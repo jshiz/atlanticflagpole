@@ -8,7 +8,7 @@ export default function Page() {
   return (
     <main className="flex flex-col">
       <Hero
-        bgImageSrc="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/AtlanticFlagPoleHero-1bpga31cXaLuyWIIyEXNHC2m8vfNAv.jpg"
+        bgImageSrc="/images/hero-flagpole.jpg"
         eyebrow="Fall Into Savings"
         headline="Up To 60% Off All Flagpoles + Accessories Included!"
         subhead="The last flagpole you will ever need"
