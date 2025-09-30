@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { Suspense } from "react"
 import { Header } from "@/components/header"
+import { PromoFooter } from "@/components/promo-footer"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -30,6 +31,7 @@ export default function RootLayout({
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} ${cinzel.variable}`}>
         <Header />
         <Suspense fallback={null}>{children}</Suspense>
+        <PromoFooter />
         <Analytics />
       </body>
     </html>

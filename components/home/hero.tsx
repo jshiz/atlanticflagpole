@@ -71,39 +71,53 @@ export function Hero() {
             </span>
           </p>
 
-          {/* Timer Box */}
-          <div className="bg-white rounded-sm p-4 mb-4 w-full">
-            <p className="text-[#0B1C2C] text-sm font-semibold mb-2">Order Today For Fastest Shipping</p>
+          <div className="bg-white rounded-sm p-3 mb-3 max-w-md mx-auto">
+            <p className="text-[#0B1C2C] text-sm font-semibold mb-2 text-center">Order Today For Fastest Shipping</p>
             <div className="flex items-center justify-center gap-2">
-              <div className="bg-[#0B1C2C] px-3 py-2 rounded-sm min-w-[60px] text-center">
-                <div className="text-2xl font-bold text-white tabular-nums">{timeLeft.days}</div>
-                <div className="text-[9px] text-white/80 uppercase tracking-widest font-bold mt-1">DAYS</div>
+              <div className="bg-[#0B1C2C] px-2.5 py-1.5 rounded-sm min-w-[55px] text-center">
+                <div className="text-xl font-bold text-white tabular-nums">{timeLeft.days}</div>
+                <div className="text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">DAYS</div>
               </div>
-              <div className="text-xl text-[#0B1C2C] font-light">.</div>
-              <div className="bg-[#0B1C2C] px-3 py-2 rounded-sm min-w-[60px] text-center">
-                <div className="text-2xl font-bold text-white tabular-nums">{timeLeft.hours}</div>
-                <div className="text-[9px] text-white/80 uppercase tracking-widest font-bold mt-1">HRS</div>
+              <div className="text-lg text-[#0B1C2C] font-light">.</div>
+              <div className="bg-[#0B1C2C] px-2.5 py-1.5 rounded-sm min-w-[55px] text-center">
+                <div className="text-xl font-bold text-white tabular-nums">{timeLeft.hours}</div>
+                <div className="text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">HRS</div>
               </div>
-              <div className="text-xl text-[#0B1C2C] font-light">.</div>
-              <div className="bg-[#0B1C2C] px-3 py-2 rounded-sm min-w-[60px] text-center">
-                <div className="text-2xl font-bold text-white tabular-nums">{timeLeft.minutes}</div>
-                <div className="text-[9px] text-white/80 uppercase tracking-widest font-bold mt-1">MIN</div>
+              <div className="text-lg text-[#0B1C2C] font-light">.</div>
+              <div className="bg-[#0B1C2C] px-2.5 py-1.5 rounded-sm min-w-[55px] text-center">
+                <div className="text-xl font-bold text-white tabular-nums">{timeLeft.minutes}</div>
+                <div className="text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">MIN</div>
               </div>
-              <div className="text-xl text-[#0B1C2C] font-light">.</div>
-              <div className="bg-[#0B1C2C] px-3 py-2 rounded-sm min-w-[60px] text-center">
-                <div className="text-2xl font-bold text-white tabular-nums">{timeLeft.seconds}</div>
-                <div className="text-[9px] text-white/80 uppercase tracking-widest font-bold mt-1">SEC</div>
+              <div className="text-lg text-[#0B1C2C] font-light">.</div>
+              <div className="bg-[#0B1C2C] px-2.5 py-1.5 rounded-sm min-w-[55px] text-center">
+                <div className="text-xl font-bold text-white tabular-nums">{timeLeft.seconds}</div>
+                <div className="text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">SEC</div>
               </div>
             </div>
           </div>
 
-          {/* CTA Button */}
-          <Link
-            href="/products"
-            className="block w-full bg-[#C8A55C] hover:bg-[#B8954C] text-[#0B1C2C] text-center font-bold text-base py-3 px-8 rounded-sm transition-colors mb-3"
-          >
-            Shop Flagpoles
-          </Link>
+          <div className="relative mb-3 max-w-md mx-auto">
+            <Link
+              href="/products"
+              className="block w-full bg-[#C8A55C] hover:bg-[#B8954C] text-[#0B1C2C] text-center font-bold text-sm py-2.5 px-6 rounded-sm transition-colors"
+            >
+              Shop Flagpoles
+            </Link>
+
+            <div className="absolute -top-3 -right-3 flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-full shadow-lg border-2 border-[#C8A55C] rotate-12">
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/award-ahFIFGNcg0OL4HphdqPlGjfDeSvpUK.png"
+                alt="Award"
+                className="w-6 h-6 object-contain"
+              />
+              <div className="flex flex-col leading-none">
+                <div className="flex items-center gap-0.5">
+                  <span className="text-[#C8A55C] text-xs">★★★★★</span>
+                </div>
+                <span className="text-[#0B1C2C] text-[10px] font-bold whitespace-nowrap">4.9 Reviews</span>
+              </div>
+            </div>
+          </div>
 
           {/* Stock Status */}
           <div className="flex items-center gap-2 mb-3">
@@ -116,9 +130,15 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Award Badges Overlay */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 text-center z-20">
-        <p className="text-white text-base font-semibold mb-4 drop-shadow-lg">America's #1 Hybrid Luxury Flagpole</p>
+      <div className="absolute top-12 left-1/2 -translate-x-1/2 text-center z-20">
+        <div className="inline-block bg-[#0B1C2C]/80 backdrop-blur-sm px-6 py-2 rounded-full mb-4 border-2 border-[#C8A55C]/30">
+          <p
+            className="text-white text-lg font-bold tracking-wide"
+            style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.8)" }}
+          >
+            America's #1 Hybrid Luxury Flagpole
+          </p>
+        </div>
         <div className="flex items-center justify-center gap-4">
           <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg border-[3px] border-[#C8A55C]">
             <div className="text-center">
