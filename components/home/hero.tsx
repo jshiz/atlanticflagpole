@@ -71,62 +71,66 @@ export function Hero() {
             </span>
           </p>
 
-          <div className="bg-white rounded-sm p-3 mb-3 max-w-md mx-auto">
-            <p className="text-[#0B1C2C] text-sm font-semibold mb-2 text-center">Order Today For Fastest Shipping</p>
-            <div className="flex items-center justify-center gap-2">
-              <div className="bg-[#0B1C2C] px-2.5 py-1.5 rounded-sm min-w-[55px] text-center">
-                <div className="text-xl font-bold text-white tabular-nums">{timeLeft.days}</div>
-                <div className="text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">DAYS</div>
-              </div>
-              <div className="text-lg text-[#0B1C2C] font-light">.</div>
-              <div className="bg-[#0B1C2C] px-2.5 py-1.5 rounded-sm min-w-[55px] text-center">
-                <div className="text-xl font-bold text-white tabular-nums">{timeLeft.hours}</div>
-                <div className="text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">HRS</div>
-              </div>
-              <div className="text-lg text-[#0B1C2C] font-light">.</div>
-              <div className="bg-[#0B1C2C] px-2.5 py-1.5 rounded-sm min-w-[55px] text-center">
-                <div className="text-xl font-bold text-white tabular-nums">{timeLeft.minutes}</div>
-                <div className="text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">MIN</div>
-              </div>
-              <div className="text-lg text-[#0B1C2C] font-light">.</div>
-              <div className="bg-[#0B1C2C] px-2.5 py-1.5 rounded-sm min-w-[55px] text-center">
-                <div className="text-xl font-bold text-white tabular-nums">{timeLeft.seconds}</div>
-                <div className="text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">SEC</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="relative mb-3 max-w-md mx-auto">
-            <Link
-              href="/products"
-              className="block w-full bg-[#C8A55C] hover:bg-[#B8954C] text-[#0B1C2C] text-center font-bold text-sm py-2.5 px-6 rounded-sm transition-colors"
-            >
-              Shop Flagpoles
-            </Link>
-
-            <div className="absolute -top-3 -right-3 flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-full shadow-lg border-2 border-[#C8A55C] rotate-12">
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/award-ahFIFGNcg0OL4HphdqPlGjfDeSvpUK.png"
-                alt="Award"
-                className="w-6 h-6 object-contain"
-              />
-              <div className="flex flex-col leading-none">
-                <div className="flex items-center gap-0.5">
-                  <span className="text-[#C8A55C] text-xs">★★★★★</span>
+          <div className="flex flex-col items-start gap-3 max-w-[380px]">
+            <div className="bg-white rounded-sm p-3 w-full">
+              <p className="text-[#0B1C2C] text-sm font-semibold mb-2 text-center">Order Today For Fastest Shipping</p>
+              <div className="flex items-center justify-center gap-2">
+                <div className="bg-[#0B1C2C] px-2.5 py-1.5 rounded-sm min-w-[55px] text-center">
+                  <div className="text-xl font-bold text-white tabular-nums">{timeLeft.days}</div>
+                  <div className="text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">DAYS</div>
                 </div>
-                <span className="text-[#0B1C2C] text-[10px] font-bold whitespace-nowrap">4.9 Reviews</span>
+                <div className="text-lg text-[#0B1C2C] font-light">.</div>
+                <div className="bg-[#0B1C2C] px-2.5 py-1.5 rounded-sm min-w-[55px] text-center">
+                  <div className="text-xl font-bold text-white tabular-nums">{timeLeft.hours}</div>
+                  <div className="text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">HRS</div>
+                </div>
+                <div className="text-lg text-[#0B1C2C] font-light">.</div>
+                <div className="bg-[#0B1C2C] px-2.5 py-1.5 rounded-sm min-w-[55px] text-center">
+                  <div className="text-xl font-bold text-white tabular-nums">{timeLeft.minutes}</div>
+                  <div className="text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">MIN</div>
+                </div>
+                <div className="text-lg text-[#0B1C2C] font-light">.</div>
+                <div className="bg-[#0B1C2C] px-2.5 py-1.5 rounded-sm min-w-[55px] text-center">
+                  <div className="text-xl font-bold text-white tabular-nums">{timeLeft.seconds}</div>
+                  <div className="text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">SEC</div>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Stock Status */}
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <p className="text-xs font-bold text-white uppercase tracking-wide">IN STOCK SHIPS IN 1-2 BUSINESS DAYS</p>
+            <div className="relative w-full">
+              <Link
+                href="/products"
+                className="block w-full bg-[#C8A55C] hover:bg-[#B8954C] text-[#0B1C2C] text-center font-bold text-sm py-2.5 px-6 rounded-sm transition-colors"
+              >
+                Shop Flagpoles
+              </Link>
+
+              <div className="absolute -top-3 -right-3 flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-full shadow-lg border-2 border-[#C8A55C] rotate-12">
+                <img
+                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/award-ahFIFGNcg0OL4HphdqPlGjfDeSvpUK.png"
+                  alt="Award"
+                  className="w-6 h-6 object-contain"
+                />
+                <div className="flex flex-col leading-none">
+                  <div className="flex items-center gap-0.5">
+                    <span className="text-[#C8A55C] text-xs">★★★★★</span>
+                  </div>
+                  <span className="text-[#0B1C2C] text-[10px] font-bold whitespace-nowrap">4.9 Reviews</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Stock Status */}
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <p className="text-xs font-bold text-white uppercase tracking-wide">
+                IN STOCK SHIPS IN 1-2 BUSINESS DAYS
+              </p>
+            </div>
           </div>
 
           {/* Terms */}
-          <p className="text-white/60 text-xs">*See Terms</p>
+          <p className="text-white/60 text-xs mt-3">*See Terms</p>
         </div>
       </div>
 
@@ -140,27 +144,34 @@ export function Hero() {
           </p>
         </div>
         <div className="flex items-center justify-center gap-4">
-          <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg border-[3px] border-[#C8A55C]">
-            <div className="text-center">
-              <div className="text-sm font-bold text-[#0B1C2C]">AD</div>
-              <div className="text-[8px] text-[#0B1C2C] leading-tight">DESIGN</div>
-              <div className="text-[8px] text-[#0B1C2C] leading-tight">AWARD</div>
-            </div>
-          </div>
-          <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg border-[3px] border-[#C8A55C]">
-            <div className="text-center">
-              <div className="text-sm font-bold text-[#0B1C2C]">Forbes</div>
-              <div className="text-[8px] text-[#0B1C2C] leading-tight">Best of</div>
-              <div className="text-[8px] text-[#0B1C2C] leading-tight">2025</div>
-            </div>
-          </div>
-          <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg border-[3px] border-[#C8A55C]">
-            <div className="text-center">
-              <div className="text-sm font-bold text-red-600">CNET</div>
-              <div className="text-[8px] text-[#0B1C2C] leading-tight">Best of</div>
-              <div className="text-[8px] text-[#0B1C2C] leading-tight">2025</div>
-            </div>
-          </div>
+          <Link
+            href="https://judge.me/reviews/stores/atlanticflagpole.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-20 h-20 bg-white rounded-full overflow-hidden shadow-lg border-[3px] border-[#C8A55C] hover:border-[#D8B56C] transition-colors flex items-center justify-center p-2"
+          >
+            <img src="/images/ten-percent-badge.svg" alt="10% Pledge Badge" className="w-full h-full object-contain" />
+          </Link>
+          <Link
+            href="https://www.bbb.org/us/ny/albany/profile/flag-poles/atlantic-flag-and-pole-0041-235985313/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-20 h-20 rounded-full overflow-hidden shadow-lg border-[3px] border-[#C8A55C] hover:border-[#D8B56C] transition-colors"
+          >
+            <img src="/images/bbb-logo.webp" alt="BBB Accredited Business" className="w-full h-full object-cover" />
+          </Link>
+          <Link
+            href="https://judge.me/reviews/stores/atlanticflagpole.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-20 h-20 bg-white rounded-full overflow-hidden shadow-lg border-[3px] border-[#C8A55C] hover:border-[#D8B56C] transition-colors flex items-center justify-center p-2"
+          >
+            <img
+              src="/images/one-percent-planet.svg"
+              alt="1% for the Planet Member"
+              className="w-full h-full object-contain"
+            />
+          </Link>
         </div>
       </div>
 

@@ -20,17 +20,17 @@ export function PromoFooter() {
       const heroSection = document.querySelector("main > section:first-child")
       const secondSection = document.querySelector("main > section:nth-child(2)")
 
+      if (window.scrollY > 10) {
+        setShowAtTop(false)
+      } else {
+        setShowAtTop(true)
+      }
+
       if (heroSection && secondSection) {
         const heroBottom = heroSection.getBoundingClientRect().bottom
         const secondBottom = secondSection.getBoundingClientRect().bottom
 
-        if (window.scrollY > 50) {
-          setShowAtTop(false)
-        } else {
-          setShowAtTop(true)
-        }
-
-        if (secondBottom < 0 && heroBottom < 0) {
+        if (heroBottom < 0 && secondBottom < 0) {
           setShowAtBottom(true)
         } else {
           setShowAtBottom(false)
@@ -38,7 +38,7 @@ export function PromoFooter() {
       }
     }
 
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScroll, { passive: true })
     handleScroll() // Check initial position
 
     return () => window.removeEventListener("scroll", handleScroll)
@@ -57,8 +57,9 @@ export function PromoFooter() {
 
   return (
     <>
+      {/* Top promo bar */}
       <div
-        className={`fixed top-0 left-0 right-0 z-[60] bg-[#C8A55C] text-[#0B1C2C] overflow-hidden transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-[60] bg-[#C8A55C] text-[#0B1C2C] overflow-hidden transition-all duration-300 ease-out ${
           showAtTop ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
         }`}
       >
@@ -75,9 +76,9 @@ export function PromoFooter() {
         </div>
       </div>
 
-      {/* Bottom promo bar - unchanged */}
+      {/* Bottom promo bar */}
       <div
-        className={`fixed bottom-0 left-0 right-0 z-[60] bg-[#C8A55C] text-[#0B1C2C] overflow-hidden transition-all duration-500 ${
+        className={`fixed bottom-0 left-0 right-0 z-[60] bg-[#C8A55C] text-[#0B1C2C] overflow-hidden transition-all duration-500 ease-out ${
           showAtBottom ? "opacity-100 translate-y-0" : "opacity-0 translate-y-full pointer-events-none"
         }`}
       >

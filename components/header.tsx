@@ -486,7 +486,7 @@ export function Header() {
 
                 <button
                   onClick={() => setQuizModalOpen(true)}
-                  className="bg-[#C8A55C] hover:bg-[#a88947] px-6 py-2.5 rounded-md text-white font-medium transition-colors text-sm"
+                  className="bg-[#C8A55C] hover:bg-[#a88947] px-6 py-2.5 rounded-md text-white font-medium transition-colors text-sm mr-2"
                 >
                   Take Quiz
                 </button>
@@ -588,24 +588,26 @@ export function Header() {
       >
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-14">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setSearchExpanded(!searchExpanded)}
-                className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors"
-              >
-                <Search className="w-5 h-5" />
-              </button>
-              <div
-                className={`overflow-hidden transition-all duration-300 ${
-                  searchExpanded ? "w-64 opacity-100" : "w-0 opacity-0"
-                }`}
-              >
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="w-full pl-3 pr-4 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C8A55C] focus:border-transparent text-sm"
-                />
-              </div>
+            <div className="flex items-center gap-4 w-80">
+              {!searchExpanded && (
+                <button
+                  onClick={() => setSearchExpanded(true)}
+                  className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors"
+                >
+                  <Search className="w-5 h-5" />
+                </button>
+              )}
+              {searchExpanded && (
+                <div className="flex items-center gap-2 w-full">
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    autoFocus
+                    onBlur={() => setSearchExpanded(false)}
+                    className="w-full pl-3 pr-4 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C8A55C] focus:border-transparent text-sm"
+                  />
+                </div>
+              )}
             </div>
 
             <nav className="hidden lg:flex items-center gap-6">
