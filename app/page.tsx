@@ -4,18 +4,24 @@ import { WhyBetter } from "@/components/home/why-better"
 import { ReviewsMarquee } from "@/components/home/reviews-marquee"
 import { CTA } from "@/components/home/cta"
 
-export default function HomePage() {
+export default function Page() {
   return (
     <main className="flex flex-col">
       <Hero
-        bgImageSrc="/american-flag-waving-on-flagpole-against-blue-sky.jpg"
-        eyebrow="MADE IN USA"
-        headline="Premium Flagpoles Built to Last Generations"
-        subhead="Aircraft-grade aluminum construction with lifetime warranty. The finest flagpoles in America."
-        priceAnchor="Starting at $299"
-        primaryCta={{ label: "Shop Flagpoles", href: "/products" }}
-        secondaryCta={{ label: "Learn More", href: "/about" }}
-        showTimer={true}
+        bgImageSrc="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/AtlanticFlagPoleHero-1bpga31cXaLuyWIIyEXNHC2m8vfNAv.jpg"
+        eyebrow="Fall Into Savings"
+        headline="Up To 60% Off All Flagpoles + Accessories Included!"
+        subhead="The last flagpole you will ever need"
+        priceAnchor="Prices Starting From $199"
+        primaryCta={{
+          label: "Shop Flagpoles",
+          href: "/products/flagpoles",
+        }}
+        secondaryCta={{
+          label: "Read Reviews",
+          href: "#reviews",
+        }}
+        showTimer
       />
       <FeaturedGrid />
       <WhyBetter />

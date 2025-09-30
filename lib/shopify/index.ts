@@ -3,8 +3,7 @@ import type { ProductCollectionSortKey, ProductSortKey, ShopifyCart, ShopifyColl
 import { parseShopifyDomain } from "./parse-shopify-domain"
 import { DEFAULT_PAGE_SIZE, DEFAULT_SORT_KEY } from "./constants"
 
-const rawStoreDomain = process.env.SHOPIFY_STORE_DOMAIN
-const storefrontToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN
+const rawStoreDomain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
 const fallbackStoreDomain = "v0-template.myshopify.com"
 const SHOPIFY_STORE_DOMAIN = rawStoreDomain ? parseShopifyDomain(rawStoreDomain) : fallbackStoreDomain
 
@@ -19,18 +18,11 @@ async function shopifyFetch<T>({
   variables?: Record<string, any>
 }): Promise<{ data: T; errors?: any[] }> {
   try {
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-    }
-
-    // Add Storefront Access Token if available
-    if (storefrontToken) {
-      headers["X-Shopify-Storefront-Access-Token"] = storefrontToken
-    }
-
     const response = await fetch(SHOPIFY_STOREFRONT_API_URL, {
       method: "POST",
-      headers,
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         query,
         variables,
@@ -585,14 +577,9 @@ export async function removeCartLines(cartId: string, lineIds: string[]): Promis
                       amount
                       currencyCode
                     }
-                    selectedOptions {
-                      name
-                      value
-                    }
                     product {
                       title
-                      handle
-                      images(first: 10) {
+                      images(first: 1) {
                         edges {
                           node {
                             url
