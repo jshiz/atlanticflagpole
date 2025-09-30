@@ -50,7 +50,7 @@ export function Hero() {
 
       {/* Content Container */}
       <div className="relative z-10 flex items-center min-h-[700px] lg:min-h-[900px] px-6 md:px-12 lg:px-16 py-8 lg:py-12">
-        <div className="max-w-[520px]">
+        <div className="max-w-[520px] w-full">
           {/* Eyebrow Badge */}
           <div className="inline-block bg-white text-[#0B1C2C] px-4 py-2 mb-4 font-bold text-xs tracking-widest uppercase">
             FALL INTO SAVINGS
@@ -70,24 +70,24 @@ export function Hero() {
           </p>
 
           {/* Timer Box */}
-          <div className="bg-white rounded-sm p-4 mb-4 inline-block">
+          <div className="bg-white rounded-sm p-4 mb-4 w-full">
             <p className="text-[#0B1C2C] text-sm font-semibold mb-2">Order Today For Fastest Shipping</p>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
               <div className="bg-[#0B1C2C] px-3 py-2 rounded-sm min-w-[60px] text-center">
                 <div className="text-2xl font-bold text-white tabular-nums">{timeLeft.days}</div>
                 <div className="text-[9px] text-white/80 uppercase tracking-widest font-bold mt-1">DAYS</div>
               </div>
-              <div className="text-xl text-white font-light">.</div>
+              <div className="text-xl text-[#0B1C2C] font-light">.</div>
               <div className="bg-[#0B1C2C] px-3 py-2 rounded-sm min-w-[60px] text-center">
                 <div className="text-2xl font-bold text-white tabular-nums">{timeLeft.hours}</div>
                 <div className="text-[9px] text-white/80 uppercase tracking-widest font-bold mt-1">HRS</div>
               </div>
-              <div className="text-xl text-white font-light">.</div>
+              <div className="text-xl text-[#0B1C2C] font-light">.</div>
               <div className="bg-[#0B1C2C] px-3 py-2 rounded-sm min-w-[60px] text-center">
                 <div className="text-2xl font-bold text-white tabular-nums">{timeLeft.minutes}</div>
                 <div className="text-[9px] text-white/80 uppercase tracking-widest font-bold mt-1">MIN</div>
               </div>
-              <div className="text-xl text-white font-light">.</div>
+              <div className="text-xl text-[#0B1C2C] font-light">.</div>
               <div className="bg-[#0B1C2C] px-3 py-2 rounded-sm min-w-[60px] text-center">
                 <div className="text-2xl font-bold text-white tabular-nums">{timeLeft.seconds}</div>
                 <div className="text-[9px] text-white/80 uppercase tracking-widest font-bold mt-1">SEC</div>

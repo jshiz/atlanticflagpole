@@ -143,6 +143,15 @@
     @apply bg-background text-foreground;
   }
 
+  /* Adding cursor pointer to all interactive elements */
+  button,
+  a,
+  [role="button"],
+  input[type="submit"],
+  input[type="button"] {
+    @apply cursor-pointer;
+  }
+
   /* Adding serif font for headings */
   h1,
   h2,
