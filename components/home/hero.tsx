@@ -3,39 +3,15 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
-type HeroProps = {
-  bgImageSrc: string
-  eyebrow?: string
-  headline: string
-  subhead?: string
-  priceAnchor?: string
-  primaryCta: { label: string; href: string }
-  secondaryCta?: { label: string; href: string }
-  badges?: { src: string; alt: string }[]
-  showTimer?: boolean
-}
-
-export function Hero({
-  bgImageSrc,
-  eyebrow,
-  headline,
-  subhead,
-  priceAnchor,
-  primaryCta,
-  secondaryCta,
-  badges,
-  showTimer = false,
-}: HeroProps) {
+export function Hero() {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
-    hours: 7,
-    minutes: 26,
-    seconds: 25,
+    hours: 6,
+    minutes: 31,
+    seconds: 15,
   })
 
   useEffect(() => {
-    if (!showTimer) return
-
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev.seconds > 0) {
@@ -52,95 +28,124 @@ export function Hero({
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [showTimer])
+  }, [])
 
   return (
-    <section className="relative min-h-[70vh] md:min-h-[80vh] w-full overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0">
-        <img
-          src={bgImageSrc || "/placeholder.svg"}
-          alt="Hero background"
-          className="w-full h-full object-cover object-center"
-        />
-        {/* Gradient Overlay - left to right */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0B1C2C] via-[#0B1C2C]/95 via-30% to-transparent to-70%" />
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 py-16 md:py-24 min-h-[70vh] md:min-h-[80vh] flex items-center">
-        <div className="max-w-[560px]">
-          {/* Eyebrow */}
-          {eyebrow && (
-            <div className="inline-block bg-[#C8A55C] text-[#0B1C2C] px-4 py-2 mb-6 font-bold text-sm tracking-wide uppercase">
-              {eyebrow}
+    <section className="relative w-full bg-[#0B1C2C]">
+      <div className="grid lg:grid-cols-2 min-h-[500px] lg:min-h-[600px]">
+        {/* Left Content Column */}
+        <div className="relative z-10 flex items-center px-6 md:px-12 lg:px-16 py-8 lg:py-12">
+          <div className="max-w-[520px]">
+            {/* Eyebrow Badge */}
+            <div className="inline-block bg-white text-[#0B1C2C] px-4 py-2 mb-4 font-bold text-xs tracking-widest uppercase">
+              FALL INTO SAVINGS
             </div>
-          )}
 
-          {/* Headline */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight text-balance">
-            {headline}
-          </h1>
+            {/* Headline */}
+            <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl text-white mb-4 leading-tight">
+              Our Biggest Offer Ever!
+            </h1>
 
-          {/* Subhead */}
-          {subhead && <p className="text-lg md:text-xl text-[#F5F3EF] mb-6 leading-relaxed">{subhead}</p>}
+            {/* Subheadline */}
+            <p className="text-2xl md:text-3xl lg:text-4xl text-white font-light leading-tight mb-6">
+              Up To 60% Off Flagpoles{" "}
+              <span className="text-xl md:text-2xl">
+                +$599 Of Accessories Included!<span className="text-red-500">*</span>
+              </span>
+            </p>
 
-          {/* Timer */}
-          {showTimer && (
-            <div className="mb-6 bg-[#0B1C2C]/60 backdrop-blur-sm border border-[#C8A55C]/30 rounded-md p-4 inline-block">
-              <p className="text-[#F5F3EF] text-sm mb-2 font-medium">Order Today For Fastest Shipping</p>
-              <div className="flex gap-4">
-                <div className="text-center">
-                  <div className="text-2xl md:text-3xl font-bold text-white">{timeLeft.days}</div>
-                  <div className="text-xs text-[#C8A55C] uppercase tracking-wide">Days</div>
+            {/* Timer Box */}
+            <div className="bg-white rounded-sm p-4 mb-4 inline-block">
+              <p className="text-[#0B1C2C] text-sm font-semibold mb-2">Order Today For Fastest Shipping</p>
+              <div className="flex items-center gap-2">
+                <div className="bg-[#0B1C2C] px-3 py-2 rounded-sm min-w-[60px] text-center">
+                  <div className="text-2xl font-bold text-white tabular-nums">{timeLeft.days}</div>
+                  <div className="text-[9px] text-white/80 uppercase tracking-widest font-bold mt-1">DAYS</div>
                 </div>
-                <div className="text-2xl text-white self-center">:</div>
-                <div className="text-center">
-                  <div className="text-2xl md:text-3xl font-bold text-white">{timeLeft.hours}</div>
-                  <div className="text-xs text-[#C8A55C] uppercase tracking-wide">Hours</div>
+                <div className="text-xl text-white font-light">.</div>
+                <div className="bg-[#0B1C2C] px-3 py-2 rounded-sm min-w-[60px] text-center">
+                  <div className="text-2xl font-bold text-white tabular-nums">{timeLeft.hours}</div>
+                  <div className="text-[9px] text-white/80 uppercase tracking-widest font-bold mt-1">HRS</div>
                 </div>
-                <div className="text-2xl text-white self-center">:</div>
-                <div className="text-center">
-                  <div className="text-2xl md:text-3xl font-bold text-white">{timeLeft.minutes}</div>
-                  <div className="text-xs text-[#C8A55C] uppercase tracking-wide">Min</div>
+                <div className="text-xl text-white font-light">.</div>
+                <div className="bg-[#0B1C2C] px-3 py-2 rounded-sm min-w-[60px] text-center">
+                  <div className="text-2xl font-bold text-white tabular-nums">{timeLeft.minutes}</div>
+                  <div className="text-[9px] text-white/80 uppercase tracking-widest font-bold mt-1">MIN</div>
                 </div>
-                <div className="text-2xl text-white self-center">:</div>
-                <div className="text-center">
-                  <div className="text-2xl md:text-3xl font-bold text-white">{timeLeft.seconds}</div>
-                  <div className="text-xs text-[#C8A55C] uppercase tracking-wide">Sec</div>
+                <div className="text-xl text-white font-light">.</div>
+                <div className="bg-[#0B1C2C] px-3 py-2 rounded-sm min-w-[60px] text-center">
+                  <div className="text-2xl font-bold text-white tabular-nums">{timeLeft.seconds}</div>
+                  <div className="text-[9px] text-white/80 uppercase tracking-widest font-bold mt-1">SEC</div>
                 </div>
               </div>
             </div>
-          )}
 
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <Link href={primaryCta.href} className="btn-gold">
-              {primaryCta.label}
+            {/* CTA Button */}
+            <Link
+              href="/products"
+              className="block w-full bg-[#C8A55C] hover:bg-[#B8954C] text-[#0B1C2C] text-center font-bold text-base py-3 px-8 rounded-sm transition-colors mb-3"
+            >
+              Shop Flagpoles
             </Link>
-            {secondaryCta && (
-              <Link href={secondaryCta.href} className="btn-outline-gold">
-                {secondaryCta.label}
-              </Link>
-            )}
+
+            {/* Stock Status */}
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <p className="text-xs font-bold text-white uppercase tracking-wide">
+                IN STOCK SHIPS IN 1-2 BUSINESS DAYS
+              </p>
+            </div>
+
+            {/* Terms */}
+            <p className="text-white/60 text-xs">*See Terms</p>
+          </div>
+        </div>
+
+        {/* Right Image Column - Adjusted to show flag on right side */}
+        <div className="relative bg-gray-900 min-h-[400px] lg:min-h-full overflow-hidden">
+          <img
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/AtlanticFlagPoleHero-GGcq1dhWXSAN3gOTUl0l1TJBWaNu2a.jpg"
+            alt="Beautiful home with American flag on premium flagpole"
+            className="w-full h-full object-cover object-[75%_center]"
+          />
+
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-[#0B1C2C] via-[#0B1C2C]/40 to-transparent pointer-events-none"
+            style={{ width: "25%" }}
+          ></div>
+
+          {/* Award Badges Overlay */}
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 text-center">
+            <p className="text-white text-sm font-semibold mb-3 drop-shadow-lg">America's #1 Hybrid Luxury Flagpole</p>
+            <div className="flex items-center justify-center gap-3">
+              <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg">
+                <div className="text-center">
+                  <div className="text-xs font-bold text-[#0B1C2C]">AD</div>
+                  <div className="text-[7px] text-[#0B1C2C]">DESIGN</div>
+                  <div className="text-[7px] text-[#0B1C2C]">AWARD</div>
+                </div>
+              </div>
+              <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg">
+                <div className="text-center">
+                  <div className="text-xs font-bold text-[#0B1C2C]">Forbes</div>
+                  <div className="text-[7px] text-[#0B1C2C]">Best of</div>
+                  <div className="text-[7px] text-[#0B1C2C]">2025</div>
+                </div>
+              </div>
+              <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg">
+                <div className="text-center">
+                  <div className="text-xs font-bold text-red-600">CNET</div>
+                  <div className="text-[7px] text-[#0B1C2C]">Best of</div>
+                  <div className="text-[7px] text-[#0B1C2C]">2025</div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Price Anchor */}
-          {priceAnchor && <p className="text-[#F5F3EF] text-lg mb-6">{priceAnchor}</p>}
-
-          {/* Trust Badges */}
-          {badges && badges.length > 0 && (
-            <div className="flex flex-wrap gap-4 items-center">
-              {badges.map((badge, index) => (
-                <img
-                  key={index}
-                  src={badge.src || "/placeholder.svg"}
-                  alt={badge.alt}
-                  className="h-8 md:h-10 opacity-80 hover:opacity-100 transition-opacity"
-                />
-              ))}
-            </div>
-          )}
+          {/* Price Anchor at Bottom */}
+          <div className="absolute bottom-6 left-6">
+            <p className="text-white text-lg font-serif drop-shadow-lg">Prices Starting From $299</p>
+          </div>
         </div>
       </div>
     </section>
