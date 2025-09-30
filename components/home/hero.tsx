@@ -58,7 +58,9 @@ export function Hero() {
 
           {/* Headline */}
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-white mb-4 leading-tight">
-            Our Biggest Offer Ever!
+            Our Biggest
+            <br />
+            Offer Ever!
           </h1>
 
           {/* Subheadline */}
