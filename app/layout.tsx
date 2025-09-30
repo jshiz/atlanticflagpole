@@ -26,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} ${cinzel.variable}`}>
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} ${cinzel.variable}`}>
+      <body className="font-sans antialiased">
         <Header />
         <Suspense fallback={null}>{children}</Suspense>
         <Analytics />
