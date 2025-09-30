@@ -50,7 +50,7 @@ export default async function TestShopifyPage() {
                 <h2 className="mb-4 font-serif text-2xl font-bold text-foreground">Collections</h2>
                 <div className="space-y-4">
                   {collections.map((collection) => (
-                    <div key={collection.id} className="rounded-lg border border-border bg-card p-4">
+                    <div key={collection.id} className="rounded-lg border border-gray-200 bg-card p-4">
                       <h3 className="font-semibold text-card-foreground">{collection.title}</h3>
                       <p className="text-sm text-muted-foreground">Handle: {collection.handle}</p>
                       {collection.description && (
@@ -67,7 +67,7 @@ export default async function TestShopifyPage() {
                 <h2 className="mb-4 font-serif text-2xl font-bold text-foreground">Products</h2>
                 <div className="space-y-4">
                   {products.map((product) => (
-                    <div key={product.id} className="rounded-lg border border-border bg-card p-4">
+                    <div key={product.id} className="rounded-lg border border-gray-200 bg-card p-4">
                       <div className="flex gap-4">
                         {product.images.edges[0] && (
                           <img
