@@ -35,7 +35,11 @@ export async function GET(req: NextRequest) {
   if (!q) return NextResponse.json({ items: [] })
 
   try {
-    const data = await shopifyFetch<{ products: any }>(PRODUCT_SEARCH, { q: buildSearchQuery(q) })
+    const data = await shopifyFetch<{ products: any }>(PRODUCT_SEARCH, {
+      q: buildSearchQuery(q),
+      first: 100,
+    })
+
     const items = data.products.nodes.map((p: any) => ({
       id: p.id,
       handle: p.handle,
@@ -51,6 +55,8 @@ export async function GET(req: NextRequest) {
         price: v.price,
       })),
     }))
+
+    console.log(`[v0] Search for "${q}" returned ${items.length} products`)
     return NextResponse.json({ items })
   } catch (error) {
     console.error("[v0] Search error:", error)
