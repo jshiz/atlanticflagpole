@@ -31,7 +31,7 @@ export function Hero() {
   }, [])
 
   return (
-    <section className="relative w-full min-h-[700px] lg:min-h-[900px] overflow-hidden">
+    <section className="relative w-full min-h-[600px] md:min-h-[700px] lg:min-h-[900px] overflow-hidden">
       {/* Full Background Image */}
       <img
         src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/AtlanticFlagPoleHero-GGcq1dhWXSAN3gOTUl0l1TJBWaNu2a.jpg"
@@ -48,50 +48,60 @@ export function Hero() {
       ></div>
 
       {/* Content Container */}
-      <div className="relative z-10 flex items-center min-h-[700px] lg:min-h-[900px] px-6 md:px-12 lg:px-16 py-8 lg:py-12">
+      <div className="relative z-10 flex items-center min-h-[600px] md:min-h-[700px] lg:min-h-[900px] px-4 md:px-12 lg:px-16 py-6 md:py-8 lg:py-12">
         <div className="max-w-[520px] w-full">
           {/* Eyebrow Badge */}
-          <div className="inline-block bg-white text-[#0B1C2C] px-4 py-2 mb-4 font-bold text-xs tracking-widest uppercase">
+          <div className="inline-block bg-white text-[#0B1C2C] px-3 py-1.5 md:px-4 md:py-2 mb-3 md:mb-4 font-bold text-[10px] md:text-xs tracking-widest uppercase">
             FALL INTO SAVINGS
           </div>
 
           {/* Headline */}
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-white mb-4 leading-tight">
+          <h1 className="font-serif text-3xl md:text-5xl lg:text-6xl text-white mb-3 md:mb-4 leading-tight">
             Our Biggest
             <br />
             Offer Ever!
           </h1>
 
           {/* Subheadline */}
-          <p className="text-3xl md:text-4xl lg:text-5xl text-white font-light leading-tight mb-6">
+          <p className="text-2xl md:text-4xl lg:text-5xl text-white font-light leading-tight mb-4 md:mb-6">
             Up To 60% Off Flagpoles{" "}
-            <span className="text-xl md:text-2xl lg:text-3xl">
+            <span className="text-lg md:text-2xl lg:text-3xl">
               +$599 Of Accessories Included!<span className="text-red-500">*</span>
             </span>
           </p>
 
-          <div className="flex flex-col items-start gap-3 max-w-[380px]">
-            <div className="bg-white rounded-sm p-3 w-full">
-              <p className="text-[#0B1C2C] text-sm font-semibold mb-2 text-center">Order Today For Fastest Shipping</p>
-              <div className="flex items-center justify-center gap-2">
-                <div className="bg-[#0B1C2C] px-2.5 py-1.5 rounded-sm min-w-[55px] text-center">
-                  <div className="text-xl font-bold text-white tabular-nums">{timeLeft.days}</div>
-                  <div className="text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">DAYS</div>
+          <div className="flex flex-col items-start gap-2.5 md:gap-3 max-w-[380px]">
+            <div className="bg-white rounded-sm p-2.5 md:p-3 w-full">
+              <p className="text-[#0B1C2C] text-xs md:text-sm font-semibold mb-1.5 md:mb-2 text-center">
+                Order Today For Fastest Shipping
+              </p>
+              <div className="flex items-center justify-center gap-1.5 md:gap-2">
+                <div className="bg-[#0B1C2C] px-2 py-1 md:px-2.5 md:py-1.5 rounded-sm min-w-[48px] md:min-w-[55px] text-center">
+                  <div className="text-lg md:text-xl font-bold text-white tabular-nums">{timeLeft.days}</div>
+                  <div className="text-[7px] md:text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">
+                    DAYS
+                  </div>
                 </div>
-                <div className="text-lg text-[#0B1C2C] font-light">.</div>
-                <div className="bg-[#0B1C2C] px-2.5 py-1.5 rounded-sm min-w-[55px] text-center">
-                  <div className="text-xl font-bold text-white tabular-nums">{timeLeft.hours}</div>
-                  <div className="text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">HRS</div>
+                <div className="text-base md:text-lg text-[#0B1C2C] font-light">.</div>
+                <div className="bg-[#0B1C2C] px-2 py-1 md:px-2.5 md:py-1.5 rounded-sm min-w-[48px] md:min-w-[55px] text-center">
+                  <div className="text-lg md:text-xl font-bold text-white tabular-nums">{timeLeft.hours}</div>
+                  <div className="text-[7px] md:text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">
+                    HRS
+                  </div>
                 </div>
-                <div className="text-lg text-[#0B1C2C] font-light">.</div>
-                <div className="bg-[#0B1C2C] px-2.5 py-1.5 rounded-sm min-w-[55px] text-center">
-                  <div className="text-xl font-bold text-white tabular-nums">{timeLeft.minutes}</div>
-                  <div className="text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">MIN</div>
+                <div className="text-base md:text-lg text-[#0B1C2C] font-light">.</div>
+                <div className="bg-[#0B1C2C] px-2 py-1 md:px-2.5 md:py-1.5 rounded-sm min-w-[48px] md:min-w-[55px] text-center">
+                  <div className="text-lg md:text-xl font-bold text-white tabular-nums">{timeLeft.minutes}</div>
+                  <div className="text-[7px] md:text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">
+                    MIN
+                  </div>
                 </div>
-                <div className="text-lg text-[#0B1C2C] font-light">.</div>
-                <div className="bg-[#0B1C2C] px-2.5 py-1.5 rounded-sm min-w-[55px] text-center">
-                  <div className="text-xl font-bold text-white tabular-nums">{timeLeft.seconds}</div>
-                  <div className="text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">SEC</div>
+                <div className="text-base md:text-lg text-[#0B1C2C] font-light">.</div>
+                <div className="bg-[#0B1C2C] px-2 py-1 md:px-2.5 md:py-1.5 rounded-sm min-w-[48px] md:min-w-[55px] text-center">
+                  <div className="text-lg md:text-xl font-bold text-white tabular-nums">{timeLeft.seconds}</div>
+                  <div className="text-[7px] md:text-[8px] text-white/80 uppercase tracking-widest font-bold mt-0.5">
+                    SEC
+                  </div>
                 </div>
               </div>
             </div>
@@ -104,17 +114,19 @@ export function Hero() {
                 Shop Flagpoles
               </Link>
 
-              <div className="absolute -top-3 -right-3 flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-full shadow-lg border-2 border-[#C8A55C] rotate-12">
+              <div className="absolute -top-2.5 -right-2.5 md:-top-3 md:-right-3 flex items-center gap-1 md:gap-1.5 bg-white px-2 py-1 md:px-2.5 md:py-1.5 rounded-full shadow-lg border-2 border-[#C8A55C] rotate-12">
                 <img
                   src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/award-ahFIFGNcg0OL4HphdqPlGjfDeSvpUK.png"
                   alt="Award"
-                  className="w-6 h-6 object-contain"
+                  className="w-5 h-5 md:w-6 md:h-6 object-contain"
                 />
                 <div className="flex flex-col leading-none">
                   <div className="flex items-center gap-0.5">
-                    <span className="text-[#C8A55C] text-xs">★★★★★</span>
+                    <span className="text-[#C8A55C] text-[10px] md:text-xs">★★★★★</span>
                   </div>
-                  <span className="text-[#0B1C2C] text-[10px] font-bold whitespace-nowrap">4.9 Reviews</span>
+                  <span className="text-[#0B1C2C] text-[9px] md:text-[10px] font-bold whitespace-nowrap">
+                    4.9 Reviews
+                  </span>
                 </div>
               </div>
             </div>
@@ -122,18 +134,19 @@ export function Hero() {
             {/* Stock Status */}
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <p className="text-xs font-bold text-white uppercase tracking-wide">
+              <p className="text-[10px] md:text-xs font-bold text-white uppercase tracking-wide">
                 IN STOCK SHIPS IN 1-2 BUSINESS DAYS
               </p>
             </div>
           </div>
 
           {/* Terms */}
-          <p className="text-white/60 text-xs mt-3">*See Terms</p>
+          <p className="text-white/60 text-[10px] md:text-xs mt-2 md:mt-3">*See Terms</p>
         </div>
       </div>
 
-      <div className="absolute top-12 left-1/2 -translate-x-1/2 text-center z-20">
+      {/* Hidden badges on mobile, shown on tablet+ */}
+      <div className="hidden md:block absolute top-12 left-1/2 -translate-x-1/2 text-center z-20">
         <div className="inline-block bg-[#0B1C2C]/80 backdrop-blur-sm px-6 py-2 rounded-full mb-4 border-2 border-[#C8A55C]/30">
           <p
             className="text-white text-lg font-bold tracking-wide"
@@ -175,8 +188,8 @@ export function Hero() {
       </div>
 
       {/* Price Anchor at Bottom */}
-      <div className="absolute bottom-6 left-6 z-20">
-        <p className="text-white text-lg font-serif drop-shadow-lg">Prices Starting From $299</p>
+      <div className="absolute bottom-4 left-4 md:bottom-6 md:left-6 z-20">
+        <p className="text-white text-base md:text-lg font-serif drop-shadow-lg">Prices Starting From $299</p>
       </div>
     </section>
   )
