@@ -24,7 +24,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [searchExpanded, setSearchExpanded] = useState(false)
   const { cart } = useCart()
-  const cartItemCount = cart?.lines?.edges?.length || 0
+  const cartItemCount = cart?.lines?.edges ? cart.lines.edges.length : 0
 
   useEffect(() => {
     const interval = setInterval(() => {

@@ -1,101 +1,92 @@
-import { getMenuWithNormalizedUrls } from "@/lib/shopify/catalog"
 import { searchProducts } from "@/lib/shopify/catalog"
 import { Header } from "./header-client"
 
 export async function HeaderWrapper() {
-  let menuData = null
-  const collectionsData: Record<string, any> = {}
+  const collectionsData: Record<string, { products: { nodes: any[] } }> = {}
 
   try {
-    menuData = await getMenuWithNormalizedUrls("main-menu")
+    const allProductsResult = await searchProducts({ first: 250 })
+    const allProducts = allProductsResult?.nodes || []
 
-    // Fetch products for Flagpoles menu
-    const flagpoleTags = ["telescoping-flag-pole", "american-made-flagpole", "flagpole", "best-flag-pole"]
-    for (const tag of flagpoleTags) {
-      const results = await searchProducts({ tag, first: 6 })
-      if (results?.nodes?.length > 0) {
-        collectionsData["flagpoles"] = { products: results }
-        console.log(`[v0] ✓ Loaded ${results.nodes.length} products for Flagpoles menu using tag: ${tag}`)
-        break
+    const filterByTag = (products: any[], searchTags: string[]) => {
+      return products.filter((product) => {
+        const productTags = product.tags || []
+        return searchTags.some((searchTag) =>
+          productTags.some((tag: string) => tag.toLowerCase().includes(searchTag.toLowerCase())),
+        )
+      })
+    }
+
+    // Flagpoles category - main category
+    const flagpoleProducts = filterByTag(allProducts, [
+      "flagpole",
+      "flag-pole",
+      "telescoping",
+      "aluminum",
+      "pole",
+      "kit",
+    ])
+    if (flagpoleProducts.length > 0) {
+      collectionsData["flagpoles"] = { products: { nodes: flagpoleProducts.slice(0, 8) } }
+    }
+
+    // Flags category - main category
+    const flagProducts = filterByTag(allProducts, ["american-flag", "flag", "star-flag", "banner", "nylon", "stripes"])
+    if (flagProducts.length > 0) {
+      collectionsData["flags"] = { products: { nodes: flagProducts.slice(0, 8) } }
+    }
+
+    // Accessories category - main category
+    const accessoryProducts = filterByTag(allProducts, [
+      "topper",
+      "lighting",
+      "mount",
+      "hardware",
+      "replacement",
+      "eagle",
+      "ball",
+    ])
+    if (accessoryProducts.length > 0) {
+      collectionsData["accessories"] = { products: { nodes: accessoryProducts.slice(0, 8) } }
+    }
+
+    // Holiday category - main category
+    const holidayProducts = filterByTag(allProducts, ["holiday", "christmas", "halloween", "seasonal", "19th-hole"])
+    if (holidayProducts.length > 0) {
+      collectionsData["holiday"] = { products: { nodes: holidayProducts.slice(0, 8) } }
+    }
+
+    const subcategories = {
+      telescoping: ["telescoping"],
+      aluminum: ["aluminum"],
+      indoor: ["indoor"],
+      commercial: ["commercial"],
+      residential: ["residential"],
+      "american-flag": ["american-flag", "american"],
+      "state-flag": ["state"],
+      military: ["military", "naval", "navy", "marine"],
+      international: ["international"],
+      custom: ["custom"],
+      lighting: ["lighting", "light"],
+      mounts: ["mount"],
+      toppers: ["topper", "eagle", "ball"],
+      hardware: ["hardware", "replacement"],
+      maintenance: ["maintenance"],
+      christmas: ["christmas"],
+      halloween: ["halloween"],
+      patriotic: ["patriotic", "independence", "memorial", "veterans"],
+      seasonal: ["seasonal"],
+    }
+
+    for (const [key, searchTags] of Object.entries(subcategories)) {
+      const products = filterByTag(allProducts, searchTags)
+      if (products.length > 0) {
+        collectionsData[key] = { products: { nodes: products.slice(0, 6) } }
       }
     }
-
-    // Fetch products for Flags menu
-    const flagTags = ["american-flag", "15-star-flag", "historical-flag", "flag"]
-    for (const tag of flagTags) {
-      const results = await searchProducts({ tag, first: 6 })
-      if (results?.nodes?.length > 0) {
-        collectionsData["flags"] = { products: results }
-        console.log(`[v0] ✓ Loaded ${results.nodes.length} products for Flags menu using tag: ${tag}`)
-        break
-      }
-    }
-
-    // Fetch products for Accessories menu
-    const accessoryTags = ["flagpole-accessories", "toppers", "lighting", "mounts"]
-    for (const tag of accessoryTags) {
-      const results = await searchProducts({ tag, first: 6 })
-      if (results?.nodes?.length > 0) {
-        collectionsData["accessories"] = { products: results }
-        console.log(`[v0] ✓ Loaded ${results.nodes.length} products for Accessories menu using tag: ${tag}`)
-        break
-      }
-    }
-
-    // Fetch products for Holiday menu
-    const holidayTags = ["holiday-flag", "specialty-flag", "christmas", "halloween"]
-    for (const tag of holidayTags) {
-      const results = await searchProducts({ tag, first: 6 })
-      if (results?.nodes?.length > 0) {
-        collectionsData["holiday"] = { products: results }
-        console.log(`[v0] ✓ Loaded ${results.nodes.length} products for Holiday menu using tag: ${tag}`)
-        break
-      }
-    }
-
-    // Also try to fetch products for specific subcategories
-    const specificTags = {
-      telescoping: ["telescoping-flag-pole", "telescoping"],
-      aluminum: ["aluminum-flagpole", "aluminum"],
-      indoor: ["indoor-flagpole", "indoor"],
-      "american-flag": ["american-flag", "usa-flag"],
-      "state-flag": ["state-flag"],
-      military: ["military-flag", "naval-history"],
-      lighting: ["flagpole-lighting", "lighting"],
-      toppers: ["flagpole-toppers", "toppers", "gold-eagle-topper"],
-    }
-
-    for (const [key, tags] of Object.entries(specificTags)) {
-      for (const tag of tags) {
-        const results = await searchProducts({ tag, first: 6 })
-        if (results?.nodes?.length > 0) {
-          collectionsData[key] = { products: results }
-          console.log(`[v0] ✓ Loaded ${results.nodes.length} products for ${key} using tag: ${tag}`)
-          break
-        }
-      }
-    }
-
-    console.log("[v0] 📊 Final collectionsData keys:", Object.keys(collectionsData))
-    console.log("[v0] 📊 Total collections with products:", Object.keys(collectionsData).length)
   } catch (error) {
-    console.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    console.error("❌ ERROR LOADING MENU")
-    console.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    console.error(error)
-    console.error("")
-    console.error("Possible causes:")
-    console.error("• Shopify store domain is incorrect")
-    console.error("• Shopify API token is missing or invalid")
-    console.error("• Network connection issue")
-    console.error("")
-    console.error("Check your environment variables:")
-    console.error("• NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN")
-    console.error("• SHOPIFY_STOREFRONT_TOKEN")
-    console.error("")
-    console.error("For help, visit: /debug-menu")
-    console.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    console.error("[v0] ❌ ERROR in HeaderWrapper:", error)
   }
 
-  return <Header menuData={menuData} collectionsData={collectionsData} />
+  return <Header menuData={null} collectionsData={collectionsData} />
 }

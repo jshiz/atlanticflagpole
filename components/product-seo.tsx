@@ -1,8 +1,10 @@
 import type { ShopifyProduct } from "@/lib/shopify/types"
 
 export default function ProductSeo({ product }: { product: ShopifyProduct }) {
-  const variant = product?.variants?.edges?.[0]?.node
-  const image = product?.images?.edges?.[0]?.node
+  const variants = product?.variants?.edges ? product.variants.edges.map((edge) => edge.node) : []
+  const variant = variants[0]
+  const images = product?.images?.edges ? product.images.edges.map((edge) => edge.node) : []
+  const image = images[0]
 
   const data = {
     "@context": "https://schema.org/",

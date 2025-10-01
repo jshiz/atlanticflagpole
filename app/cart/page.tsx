@@ -20,7 +20,7 @@ export default function CartPage() {
     )
   }
 
-  const lines = cart?.lines?.edges || []
+  const lines = cart?.lines?.edges ? cart.lines.edges.map((edge) => edge.node) : []
   const isEmpty = lines.length === 0
 
   const subtotal = cart?.cost?.subtotalAmount ? Number.parseFloat(cart.cost.subtotalAmount.amount) : 0
@@ -52,11 +52,12 @@ export default function CartPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {lines.map(({ node: line }) => {
+            {lines.map((line) => {
               const product = line.merchandise.product
               const variant = line.merchandise
               const price = Number.parseFloat(line.cost.totalAmount.amount)
-              const image = product.images?.edges?.[0]?.node || variant.image
+              const productImages = product.images?.edges ? product.images.edges.map((edge) => edge.node) : []
+              const image = productImages[0] || variant.image
 
               return (
                 <Card key={line.id} className="p-4">

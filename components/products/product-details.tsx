@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { AddToCartButton } from "@/components/cart/add-to-cart-button"
 import type { ShopifyProduct } from "@/lib/shopify"
+import { toNodes } from "@/lib/connection"
 import { Check, Shield, Truck, Award } from "lucide-react"
 
 interface ProductDetailsProps {
@@ -15,10 +16,11 @@ interface ProductDetailsProps {
 }
 
 export function ProductDetails({ product }: ProductDetailsProps) {
-  const images = product.images.edges.map((edge) => edge.node)
+  const images = toNodes(product.images)
   const [selectedImage, setSelectedImage] = useState(images[0])
 
-  const [selectedVariant, setSelectedVariant] = useState(product.variants.edges[0]?.node)
+  const variants = toNodes(product.variants)
+  const [selectedVariant, setSelectedVariant] = useState(variants[0])
 
   const price = selectedVariant ? Number.parseFloat(selectedVariant.price.amount) : 0
   const compareAtPrice = selectedVariant?.compareAtPrice
@@ -104,11 +106,11 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           <Separator />
 
           {/* Variant Selection */}
-          {product.variants.edges.length > 1 && (
+          {variants.length > 1 && (
             <div className="space-y-3">
               <label className="text-sm font-semibold text-[#0B1C2C]">Select Option:</label>
               <div className="grid grid-cols-2 gap-3">
-                {product.variants.edges.map(({ node: variant }) => (
+                {variants.map((variant) => (
                   <Button
                     key={variant.id}
                     variant={selectedVariant?.id === variant.id ? "default" : "outline"}

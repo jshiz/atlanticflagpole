@@ -14,7 +14,8 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const product = await getProduct(params.handle)
   if (!product) return {}
 
-  const img = product.images?.edges?.[0]?.node?.url
+  const images = product.images?.edges ? product.images.edges.map((edge) => edge.node) : []
+  const img = images[0]?.url
   const title = `${product.title} | Atlantic Flagpole`
   const description = product.description?.slice(0, 150) ?? "Atlantic Flagpole"
 

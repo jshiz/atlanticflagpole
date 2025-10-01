@@ -3,6 +3,7 @@ import { ProductCard } from "@/components/products/product-card"
 import { CollectionFiltersWrapper } from "@/components/collections/collection-filters-wrapper"
 import { AdvancedFiltersWrapper } from "@/components/collections/advanced-filters-wrapper"
 import { COLLECTION_WITH_FILTERS } from "@/lib/shopify/queries"
+import { toNodes } from "@/lib/connection"
 
 export const dynamic = "force-dynamic"
 
@@ -27,6 +28,32 @@ async function shopifyFetch<T>(query: string, variables?: Record<string, any>): 
   }
   return json.data
 }
+
+const PRODUCTS_BY_TAG_QUERY = `
+  query getProductsByTag($query: String!, $first: Int!, $sortKey: ProductSortKeys!) {
+    products(first: $first, query: $query, sortKey: $sortKey) {
+      nodes {
+        id
+        handle
+        title
+        productType
+        vendor
+        tags
+        availableForSale
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        featuredImage {
+          url
+          altText
+        }
+      }
+    }
+  }
+`
 
 function buildFilters(searchParams: Record<string, string | string[] | undefined>) {
   const filters: any[] = []
@@ -64,6 +91,8 @@ export default async function CollectionPage({ params, searchParams }: Collectio
   const filters = buildFilters(searchParams)
 
   let collection = null
+  let products: any[] = []
+  let isFallback = false
 
   try {
     const data = await shopifyFetch<{ collection: any }>(COLLECTION_WITH_FILTERS, {
@@ -72,17 +101,50 @@ export default async function CollectionPage({ params, searchParams }: Collectio
       sortKey: sortKey as any,
     })
     collection = data.collection
+
+    if (collection) {
+      products = toNodes(collection.products)
+    }
   } catch (error) {
-    console.error("Error fetching collection:", error)
+    console.error("[v0] Error fetching collection:", error)
   }
 
-  if (!collection || !collection.products.nodes.length) {
+  if (!collection || products.length === 0) {
+    console.log(`[v0] Collection "${params.handle}" not found, falling back to tag search`)
+    isFallback = true
+
+    try {
+      const data = await shopifyFetch<{ products: any }>(PRODUCTS_BY_TAG_QUERY, {
+        query: `tag:${params.handle}`,
+        first: 250,
+        sortKey: sortKey as any,
+      })
+
+      products = toNodes(data.products)
+
+      // Create a synthetic collection object
+      if (products.length > 0) {
+        collection = {
+          title: params.handle
+            .split("-")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" "),
+          description: `Products tagged with "${params.handle}"`,
+          descriptionHtml: `<p>Products tagged with "${params.handle}"</p>`,
+          products: { nodes: products },
+        }
+      }
+    } catch (error) {
+      console.error("[v0] Error fetching products by tag:", error)
+    }
+  }
+
+  if (!collection || products.length === 0) {
     notFound()
   }
 
-  const allProducts = collection.products.nodes
-  const productTypes = [...new Set(allProducts.map((p: any) => p.productType).filter(Boolean))]
-  const vendors = [...new Set(allProducts.map((p: any) => p.vendor).filter(Boolean))]
+  const productTypes = [...new Set(products.map((p: any) => p.productType).filter(Boolean))]
+  const vendors = [...new Set(products.map((p: any) => p.vendor).filter(Boolean))]
 
   return (
     <main className="min-h-screen bg-[#F5F3EF]">
@@ -98,7 +160,14 @@ export default async function CollectionPage({ params, searchParams }: Collectio
         )}
 
         <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#0B1C2C] mb-4">{collection.title}</h1>
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#0B1C2C] mb-4">
+            {collection.title}
+            {isFallback && (
+              <span className="ml-3 text-sm font-normal text-[#C8A55C] bg-[#C8A55C]/10 px-3 py-1 rounded-full">
+                Tag Search
+              </span>
+            )}
+          </h1>
           {collection.description && (
             <div
               className="text-lg text-[#0B1C2C]/70 mb-4"
@@ -106,7 +175,7 @@ export default async function CollectionPage({ params, searchParams }: Collectio
             />
           )}
           <p className="text-lg text-[#0B1C2C]/70">
-            {collection.products.nodes.length} {collection.products.nodes.length === 1 ? "product" : "products"}
+            {products.length} {products.length === 1 ? "product" : "products"}
           </p>
         </div>
 
@@ -124,7 +193,7 @@ export default async function CollectionPage({ params, searchParams }: Collectio
 
           <div className="lg:col-span-3">
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {collection.products.nodes.map((product: any) => (
+              {products.map((product: any) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>

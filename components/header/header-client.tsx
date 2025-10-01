@@ -160,6 +160,35 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
     }
   }, [menuData])
 
+  useEffect(() => {
+    console.log(
+      "%c🎯 Mega Menu Debug",
+      "background: #C8A55C; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;",
+    )
+    console.log(`📦 Total categories received: ${Object.keys(collectionsData).length}`)
+
+    if (Object.keys(collectionsData).length === 0) {
+      console.log("%c❌ NO PRODUCTS FOUND - Mega menu will not show product images", "color: red; font-weight: bold;")
+      console.log("This means the Shopify API is not returning products or the tags don't match.")
+    } else {
+      console.log("✅ Products found for these categories:")
+      Object.entries(collectionsData).forEach(([key, value]) => {
+        const count = value.products?.nodes?.length || 0
+        console.log(`  • ${key}: ${count} products`)
+        if (count > 0 && value.products.nodes[0]) {
+          console.log(`    Sample: "${value.products.nodes[0].title}"`)
+        }
+      })
+    }
+  }, [collectionsData])
+
+  useEffect(() => {
+    console.log("[v0] Header: collectionsData received:", Object.keys(collectionsData).length, "categories")
+    Object.entries(collectionsData).forEach(([key, value]) => {
+      console.log(`[v0] Header: Category "${key}" has ${value.products?.nodes?.length || 0} products`)
+    })
+  }, [collectionsData])
+
   const handleMenuEnter = (itemId: string) => {
     if (hoverTimeout) {
       clearTimeout(hoverTimeout)
@@ -187,6 +216,10 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
     const tag = urlParams.get("tag") || menuItem.url.split("/").pop() || ""
     const products = collectionsData[tag]?.products?.nodes || []
     const hasProducts = products.length > 0
+
+    console.log(`[v0] Opening mega menu for "${menuItem.title}" (tag: "${tag}")`)
+    console.log(`[v0] Found ${products.length} products for this menu`)
+
     const hasSubItems = menuItem.items && menuItem.items.length > 0
 
     if (!hasSubItems && !hasProducts) {

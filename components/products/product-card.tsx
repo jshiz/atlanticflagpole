@@ -17,7 +17,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const hasDiscount = compareAtPrice && compareAtPrice > price
   const discountPercentage = hasDiscount ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100) : 0
 
-  const featuredImage = product.images.edges[0]?.node
+  const images = product.images?.edges ? product.images.edges.map((edge) => edge.node) : []
+  const featuredImage = images[0]
 
   return (
     <Link href={`/products/${product.handle}`}>

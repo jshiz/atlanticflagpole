@@ -1,7 +1,8 @@
 import type { ProductCollectionSortKey, ProductSortKey, ShopifyCart, ShopifyCollection, ShopifyProduct } from "./types"
-
 import { parseShopifyDomain } from "./parse-shopify-domain"
 import { DEFAULT_PAGE_SIZE, DEFAULT_SORT_KEY } from "./constants"
+import { toNodes } from "@/lib/connection"
+import type { ConnectionLike } from "@/lib/connection"
 
 const rawStoreDomain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
 const fallbackStoreDomain = "v0-template.myshopify.com"
@@ -53,7 +54,6 @@ async function shopifyFetch<T>({
   }
 }
 
-// Get all products
 export async function getProducts({
   first = DEFAULT_PAGE_SIZE,
   sortKey = DEFAULT_SORT_KEY,
@@ -68,125 +68,42 @@ export async function getProducts({
   const query = /* gql */ `
     query getProducts($first: Int!, $sortKey: ProductSortKeys!, $reverse: Boolean) {
       products(first: $first, sortKey: $sortKey, reverse: $reverse) {
-        edges {
-          node {
+        nodes {
+          id
+          title
+          description
+          descriptionHtml
+          handle
+          availableForSale
+          productType
+          tags
+          vendor
+          options {
             id
-            title
-            description
-            descriptionHtml
-            handle
-            availableForSale
-            productType
-            options {
-              id
-              name
-              values
-            }
-            images(first: 5) {
-              edges {
-                node {
-                  url
-                  altText
-                  thumbhash
-                }
-              }
-            }
-            priceRange {
-              minVariantPrice {
-                amount
-                currencyCode
-              }
-            }
-            compareAtPriceRange {
-              minVariantPrice {
-                amount
-                currencyCode
-              }
-            }
-            variants(first: 10) {
-              edges {
-                node {
-                  id
-                  title
-                  price {
-                    amount
-                    currencyCode
-                  }
-                  compareAtPrice {
-                    amount
-                    currencyCode
-                  }
-                  availableForSale
-                  selectedOptions {
-                    name
-                    value
-                  }
-                }
-              }
-            }
+            name
+            values
           }
-        }
-      }
-    }
-  `
-
-  const { data } = await shopifyFetch<{
-    products: {
-      edges: Array<{ node: ShopifyProduct }>
-    }
-  }>({
-    query,
-    variables: { first, sortKey, reverse, query: searchQuery },
-    tags: ["products"],
-  })
-
-  return data.products.edges.map((edge) => edge.node)
-}
-
-// Get single product by handle
-export async function getProduct(handle: string): Promise<ShopifyProduct | null> {
-  const query = /* gql */ `
-    query getProduct($handle: String!) {
-      product(handle: $handle) {
-        id
-        title
-        description
-        descriptionHtml
-        handle
-        productType
-        category {
-          id
-          name
-        }
-        options {
-          id
-          name
-          values
-        }
-        images(first: 10) {
-          edges {
-            node {
+          images(first: 5) {
+            nodes {
               url
               altText
               thumbhash
             }
           }
-        }
-        priceRange {
-          minVariantPrice {
-            amount
-            currencyCode
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
           }
-        }
-        compareAtPriceRange {
-          minVariantPrice {
-            amount
-            currencyCode
+          compareAtPriceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
           }
-        }
-        variants(first: 10) {
-          edges {
-            node {
+          variants(first: 10) {
+            nodes {
               id
               title
               price {
@@ -210,6 +127,80 @@ export async function getProduct(handle: string): Promise<ShopifyProduct | null>
   `
 
   const { data } = await shopifyFetch<{
+    products: ConnectionLike<ShopifyProduct>
+  }>({
+    query,
+    variables: { first, sortKey, reverse, query: searchQuery },
+    tags: ["products"],
+  })
+
+  return toNodes(data.products)
+}
+
+export async function getProduct(handle: string): Promise<ShopifyProduct | null> {
+  const query = /* gql */ `
+    query getProduct($handle: String!) {
+      product(handle: $handle) {
+        id
+        title
+        description
+        descriptionHtml
+        handle
+        productType
+        tags
+        vendor
+        category {
+          id
+          name
+        }
+        options {
+          id
+          name
+          values
+        }
+        images(first: 10) {
+          nodes {
+            url
+            altText
+            thumbhash
+          }
+        }
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        compareAtPriceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        variants(first: 10) {
+          nodes {
+            id
+            title
+            price {
+              amount
+              currencyCode
+            }
+            compareAtPrice {
+              amount
+              currencyCode
+            }
+            availableForSale
+            selectedOptions {
+              name
+              value
+            }
+          }
+        }
+      }
+    }
+  `
+
+  const { data } = await shopifyFetch<{
     product: ShopifyProduct | null
   }>({
     query,
@@ -220,22 +211,19 @@ export async function getProduct(handle: string): Promise<ShopifyProduct | null>
   return data.product
 }
 
-// Get collections
 export async function getCollections(first = 10): Promise<ShopifyCollection[]> {
   const query = /* gql */ `
     query getCollections($first: Int!) {
       collections(first: $first) {
-        edges {
-          node {
-            id
-            title
-            handle
-            description
-            image {
-              url
-              altText
-              thumbhash
-            }
+        nodes {
+          id
+          title
+          handle
+          description
+          image {
+            url
+            altText
+            thumbhash
           }
         }
       }
@@ -243,19 +231,16 @@ export async function getCollections(first = 10): Promise<ShopifyCollection[]> {
   `
 
   const { data } = await shopifyFetch<{
-    collections: {
-      edges: Array<{ node: ShopifyCollection }>
-    }
+    collections: ConnectionLike<ShopifyCollection>
   }>({
     query,
     variables: { first },
     tags: ["collections"],
   })
 
-  return data.collections.edges.map((edge) => edge.node)
+  return toNodes(data.collections)
 }
 
-// Get products from a specific collection (simplified - no server-side filtering)
 export async function getCollectionProducts({
   collection,
   limit = DEFAULT_PAGE_SIZE,
@@ -277,63 +262,59 @@ export async function getCollectionProducts({
     query getCollectionProducts($handle: String!, $first: Int!, $sortKey: ProductCollectionSortKeys!, $reverse: Boolean) {
       collection(handle: $handle) {
         products(first: $first, sortKey: $sortKey, reverse: $reverse) {
-          edges {
-            node {
+          nodes {
+            id
+            title
+            description
+            descriptionHtml
+            handle
+            productType
+            tags
+            vendor
+            category {
               id
-              title
-              description
-              descriptionHtml
-              handle
-              productType
-              category {
+              name
+            }
+            options {
+              id
+              name
+              values
+            }
+            images(first: 5) {
+              nodes {
+                url
+                altText
+                thumbhash
+              }
+            }
+            priceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            compareAtPriceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            variants(first: 10) {
+              nodes {
                 id
-                name
-              }
-              options {
-                id
-                name
-                values
-              }
-              images(first: 5) {
-                edges {
-                  node {
-                    url
-                    altText
-                    thumbhash
-                  }
-                }
-              }
-              priceRange {
-                minVariantPrice {
+                title
+                price {
                   amount
                   currencyCode
                 }
-              }
-              compareAtPriceRange {
-                minVariantPrice {
+                compareAtPrice {
                   amount
                   currencyCode
                 }
-              }
-              variants(first: 10) {
-                edges {
-                  node {
-                    id
-                    title
-                    price {
-                      amount
-                      currencyCode
-                    }
-                    compareAtPrice {
-                      amount
-                      currencyCode
-                    }
-                    availableForSale
-                    selectedOptions {
-                      name
-                      value
-                    }
-                  }
+                availableForSale
+                selectedOptions {
+                  name
+                  value
                 }
               }
             }
@@ -345,9 +326,7 @@ export async function getCollectionProducts({
 
   const { data } = await shopifyFetch<{
     collection: {
-      products: {
-        edges: Array<{ node: ShopifyProduct }>
-      }
+      products: ConnectionLike<ShopifyProduct>
     } | null
   }>({
     query,
@@ -359,7 +338,7 @@ export async function getCollectionProducts({
     return []
   }
 
-  return data.collection.products.edges.map((edge) => edge.node)
+  return toNodes(data.collection.products)
 }
 
 export async function createCart(): Promise<ShopifyCart> {
@@ -558,9 +537,14 @@ export async function updateCartLines(
                       amount
                       currencyCode
                     }
+                    selectedOptions {
+                      name
+                      value
+                    }
                     product {
                       title
-                      images(first: 1) {
+                      handle
+                      images(first: 10) {
                         edges {
                           node {
                             url
@@ -577,6 +561,14 @@ export async function updateCartLines(
           }
           cost {
             totalAmount {
+              amount
+              currencyCode
+            }
+            subtotalAmount {
+              amount
+              currencyCode
+            }
+            totalTaxAmount {
               amount
               currencyCode
             }
@@ -816,7 +808,6 @@ export async function getCart(cartId: string): Promise<ShopifyCart | null> {
   return data.cart
 }
 
-// Get ALL products with pagination
 export async function getAllProducts(): Promise<ShopifyProduct[]> {
   const allProducts: ShopifyProduct[] = []
   let hasNextPage = true
@@ -830,62 +821,56 @@ export async function getAllProducts(): Promise<ShopifyProduct[]> {
             hasNextPage
             endCursor
           }
-          edges {
-            node {
+          nodes {
+            id
+            title
+            description
+            descriptionHtml
+            handle
+            availableForSale
+            productType
+            vendor
+            tags
+            options {
               id
-              title
-              description
-              descriptionHtml
-              handle
-              availableForSale
-              productType
-              vendor
-              tags
-              options {
+              name
+              values
+            }
+            images(first: 5) {
+              nodes {
+                url
+                altText
+                thumbhash
+              }
+            }
+            priceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            compareAtPriceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            variants(first: 10) {
+              nodes {
                 id
-                name
-                values
-              }
-              images(first: 5) {
-                edges {
-                  node {
-                    url
-                    altText
-                    thumbhash
-                  }
-                }
-              }
-              priceRange {
-                minVariantPrice {
+                title
+                price {
                   amount
                   currencyCode
                 }
-              }
-              compareAtPriceRange {
-                minVariantPrice {
+                compareAtPrice {
                   amount
                   currencyCode
                 }
-              }
-              variants(first: 10) {
-                edges {
-                  node {
-                    id
-                    title
-                    price {
-                      amount
-                      currencyCode
-                    }
-                    compareAtPrice {
-                      amount
-                      currencyCode
-                    }
-                    availableForSale
-                    selectedOptions {
-                      name
-                      value
-                    }
-                  }
+                availableForSale
+                selectedOptions {
+                  name
+                  value
                 }
               }
             }
@@ -897,17 +882,16 @@ export async function getAllProducts(): Promise<ShopifyProduct[]> {
     const { data } = await shopifyFetch<{
       products: {
         pageInfo: { hasNextPage: boolean; endCursor: string }
-        edges: Array<{ node: ShopifyProduct }>
-      }
+      } & ConnectionLike<ShopifyProduct>
     }>({
       query,
       variables: { first: 250, after: cursor },
       tags: ["products"],
     })
 
-    allProducts.push(...data.products.edges.map((edge) => edge.node))
-    hasNextPage = data.products.pageInfo.hasNextPage
-    cursor = data.products.pageInfo.endCursor
+    allProducts.push(...toNodes(data.products))
+    hasNextPage = data.products?.pageInfo?.hasNextPage || false
+    cursor = data.products?.pageInfo?.endCursor || null
   }
 
   console.log(`[v0] Fetched ${allProducts.length} total products from Shopify`)
