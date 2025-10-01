@@ -180,3 +180,68 @@ export const ALL_COLLECTIONS_QUERY = /* GraphQL */ `
     }
   }
 `
+
+// PRODUCTS SEARCH query with full filtering support
+export const PRODUCTS_SEARCH_QUERY = /* GraphQL */ `
+  query ProductsSearch(
+    $q: String!
+    $cursor: String
+    $sortKey: ProductSortKeys = RELEVANCE
+    $reverse: Boolean = false
+    $first: Int = 24
+  ) {
+    products(first: $first, after: $cursor, query: $q, sortKey: $sortKey, reverse: $reverse) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        id
+        handle
+        title
+        vendor
+        productType
+        tags
+        availableForSale
+        featuredImage {
+          url(transform: { maxWidth: 1200, maxHeight: 1200 })
+          altText
+          width
+          height
+        }
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        compareAtPriceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        variants(first: 10) {
+          nodes {
+            id
+            title
+            sku
+            availableForSale
+            price {
+              amount
+              currencyCode
+            }
+            compareAtPrice {
+              amount
+              currencyCode
+            }
+            selectedOptions {
+              name
+              value
+            }
+          }
+        }
+      }
+    }
+  }
+`

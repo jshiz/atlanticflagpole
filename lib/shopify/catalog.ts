@@ -1,5 +1,6 @@
 // Helper functions for fetching collections and menus
 import { MENU_QUERY, ALL_COLLECTIONS_QUERY } from "./queries"
+import { normalizeMenu } from "./menu-utils"
 
 const SHOPIFY_STORE_DOMAIN = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || "v0-template.myshopify.com"
 const SHOPIFY_STOREFRONT_TOKEN = process.env.SHOPIFY_STOREFRONT_TOKEN || ""
@@ -48,4 +49,9 @@ export async function getMenu(handle: string) {
     { next: { revalidate: 3600, tags: [`menu:${handle}`] } },
   )
   return data.menu
+}
+
+export async function getMenuWithNormalizedUrls(handle: string) {
+  const menu = await getMenu(handle)
+  return normalizeMenu(menu)
 }

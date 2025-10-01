@@ -43,8 +43,10 @@ export function AdvancedFilters({ availableFilters }: AdvancedFiltersProps) {
   const clearAllFilters = () => {
     const params = new URLSearchParams(searchParams.toString())
     const sort = params.get("sort")
+    const q = params.get("q")
     const newParams = new URLSearchParams()
     if (sort) newParams.set("sort", sort)
+    if (q) newParams.set("q", q)
     router.push(`?${newParams.toString()}`)
   }
 
@@ -143,6 +145,26 @@ export function AdvancedFilters({ availableFilters }: AdvancedFiltersProps) {
         </div>
       )}
 
+      {availableFilters?.tags && availableFilters.tags.length > 0 && (
+        <div className="space-y-3">
+          <Label className="text-sm font-semibold text-[#0B1C2C]">Tags</Label>
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {availableFilters.tags.map((tag) => (
+              <div key={tag} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`tag-${tag}`}
+                  checked={currentFilters.tag === tag}
+                  onCheckedChange={(checked) => updateFilter("tag", checked ? tag : null)}
+                />
+                <label htmlFor={`tag-${tag}`} className="text-sm text-[#0B1C2C] cursor-pointer">
+                  {tag}
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Active Filters Display */}
       {hasActiveFilters && (
         <div className="pt-4 border-t border-[#0B1C2C]/10">
@@ -163,6 +185,12 @@ export function AdvancedFilters({ availableFilters }: AdvancedFiltersProps) {
             {currentFilters.vendor && (
               <Button variant="outline" size="sm" onClick={() => updateFilter("vendor", null)} className="text-xs">
                 {currentFilters.vendor}
+                <X className="ml-1 h-3 w-3" />
+              </Button>
+            )}
+            {currentFilters.tag && (
+              <Button variant="outline" size="sm" onClick={() => updateFilter("tag", null)} className="text-xs">
+                {currentFilters.tag}
                 <X className="ml-1 h-3 w-3" />
               </Button>
             )}
