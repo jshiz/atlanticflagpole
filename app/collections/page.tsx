@@ -1,8 +1,16 @@
 import { getCollections } from "@/lib/shopify"
 import { CollectionCard } from "@/components/collections/collection-card"
 
+export const dynamic = "force-dynamic"
+
 export default async function CollectionsPage() {
-  const collections = await getCollections()
+  let collections = []
+
+  try {
+    collections = await getCollections()
+  } catch (error) {
+    console.error("Error fetching collections:", error)
+  }
 
   return (
     <main className="min-h-screen bg-[#F5F3EF]">

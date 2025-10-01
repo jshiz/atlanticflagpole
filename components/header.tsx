@@ -6,7 +6,7 @@ import { ShoppingCart, Menu, X, ChevronDown, Search, User } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
 import { useCart } from "@/components/cart/cart-context"
-import { SearchBar } from "@/components/search/search-bar"
+import { SearchBarWrapper } from "@/components/search/search-bar-wrapper"
 
 const promoMessages = [
   { text: "66% OFF + Free Shipping", discount: "66% OFF" },
@@ -100,7 +100,7 @@ export function Header() {
               </Link>
 
               <div className="hidden md:flex flex-1 max-w-lg mx-8 order-2">
-                <SearchBar className="w-full" />
+                <SearchBarWrapper className="w-full" />
               </div>
 
               <nav className="hidden lg:flex items-center gap-6 order-3">
@@ -528,7 +528,7 @@ export function Header() {
             {mobileMenuOpen && (
               <div className="lg:hidden py-4 border-t border-gray-200">
                 <div className="mb-4">
-                  <SearchBar />
+                  <SearchBarWrapper />
                 </div>
                 <nav className="flex flex-col gap-4">
                   <Link
@@ -623,7 +623,9 @@ export function Header() {
                   <Search className="w-5 h-5" />
                 </button>
               )}
-              {searchExpanded && <SearchBar className="w-full" autoFocus onBlur={() => setSearchExpanded(false)} />}
+              {searchExpanded && (
+                <SearchBarWrapper className="w-full" autoFocus onBlur={() => setSearchExpanded(false)} />
+              )}
             </div>
 
             <nav className="hidden lg:flex items-center gap-6">

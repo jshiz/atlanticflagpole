@@ -13,9 +13,11 @@ const SHOPIFY_STOREFRONT_API_URL = `https://${SHOPIFY_STORE_DOMAIN}/api/2025-07/
 async function shopifyFetch<T>({
   query,
   variables = {},
+  tags,
 }: {
   query: string
   variables?: Record<string, any>
+  tags?: string[]
 }): Promise<{ data: T; errors?: any[] }> {
   try {
     const response = await fetch(SHOPIFY_STOREFRONT_API_URL, {
@@ -27,7 +29,7 @@ async function shopifyFetch<T>({
         query,
         variables,
       }),
-      cache: "no-store", // Ensure fresh data for cart operations
+      next: { revalidate: 3600, tags },
     })
 
     if (!response.ok) {
@@ -133,6 +135,7 @@ export async function getProducts({
   }>({
     query,
     variables: { first, sortKey, reverse, query: searchQuery },
+    tags: ["products"],
   })
 
   return data.products.edges.map((edge) => edge.node)
@@ -209,6 +212,7 @@ export async function getProduct(handle: string): Promise<ShopifyProduct | null>
   }>({
     query,
     variables: { handle },
+    tags: ["products", `product-${handle}`],
   })
 
   return data.product
@@ -243,6 +247,7 @@ export async function getCollections(first = 10): Promise<ShopifyCollection[]> {
   }>({
     query,
     variables: { first },
+    tags: ["collections"],
   })
 
   return data.collections.edges.map((edge) => edge.node)
@@ -345,6 +350,7 @@ export async function getCollectionProducts({
   }>({
     query,
     variables: { handle: collection, first: limit, sortKey, query: searchQuery, reverse },
+    tags: ["collections", `collection-${collection}`],
   })
 
   if (!data.collection) {
@@ -407,12 +413,17 @@ export async function createCart(): Promise<ShopifyCart> {
     }
   `
 
-  const { data } = await shopifyFetch<{
-    cartCreate: {
-      cart: ShopifyCart
-      userErrors: Array<{ field: string; message: string }>
-    }
-  }>({ query })
+  const response = await fetch(SHOPIFY_STOREFRONT_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query }),
+    cache: "no-store",
+  })
+
+  const json = await response.json()
+  const { data } = json
 
   if (data.cartCreate.userErrors.length > 0) {
     throw new Error(data.cartCreate.userErrors[0].message)
@@ -477,18 +488,20 @@ export async function addCartLines(
     }
   `
 
-  const { data } = await shopifyFetch<{
-    cartLinesAdd: {
-      cart: ShopifyCart
-      userErrors: Array<{ field: string; message: string }>
-    }
-  }>({
-    query,
-    variables: {
-      cartId,
-      lines,
+  const response = await fetch(SHOPIFY_STOREFRONT_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
+    body: JSON.stringify({
+      query,
+      variables: { cartId, lines },
+    }),
+    cache: "no-store",
   })
+
+  const json = await response.json()
+  const { data } = json
 
   if (data.cartLinesAdd.userErrors.length > 0) {
     throw new Error(data.cartLinesAdd.userErrors[0].message)
@@ -553,18 +566,20 @@ export async function updateCartLines(
     }
   `
 
-  const { data } = await shopifyFetch<{
-    cartLinesUpdate: {
-      cart: ShopifyCart
-      userErrors: Array<{ field: string; message: string }>
-    }
-  }>({
-    query,
-    variables: {
-      cartId,
-      lines,
+  const response = await fetch(SHOPIFY_STOREFRONT_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
+    body: JSON.stringify({
+      query,
+      variables: { cartId, lines },
+    }),
+    cache: "no-store",
   })
+
+  const json = await response.json()
+  const { data } = json
 
   if (data.cartLinesUpdate.userErrors.length > 0) {
     throw new Error(data.cartLinesUpdate.userErrors[0].message)
@@ -593,9 +608,14 @@ export async function removeCartLines(cartId: string, lineIds: string[]): Promis
                       amount
                       currencyCode
                     }
+                    selectedOptions {
+                      name
+                      value
+                    }
                     product {
                       title
-                      images(first: 1) {
+                      handle
+                      images(first: 10) {
                         edges {
                           node {
                             url
@@ -615,6 +635,14 @@ export async function removeCartLines(cartId: string, lineIds: string[]): Promis
               amount
               currencyCode
             }
+            subtotalAmount {
+              amount
+              currencyCode
+            }
+            totalTaxAmount {
+              amount
+              currencyCode
+            }
           }
           checkoutUrl
         }
@@ -626,18 +654,20 @@ export async function removeCartLines(cartId: string, lineIds: string[]): Promis
     }
   `
 
-  const { data } = await shopifyFetch<{
-    cartLinesRemove: {
-      cart: ShopifyCart
-      userErrors: Array<{ field: string; message: string }>
-    }
-  }>({
-    query,
-    variables: {
-      cartId,
-      lineIds,
+  const response = await fetch(SHOPIFY_STOREFRONT_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
+    body: JSON.stringify({
+      query,
+      variables: { cartId, lineIds },
+    }),
+    cache: "no-store",
   })
+
+  const json = await response.json()
+  const { data } = json
 
   if (data.cartLinesRemove.userErrors.length > 0) {
     throw new Error(data.cartLinesRemove.userErrors[0].message)
@@ -706,12 +736,20 @@ export async function getCart(cartId: string): Promise<ShopifyCart | null> {
     }
   `
 
-  const { data } = await shopifyFetch<{
-    cart: ShopifyCart | null
-  }>({
-    query,
-    variables: { cartId },
+  const response = await fetch(SHOPIFY_STOREFRONT_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query,
+      variables: { cartId },
+    }),
+    cache: "no-store",
   })
+
+  const json = await response.json()
+  const { data } = json
 
   return data.cart
 }

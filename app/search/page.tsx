@@ -2,6 +2,8 @@ import { getProducts } from "@/lib/shopify"
 import { ProductCard } from "@/components/products/product-card"
 import { SearchFilters } from "@/components/search/search-filters"
 
+export const dynamic = "force-dynamic"
+
 interface SearchPageProps {
   searchParams: {
     q?: string
@@ -13,12 +15,18 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const query = searchParams.q || ""
   const sortKey = searchParams.sort || "RELEVANCE"
 
-  const products = query
-    ? await getProducts({
+  let products = []
+
+  if (query) {
+    try {
+      products = await getProducts({
         query,
         sortKey: sortKey as any,
       })
-    : []
+    } catch (error) {
+      console.error("Error fetching search results:", error)
+    }
+  }
 
   return (
     <main className="min-h-screen bg-[#F5F3EF]">

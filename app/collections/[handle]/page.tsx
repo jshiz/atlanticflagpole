@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation"
 import { ProductCard } from "@/components/products/product-card"
-import { CollectionFilters } from "@/components/collections/collection-filters"
-import { AdvancedFilters } from "@/components/collections/advanced-filters"
+import { CollectionFiltersWrapper } from "@/components/collections/collection-filters-wrapper"
+import { AdvancedFiltersWrapper } from "@/components/collections/advanced-filters-wrapper"
 import { COLLECTION_WITH_FILTERS } from "@/lib/shopify/queries"
+
+export const dynamic = "force-dynamic"
 
 const SHOPIFY_STORE_DOMAIN = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || "v0-template.myshopify.com"
 const SHOPIFY_STOREFRONT_TOKEN = process.env.SHOPIFY_STOREFRONT_TOKEN || ""
@@ -61,13 +63,18 @@ export default async function CollectionPage({ params, searchParams }: Collectio
   const sortKey = searchParams.sort || "BEST_SELLING"
   const filters = buildFilters(searchParams)
 
-  const data = await shopifyFetch<{ collection: any }>(COLLECTION_WITH_FILTERS, {
-    handle: params.handle,
-    filters,
-    sortKey: sortKey as any,
-  })
+  let collection = null
 
-  const collection = data.collection
+  try {
+    const data = await shopifyFetch<{ collection: any }>(COLLECTION_WITH_FILTERS, {
+      handle: params.handle,
+      filters,
+      sortKey: sortKey as any,
+    })
+    collection = data.collection
+  } catch (error) {
+    console.error("Error fetching collection:", error)
+  }
 
   if (!collection || !collection.products.nodes.length) {
     notFound()
@@ -103,11 +110,11 @@ export default async function CollectionPage({ params, searchParams }: Collectio
           </p>
         </div>
 
-        <CollectionFilters currentSort={sortKey} />
+        <CollectionFiltersWrapper currentSort={sortKey} />
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mt-8">
           <aside className="lg:col-span-1">
-            <AdvancedFilters
+            <AdvancedFiltersWrapper
               availableFilters={{
                 productTypes,
                 vendors,

@@ -1,10 +1,39 @@
 import { notFound } from "next/navigation"
 import { getProduct } from "@/lib/shopify"
 import { ProductDetails } from "@/components/products/product-details"
+import ProductSeo from "@/components/product-seo"
+import type { Metadata } from "next"
 
 interface ProductPageProps {
   params: {
     handle: string
+  }
+}
+
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+  const product = await getProduct(params.handle)
+  if (!product) return {}
+
+  const img = product.images?.edges?.[0]?.node?.url
+  const title = `${product.title} | Atlantic Flagpole`
+  const description = product.description?.slice(0, 150) ?? "Atlantic Flagpole"
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: `https://atlanticflagpole.vercel.app/products/${params.handle}`,
+      images: img ? [{ url: img, width: 1200, height: 1200, alt: product.title }] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: img ? [img] : [],
+    },
   }
 }
 
@@ -17,6 +46,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <main className="min-h-screen bg-[#F5F3EF]">
+      <ProductSeo product={product} />
       <ProductDetails product={product} />
     </main>
   )

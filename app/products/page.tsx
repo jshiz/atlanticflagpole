@@ -1,8 +1,16 @@
 import { getCollectionProducts } from "@/lib/shopify"
 import { ProductCard } from "@/components/products/product-card"
 
+export const dynamic = "force-dynamic"
+
 export default async function ProductsPage() {
-  const products = await getCollectionProducts()
+  let products = []
+
+  try {
+    products = await getCollectionProducts()
+  } catch (error) {
+    console.error("Error fetching products:", error)
+  }
 
   return (
     <main className="min-h-screen bg-[#F5F3EF]">

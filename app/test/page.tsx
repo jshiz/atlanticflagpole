@@ -9,6 +9,8 @@ import type { ShopifyProduct, ShopifyCollection } from "@/lib/shopify/types"
 import { Loader } from "@/components/ui/loader"
 import { CheckCircle2, XCircle, AlertCircle } from "lucide-react"
 
+export const dynamic = "force-dynamic"
+
 export default function TestPage() {
   const { cart, loading: cartLoading, addToCart } = useCart()
   const [products, setProducts] = useState<ShopifyProduct[]>([])
