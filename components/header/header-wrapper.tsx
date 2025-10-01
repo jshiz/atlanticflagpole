@@ -10,15 +10,15 @@ export async function HeaderWrapper() {
 
   let menuData = null
   try {
-    const menuHandle = process.env.NEXT_PUBLIC_SHOPIFY_MAIN_MENU_HANDLE ?? "main-menu"
+    const menuHandle = "headless-menu"
     menuData = await getMenu(menuHandle)
     if (menuData) {
-      console.log(`[v0] ✅ Successfully loaded ${menuHandle} from Shopify`)
+      console.log(`[v0] ✅ Successfully loaded ${menuHandle} from Shopify with ${menuData.items.length} items`)
     } else {
       console.error(`[v0] ⚠️ USING FALLBACK MENU - ${menuHandle} not found in Shopify`)
     }
   } catch (error) {
-    console.error("[v0] ❌ Error fetching main-menu:", error)
+    console.error("[v0] ❌ Error fetching headless-menu:", error)
   }
 
   try {

@@ -17,11 +17,11 @@ export function ProductCard({ product }: ProductCardProps) {
   const hasDiscount = compareAtPrice && compareAtPrice > price
   const discountPercentage = hasDiscount ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100) : 0
 
-  const images = product.images?.edges ? product.images.edges.map((edge) => edge.node) : []
+  const images = product.images?.nodes || []
   const featuredImage = images[0]
 
   return (
-    <Link href={`/products/${product.handle}`}>
+    <Link href={`/products/${product.handle}`} className="cursor-pointer">
       <Card className="group overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full">
         <div className="relative aspect-square overflow-hidden bg-white">
           {featuredImage ? (

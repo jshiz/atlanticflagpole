@@ -267,7 +267,6 @@ export const topBarLinks = [
   { label: "About Us", href: "/about" },
   { label: "Contact Us", href: "/contact" },
   { label: "Reviews & Testimonials", href: "/reviews" },
-  { label: "Find in Store", href: "/find-store" },
 ]
 
 // Get all collection handles for sitemap generation

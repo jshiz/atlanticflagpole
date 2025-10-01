@@ -3,7 +3,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
 import type { ShopifyCart } from "@/lib/shopify/types"
 import { createCart, addCartLines, updateCartLines, removeCartLines, getCart } from "@/lib/shopify"
-import { toast } from "sonner"
 
 interface CartContextType {
   cart: ShopifyCart | null
@@ -64,10 +63,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         ])
 
         setCart(updatedCart)
-        toast.success("Added to cart")
+        console.log("[v0] Added to cart")
       } catch (error) {
         console.error("Error adding to cart:", error)
-        toast.error("Failed to add item to cart")
       } finally {
         setLoading(false)
       }
@@ -83,10 +81,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       try {
         const updatedCart = await updateCartLines(cart.id, [{ id: lineId, quantity }])
         setCart(updatedCart)
-        toast.success("Cart updated")
+        console.log("[v0] Cart updated")
       } catch (error) {
         console.error("Error updating cart:", error)
-        toast.error("Failed to update cart")
       } finally {
         setLoading(false)
       }
@@ -102,10 +99,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       try {
         const updatedCart = await removeCartLines(cart.id, [lineId])
         setCart(updatedCart)
-        toast.success("Item removed from cart")
+        console.log("[v0] Item removed from cart")
       } catch (error) {
         console.error("Error removing from cart:", error)
-        toast.error("Failed to remove item")
       } finally {
         setLoading(false)
       }

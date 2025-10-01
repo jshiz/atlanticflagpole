@@ -7,7 +7,6 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { LiveChatButton } from "@/components/live-chat-button"
 import { CartProvider } from "@/components/cart/cart-context"
-import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -46,7 +45,6 @@ export default function RootLayout({
           <Suspense fallback={null}>{children}</Suspense>
           <Footer />
           <LiveChatButton />
-          <Toaster />
         </CartProvider>
       </body>
     </html>
