@@ -9,88 +9,72 @@ export async function HeaderWrapper() {
   try {
     menuData = await getMenuWithNormalizedUrls("main-menu")
 
-    if (!menuData) {
-      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-      console.log("⚠️  MENU NOT FOUND IN SHOPIFY")
-      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-      console.log("")
-      console.log("Your menu links are using a fallback menu structure.")
-      console.log("")
-      console.log("To fix this:")
-      console.log("1. Go to Shopify Admin → Online Store → Navigation")
-      console.log("2. Create a new menu called 'main-menu' (exact name)")
-      console.log("3. Add menu items that link to your collections")
-      console.log("")
-      console.log("For detailed instructions, visit: /debug-menu")
-      console.log("")
-      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    } else {
-      console.log("[v0] ✓ Successfully loaded Shopify menu with", menuData.items?.length || 0, "items")
+    // Fetch products for Flagpoles menu
+    const flagpoleTags = ["telescoping-flag-pole", "american-made-flagpole", "flagpole", "best-flag-pole"]
+    for (const tag of flagpoleTags) {
+      const results = await searchProducts({ tag, first: 6 })
+      if (results?.nodes?.length > 0) {
+        collectionsData["flagpoles"] = { products: results }
+        console.log(`[v0] ✓ Loaded ${results.nodes.length} products for Flagpoles menu using tag: ${tag}`)
+        break
+      }
     }
 
-    console.log("[v0] 🔍 Fetching all products to check what's available...")
-    const allProducts = await searchProducts({ first: 250 })
-    console.log(`[v0] 📦 Total products found: ${allProducts?.nodes?.length || 0}`)
-
-    if (allProducts?.nodes && allProducts.nodes.length > 0) {
-      // Log first few products to see their structure
-      console.log("[v0] 📋 Sample products:")
-      allProducts.nodes.slice(0, 3).forEach((product: any) => {
-        console.log(`  - ${product.title}`)
-        console.log(`    Tags: ${product.tags?.join(", ") || "none"}`)
-        console.log(`    Handle: ${product.handle}`)
-      })
+    // Fetch products for Flags menu
+    const flagTags = ["american-flag", "15-star-flag", "historical-flag", "flag"]
+    for (const tag of flagTags) {
+      const results = await searchProducts({ tag, first: 6 })
+      if (results?.nodes?.length > 0) {
+        collectionsData["flags"] = { products: results }
+        console.log(`[v0] ✓ Loaded ${results.nodes.length} products for Flags menu using tag: ${tag}`)
+        break
+      }
     }
 
-    const productTags = [
-      "telescoping",
-      "aluminum",
-      "indoor",
-      "commercial",
-      "residential",
-      "american-flag",
-      "state-flag",
-      "military",
-      "lighting",
-      "mounts",
-      "toppers",
-      "christmas",
-      "halloween",
-      "patriotic",
-    ]
+    // Fetch products for Accessories menu
+    const accessoryTags = ["flagpole-accessories", "toppers", "lighting", "mounts"]
+    for (const tag of accessoryTags) {
+      const results = await searchProducts({ tag, first: 6 })
+      if (results?.nodes?.length > 0) {
+        collectionsData["accessories"] = { products: results }
+        console.log(`[v0] ✓ Loaded ${results.nodes.length} products for Accessories menu using tag: ${tag}`)
+        break
+      }
+    }
 
-    console.log("[v0] 🏷️  Searching for products by tags...")
-    await Promise.all(
-      productTags.map(async (tag) => {
-        try {
-          const results = await searchProducts({ tag, first: 6 })
-          if (results && results.nodes && results.nodes.length > 0) {
-            collectionsData[tag] = { products: results }
-            console.log(`[v0] ✓ Loaded products for tag: ${tag} (${results.nodes.length} products)`)
-          } else {
-            console.log(`[v0] ⚠️  No products found for tag: ${tag}`)
-          }
-        } catch (error) {
-          console.error(`[v0] ✗ Error fetching products for tag ${tag}:`, error)
-        }
-      }),
-    )
+    // Fetch products for Holiday menu
+    const holidayTags = ["holiday-flag", "specialty-flag", "christmas", "halloween"]
+    for (const tag of holidayTags) {
+      const results = await searchProducts({ tag, first: 6 })
+      if (results?.nodes?.length > 0) {
+        collectionsData["holiday"] = { products: results }
+        console.log(`[v0] ✓ Loaded ${results.nodes.length} products for Holiday menu using tag: ${tag}`)
+        break
+      }
+    }
 
-    // Also fetch general products for main categories
-    const mainCategories = ["flagpoles", "flags", "accessories", "holiday"]
-    await Promise.all(
-      mainCategories.map(async (tag) => {
-        try {
-          const results = await searchProducts({ tag, first: 6 })
-          if (results && results.nodes && results.nodes.length > 0) {
-            collectionsData[tag] = { products: results }
-            console.log(`[v0] ✓ Loaded products for category: ${tag} (${results.nodes.length} products)`)
-          }
-        } catch (error) {
-          console.error(`[v0] ✗ Error fetching products for category ${tag}:`, error)
+    // Also try to fetch products for specific subcategories
+    const specificTags = {
+      telescoping: ["telescoping-flag-pole", "telescoping"],
+      aluminum: ["aluminum-flagpole", "aluminum"],
+      indoor: ["indoor-flagpole", "indoor"],
+      "american-flag": ["american-flag", "usa-flag"],
+      "state-flag": ["state-flag"],
+      military: ["military-flag", "naval-history"],
+      lighting: ["flagpole-lighting", "lighting"],
+      toppers: ["flagpole-toppers", "toppers", "gold-eagle-topper"],
+    }
+
+    for (const [key, tags] of Object.entries(specificTags)) {
+      for (const tag of tags) {
+        const results = await searchProducts({ tag, first: 6 })
+        if (results?.nodes?.length > 0) {
+          collectionsData[key] = { products: results }
+          console.log(`[v0] ✓ Loaded ${results.nodes.length} products for ${key} using tag: ${tag}`)
+          break
         }
-      }),
-    )
+      }
+    }
 
     console.log("[v0] 📊 Final collectionsData keys:", Object.keys(collectionsData))
     console.log("[v0] 📊 Total collections with products:", Object.keys(collectionsData).length)
