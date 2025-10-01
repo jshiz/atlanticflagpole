@@ -1,7 +1,7 @@
 import { ProductCard } from "@/components/products/product-card"
 import { ProductFilters } from "@/components/products/product-filters"
 import { ProductFiltersWrapper } from "@/components/products/product-filters-wrapper"
-import { getAllProducts } from "@/lib/shopify"
+import { searchProducts } from "@/lib/shopify/catalog"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 600
@@ -20,92 +20,23 @@ interface ProductsPageProps {
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  console.log("[v0] Products page - fetching all products")
+  console.log("[v0] Products page - searching with params:", searchParams)
 
-  let allProducts: any[] = []
+  let products: any[] = []
+  let hasError = false
 
   try {
-    allProducts = await getAllProducts()
-    console.log("[v0] Successfully fetched", allProducts.length, "products")
+    const result = await searchProducts(searchParams)
+    products = result.nodes
+    console.log("[v0] Successfully fetched", products.length, "products")
   } catch (error) {
-    console.error("[v0] Error fetching products:", error)
+    console.error("[v0] Error searching products:", error)
+    hasError = true
   }
 
-  let products = allProducts
-
-  // Filter by search query
-  if (searchParams.q) {
-    const query = searchParams.q.toLowerCase()
-    products = products.filter(
-      (p) =>
-        p.title.toLowerCase().includes(query) ||
-        p.description?.toLowerCase().includes(query) ||
-        p.productType?.toLowerCase().includes(query) ||
-        p.vendor?.toLowerCase().includes(query) ||
-        p.tags?.some((tag: string) => tag.toLowerCase().includes(query)),
-    )
-  }
-
-  // Filter by product type
-  if (searchParams.type) {
-    products = products.filter((p) => p.productType === searchParams.type)
-  }
-
-  // Filter by vendor
-  if (searchParams.vendor) {
-    products = products.filter((p) => p.vendor === searchParams.vendor)
-  }
-
-  // Filter by tag
-  if (searchParams.tag) {
-    products = products.filter((p) => p.tags?.includes(searchParams.tag))
-  }
-
-  // Filter by availability
-  if (searchParams.available === "true") {
-    products = products.filter((p) => p.availableForSale)
-  }
-
-  // Filter by price range
-  if (searchParams.min || searchParams.max) {
-    const min = searchParams.min ? Number.parseFloat(searchParams.min) : 0
-    const max = searchParams.max ? Number.parseFloat(searchParams.max) : Number.POSITIVE_INFINITY
-
-    products = products.filter((p) => {
-      const price = Number.parseFloat(p.priceRange.minVariantPrice.amount)
-      return price >= min && price <= max
-    })
-  }
-
-  if (searchParams.sort) {
-    switch (searchParams.sort) {
-      case "price-asc":
-        products.sort(
-          (a, b) =>
-            Number.parseFloat(a.priceRange.minVariantPrice.amount) -
-            Number.parseFloat(b.priceRange.minVariantPrice.amount),
-        )
-        break
-      case "price-desc":
-        products.sort(
-          (a, b) =>
-            Number.parseFloat(b.priceRange.minVariantPrice.amount) -
-            Number.parseFloat(a.priceRange.minVariantPrice.amount),
-        )
-        break
-      case "title-asc":
-        products.sort((a, b) => a.title.localeCompare(b.title))
-        break
-      case "title-desc":
-        products.sort((a, b) => b.title.localeCompare(a.title))
-        break
-    }
-  }
-
-  // Extract unique values for filters from ALL products
-  const productTypes = [...new Set(allProducts.map((p) => p.productType).filter(Boolean))]
-  const vendors = [...new Set(allProducts.map((p) => p.vendor).filter(Boolean))]
-  const tags = [...new Set(allProducts.flatMap((p) => p.tags || []))]
+  const productTypes = [...new Set(products.map((p) => p.productType).filter(Boolean))]
+  const vendors = [...new Set(products.map((p) => p.vendor).filter(Boolean))]
+  const tags = [...new Set(products.flatMap((p) => p.tags || []))]
 
   // Determine page title based on filters
   const getPageTitle = () => {
@@ -150,7 +81,12 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           </aside>
 
           <div className="lg:col-span-3">
-            {products.length === 0 ? (
+            {hasError ? (
+              <div className="text-center py-12 bg-white rounded-lg border border-red-500/20">
+                <p className="text-lg text-red-600 mb-4">Unable to load products</p>
+                <p className="text-sm text-[#0B1C2C]/60">Please check your Shopify connection and try again.</p>
+              </div>
+            ) : products.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-lg border border-[#0B1C2C]/10">
                 <p className="text-lg text-[#0B1C2C]/70 mb-4">No products found matching your criteria.</p>
                 <p className="text-sm text-[#0B1C2C]/60">Try adjusting your filters or search terms.</p>

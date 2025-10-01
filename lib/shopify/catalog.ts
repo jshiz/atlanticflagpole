@@ -103,3 +103,99 @@ export async function getCollectionWithProducts(handle: string, first = 6) {
 
   return data.collection
 }
+
+export async function searchProducts(searchParams: {
+  q?: string
+  type?: string
+  vendor?: string
+  tag?: string
+  available?: string
+  min?: string
+  max?: string
+  sort?: string
+  first?: number
+  after?: string
+}) {
+  const parts: string[] = []
+
+  if (searchParams.type) parts.push(`product_type:"${searchParams.type}"`)
+  if (searchParams.vendor) parts.push(`vendor:"${searchParams.vendor}"`)
+  if (searchParams.tag) parts.push(`tag:"${searchParams.tag}"`)
+  if (searchParams.available === "true") parts.push(`available_for_sale:true`)
+  if (searchParams.min) parts.push(`variants.price:>=${Number(searchParams.min)}`)
+  if (searchParams.max) parts.push(`variants.price:<=${Number(searchParams.max)}`)
+  if (searchParams.q) {
+    const s = String(searchParams.q).replace(/["']/g, "")
+    parts.push(`(title:${s}* OR sku:${s}* OR vendor:${s}* OR product_type:${s}* OR tag:${s}*)`)
+  }
+
+  const queryString = parts.length ? parts.join(" AND ") : "inventory_total:>0"
+
+  // Map sort parameter to Shopify sort keys
+  let sortKey = "RELEVANCE"
+  let reverse = false
+
+  if (searchParams.sort === "price-asc") {
+    sortKey = "PRICE"
+    reverse = false
+  } else if (searchParams.sort === "price-desc") {
+    sortKey = "PRICE"
+    reverse = true
+  } else if (searchParams.sort === "title-asc") {
+    sortKey = "TITLE"
+    reverse = false
+  } else if (searchParams.sort === "title-desc") {
+    sortKey = "TITLE"
+    reverse = true
+  }
+
+  const query = /* GraphQL */ `
+    query SearchProducts($query: String!, $first: Int!, $after: String, $sortKey: ProductSortKeys!, $reverse: Boolean!) {
+      products(first: $first, after: $after, query: $query, sortKey: $sortKey, reverse: $reverse) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          id
+          handle
+          title
+          vendor
+          productType
+          tags
+          availableForSale
+          featuredImage {
+            url(transform: { maxWidth: 800, maxHeight: 800 })
+            altText
+            width
+            height
+          }
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+            maxVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+        }
+      }
+    }
+  `
+
+  const data = await shopifyFetch<{ products: any }>(
+    query,
+    {
+      query: queryString,
+      first: searchParams.first || 24,
+      after: searchParams.after || null,
+      sortKey,
+      reverse,
+    },
+    { next: { revalidate: 600, tags: ["products"] } },
+  )
+
+  return data.products
+}
