@@ -79,9 +79,11 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         {/* Product Info */}
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl md:text-4xl font-serif font-bold text-[#0B1C2C] mb-4">{product.title}</h1>
+            <h1 className="text-3xl md:text-4xl font-serif font-bold text-[#0B1C2C] mb-4 text-balance">
+              {product.title}
+            </h1>
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-3xl font-bold text-[#0B1C2C]">${price.toFixed(2)}</span>
+              <span className="text-4xl font-bold text-[#0B1C2C]">${price.toFixed(2)}</span>
               {hasDiscount && compareAtPrice && (
                 <>
                   <span className="text-xl text-gray-500 line-through">${compareAtPrice.toFixed(2)}</span>
