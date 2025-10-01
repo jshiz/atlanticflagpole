@@ -1,4 +1,5 @@
-import { getMenuWithNormalizedUrls, getCollectionWithProducts } from "@/lib/shopify/catalog"
+import { getMenuWithNormalizedUrls } from "@/lib/shopify/catalog"
+import { searchProducts } from "@/lib/shopify/catalog"
 import { Header } from "./header-client"
 
 export async function HeaderWrapper() {
@@ -27,26 +28,72 @@ export async function HeaderWrapper() {
       console.log("[v0] ✓ Successfully loaded Shopify menu with", menuData.items?.length || 0, "items")
     }
 
-    // Fetch featured products for key collections to show in megamenus
-    const collectionHandles = ["flagpoles", "flags", "accessories", "holiday-seasonal"]
+    console.log("[v0] 🔍 Fetching all products to check what's available...")
+    const allProducts = await searchProducts({ first: 250 })
+    console.log(`[v0] 📦 Total products found: ${allProducts?.nodes?.length || 0}`)
 
+    if (allProducts?.nodes && allProducts.nodes.length > 0) {
+      // Log first few products to see their structure
+      console.log("[v0] 📋 Sample products:")
+      allProducts.nodes.slice(0, 3).forEach((product: any) => {
+        console.log(`  - ${product.title}`)
+        console.log(`    Tags: ${product.tags?.join(", ") || "none"}`)
+        console.log(`    Handle: ${product.handle}`)
+      })
+    }
+
+    const productTags = [
+      "telescoping",
+      "aluminum",
+      "indoor",
+      "commercial",
+      "residential",
+      "american-flag",
+      "state-flag",
+      "military",
+      "lighting",
+      "mounts",
+      "toppers",
+      "christmas",
+      "halloween",
+      "patriotic",
+    ]
+
+    console.log("[v0] 🏷️  Searching for products by tags...")
     await Promise.all(
-      collectionHandles.map(async (handle) => {
+      productTags.map(async (tag) => {
         try {
-          const collection = await getCollectionWithProducts(handle, 4)
-          if (collection) {
-            collectionsData[handle] = collection
-            console.log(`[v0] ✓ Loaded collection: ${handle} (${collection.products?.nodes?.length || 0} products)`)
+          const results = await searchProducts({ tag, first: 6 })
+          if (results && results.nodes && results.nodes.length > 0) {
+            collectionsData[tag] = { products: results }
+            console.log(`[v0] ✓ Loaded products for tag: ${tag} (${results.nodes.length} products)`)
           } else {
-            console.log(`[v0] ⚠️  Collection not found: ${handle}`)
-            console.log(`[v0]    Create this collection in Shopify Admin → Products → Collections`)
+            console.log(`[v0] ⚠️  No products found for tag: ${tag}`)
           }
         } catch (error) {
-          console.error(`[v0] ✗ Error fetching collection ${handle}:`, error)
-          console.log(`[v0]    This collection may not exist in your Shopify store`)
+          console.error(`[v0] ✗ Error fetching products for tag ${tag}:`, error)
         }
       }),
     )
+
+    // Also fetch general products for main categories
+    const mainCategories = ["flagpoles", "flags", "accessories", "holiday"]
+    await Promise.all(
+      mainCategories.map(async (tag) => {
+        try {
+          const results = await searchProducts({ tag, first: 6 })
+          if (results && results.nodes && results.nodes.length > 0) {
+            collectionsData[tag] = { products: results }
+            console.log(`[v0] ✓ Loaded products for category: ${tag} (${results.nodes.length} products)`)
+          }
+        } catch (error) {
+          console.error(`[v0] ✗ Error fetching products for category ${tag}:`, error)
+        }
+      }),
+    )
+
+    console.log("[v0] 📊 Final collectionsData keys:", Object.keys(collectionsData))
+    console.log("[v0] 📊 Total collections with products:", Object.keys(collectionsData).length)
   } catch (error) {
     console.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     console.error("❌ ERROR LOADING MENU")
