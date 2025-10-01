@@ -7,7 +7,7 @@ export default async function ProductsPage() {
   let products = []
 
   try {
-    products = await getCollectionProducts()
+    products = await getCollectionProducts({ limit: 250 })
   } catch (error) {
     console.error("Error fetching products:", error)
   }
@@ -20,6 +20,11 @@ export default async function ProductsPage() {
           <p className="text-lg text-[#0B1C2C]/70 max-w-2xl mx-auto">
             Handcrafted in the USA with a lifetime guarantee. The last flagpole you will ever need.
           </p>
+          {products.length > 0 && (
+            <p className="text-sm text-[#0B1C2C]/60 mt-2">
+              Showing {products.length} product{products.length !== 1 ? "s" : ""}
+            </p>
+          )}
         </div>
 
         {products.length === 0 ? (
