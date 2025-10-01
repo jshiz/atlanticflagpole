@@ -6,6 +6,7 @@ import { ShoppingCart, Menu, X, ChevronDown, Search, User } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
 import { useCart } from "@/components/cart/cart-context"
+import { SearchBar } from "@/components/search/search-bar"
 
 const promoMessages = [
   { text: "66% OFF + Free Shipping", discount: "66% OFF" },
@@ -99,14 +100,7 @@ export function Header() {
               </Link>
 
               <div className="hidden md:flex flex-1 max-w-lg mx-8 order-2">
-                <div className="relative w-full">
-                  <input
-                    type="text"
-                    placeholder="Search flagpoles, flags, accessories..."
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C8A55C] focus:border-transparent text-sm"
-                  />
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                </div>
+                <SearchBar className="w-full" />
               </div>
 
               <nav className="hidden lg:flex items-center gap-6 order-3">
@@ -534,14 +528,7 @@ export function Header() {
             {mobileMenuOpen && (
               <div className="lg:hidden py-4 border-t border-gray-200">
                 <div className="mb-4">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Search flagpoles, flags, accessories..."
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C8A55C] focus:border-transparent text-sm"
-                    />
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  </div>
+                  <SearchBar />
                 </div>
                 <nav className="flex flex-col gap-4">
                   <Link
@@ -636,17 +623,7 @@ export function Header() {
                   <Search className="w-5 h-5" />
                 </button>
               )}
-              {searchExpanded && (
-                <div className="flex items-center gap-2 w-full">
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    autoFocus
-                    onBlur={() => setSearchExpanded(false)}
-                    className="w-full pl-3 pr-4 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C8A55C] focus:border-transparent text-sm"
-                  />
-                </div>
-              )}
+              {searchExpanded && <SearchBar className="w-full" autoFocus onBlur={() => setSearchExpanded(false)} />}
             </div>
 
             <nav className="hidden lg:flex items-center gap-6">

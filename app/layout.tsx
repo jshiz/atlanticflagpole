@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { Suspense } from "react"
 import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
 import { LiveChatButton } from "@/components/live-chat-button"
 import { CartProvider } from "@/components/cart/cart-context"
 import { Toaster } from "@/components/ui/toaster"
@@ -34,6 +35,7 @@ export default function RootLayout({
         <CartProvider>
           <Header />
           <Suspense fallback={null}>{children}</Suspense>
+          <Footer />
           <LiveChatButton />
           <Toaster />
         </CartProvider>

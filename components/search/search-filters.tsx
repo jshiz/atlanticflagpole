@@ -1,20 +1,18 @@
 "use client"
 
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-interface CollectionFiltersProps {
+interface SearchFiltersProps {
   currentSort: string
+  query: string
 }
 
-export function CollectionFilters({ currentSort }: CollectionFiltersProps) {
+export function SearchFilters({ currentSort, query }: SearchFiltersProps) {
   const router = useRouter()
-  const searchParams = useSearchParams()
 
   const handleSortChange = (value: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set("sort", value)
-    router.push(`?${params.toString()}`)
+    router.push(`/search?q=${encodeURIComponent(query)}&sort=${value}`)
   }
 
   return (
@@ -22,15 +20,15 @@ export function CollectionFilters({ currentSort }: CollectionFiltersProps) {
       <div className="flex items-center gap-2">
         <span className="text-sm font-semibold text-[#0B1C2C]">Sort by:</span>
         <Select value={currentSort} onValueChange={handleSortChange}>
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="RELEVANCE">Relevance</SelectItem>
             <SelectItem value="BEST_SELLING">Best Selling</SelectItem>
-            <SelectItem value="TITLE">Alphabetical: A-Z</SelectItem>
+            <SelectItem value="TITLE">Alphabetical</SelectItem>
             <SelectItem value="PRICE">Price: Low to High</SelectItem>
-            <SelectItem value="CREATED">Newest First</SelectItem>
-            <SelectItem value="RELEVANCE">Most Relevant</SelectItem>
+            <SelectItem value="CREATED">Newest</SelectItem>
           </SelectContent>
         </Select>
       </div>

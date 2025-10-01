@@ -7,8 +7,14 @@ import { Button } from "@/components/ui/button"
 export function TicketPopup() {
   const [isOpen, setIsOpen] = useState(false)
   const [showButton, setShowButton] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
 
   useEffect(() => {
+    const hasClaimedTicket = localStorage.getItem("vip-ticket-claimed")
+    if (hasClaimedTicket) {
+      return // Don't show the ticket if already claimed
+    }
+
     const timer = setTimeout(() => {
       setShowButton(true)
     }, 3000)
@@ -17,6 +23,7 @@ export function TicketPopup() {
   }, [])
 
   const handleTicketClick = () => {
+    localStorage.setItem("vip-ticket-claimed", "true")
     setIsOpen(true)
     triggerConfetti()
   }
@@ -134,8 +141,20 @@ export function TicketPopup() {
     <>
       {showButton && !isOpen && (
         <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className={`fixed bottom-6 z-50 w-32 h-auto transition-all duration-500 ease-out hover:scale-110 animate-sway cursor-pointer shadow-2xl ${
+            isExpanded ? "left-6" : "-left-24"
+          }`}
+          aria-label="Open VIP ticket offer"
+        >
+          <img src="/vip-patriots-ticket.svg" alt="VIP Patriots Ticket" className="w-full h-auto" />
+        </button>
+      )}
+
+      {isExpanded && showButton && !isOpen && (
+        <button
           onClick={handleTicketClick}
-          className="fixed bottom-6 left-6 z-50 w-32 h-auto transition-transform hover:scale-110 animate-sway cursor-pointer shadow-2xl"
+          className="fixed bottom-6 left-6 z-50 w-32 h-auto transition-all duration-500 ease-out hover:scale-110 animate-sway cursor-pointer shadow-2xl"
           aria-label="Open VIP ticket offer"
         >
           <img src="/vip-patriots-ticket.svg" alt="VIP Patriots Ticket" className="w-full h-auto" />
