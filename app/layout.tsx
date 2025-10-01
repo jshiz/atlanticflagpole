@@ -7,7 +7,9 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { Suspense } from "react"
 import { Header } from "@/components/header"
-import { PromoFooter } from "@/components/promo-footer"
+import { LiveChatButton } from "@/components/live-chat-button"
+import { CartProvider } from "@/components/cart/cart-context"
+import { Toaster } from "@/components/ui/toaster"
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -29,9 +31,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} ${cinzel.variable}`}>
-        <Header />
-        <Suspense fallback={null}>{children}</Suspense>
-        <PromoFooter />
+        <CartProvider>
+          <Header />
+          <Suspense fallback={null}>{children}</Suspense>
+          <LiveChatButton />
+          <Toaster />
+        </CartProvider>
         <Analytics />
       </body>
     </html>

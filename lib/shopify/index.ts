@@ -108,6 +108,10 @@ export async function getProducts({
                     amount
                     currencyCode
                   }
+                  compareAtPrice {
+                    amount
+                    currencyCode
+                  }
                   availableForSale
                   selectedOptions {
                     name
@@ -184,6 +188,10 @@ export async function getProduct(handle: string): Promise<ShopifyProduct | null>
                 amount
                 currencyCode
               }
+              compareAtPrice {
+                amount
+                currencyCode
+              }
               availableForSale
               selectedOptions {
                 name
@@ -248,12 +256,16 @@ export async function getCollectionProducts({
   query: searchQuery,
   reverse = false,
 }: {
-  collection: string
+  collection?: string
   limit?: number
   sortKey?: ProductCollectionSortKey
   query?: string
   reverse?: boolean
-}): Promise<ShopifyProduct[]> {
+} = {}): Promise<ShopifyProduct[]> {
+  if (!collection) {
+    return getProducts({ first: limit, sortKey: sortKey as ProductSortKey, reverse, query: searchQuery })
+  }
+
   const query = /* gql */ `
     query getCollectionProducts($handle: String!, $first: Int!, $sortKey: ProductCollectionSortKeys!, $reverse: Boolean) {
       collection(handle: $handle) {
@@ -302,6 +314,10 @@ export async function getCollectionProducts({
                     id
                     title
                     price {
+                      amount
+                      currencyCode
+                    }
+                    compareAtPrice {
                       amount
                       currencyCode
                     }

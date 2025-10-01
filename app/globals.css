@@ -223,4 +223,38 @@
   .animate-marquee {
     animation: marquee 30s linear infinite;
   }
+
+  /* Adding patriotic-themed custom scrollbar styles */
+  /* Custom Scrollbar - Patriotic Theme */
+  ::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: linear-gradient(to bottom, #0b1c2c 0%, #0b1c2c 33%, #ffffff 33%, #ffffff 66%, #b71c1c 66%, #b71c1c 100%);
+    border-radius: 0;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #c8a55c 0%, #a88947 100%);
+    border-radius: 7px;
+    border: 2px solid rgba(11, 28, 44, 0.2);
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #d4b56f 0%, #b8954c 100%);
+    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.4);
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background: linear-gradient(135deg, #a88947 0%, #8a7038 100%);
+  }
+
+  /* Firefox scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #c8a55c #0b1c2c;
+  }
 }

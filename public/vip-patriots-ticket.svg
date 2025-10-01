@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560">
+  <defs>
+    <!-- Gradient for the ticket body -->
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#eadba8"/>
+      <stop offset="55%" stop-color="#c8a55c"/>
+      <stop offset="100%" stop-color="#9a7a3c"/>
+    </linearGradient>
+
+    <!-- Inner border gradient (darker golds) -->
+    <linearGradient id="innerStroke" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7c5f2e"/>
+      <stop offset="50%" stop-color="#c8a55c"/>
+      <stop offset="100%" stop-color="#7c5f2e"/>
+    </linearGradient>
+
+    <!-- Outer border gradient (bright highlight) -->
+    <linearGradient id="outerStroke" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff6d0"/>
+      <stop offset="50%" stop-color="#f0d98c"/>
+      <stop offset="100%" stop-color="#fff6d0"/>
+    </linearGradient>
+
+    <!-- Animate gradient shift for metallic effect -->
+    <linearGradient id="outerStrokeAnim" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fff6d0">
+        <animate attributeName="offset" values="0;1;0" dur="8s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" stop-color="#f0d98c"/>
+      <stop offset="100%" stop-color="#fff6d0">
+        <animate attributeName="offset" values="1;0;1" dur="8s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+
+    <style><![CDATA[
+      .ticket { fill:url(#goldGrad); }
+      .border-inner { fill:none; stroke:url(#innerStroke); stroke-width:12; }
+      .border-outer { fill:none; stroke:url(#outerStrokeAnim); stroke-width:6; }
+      .panel  { fill:none; stroke:#7c5f2e; stroke-width:8; rx:36; ry:36; }
+      .t1     { fill:#7c5f2e; font: 800 64px/1 'Inter','Montserrat',Arial,sans-serif; letter-spacing:2px; }
+      .t2     { fill:#7c5f2e; font: 900 110px/1 'Inter','Montserrat',Arial,sans-serif; letter-spacing:2px; }
+      .sub    { fill:#7c5f2e; opacity:.85; font: 700 26px/1 'Inter','Montserrat',Arial,sans-serif; letter-spacing:1px; }
+      .star   { fill:#7c5f2e; }
+    ]]></style>
+
+    <!-- Star path -->
+    <path id="starPath" d="M0,-24 L6.9,-7.4 L24,-7.4 L10.9,2.8 L15.5,19.4 L0,9.5 L-15.5,19.4 L-10.9,2.8 L-24,-7.4 L-6.9,-7.4 Z"/>
+  </defs>
+
+  <!-- Ticket outline path -->
+  <path id="ticketPath" class="ticket"
+        d="M70,80 H930
+           c12,38 40,38 40,90 s-28,52 -40,90 h-28 v100 h28
+           c12,38 40,38 40,90 s-28,52 -40,90 H70
+           c-12,-38 -40,-38 -40,-90 s28,-52 40,-90 h28 V260 H70
+           c-12,-38 -40,-38 -40,-90 s28,-52 40,-90 Z"/>
+
+  <!-- Sharp metallic borders -->
+  <use href="#ticketPath" class="border-inner"/>
+  <use href="#ticketPath" class="border-outer"/>
+
+  <!-- Inner panel -->
+  <rect x="120" y="120" width="760" height="320" class="panel"/>
+
+  <!-- Stars symmetrically placed -->
+  <use href="#starPath" class="star" transform="translate(180,280) scale(1.2)"/>
+  <use href="#starPath" class="star" transform="translate(820,280) scale(1.2)"/>
+
+  <!-- Title text -->
+  <text x="500" y="240" text-anchor="middle" class="t1">VIP PATRIOT’S</text>
+  <text x="500" y="330" text-anchor="middle" class="t2">TICKET</text>
+  <text x="500" y="372" text-anchor="middle" class="sub">Click to claim your bonus prize</text>
+</svg>

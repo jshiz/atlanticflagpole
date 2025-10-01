@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import { ShoppingCart, Menu, X, ChevronDown, Search, User } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
+import { useCart } from "@/components/cart/cart-context"
 
 const promoMessages = [
   { text: "66% OFF + Free Shipping", discount: "66% OFF" },
@@ -21,6 +22,8 @@ export function Header() {
   const [quizModalOpen, setQuizModalOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [searchExpanded, setSearchExpanded] = useState(false)
+  const { cart } = useCart()
+  const cartItemCount = cart?.lines?.edges?.length || 0
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -509,10 +512,20 @@ export function Header() {
               <div className="flex items-center gap-3 order-3">
                 <Link href="/cart" className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors lg:hidden">
                   <ShoppingCart className="w-5 h-5" />
+                  {cartItemCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-[#C8A55C] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {cartItemCount}
+                    </span>
+                  )}
                 </Link>
                 <div className="hidden lg:flex items-center gap-4">
                   <Link href="/cart" className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors">
                     <ShoppingCart className="w-5 h-5" />
+                    {cartItemCount > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-[#C8A55C] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                        {cartItemCount}
+                      </span>
+                    )}
                   </Link>
                 </div>
               </div>
@@ -1033,6 +1046,11 @@ export function Header() {
               </Link>
               <Link href="/cart" className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors">
                 <ShoppingCart className="w-5 h-5" />
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-[#C8A55C] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartItemCount}
+                  </span>
+                )}
               </Link>
             </div>
           </div>

@@ -14,6 +14,7 @@ export type ProductVariant = {
   availableForSale: boolean
   selectedOptions: SelectedOption[]
   price: Money
+  compareAtPrice?: Money | null
 }
 
 export type ProductImage = {
@@ -50,7 +51,9 @@ export type Product = {
   compareAtPriceRange?: {
     minVariantPrice: Money | null
   } | null
-  variants: ProductVariant[]
+  variants: {
+    edges: Array<{ node: ProductVariant }>
+  }
 }
 
 export type ShopifyProduct = Product
