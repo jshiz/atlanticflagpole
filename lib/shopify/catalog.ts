@@ -55,3 +55,42 @@ export async function getMenuWithNormalizedUrls(handle: string) {
   const menu = await getMenu(handle)
   return normalizeMenu(menu)
 }
+
+export async function getCollectionWithProducts(handle: string, first = 6) {
+  const query = /* GraphQL */ `
+    query CollectionWithProducts($handle: String!, $first: Int!) {
+      collection(handle: $handle) {
+        id
+        title
+        handle
+        products(first: $first, sortKey: BEST_SELLING) {
+          nodes {
+            id
+            handle
+            title
+            featuredImage {
+              url(transform: { maxWidth: 400, maxHeight: 400 })
+              altText
+              width
+              height
+            }
+            priceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+          }
+        }
+      }
+    }
+  `
+
+  const data = await shopifyFetch<{ collection: any }>(
+    query,
+    { handle, first },
+    { next: { revalidate: 3600, tags: [`collection:${handle}`] } },
+  )
+
+  return data.collection
+}

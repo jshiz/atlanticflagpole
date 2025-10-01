@@ -14,6 +14,11 @@ export const MENU_QUERY = /* GraphQL */ `
           id
           title
           url
+          items {
+            id
+            title
+            url
+          }
         }
       }
     }

@@ -1,33 +1,10 @@
 import { ProductCard } from "@/components/products/product-card"
 import { ProductFilters } from "@/components/products/product-filters"
 import { ProductFiltersWrapper } from "@/components/products/product-filters-wrapper"
-import { PRODUCTS_SEARCH_QUERY } from "@/lib/shopify/queries"
-import { buildProductQuery, getSortParams } from "@/lib/shopify/product-search"
+import { getAllProducts } from "@/lib/shopify"
 
 export const dynamic = "force-dynamic"
-
-const SHOPIFY_STORE_DOMAIN = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || "v0-template.myshopify.com"
-const SHOPIFY_STOREFRONT_TOKEN = process.env.SHOPIFY_STOREFRONT_TOKEN || ""
-const SHOPIFY_API_VERSION = process.env.SHOPIFY_STOREFRONT_API_VERSION || "2025-07"
-
-async function shopifyFetch<T>(query: string, variables?: Record<string, any>): Promise<T> {
-  const res = await fetch(`https://${SHOPIFY_STORE_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
-    },
-    body: JSON.stringify({ query, variables }),
-    next: { revalidate: 600, tags: ["products"] },
-  })
-
-  const json = await res.json()
-  if (!res.ok || json.errors) {
-    console.error("[v0] Shopify API error:", json.errors)
-    throw new Error(JSON.stringify(json.errors ?? res.statusText))
-  }
-  return json.data
-}
+export const revalidate = 600
 
 interface ProductsPageProps {
   searchParams: {
@@ -39,40 +16,96 @@ interface ProductsPageProps {
     available?: string
     min?: string
     max?: string
-    sku?: string
   }
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  // Build the Shopify query string from URL params
-  const queryString = buildProductQuery(searchParams)
-  const { sortKey, reverse } = getSortParams(searchParams.sort)
+  console.log("[v0] Products page - fetching all products")
 
-  console.log("[v0] Products page query:", queryString)
-  console.log("[v0] Sort params:", { sortKey, reverse })
-
-  let products: any[] = []
-  let productTypes: string[] = []
-  let vendors: string[] = []
-  let tags: string[] = []
+  let allProducts: any[] = []
 
   try {
-    const data = await shopifyFetch<{ products: any }>(PRODUCTS_SEARCH_QUERY, {
-      q: queryString,
-      sortKey,
-      reverse,
-      first: 48,
-    })
-
-    products = data.products.nodes
-
-    // Extract unique values for filters
-    productTypes = [...new Set(products.map((p) => p.productType).filter(Boolean))]
-    vendors = [...new Set(products.map((p) => p.vendor).filter(Boolean))]
-    tags = [...new Set(products.flatMap((p) => p.tags || []))]
+    allProducts = await getAllProducts()
+    console.log("[v0] Successfully fetched", allProducts.length, "products")
   } catch (error) {
     console.error("[v0] Error fetching products:", error)
   }
+
+  let products = allProducts
+
+  // Filter by search query
+  if (searchParams.q) {
+    const query = searchParams.q.toLowerCase()
+    products = products.filter(
+      (p) =>
+        p.title.toLowerCase().includes(query) ||
+        p.description?.toLowerCase().includes(query) ||
+        p.productType?.toLowerCase().includes(query) ||
+        p.vendor?.toLowerCase().includes(query) ||
+        p.tags?.some((tag: string) => tag.toLowerCase().includes(query)),
+    )
+  }
+
+  // Filter by product type
+  if (searchParams.type) {
+    products = products.filter((p) => p.productType === searchParams.type)
+  }
+
+  // Filter by vendor
+  if (searchParams.vendor) {
+    products = products.filter((p) => p.vendor === searchParams.vendor)
+  }
+
+  // Filter by tag
+  if (searchParams.tag) {
+    products = products.filter((p) => p.tags?.includes(searchParams.tag))
+  }
+
+  // Filter by availability
+  if (searchParams.available === "true") {
+    products = products.filter((p) => p.availableForSale)
+  }
+
+  // Filter by price range
+  if (searchParams.min || searchParams.max) {
+    const min = searchParams.min ? Number.parseFloat(searchParams.min) : 0
+    const max = searchParams.max ? Number.parseFloat(searchParams.max) : Number.POSITIVE_INFINITY
+
+    products = products.filter((p) => {
+      const price = Number.parseFloat(p.priceRange.minVariantPrice.amount)
+      return price >= min && price <= max
+    })
+  }
+
+  if (searchParams.sort) {
+    switch (searchParams.sort) {
+      case "price-asc":
+        products.sort(
+          (a, b) =>
+            Number.parseFloat(a.priceRange.minVariantPrice.amount) -
+            Number.parseFloat(b.priceRange.minVariantPrice.amount),
+        )
+        break
+      case "price-desc":
+        products.sort(
+          (a, b) =>
+            Number.parseFloat(b.priceRange.minVariantPrice.amount) -
+            Number.parseFloat(a.priceRange.minVariantPrice.amount),
+        )
+        break
+      case "title-asc":
+        products.sort((a, b) => a.title.localeCompare(b.title))
+        break
+      case "title-desc":
+        products.sort((a, b) => b.title.localeCompare(a.title))
+        break
+    }
+  }
+
+  // Extract unique values for filters from ALL products
+  const productTypes = [...new Set(allProducts.map((p) => p.productType).filter(Boolean))]
+  const vendors = [...new Set(allProducts.map((p) => p.vendor).filter(Boolean))]
+  const tags = [...new Set(allProducts.flatMap((p) => p.tags || []))]
 
   // Determine page title based on filters
   const getPageTitle = () => {
