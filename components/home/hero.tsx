@@ -39,12 +39,11 @@ export function Hero() {
         className="absolute inset-0 w-full h-full object-cover object-[75%_center]"
       />
 
-      {/* Blue Gradient Overlay - Left Side Only with Slant */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "linear-gradient(105deg, rgba(11, 28, 44, 0.95) 0%, rgba(11, 28, 44, 0.85) 20%, rgba(11, 28, 44, 0.6) 35%, rgba(11, 28, 44, 0.3) 45%, transparent 55%)",
+            "linear-gradient(90deg, rgba(11, 28, 44, 0.85) 0%, rgba(11, 28, 44, 0.65) 40%, rgba(11, 28, 44, 0.35) 70%, rgba(11, 28, 44, 0.15) 100%)",
         }}
       ></div>
 

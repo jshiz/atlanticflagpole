@@ -26,11 +26,11 @@ export function PromoFooter() {
         setShowAtTop(true)
       }
 
-      if (heroSection && secondSection) {
-        const heroBottom = heroSection.getBoundingClientRect().bottom
-        const secondBottom = secondSection.getBoundingClientRect().bottom
+      if (secondSection) {
+        const secondSectionTop = secondSection.getBoundingClientRect().top
 
-        if (heroBottom < 0 && secondBottom < 0) {
+        // Show bottom bar when the 2nd section enters the viewport
+        if (secondSectionTop <= window.innerHeight) {
           setShowAtBottom(true)
         } else {
           setShowAtBottom(false)

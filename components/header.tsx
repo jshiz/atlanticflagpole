@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 import { ShoppingCart, Menu, X, ChevronDown, Search, User } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
+import Image from "next/image"
 
 const promoMessages = [
   { text: "66% OFF + Free Shipping", discount: "66% OFF" },
@@ -43,7 +44,7 @@ export function Header() {
   return (
     <>
       <header className="relative bg-white z-50">
-        <div className="border-b border-gray-200 bg-[#F5F3EF]">
+        <div className="border-b border-gray-200 bg-[#F5F3EF] hidden md:block">
           <div className="container mx-auto px-4 py-2 flex justify-between items-center text-xs">
             <div className="flex gap-6">
               <Link href="/guarantee" className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-medium">
@@ -76,12 +77,25 @@ export function Header() {
 
         <div className="bg-white border-b border-gray-200">
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between h-16">
-              <Link href="/" className="flex items-center">
-                <span className="text-2xl font-serif font-bold text-[#0B1C2C] tracking-wide">ATLANTIC FLAGPOLES</span>
+            <div className="flex items-center justify-between h-16 md:h-16">
+              <button className="lg:hidden text-[#0B1C2C] order-1" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+
+              <Link href="/" className="flex items-center gap-2 md:gap-3 order-2 lg:order-1">
+                <Image
+                  src="/images/favicon.png"
+                  alt="Atlantic Flagpoles Logo"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 md:w-10 md:h-10"
+                />
+                <span className="text-sm md:text-2xl font-serif font-bold text-[#0B1C2C] tracking-wide">
+                  ATLANTIC FLAGPOLES
+                </span>
               </Link>
 
-              <div className="hidden md:flex flex-1 max-w-lg mx-8">
+              <div className="hidden md:flex flex-1 max-w-lg mx-8 order-2">
                 <div className="relative w-full">
                   <input
                     type="text"
@@ -92,7 +106,7 @@ export function Header() {
                 </div>
               </div>
 
-              <nav className="hidden lg:flex items-center gap-6">
+              <nav className="hidden lg:flex items-center gap-6 order-3">
                 <div
                   className="relative"
                   onMouseEnter={() => setActiveMegaMenu("flagpoles")}
@@ -492,15 +506,16 @@ export function Header() {
                 </button>
               </nav>
 
-              <div className="hidden lg:flex items-center gap-4">
-                <Link href="/cart" className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors">
+              <div className="flex items-center gap-3 order-3">
+                <Link href="/cart" className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors lg:hidden">
                   <ShoppingCart className="w-5 h-5" />
                 </Link>
+                <div className="hidden lg:flex items-center gap-4">
+                  <Link href="/cart" className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors">
+                    <ShoppingCart className="w-5 h-5" />
+                  </Link>
+                </div>
               </div>
-
-              <button className="lg:hidden text-[#0B1C2C]" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
             </div>
 
             {mobileMenuOpen && (
@@ -588,7 +603,18 @@ export function Header() {
       >
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-14">
-            <div className="flex items-center gap-4 w-80">
+            <button className="lg:hidden text-[#0B1C2C] mr-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+
+            <div className="flex items-center gap-2 md:gap-4 flex-1 lg:flex-initial lg:w-80">
+              <Image
+                src="/images/favicon.png"
+                alt="Atlantic Flagpoles Logo"
+                width={32}
+                height={32}
+                className="w-7 h-7 md:w-8 md:h-8"
+              />
               {!searchExpanded && (
                 <button
                   onClick={() => setSearchExpanded(true)}
@@ -1001,8 +1027,8 @@ export function Header() {
               </div>
             </nav>
 
-            <div className="flex items-center gap-4">
-              <Link href="/account" className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors">
+            <div className="flex items-center gap-3 md:gap-4">
+              <Link href="/account" className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors hidden md:block">
                 <User className="w-5 h-5" />
               </Link>
               <Link href="/cart" className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors">

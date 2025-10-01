@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { MessageCircle, X, Send } from "lucide-react"
+import { X, Send } from "lucide-react"
 
 export function LiveChatButton() {
   const [isOpen, setIsOpen] = useState(false)
@@ -9,7 +9,6 @@ export function LiveChatButton() {
 
   const handleSend = () => {
     if (message.trim()) {
-      // Placeholder for AI chat functionality
       console.log("Message sent:", message)
       setMessage("")
     }
@@ -17,28 +16,51 @@ export function LiveChatButton() {
 
   return (
     <>
-      {/* Chat Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 bg-[#C8A55C] hover:bg-[#B8954C] text-white rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110"
-        aria-label="Open live chat"
-      >
-        {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
-        <div className="absolute top-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-      </button>
+      {!isOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="fixed bottom-32 right-0 z-50 bg-[#0B1C2C] hover:bg-[#1a2d3f] text-white px-2 py-6 rounded-l-lg shadow-lg transition-all duration-300 hover:px-3 group"
+          aria-label="Open live chat"
+        >
+          <div className="flex flex-col items-center gap-3">
+            {/* Pulsing green indicator */}
+            <div className="relative">
+              <div className="w-2.5 h-2.5 bg-green-500 rounded-full"></div>
+              <div className="absolute inset-0 w-2.5 h-2.5 bg-green-500 rounded-full animate-ping"></div>
+            </div>
 
-      {/* Chat Window */}
+            {/* Vertical "CHAT" text */}
+            <div className="flex flex-col gap-0.5 text-xs font-semibold tracking-wider">
+              <span>C</span>
+              <span>H</span>
+              <span>A</span>
+              <span>T</span>
+            </div>
+          </div>
+        </button>
+      )}
+
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-96 h-[500px] bg-white rounded-lg shadow-2xl border border-gray-200 flex flex-col overflow-hidden">
+        <div className="fixed bottom-24 right-0 z-50 w-[90vw] max-w-sm h-[500px] bg-white rounded-l-lg shadow-2xl border border-gray-200 flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
           {/* Header */}
           <div className="bg-[#0B1C2C] text-white p-4 flex items-center justify-between">
-            <div>
-              <h3 className="font-bold text-lg">Live Chat Support</h3>
-              <p className="text-xs text-white/80 flex items-center gap-1">
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+            <div className="flex-1">
+              <h3 className="font-bold text-base md:text-lg">Live Chat Support</h3>
+              <p className="text-xs text-white/80 flex items-center gap-2">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                </span>
                 Online - We're here to help!
               </p>
             </div>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="ml-2 text-white hover:text-gray-300 transition-colors"
+              aria-label="Close chat"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Chat Messages */}
