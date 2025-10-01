@@ -1,7 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter, JetBrains_Mono, Cinzel } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { Suspense } from "react"
 import { Header } from "@/components/header"
@@ -49,7 +48,6 @@ export default function RootLayout({
           <LiveChatButton />
           <Toaster />
         </CartProvider>
-        <Analytics />
       </body>
     </html>
   )

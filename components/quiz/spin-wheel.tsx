@@ -102,13 +102,19 @@ export function SpinWheel({ score, totalQuestions, onClose }: SpinWheelProps) {
       setShowPrize(true)
       setSpinning(false)
 
-      // Trigger confetti
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ["#c8a55c", "#0b1c2c", "#ffffff"],
-      })
+      // Trigger confetti if available
+      if (typeof window !== "undefined") {
+        try {
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ["#c8a55c", "#0b1c2c", "#ffffff"],
+          })
+        } catch (error) {
+          console.log("Confetti not available")
+        }
+      }
     }, 4000)
   }
 

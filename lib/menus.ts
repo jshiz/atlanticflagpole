@@ -57,10 +57,46 @@ export interface Menu {
 }
 
 /**
+ * Cleans title by removing pipe syntax helper (e.g., "Title|tag=value" → "Title")
+ */
+function cleanTitle(title: string): string {
+  const pipeIndex = title.indexOf("|")
+  return pipeIndex > -1 ? title.substring(0, pipeIndex).trim() : title
+}
+
+/**
+ * Extracts query params from title pipe syntax (e.g., "Title|tag=value&type=Flagpole")
+ */
+function extractQueryFromTitle(title: string): string | null {
+  const pipeIndex = title.indexOf("|")
+  if (pipeIndex === -1) return null
+
+  const queryString = title.substring(pipeIndex + 1).trim()
+  if (!queryString) return null
+
+  // Validate and normalize query params
+  try {
+    const params = new URLSearchParams(queryString)
+    return params.toString()
+  } catch {
+    return null
+  }
+}
+
+/**
  * Normalizes Shopify menu item URLs to Next.js routes
  * Maps Shopify URLs to our app's routing structure
  */
-function normalizeMenuUrl(url: string, type: string): string {
+function normalizeMenuUrl(url: string, type: string, title: string): string {
+  const queryFromTitle = extractQueryFromTitle(title)
+  if (queryFromTitle) {
+    return `/products?${queryFromTitle}`
+  }
+
+  if (url.startsWith("/products?")) {
+    return url
+  }
+
   try {
     const urlObj = new URL(url)
     const pathname = urlObj.pathname
@@ -68,12 +104,12 @@ function normalizeMenuUrl(url: string, type: string): string {
     // Collection URLs: /collections/handle → /products?collection=handle
     if (pathname.startsWith("/collections/")) {
       const handle = pathname.replace("/collections/", "")
-      return `/products?collection=${handle}`
+      return `/products?collection=${encodeURIComponent(handle)}`
     }
 
-    // Product URLs: /products/handle → /products/handle (keep as-is)
     if (pathname.startsWith("/products/")) {
-      return pathname
+      const handle = pathname.replace("/products/", "")
+      return `/product/${handle}`
     }
 
     // Page URLs: /pages/handle → /handle
@@ -95,8 +131,12 @@ function normalizeMenuUrl(url: string, type: string): string {
       }
     }
 
-    // External URLs or other paths - return as-is
-    return pathname
+    if (pathname.startsWith("/")) {
+      return pathname
+    }
+
+    // External URLs - return as-is
+    return url
   } catch (error) {
     // If URL parsing fails, return as-is
     console.warn(`[v0] Failed to parse menu URL: ${url}`, error)
@@ -110,8 +150,8 @@ function normalizeMenuUrl(url: string, type: string): string {
 function normalizeMenuItem(item: ShopifyMenuItem): MenuItem {
   return {
     id: item.id,
-    title: item.title,
-    url: normalizeMenuUrl(item.url, item.type),
+    title: cleanTitle(item.title), // Clean title to remove pipe syntax
+    url: normalizeMenuUrl(item.url, item.type, item.title), // Pass title for pipe syntax extraction
     items: item.items?.map(normalizeMenuItem),
   }
 }
@@ -133,7 +173,7 @@ export async function getMenu(handle: string): Promise<Menu | null> {
         query: MENU_QUERY,
         variables: { handle },
       }),
-      next: { revalidate: 3600, tags: [`menu:${handle}`] }, // Cache for 1 hour
+      cache: "no-store", // Disable caching to always fetch fresh menu data
     })
 
     if (!res.ok) {

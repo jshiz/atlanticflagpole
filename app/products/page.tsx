@@ -13,6 +13,7 @@ interface ProductsPageProps {
     type?: string
     vendor?: string
     tag?: string
+    collection?: string // Added collection param support
     available?: string
     min?: string
     max?: string
@@ -41,6 +42,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   // Determine page title based on filters
   const getPageTitle = () => {
     if (searchParams.q) return `Search Results for "${searchParams.q}"`
+    if (searchParams.collection)
+      return searchParams.collection.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()) // Added collection title formatting
     if (searchParams.type) return searchParams.type
     if (searchParams.vendor) return searchParams.vendor
     if (searchParams.tag) return searchParams.tag
@@ -52,6 +55,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     searchParams.type ||
     searchParams.vendor ||
     searchParams.tag ||
+    searchParams.collection || // Include collection in active filters check
     searchParams.available ||
     searchParams.min ||
     searchParams.max

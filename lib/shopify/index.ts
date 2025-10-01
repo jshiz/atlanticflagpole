@@ -32,7 +32,8 @@ async function shopifyFetch<T>({
         query,
         variables,
       }),
-      next: { revalidate: 3600, tags },
+      cache: "no-store",
+      // next: { revalidate: 3600, tags },
     })
 
     if (!response.ok) {
@@ -896,4 +897,16 @@ export async function getAllProducts(): Promise<ShopifyProduct[]> {
 
   console.log(`[v0] Fetched ${allProducts.length} total products from Shopify`)
   return allProducts
+}
+
+/**
+ * Simplified Shopify Storefront API wrapper for testing
+ * Returns just the data portion of the response
+ */
+export async function sf<T = any>(query: string, variables?: Record<string, any>): Promise<T> {
+  const { data } = await shopifyFetch<T>({
+    query,
+    variables: variables || {},
+  })
+  return data
 }

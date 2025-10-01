@@ -1,8 +1,25 @@
 import { searchProducts } from "@/lib/shopify/catalog"
 import { Header } from "./header-client"
+import { getMenu } from "@/lib/menus"
+
+export const dynamic = "force-dynamic"
+export const revalidate = 0
 
 export async function HeaderWrapper() {
   const collectionsData: Record<string, { products: { nodes: any[] } }> = {}
+
+  let menuData = null
+  try {
+    const menuHandle = process.env.NEXT_PUBLIC_SHOPIFY_MAIN_MENU_HANDLE ?? "main-menu"
+    menuData = await getMenu(menuHandle)
+    if (menuData) {
+      console.log(`[v0] ✅ Successfully loaded ${menuHandle} from Shopify`)
+    } else {
+      console.error(`[v0] ⚠️ USING FALLBACK MENU - ${menuHandle} not found in Shopify`)
+    }
+  } catch (error) {
+    console.error("[v0] ❌ Error fetching main-menu:", error)
+  }
 
   try {
     const allProductsResult = await searchProducts({ first: 250 })
@@ -17,7 +34,6 @@ export async function HeaderWrapper() {
       })
     }
 
-    // Flagpoles category - main category
     const flagpoleProducts = filterByTag(allProducts, [
       "flagpole",
       "flag-pole",
@@ -30,13 +46,11 @@ export async function HeaderWrapper() {
       collectionsData["flagpoles"] = { products: { nodes: flagpoleProducts.slice(0, 8) } }
     }
 
-    // Flags category - main category
     const flagProducts = filterByTag(allProducts, ["american-flag", "flag", "star-flag", "banner", "nylon", "stripes"])
     if (flagProducts.length > 0) {
       collectionsData["flags"] = { products: { nodes: flagProducts.slice(0, 8) } }
     }
 
-    // Accessories category - main category
     const accessoryProducts = filterByTag(allProducts, [
       "topper",
       "lighting",
@@ -50,7 +64,6 @@ export async function HeaderWrapper() {
       collectionsData["accessories"] = { products: { nodes: accessoryProducts.slice(0, 8) } }
     }
 
-    // Holiday category - main category
     const holidayProducts = filterByTag(allProducts, ["holiday", "christmas", "halloween", "seasonal", "19th-hole"])
     if (holidayProducts.length > 0) {
       collectionsData["holiday"] = { products: { nodes: holidayProducts.slice(0, 8) } }
@@ -88,5 +101,5 @@ export async function HeaderWrapper() {
     console.error("[v0] ❌ ERROR in HeaderWrapper:", error)
   }
 
-  return <Header menuData={null} collectionsData={collectionsData} />
+  return <Header menuData={menuData} collectionsData={collectionsData} />
 }

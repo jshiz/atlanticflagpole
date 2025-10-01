@@ -1,6 +1,7 @@
 // Helper functions for fetching collections and menus
 import { MENU_QUERY, ALL_COLLECTIONS_QUERY } from "./queries"
 import { normalizeMenu } from "./menu-utils"
+import { buildProductQuery } from "./query-builder"
 
 const SHOPIFY_STORE_DOMAIN = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || "v0-template.myshopify.com"
 const SHOPIFY_STOREFRONT_TOKEN = process.env.SHOPIFY_STOREFRONT_TOKEN || ""
@@ -116,20 +117,15 @@ export async function searchProducts(searchParams: {
   first?: number
   after?: string
 }) {
-  const parts: string[] = []
-
-  if (searchParams.type) parts.push(`product_type:"${searchParams.type}"`)
-  if (searchParams.vendor) parts.push(`vendor:"${searchParams.vendor}"`)
-  if (searchParams.tag) parts.push(`tag:"${searchParams.tag}"`)
-  if (searchParams.available === "true") parts.push(`available_for_sale:true`)
-  if (searchParams.min) parts.push(`variants.price:>=${Number(searchParams.min)}`)
-  if (searchParams.max) parts.push(`variants.price:<=${Number(searchParams.max)}`)
-  if (searchParams.q) {
-    const s = String(searchParams.q).replace(/["']/g, "")
-    parts.push(`(title:${s}* OR sku:${s}* OR vendor:${s}* OR product_type:${s}* OR tag:${s}*)`)
-  }
-
-  const queryString = parts.length ? parts.join(" AND ") : "inventory_total:>0"
+  const queryString = buildProductQuery({
+    tag: searchParams.tag,
+    type: searchParams.type,
+    vendor: searchParams.vendor,
+    q: searchParams.q,
+    available: searchParams.available,
+    min: searchParams.min,
+    max: searchParams.max,
+  })
 
   // Map sort parameter to Shopify sort keys
   let sortKey = "RELEVANCE"
@@ -194,7 +190,7 @@ export async function searchProducts(searchParams: {
       sortKey,
       reverse,
     },
-    { next: { revalidate: 600, tags: ["products"] } },
+    { cache: "no-store" },
   )
 
   return data.products
