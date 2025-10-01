@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { ShoppingCart, Menu, X, ChevronDown, Search, User } from "lucide-react"
+import { ShoppingCart, Menu, X, ChevronDown, Search, User, Star, Flame, Sparkles, Tag } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
 import { useCart } from "@/components/cart/cart-context"
@@ -50,41 +50,48 @@ const fallbackMenu = {
     {
       id: "flagpoles",
       title: "Flagpoles",
-      url: "/collections/flagpoles",
+      url: "/products?tag=flagpoles",
       items: [
-        { id: "telescoping", title: "Telescoping Flagpoles", url: "/collections/telescoping-flagpoles", items: [] },
-        { id: "aluminum", title: "Aluminum Flagpoles", url: "/collections/aluminum-flagpoles", items: [] },
-        { id: "indoor", title: "Indoor Flagpoles", url: "/collections/indoor-flagpoles", items: [] },
+        { id: "telescoping", title: "Telescoping Flagpoles", url: "/products?tag=telescoping", items: [] },
+        { id: "aluminum", title: "Aluminum Flagpoles", url: "/products?tag=aluminum", items: [] },
+        { id: "indoor", title: "Indoor Flagpoles", url: "/products?tag=indoor", items: [] },
+        { id: "commercial", title: "Commercial Flagpoles", url: "/products?tag=commercial", items: [] },
+        { id: "residential", title: "Residential Flagpoles", url: "/products?tag=residential", items: [] },
       ],
     },
     {
       id: "flags",
       title: "Flags",
-      url: "/collections/flags",
+      url: "/products?tag=flags",
       items: [
-        { id: "american", title: "American Flags", url: "/collections/american-flags", items: [] },
-        { id: "state", title: "State Flags", url: "/collections/state-flags", items: [] },
-        { id: "military", title: "Military Flags", url: "/collections/military-flags", items: [] },
+        { id: "american", title: "American Flags", url: "/products?tag=american-flag", items: [] },
+        { id: "state", title: "State Flags", url: "/products?tag=state-flag", items: [] },
+        { id: "military", title: "Military Flags", url: "/products?tag=military", items: [] },
+        { id: "international", title: "International Flags", url: "/products?tag=international", items: [] },
+        { id: "custom", title: "Custom Flags", url: "/products?tag=custom", items: [] },
       ],
     },
     {
       id: "accessories",
       title: "Accessories",
-      url: "/collections/accessories",
+      url: "/products?tag=accessories",
       items: [
-        { id: "lighting", title: "Flagpole Lighting", url: "/collections/flagpole-lighting", items: [] },
-        { id: "mounts", title: "Flagpole Mounts", url: "/collections/flagpole-mounts", items: [] },
-        { id: "toppers", title: "Flagpole Toppers", url: "/collections/flagpole-toppers", items: [] },
+        { id: "lighting", title: "Flagpole Lighting", url: "/products?tag=lighting", items: [] },
+        { id: "mounts", title: "Flagpole Mounts", url: "/products?tag=mounts", items: [] },
+        { id: "toppers", title: "Flagpole Toppers", url: "/products?tag=toppers", items: [] },
+        { id: "hardware", title: "Hardware & Parts", url: "/products?tag=hardware", items: [] },
+        { id: "maintenance", title: "Maintenance Kits", url: "/products?tag=maintenance", items: [] },
       ],
     },
     {
       id: "holiday",
       title: "Holiday & Seasonal",
-      url: "/collections/holiday-seasonal",
+      url: "/products?tag=holiday",
       items: [
-        { id: "christmas", title: "Christmas", url: "/collections/christmas", items: [] },
-        { id: "halloween", title: "Halloween", url: "/collections/halloween", items: [] },
-        { id: "patriotic", title: "Patriotic Holidays", url: "/collections/patriotic-holidays", items: [] },
+        { id: "christmas", title: "Christmas", url: "/products?tag=christmas", items: [] },
+        { id: "halloween", title: "Halloween", url: "/products?tag=halloween", items: [] },
+        { id: "patriotic", title: "Patriotic Holidays", url: "/products?tag=patriotic", items: [] },
+        { id: "seasonal", title: "Seasonal Decorations", url: "/products?tag=seasonal", items: [] },
       ],
     },
     {
@@ -93,16 +100,26 @@ const fallbackMenu = {
       url: "/resources",
       items: [
         { id: "blog", title: "Blog", url: "/blog", items: [] },
-        { id: "guides", title: "Installation Guides", url: "/installation-guides", items: [] },
+        { id: "guides", title: "Installation Guides", url: "/installation", items: [] },
         { id: "faq", title: "FAQ", url: "/faq", items: [] },
+        { id: "warranty", title: "Warranty Info", url: "/warranty", items: [] },
       ],
     },
   ],
 }
 
+const productBadges: Record<string, { type: "hot" | "new" | "sale"; label: string }> = {
+  telescoping: { type: "hot", label: "HOT" },
+  "american-flag": { type: "sale", label: "SALE" },
+  lighting: { type: "new", label: "NEW" },
+  christmas: { type: "sale", label: "SALE" },
+  commercial: { type: "hot", label: "HOT" },
+}
+
 export function Header({ menuData, collectionsData }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeMegaMenu, setActiveMegaMenu] = useState<string | null>(null)
+  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null)
   const [currentPromoIndex, setCurrentPromoIndex] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [quizModalOpen, setQuizModalOpen] = useState(false)
@@ -143,9 +160,32 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
     }
   }, [menuData])
 
+  const handleMenuEnter = (itemId: string) => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout)
+      setHoverTimeout(null)
+    }
+    setActiveMegaMenu(itemId)
+  }
+
+  const handleMenuLeave = () => {
+    const timeout = setTimeout(() => {
+      setActiveMegaMenu(null)
+    }, 150) // 150ms delay before closing
+    setHoverTimeout(timeout)
+  }
+
+  const handleMegaMenuEnter = () => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout)
+      setHoverTimeout(null)
+    }
+  }
+
   const renderMegaMenu = (menuItem: MenuItem) => {
-    const collectionKey = menuItem.url.split("/").pop() || ""
-    const products = collectionsData[collectionKey]?.products?.nodes || []
+    const urlParams = new URLSearchParams(menuItem.url.split("?")[1] || "")
+    const tag = urlParams.get("tag") || menuItem.url.split("/").pop() || ""
+    const products = collectionsData[tag]?.products?.nodes || []
     const hasProducts = products.length > 0
     const hasSubItems = menuItem.items && menuItem.items.length > 0
 
@@ -153,72 +193,171 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
       return null
     }
 
-    // Group subitems into columns (max 3 columns for menu items)
+    // Group subitems into columns
     const columns: MenuItem[][] = []
     if (hasSubItems) {
-      const itemsPerColumn = Math.ceil(menuItem.items!.length / 3)
+      const itemsPerColumn = Math.ceil(menuItem.items!.length / 2)
       for (let i = 0; i < menuItem.items!.length; i += itemsPerColumn) {
         columns.push(menuItem.items!.slice(i, i + itemsPerColumn))
       }
     }
 
+    const getBadgeStyles = (type: "hot" | "new" | "sale") => {
+      switch (type) {
+        case "hot":
+          return "bg-gradient-to-r from-red-600 to-orange-500 text-white"
+        case "new":
+          return "bg-gradient-to-r from-blue-600 to-blue-500 text-white"
+        case "sale":
+          return "bg-gradient-to-r from-[#C8A55C] to-yellow-600 text-white"
+      }
+    }
+
+    const getBadgeIcon = (type: "hot" | "new" | "sale") => {
+      switch (type) {
+        case "hot":
+          return <Flame className="w-3 h-3" />
+        case "new":
+          return <Sparkles className="w-3 h-3" />
+        case "sale":
+          return <Tag className="w-3 h-3" />
+      }
+    }
+
     return (
       <div
-        className={`absolute top-full left-0 mt-2 ${hasProducts ? "w-[900px]" : "w-[700px]"} bg-white border border-gray-200 rounded-lg shadow-xl p-6 z-50`}
+        className="absolute top-full left-0 pt-2 z-50"
+        onMouseEnter={handleMegaMenuEnter}
+        onMouseLeave={handleMenuLeave}
       >
-        <div className={`grid ${hasProducts ? "grid-cols-4" : "grid-cols-3"} gap-6`}>
-          {columns.map((columnItems, idx) => (
-            <div key={idx}>
-              <h3 className="text-[#C8A55C] font-bold mb-3 text-xs uppercase tracking-wide">
-                {idx === 0 ? "Categories" : ""}
-              </h3>
-              <ul className="space-y-2">
-                {columnItems.map((item) => (
-                  <li key={item.id}>
-                    <Link
-                      href={item.url}
-                      className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors text-sm block"
-                    >
-                      {item.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+        <div
+          className={`${hasProducts ? "w-[1100px]" : "w-[800px]"} bg-white border-2 border-[#C8A55C]/30 rounded-xl shadow-2xl overflow-hidden`}
+        >
+          <div className="bg-gradient-to-r from-[#0B1C2C] via-[#1a3a52] to-[#0B1C2C] px-6 py-3 border-b-4 border-[#C8A55C]">
+            <div className="flex items-center justify-between">
+              <h2 className="text-white font-bold text-lg tracking-wide flex items-center gap-2">
+                <Star className="w-5 h-5 text-[#C8A55C] fill-[#C8A55C]" />
+                {menuItem.title}
+                <Star className="w-5 h-5 text-[#C8A55C] fill-[#C8A55C]" />
+              </h2>
+              <Link
+                href={menuItem.url}
+                className="text-[#C8A55C] hover:text-white transition-colors text-sm font-medium flex items-center gap-1"
+              >
+                View All
+                <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
+              </Link>
             </div>
-          ))}
+          </div>
 
-          {hasProducts && (
-            <div>
-              <h3 className="text-[#C8A55C] font-bold mb-3 text-xs uppercase tracking-wide">Featured Products</h3>
-              <div className="space-y-3">
-                {products.slice(0, 3).map((product) => (
-                  <Link
-                    key={product.id}
-                    href={`/products/${product.handle}`}
-                    className="flex gap-2 group hover:bg-[#F5F3EF] p-2 rounded-md transition-colors"
-                  >
-                    {product.featuredImage && (
-                      <Image
-                        src={product.featuredImage.url || "/placeholder.svg"}
-                        alt={product.featuredImage.altText || product.title}
-                        width={60}
-                        height={60}
-                        className="w-14 h-14 object-cover rounded border border-gray-200"
-                      />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2">
-                        {product.title}
-                      </p>
-                      <p className="text-xs text-[#0B1C2C]/70 mt-1">
-                        ${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}
-                      </p>
+          <div className="p-6">
+            <div className={`grid ${hasProducts ? "grid-cols-[2fr_1fr]" : "grid-cols-1"} gap-8`}>
+              <div>
+                <div className="grid grid-cols-2 gap-6">
+                  {columns.map((columnItems, idx) => (
+                    <div key={idx} className="space-y-1">
+                      {columnItems.map((item, itemIdx) => {
+                        const itemUrlParams = new URLSearchParams(item.url.split("?")[1] || "")
+                        const itemTag = itemUrlParams.get("tag") || item.url.split("/").pop() || ""
+                        const badge = productBadges[itemTag]
+                        return (
+                          <Link
+                            key={item.id}
+                            href={item.url}
+                            className="group flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-gradient-to-r hover:from-[#F5F3EF] hover:to-white transition-all duration-200 border border-transparent hover:border-[#C8A55C]/20"
+                          >
+                            <span className="text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors font-medium text-sm flex items-center gap-2">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#C8A55C] opacity-0 group-hover:opacity-100 transition-opacity" />
+                              {item.title}
+                            </span>
+                            {badge && (
+                              <span
+                                className={`${getBadgeStyles(badge.type)} px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider flex items-center gap-1 shadow-md`}
+                              >
+                                {getBadgeIcon(badge.type)}
+                                {badge.label}
+                              </span>
+                            )}
+                          </Link>
+                        )
+                      })}
                     </div>
-                  </Link>
-                ))}
+                  ))}
+                </div>
+
+                <div className="mt-6 bg-gradient-to-r from-red-50 via-white to-blue-50 border-2 border-[#C8A55C]/30 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-[#C8A55C] rounded-full p-2">
+                        <Star className="w-5 h-5 text-white fill-white" />
+                      </div>
+                      <div>
+                        <p className="text-[#0B1C2C] font-bold text-sm">Free Shipping on Orders $99+</p>
+                        <p className="text-[#0B1C2C]/60 text-xs">Plus 30-Day Money Back Guarantee</p>
+                      </div>
+                    </div>
+                    <Link
+                      href="/guarantee"
+                      className="text-[#C8A55C] hover:text-[#0B1C2C] transition-colors text-xs font-medium"
+                    >
+                      Learn More →
+                    </Link>
+                  </div>
+                </div>
               </div>
+
+              {hasProducts && (
+                <div className="border-l-2 border-[#C8A55C]/20 pl-8">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Star className="w-4 h-4 text-[#C8A55C] fill-[#C8A55C]" />
+                    <h3 className="text-[#0B1C2C] font-bold text-sm uppercase tracking-wide">Featured Products</h3>
+                  </div>
+                  <div className="space-y-3">
+                    {products.slice(0, 4).map((product, idx) => (
+                      <Link
+                        key={product.id}
+                        href={`/products/${product.handle}`}
+                        className="group flex gap-3 p-3 rounded-lg hover:bg-gradient-to-r hover:from-[#F5F3EF] hover:to-white transition-all duration-200 border border-transparent hover:border-[#C8A55C]/30 hover:shadow-md"
+                      >
+                        {product.featuredImage && (
+                          <div className="relative flex-shrink-0">
+                            <Image
+                              src={product.featuredImage.url || "/placeholder.svg"}
+                              alt={product.featuredImage.altText || product.title}
+                              width={80}
+                              height={80}
+                              className="w-20 h-20 object-cover rounded-lg border-2 border-[#C8A55C]/20 group-hover:border-[#C8A55C] transition-colors"
+                            />
+                            {idx === 0 && (
+                              <span className="absolute -top-2 -right-2 bg-gradient-to-r from-red-600 to-orange-500 text-white px-2 py-0.5 rounded-full text-[10px] font-bold shadow-lg flex items-center gap-1">
+                                <Flame className="w-3 h-3" />
+                                HOT
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-1">
+                            {product.title}
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-base font-bold text-[#C8A55C]">
+                              ${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}
+                            </p>
+                            <div className="flex items-center gap-0.5">
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} className="w-3 h-3 text-[#C8A55C] fill-[#C8A55C]" />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     )
@@ -257,7 +396,6 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
             </div>
           </div>
         </div>
-
         <div className="bg-white border-b border-gray-200">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between h-16 md:h-16">
@@ -302,8 +440,8 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
                     <div
                       key={item.id}
                       className="relative"
-                      onMouseEnter={() => setActiveMegaMenu(item.id)}
-                      onMouseLeave={() => setActiveMegaMenu(null)}
+                      onMouseEnter={() => handleMenuEnter(item.id)}
+                      onMouseLeave={handleMenuLeave}
                     >
                       <button className="flex items-center gap-1 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-medium text-sm">
                         {item.title}
@@ -443,8 +581,8 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
                   <div
                     key={item.id}
                     className="relative"
-                    onMouseEnter={() => setActiveMegaMenu(item.id)}
-                    onMouseLeave={() => setActiveMegaMenu(null)}
+                    onMouseEnter={() => handleMenuEnter(item.id)}
+                    onMouseLeave={handleMenuLeave}
                   >
                     <button className="flex items-center gap-1 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-medium text-sm">
                       {item.title}

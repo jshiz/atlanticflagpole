@@ -1,8 +1,9 @@
-import { getProducts, getCollections, createCart } from "@/lib/shopify"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, XCircle, AlertCircle, ExternalLink } from "lucide-react"
 import Link from "next/link"
+
+export const dynamic = "force-dynamic"
 
 type TestResult = {
   name: string
@@ -11,13 +12,22 @@ type TestResult = {
   details?: any
 }
 
+async function fetchAPI(url: string) {
+  try {
+    const res = await fetch(url, { cache: "no-store" })
+    return await res.json()
+  } catch (error) {
+    return { ok: false, error: "Failed to fetch" }
+  }
+}
+
 export default async function UnifiedDiagnosticsPage() {
   const results: TestResult[] = []
 
   // Test 1: Environment Variables
-  const storeDomain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
+  const storeDomain = process.env.SHOPIFY_STORE_DOMAIN || process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
   const storefrontToken = process.env.SHOPIFY_STOREFRONT_TOKEN
-  const apiVersion = process.env.SHOPIFY_STOREFRONT_API_VERSION || "2025-07"
+  const apiVersion = process.env.SHOPIFY_STOREFRONT_API_VERSION || process.env.SHOPIFY_API_VERSION || "2025-07"
 
   if (!storeDomain || !storefrontToken) {
     results.push({
@@ -28,7 +38,7 @@ export default async function UnifiedDiagnosticsPage() {
         SHOPIFY_STORE_DOMAIN: storeDomain || "NOT SET",
         SHOPIFY_STOREFRONT_TOKEN: storefrontToken ? "SET" : "NOT SET",
         SHOPIFY_API_VERSION: apiVersion,
-        fix: "Add these environment variables in your Vercel project settings",
+        fix: "Add SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_TOKEN in Vercel project settings",
       },
     })
   } else {
@@ -45,9 +55,12 @@ export default async function UnifiedDiagnosticsPage() {
   }
 
   // Test 2: Products API
-  try {
-    const products = await getProducts({ first: 5 })
+  const productsResult = await fetchAPI(
+    `${process.env.VERCEL_URL ? "https://" + process.env.VERCEL_URL : ""}/api/shopify/test-products`,
+  )
 
+  if (productsResult.ok && productsResult.data?.products?.nodes) {
+    const products = productsResult.data.products.nodes
     if (products.length === 0) {
       results.push({
         name: "Products API",
@@ -55,13 +68,7 @@ export default async function UnifiedDiagnosticsPage() {
         message: "API connection works, but no products found",
         details: {
           count: 0,
-          fix: "Make sure products are published to the 'Headless' sales channel in Shopify Admin",
-          steps: [
-            "Go to Shopify Admin → Products",
-            "Select your products",
-            "Click 'More actions' → 'Manage'",
-            "Enable the 'Headless' channel",
-          ],
+          fix: "Publish products to the 'Headless' sales channel in Shopify Admin",
         },
       })
     } else {
@@ -71,37 +78,33 @@ export default async function UnifiedDiagnosticsPage() {
         message: `Successfully fetched ${products.length} products`,
         details: {
           count: products.length,
-          sampleProducts: products.slice(0, 3).map((p) => ({
+          sampleProducts: products.slice(0, 3).map((p: any) => ({
             title: p.title,
             handle: p.handle,
-            price: p.priceRange.minVariantPrice.amount,
-            available: p.availableForSale,
+            id: p.id,
           })),
         },
       })
     }
-  } catch (error: any) {
+  } else {
     results.push({
       name: "Products API",
       status: "error",
-      message: `Failed to fetch products: ${error.message}`,
+      message: "Failed to fetch products",
       details: {
-        error: error.message,
-        commonCauses: [
-          "Invalid SHOPIFY_STOREFRONT_TOKEN",
-          "Store domain is incorrect",
-          "Storefront API not enabled in Shopify",
-          "Network/firewall issues",
-        ],
-        fix: "Check your Shopify Storefront API token and store domain",
+        error: productsResult.error || "Unknown error",
+        fix: "Check SHOPIFY_STOREFRONT_TOKEN is the PUBLIC token (starts with 'febe')",
       },
     })
   }
 
   // Test 3: Collections API
-  try {
-    const collections = await getCollections(10)
+  const collectionsResult = await fetchAPI(
+    `${process.env.VERCEL_URL ? "https://" + process.env.VERCEL_URL : ""}/api/shopify/test-collections`,
+  )
 
+  if (collectionsResult.ok && collectionsResult.data?.collections?.nodes) {
+    const collections = collectionsResult.data.collections.nodes
     if (collections.length === 0) {
       results.push({
         name: "Collections API",
@@ -119,46 +122,21 @@ export default async function UnifiedDiagnosticsPage() {
         message: `Successfully fetched ${collections.length} collections`,
         details: {
           count: collections.length,
-          collections: collections.map((c) => ({
+          collections: collections.map((c: any) => ({
             title: c.title,
             handle: c.handle,
           })),
         },
       })
     }
-  } catch (error: any) {
+  } else {
     results.push({
       name: "Collections API",
       status: "error",
-      message: `Failed to fetch collections: ${error.message}`,
+      message: "Failed to fetch collections",
       details: {
-        error: error.message,
+        error: collectionsResult.error || "Unknown error",
         fix: "Check your Shopify API configuration",
-      },
-    })
-  }
-
-  // Test 4: Cart API
-  try {
-    const cart = await createCart()
-
-    results.push({
-      name: "Cart API",
-      status: "success",
-      message: "Cart operations working correctly",
-      details: {
-        cartId: cart.id,
-        checkoutUrl: cart.checkoutUrl,
-      },
-    })
-  } catch (error: any) {
-    results.push({
-      name: "Cart API",
-      status: "error",
-      message: `Failed to create cart: ${error.message}`,
-      details: {
-        error: error.message,
-        fix: "Verify Storefront API has cart permissions enabled",
       },
     })
   }
@@ -249,30 +227,8 @@ export default async function UnifiedDiagnosticsPage() {
                   <div className="bg-[#0B1C2C]/5 p-4 rounded-lg space-y-3">
                     {result.details.fix && (
                       <div className="bg-yellow-50 border border-yellow-200 p-3 rounded">
-                        <p className="font-semibold text-sm mb-1 text-yellow-900">💡 How to Fix:</p>
+                        <p className="font-semibold text-sm mb-1 text-yellow-900">How to Fix:</p>
                         <p className="text-sm text-yellow-800">{result.details.fix}</p>
-                      </div>
-                    )}
-
-                    {result.details.steps && (
-                      <div>
-                        <p className="font-semibold text-sm mb-2">Steps:</p>
-                        <ol className="list-decimal list-inside space-y-1 text-sm text-[#0B1C2C]/70">
-                          {result.details.steps.map((step: string, i: number) => (
-                            <li key={i}>{step}</li>
-                          ))}
-                        </ol>
-                      </div>
-                    )}
-
-                    {result.details.commonCauses && (
-                      <div>
-                        <p className="font-semibold text-sm mb-2">Common Causes:</p>
-                        <ul className="list-disc list-inside space-y-1 text-sm text-[#0B1C2C]/70">
-                          {result.details.commonCauses.map((cause: string, i: number) => (
-                            <li key={i}>{cause}</li>
-                          ))}
-                        </ul>
                       </div>
                     )}
 
@@ -285,9 +241,7 @@ export default async function UnifiedDiagnosticsPage() {
                               <div className="flex items-center justify-between">
                                 <div>
                                   <p className="font-medium text-sm">{product.title}</p>
-                                  <p className="text-xs text-[#0B1C2C]/60">
-                                    ${product.price} • {product.available ? "Available" : "Sold Out"}
-                                  </p>
+                                  <p className="text-xs text-[#0B1C2C]/60 font-mono">{product.handle}</p>
                                 </div>
                                 <Link
                                   href={`/products/${product.handle}`}
@@ -357,24 +311,26 @@ export default async function UnifiedDiagnosticsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Quick Links</CardTitle>
-            <CardDescription>Navigate to key pages and resources</CardDescription>
+            <CardDescription>Navigate to key pages and test API endpoints</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Link
-              href="/products"
-              className="block px-4 py-3 bg-[#0B1C2C] text-white rounded-lg hover:bg-[#0B1C2C]/90 transition-colors text-center"
-            >
-              View All Products →
-            </Link>
-            <Link
-              href="/collections"
-              className="block px-4 py-3 bg-[#0B1C2C] text-white rounded-lg hover:bg-[#0B1C2C]/90 transition-colors text-center"
-            >
-              View All Collections →
-            </Link>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <Link
+                href="/products"
+                className="px-4 py-3 bg-[#0B1C2C] text-white rounded-lg hover:bg-[#0B1C2C]/90 transition-colors text-center"
+              >
+                View All Products →
+              </Link>
+              <Link
+                href="/collections"
+                className="px-4 py-3 bg-[#0B1C2C] text-white rounded-lg hover:bg-[#0B1C2C]/90 transition-colors text-center"
+              >
+                View Collections →
+              </Link>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <Link
-                href="/api/debug-products"
+                href="/api/shopify/test-products"
                 target="_blank"
                 className="px-4 py-3 border-2 border-[#0B1C2C] text-[#0B1C2C] rounded-lg hover:bg-[#0B1C2C]/5 transition-colors text-center text-sm"
               >
@@ -403,15 +359,16 @@ export default async function UnifiedDiagnosticsPage() {
                 <p className="text-[#0B1C2C]/70 mb-2">Go to your Vercel project → Settings → Environment Variables</p>
                 <div className="bg-white p-3 rounded border border-blue-200 font-mono text-xs space-y-1">
                   <div>SHOPIFY_STORE_DOMAIN=your-store.myshopify.com</div>
-                  <div>SHOPIFY_STOREFRONT_TOKEN=your_storefront_access_token</div>
+                  <div>SHOPIFY_STOREFRONT_TOKEN=your_public_storefront_token</div>
+                  <div>SHOPIFY_STOREFRONT_API_VERSION=2025-07</div>
                 </div>
               </div>
 
               <div>
-                <p className="font-semibold mb-2">2. Get Your Storefront Access Token</p>
+                <p className="font-semibold mb-2">2. Use the PUBLIC Storefront Token</p>
                 <p className="text-[#0B1C2C]/70">
-                  In Shopify Admin → Settings → Apps and sales channels → Develop apps → Create an app → Configure
-                  Storefront API scopes → Install app
+                  Make sure SHOPIFY_STOREFRONT_TOKEN is the PUBLIC token (starts with 'febe'), not the private Admin API
+                  token
                 </p>
               </div>
 
