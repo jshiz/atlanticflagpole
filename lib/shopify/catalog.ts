@@ -17,10 +17,19 @@ async function shopifyFetch<T>(query: string, variables?: Record<string, any>, o
     ...opts,
   })
 
-  const json = await res.json()
-  if (!res.ok || json.errors) {
-    throw new Error(JSON.stringify(json.errors ?? res.statusText))
+  if (!res.ok) {
+    const errorText = await res.text()
+    console.error("[v0] Shopify catalog HTTP error:", res.status, errorText)
+    throw new Error(`Shopify API error (${res.status}): ${errorText}`)
   }
+
+  const json = await res.json()
+
+  if (json.errors) {
+    console.error("[v0] Shopify catalog GraphQL errors:", json.errors)
+    throw new Error(`Shopify GraphQL errors: ${JSON.stringify(json.errors)}`)
+  }
+
   return json.data
 }
 

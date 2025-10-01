@@ -424,7 +424,19 @@ export async function createCart(): Promise<ShopifyCart> {
     cache: "no-store",
   })
 
+  if (!response.ok) {
+    const errorText = await response.text()
+    console.error("[v0] Shopify createCart HTTP error:", response.status, errorText)
+    throw new Error(`Shopify API error (${response.status}): ${errorText}`)
+  }
+
   const json = await response.json()
+
+  if (json.errors) {
+    console.error("[v0] Shopify createCart GraphQL errors:", json.errors)
+    throw new Error(`Shopify GraphQL errors: ${JSON.stringify(json.errors)}`)
+  }
+
   const { data } = json
 
   if (data.cartCreate.userErrors.length > 0) {
@@ -502,7 +514,19 @@ export async function addCartLines(
     cache: "no-store",
   })
 
+  if (!response.ok) {
+    const errorText = await response.text()
+    console.error("[v0] Shopify addCartLines HTTP error:", response.status, errorText)
+    throw new Error(`Shopify API error (${response.status}): ${errorText}`)
+  }
+
   const json = await response.json()
+
+  if (json.errors) {
+    console.error("[v0] Shopify addCartLines GraphQL errors:", json.errors)
+    throw new Error(`Shopify GraphQL errors: ${JSON.stringify(json.errors)}`)
+  }
+
   const { data } = json
 
   if (data.cartLinesAdd.userErrors.length > 0) {
@@ -580,7 +604,19 @@ export async function updateCartLines(
     cache: "no-store",
   })
 
+  if (!response.ok) {
+    const errorText = await response.text()
+    console.error("[v0] Shopify updateCartLines HTTP error:", response.status, errorText)
+    throw new Error(`Shopify API error (${response.status}): ${errorText}`)
+  }
+
   const json = await response.json()
+
+  if (json.errors) {
+    console.error("[v0] Shopify updateCartLines GraphQL errors:", json.errors)
+    throw new Error(`Shopify GraphQL errors: ${JSON.stringify(json.errors)}`)
+  }
+
   const { data } = json
 
   if (data.cartLinesUpdate.userErrors.length > 0) {
@@ -668,7 +704,19 @@ export async function removeCartLines(cartId: string, lineIds: string[]): Promis
     cache: "no-store",
   })
 
+  if (!response.ok) {
+    const errorText = await response.text()
+    console.error("[v0] Shopify removeCartLines HTTP error:", response.status, errorText)
+    throw new Error(`Shopify API error (${response.status}): ${errorText}`)
+  }
+
   const json = await response.json()
+
+  if (json.errors) {
+    console.error("[v0] Shopify removeCartLines GraphQL errors:", json.errors)
+    throw new Error(`Shopify GraphQL errors: ${JSON.stringify(json.errors)}`)
+  }
+
   const { data } = json
 
   if (data.cartLinesRemove.userErrors.length > 0) {
@@ -750,7 +798,19 @@ export async function getCart(cartId: string): Promise<ShopifyCart | null> {
     cache: "no-store",
   })
 
+  if (!response.ok) {
+    const errorText = await response.text()
+    console.error("[v0] Shopify getCart HTTP error:", response.status, errorText)
+    throw new Error(`Shopify API error (${response.status}): ${errorText}`)
+  }
+
   const json = await response.json()
+
+  if (json.errors) {
+    console.error("[v0] Shopify getCart GraphQL errors:", json.errors)
+    throw new Error(`Shopify GraphQL errors: ${JSON.stringify(json.errors)}`)
+  }
+
   const { data } = json
 
   return data.cart
