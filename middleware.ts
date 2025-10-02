@@ -41,32 +41,11 @@ function rewriteToProducts(req: NextRequest, type: "Flagpole" | "Flag" | "Access
 }
 
 export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl
-
-  // Parent category -> just type filter (no tag)
-  if (/^\/flagpoles\/?$/.test(pathname)) return rewriteToProducts(req, "Flagpole")
-  if (/^\/flags\/?$/.test(pathname)) return rewriteToProducts(req, "Flag")
-  if (/^\/accessories\/?$/.test(pathname)) return rewriteToProducts(req, "Accessory")
-
-  // /flagpoles/<slug>  (also supports /flagpoles/a/b as AND)
-  let m = pathname.match(/^\/flagpoles\/([^/]+)(?:\/([^/]+))?$/i)
-  if (m) {
-    const slugs = [m[1], m[2]].filter(Boolean) as string[]
-    const tag = slugs.map((s) => TAGS[s] ?? s).join(",") // comma = AND
-    return rewriteToProducts(req, "Flagpole", tag)
-  }
-
-  // /flags/<slug>
-  m = pathname.match(/^\/flags\/([^/]+)$/i)
-  if (m) return rewriteToProducts(req, "Flag", TAGS[m[1]] ?? m[1])
-
-  // /accessories/<slug>
-  m = pathname.match(/^\/accessories\/([^/]+)$/i)
-  if (m) return rewriteToProducts(req, "Accessory", TAGS[m[1]] ?? m[1])
-
+  // Middleware disabled - let Next.js handle routing naturally
+  // Collections will be handled by app/collections/[handle]/page.tsx
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ["/flagpoles/:path*", "/flags/:path*", "/accessories/:path*"],
+  matcher: [],
 }

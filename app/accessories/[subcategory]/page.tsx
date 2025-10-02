@@ -13,6 +13,10 @@ const subcategoryMap: Record<string, string> = {
   "flagpole-toppers": "flagpole-toppers",
   weathervanes: "weathervanes",
   all: "accessories",
+  mount: "flagpole-mounts", // Map mount to flagpole-mounts
+  mounts: "flagpole-mounts", // Map mounts to flagpole-mounts
+  lighting: "flagpole-lighting", // Map lighting to flagpole-lighting
+  toppers: "flagpole-toppers", // Map toppers to flagpole-toppers
 }
 
 export default async function AccessoriesSubcategoryPage({ params }: AccessoriesSubcategoryPageProps) {
