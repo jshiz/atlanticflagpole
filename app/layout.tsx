@@ -4,6 +4,7 @@ import { Inter, JetBrains_Mono, Cinzel } from "next/font/google"
 import "./globals.css"
 import { Suspense } from "react"
 import { Header } from "@/components/header"
+import { HeaderSkeleton } from "@/components/header-skeleton"
 import { Footer } from "@/components/footer"
 import { LiveChatButton } from "@/components/live-chat-button"
 import { CartProvider } from "@/components/cart/cart-context"
@@ -41,7 +42,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`font-sans ${inter.variable} ${jetbrainsMono.variable} ${cinzel.variable}`}>
         <CartProvider>
-          <Header />
+          <Suspense fallback={<HeaderSkeleton />}>
+            <Header />
+          </Suspense>
           <Suspense fallback={null}>{children}</Suspense>
           <Footer />
           <LiveChatButton />

@@ -56,9 +56,8 @@ export function ProductFilters({ currentSort }: ProductFiltersProps) {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="relevance">Most Relevant</SelectItem>
-            <SelectItem value="best">Best Selling</SelectItem>
-            <SelectItem value="newest">Newest First</SelectItem>
-            <SelectItem value="title">Alphabetical: A-Z</SelectItem>
+            <SelectItem value="title-asc">Name: A-Z</SelectItem>
+            <SelectItem value="title-desc">Name: Z-A</SelectItem>
             <SelectItem value="price-asc">Price: Low to High</SelectItem>
             <SelectItem value="price-desc">Price: High to Low</SelectItem>
           </SelectContent>

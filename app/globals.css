@@ -242,6 +242,37 @@
     animation: wiggle 2s ease-in-out infinite;
   }
 
+  /* Adding wave animation for flag loading screen */
+  @keyframes wave {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  .animate-wave {
+    animation: wave 2s ease-in-out infinite;
+  }
+
+  @keyframes perspective-wave {
+    0% {
+      d: path("M 0 0 Q 80 -5 160 0 T 320 0");
+    }
+    50% {
+      d: path("M 0 0 Q 80 5 160 0 T 320 0");
+    }
+    100% {
+      d: path("M 0 0 Q 80 -5 160 0 T 320 0");
+    }
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
   /* Adding patriotic-themed custom scrollbar styles */
   /* Custom Scrollbar - Patriotic Theme */
   ::-webkit-scrollbar {

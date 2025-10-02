@@ -206,3 +206,108 @@ export async function searchProducts(searchParams: {
 
   return data.products
 }
+
+export async function getAllProducts(searchParams: {
+  q?: string
+  type?: string
+  vendor?: string
+  tag?: string
+  available?: string
+  min?: string
+  max?: string
+  sort?: string
+}) {
+  const queryString = buildProductQuery({
+    tag: searchParams.tag,
+    type: searchParams.type,
+    vendor: searchParams.vendor,
+    q: searchParams.q,
+    available: searchParams.available,
+    min: searchParams.min,
+    max: searchParams.max,
+  })
+
+  // Map sort parameter to Shopify sort keys
+  let sortKey = "RELEVANCE"
+  let reverse = false
+
+  if (searchParams.sort === "price-asc") {
+    sortKey = "PRICE"
+    reverse = false
+  } else if (searchParams.sort === "price-desc") {
+    sortKey = "PRICE"
+    reverse = true
+  } else if (searchParams.sort === "title-asc") {
+    sortKey = "TITLE"
+    reverse = false
+  } else if (searchParams.sort === "title-desc") {
+    sortKey = "TITLE"
+    reverse = true
+  }
+
+  const query = /* GraphQL */ `
+    query SearchProducts($query: String!, $first: Int!, $after: String, $sortKey: ProductSortKeys!, $reverse: Boolean!) {
+      products(first: $first, after: $after, query: $query, sortKey: $sortKey, reverse: $reverse) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          id
+          handle
+          title
+          vendor
+          productType
+          tags
+          availableForSale
+          featuredImage {
+            url(transform: { maxWidth: 800, maxHeight: 800 })
+            altText
+            width
+            height
+          }
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+            maxVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+        }
+      }
+    }
+  `
+
+  let cursor: string | null = null
+  const allProducts: any[] = []
+
+  // Loop through all pages to fetch ALL products
+  do {
+    const data = await shopifyFetch<{ products: any }>(
+      query,
+      {
+        query: queryString,
+        first: 250, // Fetch 250 per page for efficiency
+        after: cursor,
+        sortKey,
+        reverse,
+      },
+      { cache: "no-store" },
+    )
+
+    const { nodes, pageInfo } = data.products
+    allProducts.push(...nodes)
+    cursor = pageInfo.hasNextPage ? pageInfo.endCursor : null
+
+    console.log(
+      `[v0] Fetched ${nodes.length} products, total so far: ${allProducts.length}, hasNextPage: ${pageInfo.hasNextPage}`,
+    )
+  } while (cursor)
+
+  console.log(`[v0] ✅ Finished fetching all products. Total: ${allProducts.length}`)
+
+  return allProducts
+}

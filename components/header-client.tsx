@@ -53,6 +53,11 @@ export function HeaderClient({ menuData, megaMenuData = {} }: HeaderClientProps)
     return pathMatch ? pathMatch[1] : null
   }
 
+  const isResourceMenu = (item: any) => {
+    const title = item.title.toLowerCase()
+    return title.includes("resource") || title.includes("about") || title.includes("company")
+  }
+
   return (
     <>
       <header className="sticky top-0 z-50 bg-gradient-to-b from-white via-white to-white/95 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
@@ -158,11 +163,10 @@ export function HeaderClient({ menuData, megaMenuData = {} }: HeaderClientProps)
                 className="hidden lg:flex items-center gap-2 relative bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] hover:from-[#a88947] hover:to-[#C8A55C] px-5 py-2.5 rounded-lg text-white font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-[#C8A55C]/40 hover:-translate-y-0.5 group overflow-hidden"
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] opacity-75 blur-xl animate-pulse" />
-                <span className="relative z-10 flex items-center gap-2">
+                <span className="relative z-10 flex items-center justify-center gap-2">
                   <Sparkles className="w-4 h-4 animate-pulse" />
-                  <span className="text-sm">Flagpole Finder</span>
+                  Flagpole Finder
                 </span>
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
               </Link>
 
               <button
@@ -227,6 +231,47 @@ export function HeaderClient({ menuData, megaMenuData = {} }: HeaderClientProps)
                       if (activeDropdown !== item.id) return null
 
                       const itemData = megaMenuData[item.id]
+                      const isResource = isResourceMenu(item)
+
+                      if (isResource || !itemData) {
+                        return (
+                          <div key={item.id} className="max-w-4xl mx-auto">
+                            <h3 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-6 pb-3 border-b-2 border-[#C8A55C]">
+                              {item.title}
+                            </h3>
+                            <div className="grid grid-cols-3 gap-6">
+                              {item.items?.map((subItem) => (
+                                <Link
+                                  key={subItem.id}
+                                  href={subItem.url}
+                                  className="group p-6 bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all duration-300"
+                                  onClick={(e) => {
+                                    console.log("[v0] Resources link clicked:", subItem.title, "URL:", subItem.url)
+                                    setActiveDropdown(null)
+                                    console.log("[v0] Dropdown closed, navigation should proceed")
+                                  }}
+                                >
+                                  <h4 className="text-lg font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors mb-2">
+                                    {subItem.title}
+                                  </h4>
+                                  <p className="text-sm text-gray-600">
+                                    {subItem.title === "Blog" && "Read our latest articles and updates"}
+                                    {subItem.title === "Installation Guides" &&
+                                      "Step-by-step installation instructions"}
+                                    {subItem.title === "FAQ" && "Frequently asked questions and answers"}
+                                  </p>
+                                  <span className="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-[#C8A55C] group-hover:gap-2 transition-all">
+                                    Learn More
+                                    <span className="group-hover:translate-x-1 transition-transform duration-300">
+                                      →
+                                    </span>
+                                  </span>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      }
 
                       return (
                         <div key={item.id} className="grid grid-cols-12 gap-8 max-w-7xl mx-auto">

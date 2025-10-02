@@ -1,7 +1,7 @@
 import { ProductCard } from "@/components/products/product-card"
 import { ProductFilters } from "@/components/products/product-filters"
 import { ProductFiltersWrapper } from "@/components/products/product-filters-wrapper"
-import { searchProducts } from "@/lib/shopify/catalog"
+import { getAllProducts } from "@/lib/shopify/catalog"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 600
@@ -27,8 +27,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   let hasError = false
 
   try {
-    const result = await searchProducts(searchParams)
-    products = result.nodes
+    products = await getAllProducts(searchParams)
     console.log("[v0] Successfully fetched", products.length, "products")
   } catch (error) {
     console.error("[v0] Error searching products:", error)

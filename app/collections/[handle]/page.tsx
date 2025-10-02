@@ -4,8 +4,7 @@ import { CollectionFiltersWrapper } from "@/components/collections/collection-fi
 import { AdvancedFiltersWrapper } from "@/components/collections/advanced-filters-wrapper"
 import { COLLECTION_WITH_FILTERS } from "@/lib/shopify/queries"
 import { toNodes } from "@/lib/connection"
-
-export const dynamic = "force-dynamic"
+import { navigationConfig, singleNavItems } from "@/lib/navigation-config"
 
 const SHOPIFY_STORE_DOMAIN = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || "v0-template.myshopify.com"
 const SHOPIFY_STOREFRONT_TOKEN = process.env.SHOPIFY_STOREFRONT_TOKEN || ""
@@ -71,6 +70,30 @@ function buildFilters(searchParams: Record<string, string | string[] | undefined
   return filters
 }
 
+// Helper function to get tags for a collection handle
+function getTagsForCollection(handle: string): string[] {
+  // Search in main navigation
+  for (const menu of navigationConfig) {
+    for (const category of menu.categories) {
+      for (const item of category.items) {
+        if (item.collection === handle && item.tags) {
+          return item.tags
+        }
+      }
+    }
+  }
+
+  // Search in single nav items
+  for (const item of singleNavItems) {
+    if (item.collection === handle && item.tags) {
+      return item.tags
+    }
+  }
+
+  // Fallback to handle itself
+  return [handle.replace(/-/g, " ")]
+}
+
 interface CollectionPageProps {
   params: {
     handle: string
@@ -113,14 +136,29 @@ export default async function CollectionPage({ params, searchParams }: Collectio
     console.log(`[v0] Collection "${params.handle}" not found, falling back to tag search`)
     isFallback = true
 
-    try {
-      const data = await shopifyFetch<{ products: any }>(PRODUCTS_BY_TAG_QUERY, {
-        query: `tag:${params.handle}`,
-        first: 250,
-        sortKey: sortKey as any,
-      })
+    const tagsToTry = getTagsForCollection(params.handle)
+    console.log(`[v0] Trying tags for "${params.handle}":`, tagsToTry)
 
-      products = toNodes(data.products)
+    try {
+      // Try each tag until we find products
+      for (const tag of tagsToTry) {
+        const data = await shopifyFetch<{ products: any }>(PRODUCTS_BY_TAG_QUERY, {
+          query: `tag:${tag}`,
+          first: 250,
+          sortKey: sortKey as any,
+        })
+
+        const tagProducts = toNodes(data.products)
+
+        if (tagProducts.length > 0) {
+          products.push(...tagProducts)
+          console.log(`[v0] ✅ Found ${tagProducts.length} products with tag "${tag}"`)
+        }
+      }
+
+      // Remove duplicates based on product ID
+      const uniqueProducts = Array.from(new Map(products.map((p) => [p.id, p])).values())
+      products = uniqueProducts
 
       // Create a synthetic collection object
       if (products.length > 0) {
@@ -129,10 +167,11 @@ export default async function CollectionPage({ params, searchParams }: Collectio
             .split("-")
             .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
             .join(" "),
-          description: `Products tagged with "${params.handle}"`,
-          descriptionHtml: `<p>Products tagged with "${params.handle}"</p>`,
+          description: `Showing ${products.length} products related to ${params.handle.replace(/-/g, " ")}`,
+          descriptionHtml: `<p>Showing ${products.length} products related to ${params.handle.replace(/-/g, " ")}</p>`,
           products: { nodes: products },
         }
+        console.log(`[v0] ✅ Created synthetic collection with ${products.length} products`)
       }
     } catch (error) {
       console.error("[v0] Error fetching products by tag:", error)

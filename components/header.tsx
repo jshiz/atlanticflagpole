@@ -1,5 +1,5 @@
 import { getMenu } from "@/lib/menus"
-import { getCollectionWithProducts } from "@/lib/shopify/catalog"
+import { getCollectionWithProducts, searchProducts } from "@/lib/shopify/catalog"
 import { HeaderClient } from "@/components/header-client"
 
 export async function Header() {
@@ -11,49 +11,86 @@ export async function Header() {
     for (const item of menuData.items) {
       const title = item.title.toLowerCase()
 
-      let collectionHandles: string[] = []
+      let collectionConfig: Array<{ handle: string; tags: string[] }> = []
 
       if (title.includes("flagpole") && !title.includes("kit")) {
-        // Flagpoles menu - show telescoping and aluminum flagpoles
-        collectionHandles = ["telescoping-flagpoles", "aluminum-flagpoles"]
+        collectionConfig = [
+          { handle: "telescoping-flagpoles", tags: ["telescoping", "telescoping flagpole"] },
+          { handle: "aluminum-flagpoles", tags: ["aluminum", "aluminum flagpole", "Aluminum Flagpoles"] },
+        ]
       } else if (title.includes("kit") || title.includes("bundle")) {
-        // Flagpole Kits & Bundles
-        collectionHandles = ["flagpole-kits", "presidential-package"]
+        collectionConfig = [
+          { handle: "flagpole-kits", tags: ["kit", "bundle", "flagpole kit"] },
+          { handle: "presidential-package", tags: ["presidential", "premium", "deluxe"] },
+        ]
       } else if (title.includes("flag") && !title.includes("flagpole")) {
-        // Flags menu - show american flags and state flags
-        collectionHandles = ["american-flags", "state-flags"]
+        collectionConfig = [
+          { handle: "american-flags", tags: ["american flag", "usa flag", "us flag"] },
+          { handle: "state-flags", tags: ["state flag", "state"] },
+        ]
       } else if (title.includes("accessor")) {
-        // Accessories menu - show specific accessory categories
-        collectionHandles = ["flagpole-lighting", "flagpole-mounts", "flagpole-toppers"]
+        collectionConfig = [
+          { handle: "flagpole-lighting", tags: ["light", "lighting", "solar light", "led light"] },
+          { handle: "flagpole-mounts", tags: ["mount", "bracket", "wall mount"] },
+          { handle: "flagpole-toppers", tags: ["topper", "finial", "eagle", "ball"] },
+        ]
       } else if (title.includes("holiday") || title.includes("seasonal")) {
-        // Holiday & Seasonal
-        collectionHandles = ["holiday-seasonal"]
+        collectionConfig = [
+          {
+            handle: "holiday-seasonal",
+            tags: [
+              "holiday",
+              "seasonal",
+              "christmas",
+              "halloween",
+              "thanksgiving",
+              "easter",
+              "4th of july",
+              "memorial day",
+              "veterans day",
+              "patriotic",
+            ],
+          },
+        ]
       }
 
-      if (collectionHandles.length > 0) {
+      if (collectionConfig.length > 0) {
         const allProducts: any[] = []
 
-        for (const handle of collectionHandles) {
+        for (const config of collectionConfig) {
           try {
-            const collection = await getCollectionWithProducts(handle, 2) // Get 2 products per collection
-            if (collection?.products?.nodes) {
+            const collection = await getCollectionWithProducts(config.handle, 2)
+            if (collection?.products?.nodes && collection.products.nodes.length > 0) {
               allProducts.push(...collection.products.nodes)
               console.log(
-                `[v0] ✅ Found ${collection.products.nodes.length} products from "${handle}" for "${item.title}"`,
+                `[v0] ✅ Found ${collection.products.nodes.length} products from collection "${config.handle}" for "${item.title}"`,
               )
+            } else {
+              console.log(`[v0] 🔄 Collection "${config.handle}" not found, trying tag-based search...`)
+
+              for (const tag of config.tags) {
+                const tagResults = await searchProducts({ tag, first: 2 })
+                if (tagResults?.nodes && tagResults.nodes.length > 0) {
+                  allProducts.push(...tagResults.nodes)
+                  console.log(`[v0] ✅ Found ${tagResults.nodes.length} products with tag "${tag}" for "${item.title}"`)
+                  break // Found products with this tag, no need to try other tags
+                }
+              }
             }
           } catch (error) {
-            console.error(`[v0] ❌ Error fetching collection "${handle}":`, error)
+            console.error(`[v0] ❌ Error fetching products for "${config.handle}":`, error)
           }
         }
 
         if (allProducts.length > 0) {
+          const uniqueProducts = Array.from(new Map(allProducts.map((p) => [p.id, p])).values())
+
           megaMenuData[item.id] = {
             products: {
-              nodes: allProducts.slice(0, 4), // Limit to 4 total products
+              nodes: uniqueProducts.slice(0, 4), // Limit to 4 total products
             },
           }
-          console.log(`[v0] ✅ Total ${allProducts.length} products for "${item.title}" megamenu`)
+          console.log(`[v0] ✅ Total ${uniqueProducts.length} unique products for "${item.title}" megamenu`)
         } else {
           console.log(`[v0] ⚠️ No products found for "${item.title}"`)
         }
