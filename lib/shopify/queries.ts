@@ -250,3 +250,22 @@ export const PRODUCTS_SEARCH_QUERY = /* GraphQL */ `
     }
   }
 `
+
+export const PRODUCT_REVIEWS_QUERY = /* GraphQL */ `
+  query ProductReviews($handle: String!) {
+    product(handle: $handle) {
+      id
+      title
+      metafields(identifiers: [
+        { namespace: "judgeme", key: "reviews" }
+        { namespace: "judgeme", key: "rating" }
+        { namespace: "judgeme", key: "review_count" }
+      ]) {
+        namespace
+        key
+        value
+        type
+      }
+    }
+  }
+`

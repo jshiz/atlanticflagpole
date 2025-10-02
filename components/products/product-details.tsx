@@ -17,14 +17,21 @@ import { CustomerReviews } from "./customer-reviews"
 import type { ShopifyProduct } from "@/lib/shopify"
 import { toNodes } from "@/lib/connection"
 import { Check, Shield, Truck, Award } from "lucide-react"
+import type { ReviewsData } from "@/lib/shopify/reviews"
 
 interface ProductDetailsProps {
   product: ShopifyProduct
   relatedProducts?: ShopifyProduct[]
   bundleProducts?: ShopifyProduct[]
+  reviewsData: ReviewsData
 }
 
-export function ProductDetails({ product, relatedProducts = [], bundleProducts = [] }: ProductDetailsProps) {
+export function ProductDetails({
+  product,
+  relatedProducts = [],
+  bundleProducts = [],
+  reviewsData,
+}: ProductDetailsProps) {
   const images = toNodes(product.images)
   const [selectedImage, setSelectedImage] = useState(images[0])
 
@@ -215,7 +222,8 @@ export function ProductDetails({ product, relatedProducts = [], bundleProducts =
       )}
       {/* </CHANGE> */}
 
-      <CustomerReviews />
+      <CustomerReviews reviewsData={reviewsData} />
+
       {/* </CHANGE> */}
 
       {relatedProducts.length > 0 && <RelatedProducts products={relatedProducts} />}

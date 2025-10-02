@@ -1,5 +1,5 @@
 import { getMenu } from "@/lib/menus"
-import { searchProducts } from "@/lib/shopify/catalog"
+import { getCollectionWithProducts } from "@/lib/shopify/catalog"
 import { HeaderClient } from "@/components/header-client"
 
 export async function Header() {
@@ -11,48 +11,51 @@ export async function Header() {
     for (const item of menuData.items) {
       const title = item.title.toLowerCase()
 
-      // Map menu items to product searches
-      let searchQuery = ""
+      let collectionHandles: string[] = []
 
-      if (title.includes("flagpole") && title.includes("kit")) {
-        // Flagpole Kits & Bundles - search for bundle products
-        searchQuery = "product_type:Bundle OR tag:kit OR tag:bundle"
-      } else if (title.includes("flagpole")) {
-        // Flagpoles - search for flagpole products
-        searchQuery = "product_type:Flagpole"
-      } else if (title.includes("flag")) {
-        // Flags - search for flag products
-        searchQuery = "product_type:Flag"
+      if (title.includes("flagpole") && !title.includes("kit")) {
+        // Flagpoles menu - show telescoping and aluminum flagpoles
+        collectionHandles = ["telescoping-flagpoles", "aluminum-flagpoles"]
+      } else if (title.includes("kit") || title.includes("bundle")) {
+        // Flagpole Kits & Bundles
+        collectionHandles = ["flagpole-kits", "presidential-package"]
+      } else if (title.includes("flag") && !title.includes("flagpole")) {
+        // Flags menu - show american flags and state flags
+        collectionHandles = ["american-flags", "state-flags"]
       } else if (title.includes("accessor")) {
-        // Accessories - search for accessory products
-        searchQuery = "product_type:Accessory OR product_type:Accessories"
+        // Accessories menu - show specific accessory categories
+        collectionHandles = ["flagpole-lighting", "flagpole-mounts", "flagpole-toppers"]
       } else if (title.includes("holiday") || title.includes("seasonal")) {
-        // Holiday & Seasonal - search for seasonal products
-        searchQuery = "tag:holiday OR tag:seasonal OR tag:christmas OR tag:halloween"
-      } else if (title.includes("resource")) {
-        // Resources - search for guides or informational products
-        searchQuery = "tag:guide OR tag:resource OR product_type:Guide"
+        // Holiday & Seasonal
+        collectionHandles = ["holiday-seasonal"]
       }
 
-      if (searchQuery) {
-        try {
-          const products = await searchProducts({
-            q: searchQuery,
-            first: 4, // Limit to 4 products as requested
-          })
+      if (collectionHandles.length > 0) {
+        const allProducts: any[] = []
 
-          if (products?.nodes && products.nodes.length > 0) {
-            megaMenuData[item.id] = {
-              products: {
-                nodes: products.nodes,
-              },
+        for (const handle of collectionHandles) {
+          try {
+            const collection = await getCollectionWithProducts(handle, 2) // Get 2 products per collection
+            if (collection?.products?.nodes) {
+              allProducts.push(...collection.products.nodes)
+              console.log(
+                `[v0] ✅ Found ${collection.products.nodes.length} products from "${handle}" for "${item.title}"`,
+              )
             }
-            console.log(`[v0] ✅ Found ${products.nodes.length} products for "${item.title}"`)
-          } else {
-            console.log(`[v0] ⚠️ No products found for "${item.title}" with query: ${searchQuery}`)
+          } catch (error) {
+            console.error(`[v0] ❌ Error fetching collection "${handle}":`, error)
           }
-        } catch (error) {
-          console.error(`[v0] ❌ Error searching products for "${item.title}":`, error)
+        }
+
+        if (allProducts.length > 0) {
+          megaMenuData[item.id] = {
+            products: {
+              nodes: allProducts.slice(0, 4), // Limit to 4 total products
+            },
+          }
+          console.log(`[v0] ✅ Total ${allProducts.length} products for "${item.title}" megamenu`)
+        } else {
+          console.log(`[v0] ⚠️ No products found for "${item.title}"`)
         }
       }
     }

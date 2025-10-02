@@ -859,3 +859,5 @@ export async function sf<T = any>(query: string, variables?: Record<string, any>
   })
   return data
 }
+
+export { shopifyFetch }
