@@ -96,13 +96,24 @@ export async function getCollectionWithProducts(handle: string, first = 6) {
     }
   `
 
-  const data = await shopifyFetch<{ collection: any }>(
-    query,
-    { handle, first },
-    { next: { revalidate: 3600, tags: [`collection:${handle}`] } },
-  )
+  try {
+    const data = await shopifyFetch<{ collection: any }>(
+      query,
+      { handle, first },
+      { next: { revalidate: 3600, tags: [`collection:${handle}`] } },
+    )
 
-  return data.collection
+    // Return null if collection doesn't exist instead of throwing error
+    if (!data || !data.collection) {
+      console.log(`[v0] Collection "${handle}" not found in Shopify`)
+      return null
+    }
+
+    return data.collection
+  } catch (error) {
+    console.error(`[v0] Error fetching collection "${handle}":`, error)
+    return null
+  }
 }
 
 export async function searchProducts(searchParams: {

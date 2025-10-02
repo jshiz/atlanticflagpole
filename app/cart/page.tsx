@@ -12,6 +12,9 @@ import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react"
 export default function CartPage() {
   const { cart, loading, updateCartLine, removeFromCart } = useCart()
 
+  console.log("[v0] Cart page - cart:", cart)
+  console.log("[v0] Cart page - checkoutUrl:", cart?.checkoutUrl)
+
   if (loading && !cart) {
     return (
       <div className="min-h-screen bg-[#F5F3EF] flex items-center justify-center">
@@ -42,6 +45,15 @@ export default function CartPage() {
         </div>
       </main>
     )
+  }
+
+  const handleCheckout = () => {
+    console.log("[v0] Checkout button clicked, redirecting to:", cart?.checkoutUrl)
+    if (cart?.checkoutUrl) {
+      window.location.href = cart.checkoutUrl
+    } else {
+      console.error("[v0] No checkout URL available")
+    }
   }
 
   return (
@@ -139,7 +151,7 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between text-[#0B1C2C]/70">
                   <span>Shipping</span>
-                  <span className="text-green-600 font-semibold">FREE</span>
+                  <span className="text-sm text-[#0B1C2C]/60">Calculated at checkout</span>
                 </div>
               </div>
 
@@ -150,15 +162,32 @@ export default function CartPage() {
                 <span>${total.toFixed(2)}</span>
               </div>
 
-              {cart?.checkoutUrl && (
-                <Button asChild className="w-full bg-[#C8A55C] hover:bg-[#a88947] text-white font-semibold py-6">
-                  <a href={cart.checkoutUrl}>Proceed to Checkout</a>
+              {cart?.checkoutUrl ? (
+                <Button
+                  onClick={handleCheckout}
+                  className="w-full bg-[#C8A55C] hover:bg-[#a88947] text-white font-semibold py-6"
+                >
+                  Proceed to Checkout
+                </Button>
+              ) : (
+                <Button disabled className="w-full py-6">
+                  Loading checkout...
                 </Button>
               )}
 
               <Button asChild variant="outline" className="w-full mt-3 bg-transparent">
                 <Link href="/products">Continue Shopping</Link>
               </Button>
+
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <p className="text-xs text-center text-[#0B1C2C]/60 mb-3">Secure Checkout Powered by Shopify</p>
+                <div className="flex items-center justify-center gap-4 text-[#0B1C2C]/40">
+                  <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm-1-9h2v2h-2v-2zm0 4h2v2h-2v-2z" />
+                  </svg>
+                  <span className="text-xs font-medium">SSL Encrypted</span>
+                </div>
+              </div>
             </Card>
           </div>
         </div>

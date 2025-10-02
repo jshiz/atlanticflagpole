@@ -18,7 +18,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const discountPercentage = hasDiscount ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100) : 0
 
   const images = product.images?.nodes || []
-  const featuredImage = images[0]
+  const featuredImage = images[0] || product.featuredImage
+  // </CHANGE>
 
   return (
     <Link href={`/products/${product.handle}`} className="cursor-pointer">

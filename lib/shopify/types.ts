@@ -73,6 +73,9 @@ export type ShopifyCollection = {
 export type ShopifyCartLine = {
   id: string
   quantity: number
+  cost: {
+    totalAmount: Money
+  }
   merchandise: ProductVariant & {
     product: {
       title: string

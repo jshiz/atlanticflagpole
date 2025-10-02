@@ -353,6 +353,12 @@ export async function createCart(): Promise<ShopifyCart> {
               node {
                 id
                 quantity
+                cost {
+                  totalAmount {
+                    amount
+                    currencyCode
+                  }
+                }
                 merchandise {
                   ... on ProductVariant {
                     id
@@ -363,6 +369,7 @@ export async function createCart(): Promise<ShopifyCart> {
                     }
                     product {
                       title
+                      handle
                       images(first: 1) {
                         edges {
                           node {
@@ -383,6 +390,10 @@ export async function createCart(): Promise<ShopifyCart> {
               amount
               currencyCode
             }
+            subtotalAmount {
+              amount
+              currencyCode
+            }
           }
           checkoutUrl
         }
@@ -394,30 +405,14 @@ export async function createCart(): Promise<ShopifyCart> {
     }
   `
 
-  const response = await fetch(SHOPIFY_STOREFRONT_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
-    },
-    body: JSON.stringify({ query }),
-    cache: "no-store",
+  const { data } = await shopifyFetch<{
+    cartCreate: {
+      cart: ShopifyCart
+      userErrors: Array<{ field: string; message: string }>
+    }
+  }>({
+    query,
   })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    console.error("[v0] Shopify createCart HTTP error:", response.status, errorText)
-    throw new Error(`Shopify API error (${response.status}): ${errorText}`)
-  }
-
-  const json = await response.json()
-
-  if (json.errors) {
-    console.error("[v0] Shopify createCart GraphQL errors:", json.errors)
-    throw new Error(`Shopify GraphQL errors: ${JSON.stringify(json.errors)}`)
-  }
-
-  const { data } = json
 
   if (data.cartCreate.userErrors.length > 0) {
     throw new Error(data.cartCreate.userErrors[0].message)
@@ -440,6 +435,12 @@ export async function addCartLines(
               node {
                 id
                 quantity
+                cost {
+                  totalAmount {
+                    amount
+                    currencyCode
+                  }
+                }
                 merchandise {
                   ... on ProductVariant {
                     id
@@ -450,6 +451,7 @@ export async function addCartLines(
                     }
                     product {
                       title
+                      handle
                       images(first: 1) {
                         edges {
                           node {
@@ -470,6 +472,10 @@ export async function addCartLines(
               amount
               currencyCode
             }
+            subtotalAmount {
+              amount
+              currencyCode
+            }
           }
           checkoutUrl
         }
@@ -481,33 +487,15 @@ export async function addCartLines(
     }
   `
 
-  const response = await fetch(SHOPIFY_STOREFRONT_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
-    },
-    body: JSON.stringify({
-      query,
-      variables: { cartId, lines },
-    }),
-    cache: "no-store",
+  const { data } = await shopifyFetch<{
+    cartLinesAdd: {
+      cart: ShopifyCart
+      userErrors: Array<{ field: string; message: string }>
+    }
+  }>({
+    query,
+    variables: { cartId, lines },
   })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    console.error("[v0] Shopify addCartLines HTTP error:", response.status, errorText)
-    throw new Error(`Shopify API error (${response.status}): ${errorText}`)
-  }
-
-  const json = await response.json()
-
-  if (json.errors) {
-    console.error("[v0] Shopify addCartLines GraphQL errors:", json.errors)
-    throw new Error(`Shopify GraphQL errors: ${JSON.stringify(json.errors)}`)
-  }
-
-  const { data } = json
 
   if (data.cartLinesAdd.userErrors.length > 0) {
     throw new Error(data.cartLinesAdd.userErrors[0].message)
@@ -530,6 +518,12 @@ export async function updateCartLines(
               node {
                 id
                 quantity
+                cost {
+                  totalAmount {
+                    amount
+                    currencyCode
+                  }
+                }
                 merchandise {
                   ... on ProductVariant {
                     id
@@ -584,33 +578,15 @@ export async function updateCartLines(
     }
   `
 
-  const response = await fetch(SHOPIFY_STOREFRONT_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
-    },
-    body: JSON.stringify({
-      query,
-      variables: { cartId, lines },
-    }),
-    cache: "no-store",
+  const { data } = await shopifyFetch<{
+    cartLinesUpdate: {
+      cart: ShopifyCart
+      userErrors: Array<{ field: string; message: string }>
+    }
+  }>({
+    query,
+    variables: { cartId, lines },
   })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    console.error("[v0] Shopify updateCartLines HTTP error:", response.status, errorText)
-    throw new Error(`Shopify API error (${response.status}): ${errorText}`)
-  }
-
-  const json = await response.json()
-
-  if (json.errors) {
-    console.error("[v0] Shopify updateCartLines GraphQL errors:", json.errors)
-    throw new Error(`Shopify GraphQL errors: ${JSON.stringify(json.errors)}`)
-  }
-
-  const { data } = json
 
   if (data.cartLinesUpdate.userErrors.length > 0) {
     throw new Error(data.cartLinesUpdate.userErrors[0].message)
@@ -630,6 +606,12 @@ export async function removeCartLines(cartId: string, lineIds: string[]): Promis
               node {
                 id
                 quantity
+                cost {
+                  totalAmount {
+                    amount
+                    currencyCode
+                  }
+                }
                 merchandise {
                   ... on ProductVariant {
                     id
@@ -684,33 +666,15 @@ export async function removeCartLines(cartId: string, lineIds: string[]): Promis
     }
   `
 
-  const response = await fetch(SHOPIFY_STOREFRONT_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
-    },
-    body: JSON.stringify({
-      query,
-      variables: { cartId, lineIds },
-    }),
-    cache: "no-store",
+  const { data } = await shopifyFetch<{
+    cartLinesRemove: {
+      cart: ShopifyCart
+      userErrors: Array<{ field: string; message: string }>
+    }
+  }>({
+    query,
+    variables: { cartId, lineIds },
   })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    console.error("[v0] Shopify removeCartLines HTTP error:", response.status, errorText)
-    throw new Error(`Shopify API error (${response.status}): ${errorText}`)
-  }
-
-  const json = await response.json()
-
-  if (json.errors) {
-    console.error("[v0] Shopify removeCartLines GraphQL errors:", json.errors)
-    throw new Error(`Shopify GraphQL errors: ${JSON.stringify(json.errors)}`)
-  }
-
-  const { data } = json
 
   if (data.cartLinesRemove.userErrors.length > 0) {
     throw new Error(data.cartLinesRemove.userErrors[0].message)
@@ -729,6 +693,12 @@ export async function getCart(cartId: string): Promise<ShopifyCart | null> {
             node {
               id
               quantity
+              cost {
+                totalAmount {
+                  amount
+                  currencyCode
+                }
+              }
               merchandise {
                 ... on ProductVariant {
                   id
@@ -778,33 +748,12 @@ export async function getCart(cartId: string): Promise<ShopifyCart | null> {
     }
   `
 
-  const response = await fetch(SHOPIFY_STOREFRONT_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
-    },
-    body: JSON.stringify({
-      query,
-      variables: { cartId },
-    }),
-    cache: "no-store",
+  const { data } = await shopifyFetch<{
+    cart: ShopifyCart | null
+  }>({
+    query,
+    variables: { cartId },
   })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    console.error("[v0] Shopify getCart HTTP error:", response.status, errorText)
-    throw new Error(`Shopify API error (${response.status}): ${errorText}`)
-  }
-
-  const json = await response.json()
-
-  if (json.errors) {
-    console.error("[v0] Shopify getCart GraphQL errors:", json.errors)
-    throw new Error(`Shopify GraphQL errors: ${JSON.stringify(json.errors)}`)
-  }
-
-  const { data } = json
 
   return data.cart
 }
