@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import { ShoppingCart, MenuIcon, X, ChevronDown, Facebook, Instagram, Youtube } from "lucide-react"
+import { ShoppingCart, MenuIcon, X, ChevronDown, Facebook, Instagram, Youtube, Sparkles } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
 import { useCart } from "@/components/cart/cart-context"
@@ -153,11 +153,23 @@ export function HeaderClient({ menuData, megaMenuData = {} }: HeaderClientProps)
                 </Link>
               </div>
 
+              <Link
+                href="/flagpole-finder"
+                className="hidden lg:flex items-center gap-2 relative bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] hover:from-[#a88947] hover:to-[#C8A55C] px-5 py-2.5 rounded-lg text-white font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-[#C8A55C]/40 hover:-translate-y-0.5 group overflow-hidden"
+              >
+                <span className="absolute inset-0 bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] opacity-75 blur-xl animate-pulse" />
+                <span className="relative z-10 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 animate-pulse" />
+                  <span className="text-sm">Flagpole Finder</span>
+                </span>
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+              </Link>
+
               <button
                 onClick={() => setQuizModalOpen(true)}
-                className="hidden lg:flex items-center gap-2 bg-gradient-to-r from-[#C8A55C] to-[#a88947] hover:from-[#d4b56f] hover:to-[#C8A55C] px-6 py-2.5 rounded-lg text-white font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-[#C8A55C]/30 hover:-translate-y-0.5"
+                className="hidden lg:flex items-center gap-2 bg-[#0B1C2C] hover:bg-[#0B1C2C]/90 px-5 py-2.5 rounded-lg text-white font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
               >
-                <span className="text-sm">Find Your Flagpole</span>
+                <span className="text-sm">Flagpole Quiz</span>
               </button>
 
               <Link href="/cart" className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors group">
@@ -339,14 +351,25 @@ export function HeaderClient({ menuData, megaMenuData = {} }: HeaderClientProps)
                     )}
                   </div>
                 ))}
+                <Link
+                  href="/flagpole-finder"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="relative bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] px-4 py-3 rounded-lg text-white font-semibold transition-all duration-300 shadow-lg overflow-hidden group"
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] opacity-75 blur-xl animate-pulse" />
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    <Sparkles className="w-4 h-4" />
+                    Flagpole Finder
+                  </span>
+                </Link>
                 <button
                   onClick={() => {
                     setQuizModalOpen(true)
                     setMobileMenuOpen(false)
                   }}
-                  className="text-left bg-gradient-to-r from-[#C8A55C] to-[#a88947] px-4 py-3 rounded-lg text-white font-semibold transition-all duration-300 hover:shadow-lg"
+                  className="text-left bg-[#0B1C2C] hover:bg-[#0B1C2C]/90 px-4 py-3 rounded-lg text-white font-semibold transition-all duration-300 hover:shadow-lg"
                 >
-                  Find Your Flagpole
+                  Flagpole Quiz
                 </button>
               </nav>
             </div>

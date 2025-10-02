@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Facebook, Instagram, Youtube } from "lucide-react"
+import { Facebook, Instagram, Youtube, Sparkles } from "lucide-react"
 
 const PinterestIcon = () => (
   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -30,6 +30,24 @@ export function Footer() {
             <p className="text-sm leading-relaxed">
               Premium American-made flagpoles with a lifetime guarantee. The last flagpole you will ever need.
             </p>
+            <div className="flex flex-col gap-3 pt-4">
+              <Link
+                href="/flagpole-finder"
+                className="relative bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] hover:from-[#a88947] hover:to-[#C8A55C] px-4 py-2.5 rounded-md text-white font-semibold transition-all text-sm shadow-lg hover:shadow-xl group overflow-hidden text-center"
+              >
+                <span className="absolute inset-0 bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] opacity-50 blur-xl animate-pulse" />
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  Flagpole Finder
+                </span>
+              </Link>
+              <Link
+                href="/?quiz=open"
+                className="bg-[#0B1C2C] hover:bg-[#0B1C2C]/90 px-4 py-2.5 rounded-md text-white font-semibold transition-colors text-sm text-center"
+              >
+                Flagpole Quiz
+              </Link>
+            </div>
           </div>
 
           {/* Quick Links */}

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { ShoppingCart, Menu, X, ChevronDown, User } from "lucide-react"
+import { ShoppingCart, Menu, X, ChevronDown, User, Sparkles } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
 import { useCart } from "@/components/cart/cart-context"
@@ -165,11 +165,25 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
                   )
                 })}
 
+                <Link
+                  href="/flagpole-finder"
+                  className="relative bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] hover:from-[#a88947] hover:to-[#C8A55C] px-6 py-2.5 rounded-md text-white font-semibold transition-all text-sm shadow-lg hover:shadow-xl group overflow-hidden"
+                >
+                  <span className="relative z-10 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4" />
+                    Flagpole Finder
+                  </span>
+                  {/* Glowing effect */}
+                  <span className="absolute inset-0 bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300" />
+                  {/* Animated shine */}
+                  <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+                </Link>
+
                 <button
                   onClick={() => setQuizModalOpen(true)}
-                  className="bg-[#C8A55C] hover:bg-[#a88947] px-6 py-2.5 rounded-md text-white font-semibold transition-colors text-sm"
+                  className="bg-[#0B1C2C] hover:bg-[#0B1C2C]/90 px-6 py-2.5 rounded-md text-white font-semibold transition-colors text-sm"
                 >
-                  Take Quiz
+                  Flagpole Quiz
                 </button>
               </nav>
 
@@ -222,14 +236,27 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
                       )}
                     </div>
                   ))}
+
+                  <Link
+                    href="/flagpole-finder"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="relative bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] px-4 py-3 rounded-md text-white font-semibold transition-all mt-4 shadow-lg flex items-center justify-center gap-2 overflow-hidden group"
+                  >
+                    <span className="relative z-10 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4" />
+                      Find Your Perfect Flagpole
+                    </span>
+                    <span className="absolute inset-0 bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] opacity-0 group-active:opacity-100 blur-xl transition-opacity duration-300" />
+                  </Link>
+
                   <button
                     onClick={() => {
                       setQuizModalOpen(true)
                       setMobileMenuOpen(false)
                     }}
-                    className="text-left bg-[#C8A55C] hover:bg-[#a88947] px-4 py-3 rounded-md text-white font-semibold transition-colors mt-4"
+                    className="text-left bg-[#0B1C2C] hover:bg-[#0B1C2C]/90 px-4 py-3 rounded-md text-white font-semibold transition-colors"
                   >
-                    Take Flagpole Quiz
+                    Flagpole Quiz
                   </button>
                 </nav>
               </div>
