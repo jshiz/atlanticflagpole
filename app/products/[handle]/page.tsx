@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation"
-import { getProduct } from "@/lib/shopify"
+import { getProduct, getProducts } from "@/lib/shopify"
 import { ProductDetails } from "@/components/products/product-details"
 import ProductSeo from "@/components/product-seo"
 import type { Metadata } from "next"
@@ -45,10 +45,24 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound()
   }
 
+  const allProducts = await getProducts({ first: 20 })
+  const relatedProducts = allProducts
+    .filter(
+      (p) =>
+        p.id !== product.id &&
+        (p.productType === product.productType || p.tags?.some((tag) => product.tags?.includes(tag))),
+    )
+    .slice(0, 4)
+
+  // Get potential bundle products (similar or complementary items)
+  const bundleProducts = allProducts.filter((p) => p.id !== product.id).slice(0, 2)
+  // </CHANGE>
+
   return (
     <main className="min-h-screen bg-[#F5F3EF]">
       <ProductSeo product={product} />
-      <ProductDetails product={product} />
+      <ProductDetails product={product} relatedProducts={relatedProducts} bundleProducts={bundleProducts} />
+      {/* </CHANGE> */}
     </main>
   )
 }

@@ -4,52 +4,11 @@ import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
 import Link from "next/link"
 import { Clock, TrendingUp } from "lucide-react"
+import { getProducts } from "@/lib/shopify"
 
-interface Deal {
-  id: string
-  title: string
-  description: string
-  originalPrice: number
-  salePrice: number
-  image: string
-  badge: string
-  link: string
-}
+export async function QuickDeals() {
+  const products = await getProducts({ first: 5, sortKey: "BEST_SELLING" })
 
-const deals: Deal[] = [
-  {
-    id: "1",
-    title: "Presidential Package",
-    description: "25ft Flagpole + 4x6 Flag + Solar Light + Eagle Topper",
-    originalPrice: 699,
-    salePrice: 399,
-    image: "/presidential-flagpole-package.jpg",
-    badge: "43% OFF",
-    link: "/products/presidential-package",
-  },
-  {
-    id: "2",
-    title: "Patriot Bundle",
-    description: "20ft Flagpole + 3x5 Flag + LED Light",
-    originalPrice: 499,
-    salePrice: 299,
-    image: "/patriot-flagpole-bundle.jpg",
-    badge: "40% OFF",
-    link: "/products/patriot-bundle",
-  },
-  {
-    id: "3",
-    title: "Starter Kit",
-    description: "20ft Flagpole + 3x5 American Flag",
-    originalPrice: 399,
-    salePrice: 249,
-    image: "/starter-flagpole-kit.jpg",
-    badge: "38% OFF",
-    link: "/products/starter-kit",
-  },
-]
-
-export function QuickDeals() {
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
@@ -67,39 +26,57 @@ export function QuickDeals() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {deals.map((deal) => {
-            const savings = deal.originalPrice - deal.salePrice
-            const savingsPercent = Math.round((savings / deal.originalPrice) * 100)
+        <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+          {products.map((product) => {
+            const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
+            const compareAtPrice = product.compareAtPriceRange?.minVariantPrice?.amount
+              ? Number.parseFloat(product.compareAtPriceRange.minVariantPrice.amount)
+              : null
+            const hasDiscount = compareAtPrice && compareAtPrice > price
+            const savingsPercent = hasDiscount ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100) : 0
+            const image = product.images.nodes[0]
 
             return (
-              <Card key={deal.id} className="group overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              <Card
+                key={product.id}
+                className="group flex-shrink-0 w-[280px] md:w-[calc(20%-1.2rem)] overflow-hidden hover:shadow-xl transition-shadow duration-300 snap-start"
+              >
                 <div className="relative aspect-square overflow-hidden bg-gray-100">
-                  <Image
-                    src={deal.image || "/placeholder.svg"}
-                    alt={deal.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <Badge className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-lg px-3 py-1">
-                    {deal.badge}
-                  </Badge>
+                  {image && (
+                    <Image
+                      src={image.url || "/placeholder.svg"}
+                      alt={image.altText || product.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  )}
+                  {hasDiscount && (
+                    <Badge className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-lg px-3 py-1">
+                      {savingsPercent}% OFF
+                    </Badge>
+                  )}
                 </div>
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-serif font-bold text-[#0B1C2C] mb-2">{deal.title}</h3>
-                  <p className="text-sm text-[#0B1C2C]/70 mb-4">{deal.description}</p>
+                  <h3 className="text-xl font-serif font-bold text-[#0B1C2C] mb-2 line-clamp-2">{product.title}</h3>
+                  <p className="text-sm text-[#0B1C2C]/70 mb-4 line-clamp-2">{product.description}</p>
 
                   <div className="flex items-center gap-3 mb-4">
-                    <span className="text-2xl font-bold text-[#C8A55C]">${deal.salePrice}</span>
-                    <span className="text-lg text-gray-500 line-through">${deal.originalPrice}</span>
+                    <span className="text-2xl font-bold text-[#C8A55C]">${price.toFixed(2)}</span>
+                    {hasDiscount && compareAtPrice && (
+                      <span className="text-lg text-gray-500 line-through">${compareAtPrice.toFixed(2)}</span>
+                    )}
                   </div>
 
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
-                    <p className="text-sm text-green-800 font-semibold">Save ${savings} Today!</p>
-                  </div>
+                  {hasDiscount && compareAtPrice && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                      <p className="text-sm text-green-800 font-semibold">
+                        Save ${(compareAtPrice - price).toFixed(2)} Today!
+                      </p>
+                    </div>
+                  )}
 
                   <Button asChild className="w-full bg-[#C8A55C] hover:bg-[#a88947] text-white font-semibold">
-                    <Link href={deal.link}>View Deal</Link>
+                    <Link href={`/products/${product.handle}`}>View Deal</Link>
                   </Button>
                 </CardContent>
               </Card>

@@ -138,8 +138,7 @@ export function HeaderClient({ menuData, megaMenuData = {} }: HeaderClientProps)
                     {menuItems.map((item) => {
                       if (activeDropdown !== item.id) return null
 
-                      const collectionHandle = getCollectionHandle(item.url)
-                      const collectionData = collectionHandle ? megaMenuData[collectionHandle] : null
+                      const itemData = megaMenuData[item.id]
 
                       return (
                         <div key={item.id} className="grid grid-cols-12 gap-8 max-w-7xl mx-auto">
@@ -179,9 +178,9 @@ export function HeaderClient({ menuData, megaMenuData = {} }: HeaderClientProps)
                             <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">
                               Featured Products
                             </h4>
-                            {collectionData?.products?.nodes && collectionData.products.nodes.length > 0 ? (
+                            {itemData?.products?.nodes && itemData.products.nodes.length > 0 ? (
                               <div className="grid grid-cols-4 gap-6">
-                                {collectionData.products.nodes.slice(0, 8).map((product: any) => (
+                                {itemData.products.nodes.slice(0, 4).map((product: any) => (
                                   <Link key={product.id} href={`/products/${product.handle}`} className="group">
                                     <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden mb-3 shadow-sm group-hover:shadow-xl transition-all duration-300">
                                       {product.featuredImage ? (

@@ -5,7 +5,6 @@ import type React from "react"
 import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Gift, Percent, Tag, Star, Trophy, Sparkles } from "lucide-react"
-import confetti from "canvas-confetti"
 
 interface Prize {
   id: number
@@ -73,6 +72,75 @@ interface SpinWheelProps {
   onClose: () => void
 }
 
+const triggerConfetti = () => {
+  const canvas = document.createElement("canvas")
+  canvas.style.position = "fixed"
+  canvas.style.top = "0"
+  canvas.style.left = "0"
+  canvas.style.width = "100%"
+  canvas.style.height = "100%"
+  canvas.style.pointerEvents = "none"
+  canvas.style.zIndex = "9999"
+  canvas.width = window.innerWidth
+  canvas.height = window.innerHeight
+  document.body.appendChild(canvas)
+
+  const ctx = canvas.getContext("2d")
+  if (!ctx) return
+
+  const particles: any[] = []
+  const colors = ["#c8a55c", "#0b1c2c", "#ffffff"]
+
+  // Create 100 particles
+  for (let i = 0; i < 100; i++) {
+    particles.push({
+      x: canvas.width / 2,
+      y: canvas.height * 0.6,
+      vx: (Math.random() - 0.5) * 20,
+      vy: Math.random() * -20,
+      rotation: Math.random() * 360,
+      rotationSpeed: (Math.random() - 0.5) * 10,
+      size: Math.random() * 8 + 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      life: 120,
+    })
+  }
+
+  let frame = 0
+  const animate = () => {
+    frame++
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    particles.forEach((particle, index) => {
+      particle.x += particle.vx
+      particle.y += particle.vy
+      particle.vy += 0.5
+      particle.rotation += particle.rotationSpeed
+      particle.life--
+
+      if (particle.life <= 0) {
+        particles.splice(index, 1)
+        return
+      }
+
+      ctx.save()
+      ctx.translate(particle.x, particle.y)
+      ctx.rotate((particle.rotation * Math.PI) / 180)
+      ctx.fillStyle = particle.color
+      ctx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size)
+      ctx.restore()
+    })
+
+    if (particles.length > 0 && frame < 120) {
+      requestAnimationFrame(animate)
+    } else {
+      document.body.removeChild(canvas)
+    }
+  }
+
+  animate()
+}
+
 export function SpinWheel({ score, totalQuestions, onClose }: SpinWheelProps) {
   const [spinning, setSpinning] = useState(false)
   const [rotation, setRotation] = useState(0)
@@ -102,17 +170,11 @@ export function SpinWheel({ score, totalQuestions, onClose }: SpinWheelProps) {
       setShowPrize(true)
       setSpinning(false)
 
-      // Trigger confetti if available
       if (typeof window !== "undefined") {
         try {
-          confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 },
-            colors: ["#c8a55c", "#0b1c2c", "#ffffff"],
-          })
+          triggerConfetti()
         } catch (error) {
-          console.log("Confetti not available")
+          console.log("Confetti animation failed")
         }
       }
     }, 4000)

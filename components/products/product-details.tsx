@@ -7,15 +7,24 @@ import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { AddToCartButton } from "@/components/cart/add-to-cart-button"
+import { ProductWatching } from "./product-watching"
+import { ShippingEstimate } from "./shipping-estimate"
+import { ProductReviewsSummary } from "./product-reviews-summary"
+import { TrustBadges } from "./trust-badges"
+import { FrequentlyBoughtTogether } from "./frequently-bought-together"
+import { RelatedProducts } from "./related-products"
+import { CustomerReviews } from "./customer-reviews"
 import type { ShopifyProduct } from "@/lib/shopify"
 import { toNodes } from "@/lib/connection"
 import { Check, Shield, Truck, Award } from "lucide-react"
 
 interface ProductDetailsProps {
   product: ShopifyProduct
+  relatedProducts?: ShopifyProduct[]
+  bundleProducts?: ShopifyProduct[]
 }
 
-export function ProductDetails({ product }: ProductDetailsProps) {
+export function ProductDetails({ product, relatedProducts = [], bundleProducts = [] }: ProductDetailsProps) {
   const images = toNodes(product.images)
   const [selectedImage, setSelectedImage] = useState(images[0])
 
@@ -30,9 +39,13 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const hasDiscount = compareAtPrice && compareAtPrice > price
   const discountPercentage = hasDiscount ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100) : 0
 
+  const scrollToReviews = () => {
+    document.getElementById("reviews")?.scrollIntoView({ behavior: "smooth" })
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12">
         {/* Image Gallery */}
         <div className="space-y-4">
           <div className="relative aspect-square overflow-hidden rounded-lg bg-white">
@@ -84,7 +97,15 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             <h1 className="text-3xl md:text-4xl font-serif font-bold text-[#0B1C2C] mb-4 text-balance">
               {product.title}
             </h1>
-            <div className="flex items-center gap-3 mb-4">
+
+            <div className="flex items-center gap-4 mb-4">
+              <ProductReviewsSummary onViewReviews={scrollToReviews} />
+            </div>
+
+            <ProductWatching />
+            {/* </CHANGE> */}
+
+            <div className="flex items-center gap-3 mt-4">
               <span className="text-4xl font-bold text-[#0B1C2C]">${price.toFixed(2)}</span>
               {hasDiscount && compareAtPrice && (
                 <>
@@ -104,6 +125,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           )}
 
           <Separator />
+
+          <ShippingEstimate />
+          {/* </CHANGE> */}
 
           {/* Variant Selection */}
           {variants.length > 1 && (
@@ -126,8 +150,27 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
           {/* Add to Cart */}
           {selectedVariant && (
-            <AddToCartButton variantId={selectedVariant.id} availableForSale={selectedVariant.availableForSale} />
+            <div className="space-y-3">
+              <AddToCartButton variantId={selectedVariant.id} availableForSale={selectedVariant.availableForSale} />
+
+              <Button
+                variant="outline"
+                className="w-full py-6 text-base font-semibold border-2 hover:bg-[#5A31F4] hover:text-white hover:border-[#5A31F4] bg-transparent"
+                size="lg"
+              >
+                <svg className="w-16 h-5 mr-2" viewBox="0 0 80 20" fill="currentColor">
+                  <path d="M13.937 5.194c-.897 0-1.72.448-2.318 1.194V5.418h-2.692v13.164h2.767v-4.478c.598.672 1.421 1.12 2.243 1.12 2.094 0 3.814-1.791 3.814-4.925 0-3.134-1.72-5.105-3.814-5.105zm-.598 7.687c-1.047 0-1.87-.896-1.87-2.537 0-1.642.823-2.538 1.87-2.538 1.047 0 1.87.896 1.87 2.538 0 1.641-.823 2.537-1.87 2.537z" />
+                  <path d="M23.117 5.194c-2.617 0-4.561 1.94-4.561 4.925 0 2.985 1.944 4.925 4.561 4.925 2.617 0 4.561-1.94 4.561-4.925 0-2.985-1.944-4.925-4.561-4.925zm0 7.687c-1.047 0-1.87-.896-1.87-2.537 0-1.642.823-2.538 1.87-2.538 1.047 0 1.87.896 1.87 2.538 0 1.641-.823 2.537-1.87 2.537z" />
+                  <path d="M35.154 5.194c-.897 0-1.72.448-2.318 1.194V5.418h-2.692v13.164h2.767v-4.478c.598.672 1.421 1.12 2.243 1.12 2.094 0 3.814-1.791 3.814-4.925 0-3.134-1.72-5.105-3.814-5.105zm-.598 7.687c-1.047 0-1.87-.896-1.87-2.537 0-1.642.823-2.538 1.87-2.538 1.047 0 1.87.896 1.87 2.538 0 1.641-.823 2.537-1.87 2.537z" />
+                </svg>
+                Pay
+              </Button>
+              {/* </CHANGE> */}
+            </div>
           )}
+
+          <TrustBadges />
+          {/* </CHANGE> */}
 
           {/* Features */}
           <Card className="p-6 bg-white">
@@ -164,6 +207,19 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           </Card>
         </div>
       </div>
+
+      {bundleProducts.length > 0 && (
+        <div className="mb-12">
+          <FrequentlyBoughtTogether mainProduct={product} bundleProducts={bundleProducts} />
+        </div>
+      )}
+      {/* </CHANGE> */}
+
+      <CustomerReviews />
+      {/* </CHANGE> */}
+
+      {relatedProducts.length > 0 && <RelatedProducts products={relatedProducts} />}
+      {/* </CHANGE> */}
     </div>
   )
 }
