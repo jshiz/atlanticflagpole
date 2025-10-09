@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ShoppingCart, MenuIcon, X, ChevronDown, Facebook, Instagram, Youtube, Sparkles } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
@@ -30,15 +30,41 @@ const XIcon = ({ className }: { className?: string }) => (
 
 interface HeaderClientProps {
   menuData: Menu | null
-  megaMenuData?: Record<string, any>
 }
 
-export function HeaderClient({ menuData, megaMenuData = {} }: HeaderClientProps) {
+export function HeaderClient({ menuData }: HeaderClientProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [quizModalOpen, setQuizModalOpen] = useState(false)
   const { cart } = useCart()
   const cartItemCount = cart?.lines?.edges ? cart.lines.edges.length : 0
+
+  const [megaMenuData, setMegaMenuData] = useState<Record<string, any>>({})
+  const [loadingMenuData, setLoadingMenuData] = useState(false)
+  const [hasFetchedData, setHasFetchedData] = useState(false)
+
+  useEffect(() => {
+    if (!menuData?.items || loadingMenuData || hasFetchedData) return
+
+    const fetchMegaMenuData = async () => {
+      setLoadingMenuData(true)
+
+      try {
+        const response = await fetch("/api/mega-menu-data")
+        if (response.ok) {
+          const data = await response.json()
+          setMegaMenuData(data)
+          setHasFetchedData(true)
+        }
+      } catch (error) {
+        console.error("[v0] Error loading mega menu data:", error)
+      } finally {
+        setLoadingMenuData(false)
+      }
+    }
+
+    fetchMegaMenuData()
+  }, [menuData, hasFetchedData, loadingMenuData])
 
   if (!menuData || !menuData.items || menuData.items.length === 0) {
     return null
@@ -226,43 +252,30 @@ export function HeaderClient({ menuData, megaMenuData = {} }: HeaderClientProps)
               {/* Mega Menu Dropdown */}
               {activeDropdown && (
                 <div className="absolute left-0 right-0 top-full bg-white border-t border-gray-200 shadow-2xl shadow-black/10">
-                  <div className="container mx-auto px-4 py-8">
+                  <div className="container mx-auto px-4 py-6">
                     {menuItems.map((item) => {
                       if (activeDropdown !== item.id) return null
 
-                      const itemData = megaMenuData[item.id]
+                      const itemData = megaMenuData[item.title]
                       const isResource = isResourceMenu(item)
 
-                      if (isResource || !itemData) {
+                      if (!itemData || !itemData.products?.nodes || itemData.products.nodes.length === 0) {
                         return (
-                          <div key={item.id} className="max-w-4xl mx-auto">
-                            <h3 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-6 pb-3 border-b-2 border-[#C8A55C]">
-                              {item.title}
-                            </h3>
-                            <div className="grid grid-cols-3 gap-6">
+                          <div key={item.id} className="max-w-5xl mx-auto">
+                            <div className="grid grid-cols-4 gap-4">
                               {item.items?.map((subItem) => (
                                 <Link
                                   key={subItem.id}
                                   href={subItem.url}
-                                  className="group p-6 bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all duration-300"
-                                  onClick={(e) => {
-                                    console.log("[v0] Resources link clicked:", subItem.title, "URL:", subItem.url)
-                                    setActiveDropdown(null)
-                                    console.log("[v0] Dropdown closed, navigation should proceed")
-                                  }}
+                                  className="group p-4 bg-gradient-to-br from-gray-50 to-white rounded-lg border border-gray-200 hover:border-[#C8A55C] hover:shadow-md transition-all duration-300"
+                                  onClick={() => setActiveDropdown(null)}
                                 >
-                                  <h4 className="text-lg font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors mb-2">
+                                  <h4 className="text-sm font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors">
                                     {subItem.title}
                                   </h4>
-                                  <p className="text-sm text-gray-600">
-                                    {subItem.title === "Blog" && "Read our latest articles and updates"}
-                                    {subItem.title === "Installation Guides" &&
-                                      "Step-by-step installation instructions"}
-                                    {subItem.title === "FAQ" && "Frequently asked questions and answers"}
-                                  </p>
-                                  <span className="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-[#C8A55C] group-hover:gap-2 transition-all">
-                                    Learn More
-                                    <span className="group-hover:translate-x-1 transition-transform duration-300">
+                                  <span className="inline-flex items-center gap-1 mt-2 text-xs font-medium text-[#C8A55C] group-hover:gap-1.5 transition-all">
+                                    View
+                                    <span className="group-hover:translate-x-0.5 transition-transform duration-300">
                                       →
                                     </span>
                                   </span>
@@ -274,86 +287,91 @@ export function HeaderClient({ menuData, megaMenuData = {} }: HeaderClientProps)
                       }
 
                       return (
-                        <div key={item.id} className="grid grid-cols-12 gap-8 max-w-7xl mx-auto">
-                          {/* Left Sidebar - Categories */}
-                          <div className="col-span-3 border-r border-gray-100 pr-8">
-                            <div className="sticky top-4">
-                              <h3 className="text-lg font-serif font-bold text-[#0B1C2C] mb-4 pb-3 border-b-2 border-[#C8A55C]">
-                                {item.title}
+                        <div key={item.id} className="max-w-6xl mx-auto">
+                          <div className="grid grid-cols-5 gap-6">
+                            {/* Left Sidebar - Compact Categories */}
+                            <div className="col-span-1 pr-4 border-r border-gray-100">
+                              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
+                                Categories
                               </h3>
-                              <ul className="space-y-3">
-                                {item.items?.map((subItem) => (
+                              <ul className="space-y-1.5">
+                                {item.items?.slice(0, 8).map((subItem) => (
                                   <li key={subItem.id}>
                                     <Link
                                       href={subItem.url}
-                                      className="group flex items-center gap-2 text-[#0B1C2C] hover:text-[#C8A55C] transition-all duration-300 text-sm py-1"
+                                      className="group flex items-center gap-1.5 text-[#0B1C2C] hover:text-[#C8A55C] transition-all duration-200 text-xs py-1"
+                                      onClick={() => setActiveDropdown(null)}
                                     >
                                       <span className="w-1 h-1 rounded-full bg-[#C8A55C] opacity-0 group-hover:opacity-100 transition-opacity" />
-                                      <span className="group-hover:translate-x-1 transition-transform duration-300">
+                                      <span className="group-hover:translate-x-0.5 transition-transform duration-200 line-clamp-1">
                                         {subItem.title}
                                       </span>
                                     </Link>
                                   </li>
                                 ))}
                               </ul>
-                              <Link
-                                href={item.url}
-                                className="inline-flex items-center gap-2 mt-6 text-[#C8A55C] hover:text-[#a88947] font-bold text-sm group transition-colors"
-                              >
-                                View All {item.title}
-                                <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
-                              </Link>
+                              {item.items && item.items.length > 8 && (
+                                <Link
+                                  href={item.url}
+                                  className="inline-flex items-center gap-1 mt-3 text-[#C8A55C] hover:text-[#a88947] font-semibold text-xs group transition-colors"
+                                  onClick={() => setActiveDropdown(null)}
+                                >
+                                  View All
+                                  <span className="group-hover:translate-x-0.5 transition-transform duration-200">
+                                    →
+                                  </span>
+                                </Link>
+                              )}
                             </div>
-                          </div>
 
-                          {/* Right Side - Featured Products */}
-                          <div className="col-span-9">
-                            <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">
-                              Featured Products
-                            </h4>
-                            {itemData?.products?.nodes && itemData.products.nodes.length > 0 ? (
-                              <div className="grid grid-cols-4 gap-6">
-                                {itemData.products.nodes.slice(0, 4).map((product: any) => (
-                                  <Link key={product.id} href={`/products/${product.handle}`} className="group">
-                                    <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden mb-3 shadow-sm group-hover:shadow-xl transition-all duration-300">
+                            {/* Right Side - Compact Product Grid */}
+                            <div className="col-span-4">
+                              <div className="flex items-center justify-between mb-4">
+                                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                  Featured Products
+                                </h4>
+                                <Link
+                                  href={item.url}
+                                  className="text-xs font-semibold text-[#C8A55C] hover:text-[#a88947] transition-colors"
+                                  onClick={() => setActiveDropdown(null)}
+                                >
+                                  View All →
+                                </Link>
+                              </div>
+                              <div className="grid grid-cols-4 gap-4">
+                                {itemData.products.nodes.slice(0, 8).map((product: any) => (
+                                  <Link
+                                    key={product.id}
+                                    href={`/products/${product.handle}`}
+                                    className="group"
+                                    onClick={() => setActiveDropdown(null)}
+                                  >
+                                    <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg overflow-hidden mb-2 shadow-sm group-hover:shadow-lg transition-all duration-300">
                                       {product.featuredImage ? (
                                         <Image
                                           src={product.featuredImage.url || "/placeholder.svg"}
                                           alt={product.featuredImage.altText || product.title}
-                                          width={300}
-                                          height={300}
-                                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                          width={200}
+                                          height={200}
+                                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                         />
                                       ) : (
                                         <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                          <span className="text-4xl">🏴</span>
+                                          <span className="text-3xl">🏴</span>
                                         </div>
                                       )}
-                                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                     </div>
-                                    <h5 className="text-sm font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-1.5">
+                                    <h5 className="text-xs font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-1 leading-tight">
                                       {product.title}
                                     </h5>
-                                    <p className="text-sm font-bold text-[#C8A55C]">
+                                    <p className="text-xs font-bold text-[#C8A55C]">
                                       ${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}
                                     </p>
                                   </Link>
                                 ))}
                               </div>
-                            ) : (
-                              <div className="grid grid-cols-4 gap-6">
-                                {item.items?.slice(0, 4).map((subItem) => (
-                                  <Link key={subItem.id} href={subItem.url} className="group">
-                                    <div className="aspect-square bg-gradient-to-br from-[#0B1C2C] to-[#112b44] rounded-xl overflow-hidden mb-3 flex items-center justify-center shadow-sm group-hover:shadow-xl transition-all duration-300">
-                                      <span className="text-5xl">🏴</span>
-                                    </div>
-                                    <h5 className="text-sm font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors">
-                                      {subItem.title}
-                                    </h5>
-                                  </Link>
-                                ))}
-                              </div>
-                            )}
+                            </div>
                           </div>
                         </div>
                       )
