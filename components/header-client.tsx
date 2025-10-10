@@ -2,25 +2,35 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import { ShoppingCart, MenuIcon, X, ChevronDown, Facebook, Instagram, Youtube, Sparkles } from "lucide-react"
+import { ShoppingCart, MenuIcon, X, Facebook, Instagram, Youtube, Sparkles } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
 import { useCart } from "@/components/cart/cart-context"
 import { SearchBarWrapper } from "@/components/search/search-bar-wrapper"
 import type { Menu } from "@/lib/menus"
 import { NFLMenuClient } from "@/components/header/nfl-menu-client"
-import { isNFLMenuItem } from "@/lib/nfl-teams"
+import { ChristmasTreeMegaMenu } from "@/components/header/christmas-tree-mega-menu"
+import { isNFLMenuItem, isChristmasTreeMenuItem } from "@/lib/nfl-teams"
 import type { ShopifyProduct } from "@/lib/shopify/types"
 
 interface HeaderClientProps {
   menuData: Menu | null
   megaMenuData?: Record<string, any>
+  submenuProductsData?: Record<string, any[]>
   nflFlagProducts: ShopifyProduct[]
+  christmasTreeProducts: ShopifyProduct[]
 }
 
-export function HeaderClient({ menuData, megaMenuData = {}, nflFlagProducts }: HeaderClientProps) {
+export function HeaderClient({
+  menuData,
+  megaMenuData = {},
+  submenuProductsData = {},
+  nflFlagProducts,
+  christmasTreeProducts,
+}: HeaderClientProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+  const [hoveredSubmenuId, setHoveredSubmenuId] = useState<string | null>(null)
   const [quizModalOpen, setQuizModalOpen] = useState(false)
   const { cart } = useCart()
   const cartItemCount = cart?.lines?.edges ? cart.lines.edges.length : 0
@@ -31,11 +41,9 @@ export function HeaderClient({ menuData, megaMenuData = {}, nflFlagProducts }: H
 
   const menuItems = menuData.items
 
-  const getCollectionHandle = (url: string) => {
-    const queryMatch = url.match(/[?&]collection=([^&]+)/)
-    if (queryMatch) return queryMatch[1]
-    const pathMatch = url.match(/^\/([^/?]+)/)
-    return pathMatch ? pathMatch[1] : null
+  const extractCollectionHandle = (url: string): string | null => {
+    const match = url.match(/\/collections\/([^/?]+)/)
+    return match ? match[1] : null
   }
 
   const isResourceMenu = (item: any) => {
@@ -46,7 +54,7 @@ export function HeaderClient({ menuData, megaMenuData = {}, nflFlagProducts }: H
   // Custom social media icons
   const PinterestIcon = ({ className }: { className?: string }) => (
     <svg className={className} fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z" />
+      <path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.84.051 9.941 0 9.999 0h3.517v6.114h4.801v3.633h-4.82v7.47c.016 1.001.375 2.371 2.207 2.371h.09c.631-.02 1.486-.205 1.936-.419l1.156 3.425c-.436.636-2.4 1.374-4.156 1.404h-.178l.011.002z" />
     </svg>
   )
 
@@ -197,6 +205,7 @@ export function HeaderClient({ menuData, megaMenuData = {}, nflFlagProducts }: H
               <nav className="flex items-center justify-center gap-8 py-4">
                 {menuItems.map((item) => {
                   const hasSubmenu = item.items && item.items.length > 0
+                  const isChristmas = isChristmasTreeMenuItem(item.title)
 
                   if (!hasSubmenu) {
                     return (
@@ -213,13 +222,23 @@ export function HeaderClient({ menuData, megaMenuData = {}, nflFlagProducts }: H
 
                   return (
                     <div key={item.id} className="relative" onMouseEnter={() => setActiveDropdown(item.id)}>
-                      <button className="flex items-center gap-1.5 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors duration-300 font-semibold text-sm tracking-wide group py-2">
-                        {item.title}
-                        <ChevronDown
-                          className={`w-4 h-4 transition-transform duration-300 ${
-                            activeDropdown === item.id ? "rotate-180" : ""
-                          }`}
-                        />
+                      <button className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors duration-300 font-semibold text-sm tracking-wide group py-2 relative">
+                        {isChristmas && (
+                          <span className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+                            {[...Array(8)].map((_, i) => (
+                              <span
+                                key={i}
+                                className="absolute w-1 h-1 bg-green-400/30 rounded-full animate-snow-title"
+                                style={{
+                                  left: `${10 + i * 12}%`,
+                                  animationDelay: `${i * 0.3}s`,
+                                  animationDuration: "3s",
+                                }}
+                              />
+                            ))}
+                          </span>
+                        )}
+                        <span className={isChristmas ? "text-green-700" : ""}>{item.title}</span>
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#C8A55C] to-[#a88947] group-hover:w-full transition-all duration-300" />
                       </button>
                     </div>
@@ -237,6 +256,24 @@ export function HeaderClient({ menuData, megaMenuData = {}, nflFlagProducts }: H
                       const itemData = megaMenuData[item.id]
                       const isResource = isResourceMenu(item)
                       const isNFL = isNFLMenuItem(item.title)
+                      const isChristmas = isChristmasTreeMenuItem(item.title)
+
+                      if (isChristmas) {
+                        return (
+                          <div key={item.id}>
+                            <h3 className="text-2xl font-serif font-bold text-green-800 mb-6 pb-3 border-b-2 border-green-600 text-center flex items-center justify-center gap-3">
+                              <span className="text-3xl">🎄</span>
+                              {item.title}
+                              <span className="text-3xl">🎄</span>
+                            </h3>
+                            <ChristmasTreeMegaMenu
+                              products={christmasTreeProducts}
+                              submenuProductsData={submenuProductsData}
+                              onLinkClick={() => setActiveDropdown(null)}
+                            />
+                          </div>
+                        )
+                      }
 
                       if (isNFL) {
                         return (
@@ -292,6 +329,11 @@ export function HeaderClient({ menuData, megaMenuData = {}, nflFlagProducts }: H
                         )
                       }
 
+                      const displayProducts =
+                        hoveredSubmenuId && submenuProductsData[hoveredSubmenuId]
+                          ? submenuProductsData[hoveredSubmenuId]
+                          : itemData?.products?.nodes || []
+
                       return (
                         <div key={item.id} className="grid grid-cols-12 gap-8 max-w-7xl mx-auto">
                           {/* Left Sidebar - Categories */}
@@ -305,6 +347,8 @@ export function HeaderClient({ menuData, megaMenuData = {}, nflFlagProducts }: H
                                   <li key={subItem.id}>
                                     <Link
                                       href={subItem.url}
+                                      onMouseEnter={() => setHoveredSubmenuId(subItem.id)}
+                                      onMouseLeave={() => setHoveredSubmenuId(null)}
                                       className="group flex items-center gap-2 text-[#0B1C2C] hover:text-[#C8A55C] transition-all duration-300 text-sm py-1"
                                     >
                                       <span className="w-1 h-1 rounded-full bg-[#C8A55C] opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -328,11 +372,13 @@ export function HeaderClient({ menuData, megaMenuData = {}, nflFlagProducts }: H
                           {/* Right Side - Featured Products */}
                           <div className="col-span-9">
                             <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">
-                              Featured Products
+                              {hoveredSubmenuId
+                                ? `${item.items?.find((si) => si.id === hoveredSubmenuId)?.title || "Featured"} Products`
+                                : "Featured Products"}
                             </h4>
-                            {itemData?.products?.nodes && itemData.products.nodes.length > 0 ? (
+                            {displayProducts && displayProducts.length > 0 ? (
                               <div className="grid grid-cols-4 gap-6">
-                                {itemData.products.nodes.slice(0, 4).map((product: any) => (
+                                {displayProducts.slice(0, 4).map((product: any) => (
                                   <Link key={product.id} href={`/products/${product.handle}`} className="group">
                                     <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden mb-3 shadow-sm group-hover:shadow-xl transition-all duration-300">
                                       {product.featuredImage ? (
@@ -392,6 +438,7 @@ export function HeaderClient({ menuData, megaMenuData = {}, nflFlagProducts }: H
               <nav className="flex flex-col gap-4">
                 {menuItems.map((item) => {
                   const isNFL = isNFLMenuItem(item.title)
+                  const isChristmas = isChristmasTreeMenuItem(item.title)
 
                   return (
                     <div key={item.id}>
@@ -400,8 +447,17 @@ export function HeaderClient({ menuData, megaMenuData = {}, nflFlagProducts }: H
                         className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-semibold block"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        {item.title}
+                        {isChristmas ? `🎄 ${item.title}` : item.title}
                       </Link>
+                      {isChristmas && item.items && item.items.length > 0 && (
+                        <div className="mt-3">
+                          <ChristmasTreeMegaMenu
+                            products={christmasTreeProducts}
+                            submenuProductsData={submenuProductsData}
+                            onLinkClick={() => setMobileMenuOpen(false)}
+                          />
+                        </div>
+                      )}
                       {isNFL && item.items && item.items.length > 0 && (
                         <div className="mt-3">
                           <NFLMenuClient
@@ -410,7 +466,7 @@ export function HeaderClient({ menuData, megaMenuData = {}, nflFlagProducts }: H
                           />
                         </div>
                       )}
-                      {!isNFL && item.items && item.items.length > 0 && (
+                      {!isNFL && !isChristmas && item.items && item.items.length > 0 && (
                         <div className="ml-4 mt-2 space-y-2">
                           {item.items.map((subItem) => {
                             return (
@@ -454,6 +510,25 @@ export function HeaderClient({ menuData, megaMenuData = {}, nflFlagProducts }: H
           )}
         </div>
       </header>
+
+      <style jsx global>{`
+        @keyframes snow-title {
+          0% {
+            transform: translateY(-10px);
+            opacity: 0;
+          }
+          50% {
+            opacity: 0.6;
+          }
+          100% {
+            transform: translateY(30px);
+            opacity: 0;
+          }
+        }
+        .animate-snow-title {
+          animation: snow-title linear infinite;
+        }
+      `}</style>
 
       <FlagpoleQuizModal open={quizModalOpen} onOpenChange={setQuizModalOpen} />
     </>

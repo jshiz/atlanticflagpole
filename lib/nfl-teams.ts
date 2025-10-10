@@ -11,7 +11,7 @@ export const NFL_TEAMS: NFLTeam[] = [
   // NFC East
   {
     name: "Dallas Cowboys",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Dallas%20Cowboys-AGptVSBUAIivgisyTTGn6Z9GEBPa3e.webp",
     conference: "NFC",
     division: "East",
   },
@@ -63,13 +63,13 @@ export const NFL_TEAMS: NFLTeam[] = [
   // NFC North
   {
     name: "Detroit Lions",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Detroit%20Lions-PVtKnCowQka5IqCMeTmaKREGPbLFs8.webp", // Added Detroit Lions logo
     conference: "NFC",
     division: "North",
   },
   {
     name: "Green Bay Packers",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Green%20Bay%20Packers-h105kjL6odIbR4v34IperwPijCZ355.webp", // Added Green Bay Packers logo
     conference: "NFC",
     division: "North",
   },
@@ -81,7 +81,7 @@ export const NFL_TEAMS: NFLTeam[] = [
   },
   {
     name: "Chicago Bears",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Chicago%20Bears-28WKJQhZxSTwTLCxEwfLp1KpMNWfhy.webp",
     conference: "NFC",
     division: "North",
   },
@@ -228,4 +228,9 @@ export function getNFLTeamByName(name: string): NFLTeam | null {
 export function isNFLMenuItem(title: string): boolean {
   const normalized = title.toLowerCase()
   return normalized.includes("nfl") || normalized.includes("football")
+}
+
+export function isChristmasTreeMenuItem(title: string): boolean {
+  const normalized = title.toLowerCase()
+  return normalized.includes("christmas") && normalized.includes("tree")
 }

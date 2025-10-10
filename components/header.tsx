@@ -3,15 +3,22 @@ import { getCollectionWithProducts, searchProducts } from "@/lib/shopify/catalog
 import { HeaderClient } from "@/components/header-client"
 import { getProducts } from "@/lib/shopify"
 
+function extractCollectionHandle(url: string): string | null {
+  // Try to extract from /collections/handle format
+  const match = url.match(/\/collections\/([^/?]+)/)
+  return match ? match[1] : null
+}
+
 export async function Header() {
   const menuData = await getMenu("ultimate-menu")
 
   const megaMenuData: Record<string, any> = {}
+  const submenuProductsData: Record<string, any[]> = {}
 
   let nflFlagProducts: any[] = []
   try {
     const products = await getProducts({
-      first: 4,
+      first: 12,
       query: "tag:nfl-flags",
     })
     nflFlagProducts = products || []
@@ -20,9 +27,68 @@ export async function Header() {
     console.error("[v0] ❌ Error fetching NFL flag products:", error)
   }
 
+  let christmasTreeProducts: any[] = []
+  try {
+    const products = await getProducts({
+      first: 8,
+      query: "tag:Christmas Tree",
+    })
+    christmasTreeProducts = products || []
+    console.log(`[v0] ✅ Found ${christmasTreeProducts.length} Christmas tree products`)
+  } catch (error) {
+    console.error("[v0] ❌ Error fetching Christmas tree products:", error)
+  }
+
+  const christmasCollections = [
+    "flagpole-christmas-trees",
+    "warm-white-flagpole-trees",
+    "multicolor-flagpole-trees",
+    "smart-magic-flagpole-trees",
+    "best-selling-christmas-trees",
+    "flagpole-tree-accessories",
+  ]
+
+  for (const collectionHandle of christmasCollections) {
+    try {
+      const collection = await getCollectionWithProducts(collectionHandle, 4)
+      if (collection?.products?.nodes && collection.products.nodes.length > 0) {
+        submenuProductsData[collectionHandle] = collection.products.nodes
+        console.log(
+          `[v0] ✅ Found ${collection.products.nodes.length} products for Christmas collection "${collectionHandle}"`,
+        )
+      }
+    } catch (error) {
+      console.error(`[v0] ❌ Error fetching Christmas collection "${collectionHandle}":`, error)
+    }
+  }
+
   if (menuData?.items) {
     for (const item of menuData.items) {
       const title = item.title.toLowerCase()
+
+      if (title.includes("christmas") && title.includes("tree")) {
+        console.log(`[v0] ⏭️ Skipping "${item.title}" - using dedicated Christmas tree mega menu`)
+        continue
+      }
+
+      if (item.items && item.items.length > 0) {
+        for (const subItem of item.items) {
+          const collectionHandle = extractCollectionHandle(subItem.url)
+          if (collectionHandle) {
+            try {
+              const collection = await getCollectionWithProducts(collectionHandle, 4)
+              if (collection?.products?.nodes && collection.products.nodes.length > 0) {
+                submenuProductsData[subItem.id] = collection.products.nodes
+                console.log(
+                  `[v0] ✅ Found ${collection.products.nodes.length} products for submenu "${subItem.title}" (${collectionHandle})`,
+                )
+              }
+            } catch (error) {
+              console.log(`[v0] ⚠️ Could not fetch products for submenu "${subItem.title}"`)
+            }
+          }
+        }
+      }
 
       let collectionConfig: Array<{ handle: string; tags: string[] }> = []
 
@@ -86,7 +152,7 @@ export async function Header() {
                 if (tagResults?.nodes && tagResults.nodes.length > 0) {
                   allProducts.push(...tagResults.nodes)
                   console.log(`[v0] ✅ Found ${tagResults.nodes.length} products with tag "${tag}" for "${item.title}"`)
-                  break // Found products with this tag, no need to try other tags
+                  break
                 }
               }
             }
@@ -111,5 +177,13 @@ export async function Header() {
     }
   }
 
-  return <HeaderClient menuData={menuData} megaMenuData={megaMenuData} nflFlagProducts={nflFlagProducts} />
+  return (
+    <HeaderClient
+      menuData={menuData}
+      megaMenuData={megaMenuData}
+      submenuProductsData={submenuProductsData}
+      nflFlagProducts={nflFlagProducts}
+      christmasTreeProducts={christmasTreeProducts}
+    />
+  )
 }
