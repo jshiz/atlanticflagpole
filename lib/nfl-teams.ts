@@ -11,7 +11,7 @@ export const NFL_TEAMS: NFLTeam[] = [
   // NFC East
   {
     name: "Dallas Cowboys",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Dallas%20Cowboys-AGptVSBUAIivgisyTTGn6Z9GEBPa3e.webp",
+    logo: "/images/nfl/dallas-cowboys.webp",
     conference: "NFC",
     division: "East",
   },
@@ -49,13 +49,13 @@ export const NFL_TEAMS: NFLTeam[] = [
   },
   {
     name: "Los Angeles Rams",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "/images/nfl/los-angeles-rams.webp",
     conference: "NFC",
     division: "West",
   },
   {
     name: "Arizona Cardinals",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Arizona%20Cardinals-UWxVs3fK8idXT6pxUVobpBAGWnPWjb.webp",
+    logo: "/images/nfl/arizona-cardinals.webp",
     conference: "NFC",
     division: "West",
   },
@@ -63,25 +63,25 @@ export const NFL_TEAMS: NFLTeam[] = [
   // NFC North
   {
     name: "Detroit Lions",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Detroit%20Lions-PVtKnCowQka5IqCMeTmaKREGPbLFs8.webp", // Added Detroit Lions logo
+    logo: "/images/nfl/detroit-lions.webp",
     conference: "NFC",
     division: "North",
   },
   {
     name: "Green Bay Packers",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Green%20Bay%20Packers-h105kjL6odIbR4v34IperwPijCZ355.webp", // Added Green Bay Packers logo
+    logo: "/images/nfl/green-bay-packers.webp",
     conference: "NFC",
     division: "North",
   },
   {
     name: "Minnesota Vikings",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "/images/nfl/minnesota-vikings.webp",
     conference: "NFC",
     division: "North",
   },
   {
     name: "Chicago Bears",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Chicago%20Bears-28WKJQhZxSTwTLCxEwfLp1KpMNWfhy.webp",
+    logo: "/images/nfl/chicago-bears.webp",
     conference: "NFC",
     division: "North",
   },
@@ -95,19 +95,19 @@ export const NFL_TEAMS: NFLTeam[] = [
   },
   {
     name: "Atlanta Falcons",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Atlanta-Falcons-VTadqz547s41wGDTTv5J69CGInRkLs.webp",
+    logo: "/images/nfl/atlanta-falcons.webp",
     conference: "NFC",
     division: "South",
   },
   {
     name: "Carolina Panthers",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Carolina%20Panthers-DD5yFgvrRJ2UewdZ6XvyNAqBq4Zky1.webp",
+    logo: "/images/nfl/carolina-panthers.webp",
     conference: "NFC",
     division: "South",
   },
   {
     name: "New Orleans Saints",
-    logo: "/placeholder.svg?height=80&width=80",
+    logo: "/images/nfl/new-orleans-saints.webp",
     conference: "NFC",
     division: "South",
   },
