@@ -1,70 +1,29 @@
 "use client"
 
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { ShoppingCart, MenuIcon, X, ChevronDown, Facebook, Instagram, Youtube, Sparkles } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
 import { useCart } from "@/components/cart/cart-context"
 import { SearchBarWrapper } from "@/components/search/search-bar-wrapper"
 import type { Menu } from "@/lib/menus"
-
-// Custom social media icons for Pinterest, Tumblr, and X
-const PinterestIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z" />
-  </svg>
-)
-
-const TumblrIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M14.563 24c-5.093 0-7.031-3.756-7.031-6.411V9.747H5.116V6.648c3.63-1.313 4.512-4.596 4.71-6.469C9.84.051 9.941 0 9.999 0h3.517v6.114h4.801v3.633h-4.82v7.47c.016 1.001.375 2.371 2.207 2.371h.09c.631-.02 1.486-.205 1.936-.419l1.156 3.425c-.436.636-2.4 1.374-4.156 1.404h-.178l.011.002z" />
-  </svg>
-)
-
-const XIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-  </svg>
-)
+import { NFLMenuClient } from "@/components/header/nfl-menu-client"
+import { isNFLMenuItem } from "@/lib/nfl-teams"
+import type { ShopifyProduct } from "@/lib/shopify/types"
 
 interface HeaderClientProps {
   menuData: Menu | null
+  megaMenuData?: Record<string, any>
+  nflFlagProducts: ShopifyProduct[]
 }
 
-export function HeaderClient({ menuData }: HeaderClientProps) {
+export function HeaderClient({ menuData, megaMenuData = {}, nflFlagProducts }: HeaderClientProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [quizModalOpen, setQuizModalOpen] = useState(false)
   const { cart } = useCart()
   const cartItemCount = cart?.lines?.edges ? cart.lines.edges.length : 0
-
-  const [megaMenuData, setMegaMenuData] = useState<Record<string, any>>({})
-  const [loadingMenuData, setLoadingMenuData] = useState(false)
-  const [hasFetchedData, setHasFetchedData] = useState(false)
-
-  useEffect(() => {
-    if (!menuData?.items || loadingMenuData || hasFetchedData) return
-
-    const fetchMegaMenuData = async () => {
-      setLoadingMenuData(true)
-
-      try {
-        const response = await fetch("/api/mega-menu-data")
-        if (response.ok) {
-          const data = await response.json()
-          setMegaMenuData(data)
-          setHasFetchedData(true)
-        }
-      } catch (error) {
-        console.error("[v0] Error loading mega menu data:", error)
-      } finally {
-        setLoadingMenuData(false)
-      }
-    }
-
-    fetchMegaMenuData()
-  }, [menuData, hasFetchedData, loadingMenuData])
 
   if (!menuData || !menuData.items || menuData.items.length === 0) {
     return null
@@ -83,6 +42,25 @@ export function HeaderClient({ menuData }: HeaderClientProps) {
     const title = item.title.toLowerCase()
     return title.includes("resource") || title.includes("about") || title.includes("company")
   }
+
+  // Custom social media icons
+  const PinterestIcon = ({ className }: { className?: string }) => (
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z" />
+    </svg>
+  )
+
+  const TumblrIcon = ({ className }: { className?: string }) => (
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14.563 24c-5.093 0-7.031-3.756-7.031-6.411V9.747H5.116V6.648c3.63-1.313 4.512-4.596 4.71-6.469C9.84.051 9.941 0 9.999 0h3.517v6.114h4.801v3.633h-4.82v7.47c.016 1.001.375 2.371 2.207 2.371h.09c.631-.02 1.486-.205 1.936-.419l1.156 3.425c-.436.636-2.4 1.374-4.156 1.404h-.178l.011.002z" />
+    </svg>
+  )
+
+  const XIcon = ({ className }: { className?: string }) => (
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  )
 
   return (
     <>
@@ -252,126 +230,149 @@ export function HeaderClient({ menuData }: HeaderClientProps) {
               {/* Mega Menu Dropdown */}
               {activeDropdown && (
                 <div className="absolute left-0 right-0 top-full bg-white border-t border-gray-200 shadow-2xl shadow-black/10">
-                  <div className="container mx-auto px-4 py-6">
+                  <div className="container mx-auto px-4 py-8">
                     {menuItems.map((item) => {
                       if (activeDropdown !== item.id) return null
 
-                      const itemData = megaMenuData[item.title]
+                      const itemData = megaMenuData[item.id]
                       const isResource = isResourceMenu(item)
+                      const isNFL = isNFLMenuItem(item.title)
 
-                      if (!itemData || !itemData.products?.nodes || itemData.products.nodes.length === 0) {
+                      if (isNFL) {
                         return (
-                          <div key={item.id} className="max-w-5xl mx-auto">
-                            <div className="grid grid-cols-4 gap-4">
-                              {item.items?.map((subItem) => (
-                                <Link
-                                  key={subItem.id}
-                                  href={subItem.url}
-                                  className="group p-4 bg-gradient-to-br from-gray-50 to-white rounded-lg border border-gray-200 hover:border-[#C8A55C] hover:shadow-md transition-all duration-300"
-                                  onClick={() => setActiveDropdown(null)}
-                                >
-                                  <h4 className="text-sm font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors">
-                                    {subItem.title}
-                                  </h4>
-                                  <span className="inline-flex items-center gap-1 mt-2 text-xs font-medium text-[#C8A55C] group-hover:gap-1.5 transition-all">
-                                    View
-                                    <span className="group-hover:translate-x-0.5 transition-transform duration-300">
-                                      →
+                          <div key={item.id}>
+                            <h3 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-6 pb-3 border-b-2 border-[#C8A55C] text-center">
+                              {item.title}
+                            </h3>
+                            <NFLMenuClient
+                              nflFlagProducts={nflFlagProducts}
+                              onLinkClick={() => setActiveDropdown(null)}
+                            />
+                          </div>
+                        )
+                      }
+
+                      if (isResource || !itemData) {
+                        return (
+                          <div key={item.id} className="max-w-4xl mx-auto">
+                            <h3 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-6 pb-3 border-b-2 border-[#C8A55C]">
+                              {item.title}
+                            </h3>
+                            <div className="grid grid-cols-3 gap-6">
+                              {item.items?.map((subItem) => {
+                                return (
+                                  <Link
+                                    key={subItem.id}
+                                    href={subItem.url}
+                                    className="group p-6 bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all duration-300"
+                                    onClick={() => {
+                                      setActiveDropdown(null)
+                                    }}
+                                  >
+                                    <h4 className="text-lg font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors mb-2">
+                                      {subItem.title}
+                                    </h4>
+                                    <p className="text-sm text-gray-600">
+                                      {subItem.title === "Blog" && "Read our latest articles and updates"}
+                                      {subItem.title === "Installation Guides" &&
+                                        "Step-by-step installation instructions"}
+                                      {subItem.title === "FAQ" && "Frequently asked questions and answers"}
+                                    </p>
+                                    <span className="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-[#C8A55C] group-hover:gap-2 transition-all">
+                                      Learn More
+                                      <span className="group-hover:translate-x-1 transition-transform duration-300">
+                                        →
+                                      </span>
                                     </span>
-                                  </span>
-                                </Link>
-                              ))}
+                                  </Link>
+                                )
+                              })}
                             </div>
                           </div>
                         )
                       }
 
                       return (
-                        <div key={item.id} className="max-w-6xl mx-auto">
-                          <div className="grid grid-cols-5 gap-6">
-                            {/* Left Sidebar - Compact Categories */}
-                            <div className="col-span-1 pr-4 border-r border-gray-100">
-                              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
-                                Categories
+                        <div key={item.id} className="grid grid-cols-12 gap-8 max-w-7xl mx-auto">
+                          {/* Left Sidebar - Categories */}
+                          <div className="col-span-3 border-r border-gray-100 pr-8">
+                            <div className="sticky top-4">
+                              <h3 className="text-lg font-serif font-bold text-[#0B1C2C] mb-4 pb-3 border-b-2 border-[#C8A55C]">
+                                {item.title}
                               </h3>
-                              <ul className="space-y-1.5">
-                                {item.items?.slice(0, 8).map((subItem) => (
+                              <ul className="space-y-3">
+                                {item.items?.map((subItem) => (
                                   <li key={subItem.id}>
                                     <Link
                                       href={subItem.url}
-                                      className="group flex items-center gap-1.5 text-[#0B1C2C] hover:text-[#C8A55C] transition-all duration-200 text-xs py-1"
-                                      onClick={() => setActiveDropdown(null)}
+                                      className="group flex items-center gap-2 text-[#0B1C2C] hover:text-[#C8A55C] transition-all duration-300 text-sm py-1"
                                     >
                                       <span className="w-1 h-1 rounded-full bg-[#C8A55C] opacity-0 group-hover:opacity-100 transition-opacity" />
-                                      <span className="group-hover:translate-x-0.5 transition-transform duration-200 line-clamp-1">
+                                      <span className="group-hover:translate-x-1 transition-transform duration-300">
                                         {subItem.title}
                                       </span>
                                     </Link>
                                   </li>
                                 ))}
                               </ul>
-                              {item.items && item.items.length > 8 && (
-                                <Link
-                                  href={item.url}
-                                  className="inline-flex items-center gap-1 mt-3 text-[#C8A55C] hover:text-[#a88947] font-semibold text-xs group transition-colors"
-                                  onClick={() => setActiveDropdown(null)}
-                                >
-                                  View All
-                                  <span className="group-hover:translate-x-0.5 transition-transform duration-200">
-                                    →
-                                  </span>
-                                </Link>
-                              )}
+                              <Link
+                                href={item.url}
+                                className="inline-flex items-center gap-2 mt-6 text-[#C8A55C] hover:text-[#a88947] font-bold text-sm group transition-colors"
+                              >
+                                View All {item.title}
+                                <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
+                              </Link>
                             </div>
+                          </div>
 
-                            {/* Right Side - Compact Product Grid */}
-                            <div className="col-span-4">
-                              <div className="flex items-center justify-between mb-4">
-                                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                  Featured Products
-                                </h4>
-                                <Link
-                                  href={item.url}
-                                  className="text-xs font-semibold text-[#C8A55C] hover:text-[#a88947] transition-colors"
-                                  onClick={() => setActiveDropdown(null)}
-                                >
-                                  View All →
-                                </Link>
-                              </div>
-                              <div className="grid grid-cols-4 gap-4">
-                                {itemData.products.nodes.slice(0, 8).map((product: any) => (
-                                  <Link
-                                    key={product.id}
-                                    href={`/products/${product.handle}`}
-                                    className="group"
-                                    onClick={() => setActiveDropdown(null)}
-                                  >
-                                    <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg overflow-hidden mb-2 shadow-sm group-hover:shadow-lg transition-all duration-300">
+                          {/* Right Side - Featured Products */}
+                          <div className="col-span-9">
+                            <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">
+                              Featured Products
+                            </h4>
+                            {itemData?.products?.nodes && itemData.products.nodes.length > 0 ? (
+                              <div className="grid grid-cols-4 gap-6">
+                                {itemData.products.nodes.slice(0, 4).map((product: any) => (
+                                  <Link key={product.id} href={`/products/${product.handle}`} className="group">
+                                    <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden mb-3 shadow-sm group-hover:shadow-xl transition-all duration-300">
                                       {product.featuredImage ? (
                                         <Image
                                           src={product.featuredImage.url || "/placeholder.svg"}
                                           alt={product.featuredImage.altText || product.title}
-                                          width={200}
-                                          height={200}
-                                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                          width={300}
+                                          height={300}
+                                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                         />
                                       ) : (
                                         <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                          <span className="text-3xl">🏴</span>
+                                          <span className="text-4xl">🏴</span>
                                         </div>
                                       )}
-                                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                     </div>
-                                    <h5 className="text-xs font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-1 leading-tight">
+                                    <h5 className="text-sm font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-1.5">
                                       {product.title}
                                     </h5>
-                                    <p className="text-xs font-bold text-[#C8A55C]">
+                                    <p className="text-sm font-bold text-[#C8A55C]">
                                       ${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}
                                     </p>
                                   </Link>
                                 ))}
                               </div>
-                            </div>
+                            ) : (
+                              <div className="grid grid-cols-4 gap-6">
+                                {item.items?.slice(0, 4).map((subItem) => (
+                                  <Link key={subItem.id} href={subItem.url} className="group">
+                                    <div className="aspect-square bg-gradient-to-br from-[#0B1C2C] to-[#112b44] rounded-xl overflow-hidden mb-3 flex items-center justify-center shadow-sm group-hover:shadow-xl transition-all duration-300">
+                                      <span className="text-5xl">🏴</span>
+                                    </div>
+                                    <h5 className="text-sm font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors">
+                                      {subItem.title}
+                                    </h5>
+                                  </Link>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         </div>
                       )
@@ -389,31 +390,45 @@ export function HeaderClient({ menuData }: HeaderClientProps) {
                 <SearchBarWrapper />
               </div>
               <nav className="flex flex-col gap-4">
-                {menuItems.map((item) => (
-                  <div key={item.id}>
-                    <Link
-                      href={item.url}
-                      className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-semibold block"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {item.title}
-                    </Link>
-                    {item.items && item.items.length > 0 && (
-                      <div className="ml-4 mt-2 space-y-2">
-                        {item.items.map((subItem) => (
-                          <Link
-                            key={subItem.id}
-                            href={subItem.url}
-                            className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors text-sm block"
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            {subItem.title}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                {menuItems.map((item) => {
+                  const isNFL = isNFLMenuItem(item.title)
+
+                  return (
+                    <div key={item.id}>
+                      <Link
+                        href={item.url}
+                        className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-semibold block"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        {item.title}
+                      </Link>
+                      {isNFL && item.items && item.items.length > 0 && (
+                        <div className="mt-3">
+                          <NFLMenuClient
+                            nflFlagProducts={nflFlagProducts}
+                            onLinkClick={() => setMobileMenuOpen(false)}
+                          />
+                        </div>
+                      )}
+                      {!isNFL && item.items && item.items.length > 0 && (
+                        <div className="ml-4 mt-2 space-y-2">
+                          {item.items.map((subItem) => {
+                            return (
+                              <Link
+                                key={subItem.id}
+                                href={subItem.url}
+                                className="flex items-center gap-2 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors text-sm"
+                                onClick={() => setMobileMenuOpen(false)}
+                              >
+                                {subItem.title}
+                              </Link>
+                            )
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
                 <Link
                   href="/flagpole-finder"
                   onClick={() => setMobileMenuOpen(false)}

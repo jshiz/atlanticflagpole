@@ -192,30 +192,19 @@ export async function searchProducts(searchParams: {
     }
   `
 
-  try {
-    const data = await shopifyFetch<{ products: any }>(
-      query,
-      {
-        query: queryString,
-        first: searchParams.first || 24,
-        after: searchParams.after || null,
-        sortKey,
-        reverse,
-      },
-      { cache: "no-store" },
-    )
+  const data = await shopifyFetch<{ products: any }>(
+    query,
+    {
+      query: queryString,
+      first: searchParams.first || 24,
+      after: searchParams.after || null,
+      sortKey,
+      reverse,
+    },
+    { cache: "no-store" },
+  )
 
-    // Return empty result if products is undefined
-    if (!data || !data.products) {
-      return { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } }
-    }
-
-    return data.products
-  } catch (error) {
-    console.error(`[v0] Error in searchProducts:`, error)
-    // Return empty result on error instead of throwing
-    return { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } }
-  }
+  return data.products
 }
 
 export async function getAllProducts(searchParams: {
