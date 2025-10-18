@@ -17,7 +17,7 @@ export async function JudgemeFooterWidget() {
             </div>
             <span className="text-xl font-bold text-white">{stats.averageRating.toFixed(1)}</span>
           </div>
-          <p className="text-white/80">Based on {stats.totalReviews.toLocaleString()} reviews</p>
+          <p className="text-white/80">Based on {(stats.totalReviews || 0).toLocaleString()} reviews</p>
         </div>
 
         {featuredReviews.length > 0 && (

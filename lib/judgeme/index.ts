@@ -73,7 +73,19 @@ async function judgemeApiFetch<T>(endpoint: string, options: RequestInit = {}): 
     return null as T
   }
 
-  const url = new URL(endpoint, JUDGEME_API_BASE)
+  if (!apiToken.startsWith("u-") && !apiToken.startsWith("XF")) {
+    console.error(
+      "[v0] ❌ Judge.me API token format is incorrect. Private tokens should start with 'u-', Public tokens with 'XF'",
+    )
+    console.error(`[v0] Current token starts with: ${apiToken.substring(0, 3)}...`)
+    console.error("[v0] Please check your JUDGEME_API_TOKEN environment variable in Vercel")
+    return null as T
+  }
+
+  // Remove leading slash from endpoint if present to avoid path replacement
+  const cleanEndpoint = endpoint.startsWith("/") ? endpoint.slice(1) : endpoint
+  const baseWithSlash = JUDGEME_API_BASE.endsWith("/") ? JUDGEME_API_BASE : `${JUDGEME_API_BASE}/`
+  const url = new URL(cleanEndpoint, baseWithSlash)
   url.searchParams.set("shop_domain", shopDomain)
   url.searchParams.set("api_token", apiToken)
 
@@ -86,6 +98,10 @@ async function judgemeApiFetch<T>(endpoint: string, options: RequestInit = {}): 
     console.log(`[v0] Judge.me API request to ${endpoint}`)
     console.log(`[v0] Using shop_domain: ${shopDomain}`)
     console.log(`[v0] API token present: ${!!apiToken}`)
+    console.log(
+      `[v0] API token format: ${apiToken.substring(0, 3)}...${apiToken.substring(apiToken.length - 4)} (length: ${apiToken.length})`,
+    )
+    console.log(`[v0] Full URL (token masked): ${url.toString().replace(/api_token=[^&]+/, "api_token=***")}`)
 
     const response = await fetch(url.toString(), {
       ...options,
@@ -99,6 +115,14 @@ async function judgemeApiFetch<T>(endpoint: string, options: RequestInit = {}): 
       const responseText = await response.text()
       console.warn(`[v0] Judge.me API returned ${response.status} for ${endpoint}`)
       console.warn(`[v0] Response body: ${responseText.substring(0, 200)}`)
+      if (response.status === 401 || response.status === 403) {
+        console.error(
+          "[v0] ❌ Authentication failed. Please verify your JUDGEME_API_TOKEN in Vercel environment variables",
+        )
+        console.error(
+          "[v0] The token should be your Private API Token from Judge.me Settings > Integrations > View API tokens",
+        )
+      }
       return null as T
     }
 
@@ -107,6 +131,13 @@ async function judgemeApiFetch<T>(endpoint: string, options: RequestInit = {}): 
       const responseText = await response.text()
       console.warn(`[v0] Judge.me API returned non-JSON response (${contentType}) for ${endpoint}`)
       console.warn(`[v0] Response body: ${responseText.substring(0, 200)}`)
+      if (contentType?.includes("text/html")) {
+        console.error("[v0] ❌ Received HTML instead of JSON - this means authentication failed")
+        console.error("[v0] Please verify:")
+        console.error("[v0]   1. JUDGEME_API_TOKEN is set to your Private API Token (starts with 'u-')")
+        console.error("[v0]   2. NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN is set to: atlantic-flag-and-pole-inc.myshopify.com")
+        console.error("[v0]   3. You've redeployed after updating environment variables")
+      }
       return null as T
     }
 
@@ -130,9 +161,9 @@ export async function getJudgemeReviews(params: {
   perPage?: number
   minRating?: number
   featured?: boolean
-}): Promise<{ reviews: JudgemeReview[]; total: number }> {
+}): Promise<{ reviews: JudgemeReview[]; currentPage: number; perPage: number }> {
   if (!isJudgemeConfigured()) {
-    return { reviews: [], total: 0 }
+    return { reviews: [], currentPage: 1, perPage: 10 }
   }
 
   try {
@@ -143,18 +174,24 @@ export async function getJudgemeReviews(params: {
     if (params.minRating) queryParams.set("min_rating", params.minRating.toString())
     if (params.featured) queryParams.set("featured", "true")
 
-    const data = await judgemeApiFetch<{ reviews: JudgemeReview[]; total: number }>(
-      `/reviews?${queryParams.toString()}`,
-    )
+    const data = await judgemeApiFetch<{
+      reviews: JudgemeReview[]
+      current_page: number
+      per_page: number
+    }>(`/reviews?${queryParams.toString()}`)
 
     if (!data) {
-      return { reviews: [], total: 0 }
+      return { reviews: [], currentPage: 1, perPage: 10 }
     }
 
-    return data
+    return {
+      reviews: data.reviews || [],
+      currentPage: data.current_page || 1,
+      perPage: data.per_page || 10,
+    }
   } catch (error) {
     console.error("[v0] Error fetching Judge.me reviews:", error)
-    return { reviews: [], total: 0 }
+    return { reviews: [], currentPage: 1, perPage: 10 }
   }
 }
 
@@ -196,6 +233,32 @@ export async function getJudgemeWidgetHtml(productHandle: string): Promise<strin
   }
 }
 
+export async function getJudgemeReviewsCount(params?: {
+  productHandle?: string
+  minRating?: number
+}): Promise<number> {
+  if (!isJudgemeConfigured()) {
+    return 0
+  }
+
+  try {
+    const queryParams = new URLSearchParams()
+    if (params?.productHandle) queryParams.set("product_handle", params.productHandle)
+    if (params?.minRating) queryParams.set("min_rating", params.minRating.toString())
+
+    const data = await judgemeApiFetch<{ count: number }>(`/reviews/count?${queryParams.toString()}`)
+
+    if (!data) {
+      return 0
+    }
+
+    return data.count || 0
+  } catch (error) {
+    console.error("[v0] Error fetching Judge.me reviews count:", error)
+    return 0
+  }
+}
+
 export async function getAllJudgemeReviews(limit = 100): Promise<JudgemeReview[]> {
   if (!isJudgemeConfigured()) {
     return []
@@ -206,14 +269,16 @@ export async function getAllJudgemeReviews(limit = 100): Promise<JudgemeReview[]
     let page = 1
     const perPage = 50
 
-    while (allReviews.length < limit) {
-      const { reviews, total } = await getJudgemeReviews({ page, perPage })
+    const totalCount = await getJudgemeReviewsCount()
+
+    while (allReviews.length < limit && allReviews.length < totalCount) {
+      const { reviews } = await getJudgemeReviews({ page, perPage })
 
       if (reviews.length === 0) break
 
       allReviews.push(...reviews)
 
-      if (allReviews.length >= total || reviews.length < perPage) break
+      if (reviews.length < perPage) break
 
       page++
     }
@@ -250,9 +315,10 @@ export async function getJudgemeStats(): Promise<{
   }
 
   try {
-    const { reviews, total } = await getJudgemeReviews({ perPage: 100 })
+    const totalReviews = await getJudgemeReviewsCount()
+    const { reviews } = await getJudgemeReviews({ perPage: 100 })
 
-    if (total === 0 || reviews.length === 0) {
+    if (totalReviews === 0 || reviews.length === 0) {
       console.log("[v0] No Judge.me reviews found - using fallback stats")
       return { averageRating: 4.8, totalReviews: 1250, fiveStarCount: 980 }
     }
@@ -261,11 +327,11 @@ export async function getJudgemeStats(): Promise<{
     const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0)
     const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0
 
-    console.log("[v0] ✅ Using live Judge.me stats:", { averageRating, totalReviews: total, fiveStarCount })
+    console.log("[v0] ✅ Using live Judge.me stats:", { averageRating, totalReviews, fiveStarCount })
 
     return {
       averageRating,
-      totalReviews: total,
+      totalReviews,
       fiveStarCount,
     }
   } catch (error) {
