@@ -96,7 +96,7 @@ export default function CartPage() {
     const image = productImages[0] || variant.image
 
     return (
-      <div key={line.id} className={`flex gap-4 ${isIncluded ? "pl-8 py-2" : "p-4"}`}>
+      <div key={line.id} className={`flex gap-4 ${isIncluded ? "pl-12 py-3 border-l-2 border-green-300" : "p-4"}`}>
         <div
           className={`relative flex-shrink-0 rounded-lg overflow-hidden bg-white ${isIncluded ? "w-16 h-16" : "w-24 h-24"}`}
         >
@@ -114,7 +114,7 @@ export default function CartPage() {
           )}
           {isIncluded && (
             <div className="absolute inset-0 bg-green-600/10 flex items-center justify-center">
-              <span className="text-xs font-bold text-green-600">FREE</span>
+              <span className="text-xs font-bold text-green-700">✓</span>
             </div>
           )}
         </div>
@@ -129,7 +129,12 @@ export default function CartPage() {
           {variant.title !== "Default Title" && (
             <p className={`text-[#0B1C2C]/70 mt-1 ${isIncluded ? "text-xs" : "text-sm"}`}>{variant.title}</p>
           )}
-          {isIncluded && <p className="text-xs text-green-600 font-semibold mt-1">Included in Premier Kit</p>}
+          {isIncluded && (
+            <p className="text-xs text-green-700 font-semibold mt-1 flex items-center gap-1">
+              <Package className="w-3 h-3" />
+              Included in Premier Kit
+            </p>
+          )}
           {!isIncluded && <p className="text-lg font-bold text-[#0B1C2C] mt-2">${price.toFixed(2)}</p>}
         </div>
 
@@ -178,37 +183,69 @@ export default function CartPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {groupedLines.regular.map((line) => (
-              <Card key={line.id}>
-                {renderCartLine(line)}
-                {groupedLines.bundles[line.merchandise.id] && groupedLines.bundles[line.merchandise.id].length > 0 && (
-                  <Collapsible
-                    open={expandedBundles.has(line.merchandise.id)}
-                    onOpenChange={() => toggleBundle(line.merchandise.id)}
-                  >
-                    <CollapsibleTrigger className="w-full px-4 py-3 bg-green-50 border-t border-green-200 flex items-center justify-between hover:bg-green-100 transition-colors">
-                      <div className="flex items-center gap-2">
-                        <Package className="w-4 h-4 text-green-600" />
-                        <span className="text-sm font-semibold text-green-700">
-                          Premier Kit Included ({groupedLines.bundles[line.merchandise.id].length} items)
-                        </span>
-                      </div>
-                      <ChevronDown
-                        className={`w-4 h-4 text-green-600 transition-transform ${expandedBundles.has(line.merchandise.id) ? "rotate-180" : ""}`}
-                      />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="bg-green-50/50">
-                      {groupedLines.bundles[line.merchandise.id].map((includedLine: any) =>
-                        renderCartLine(includedLine, true),
-                      )}
-                    </CollapsibleContent>
-                  </Collapsible>
-                )}
-              </Card>
-            ))}
+            {groupedLines.regular.map((line) => {
+              const hasBundleItems =
+                groupedLines.bundles[line.merchandise.id] && groupedLines.bundles[line.merchandise.id].length > 0
+              const isExpanded = hasBundleItems ? true : expandedBundles.has(line.merchandise.id)
+
+              return (
+                <Card key={line.id}>
+                  {renderCartLine(line)}
+                  {hasBundleItems && (
+                    <Collapsible open={isExpanded} onOpenChange={() => toggleBundle(line.merchandise.id)}>
+                      <CollapsibleTrigger className="w-full px-4 py-2 bg-green-50 border-t border-green-200 flex items-center justify-between hover:bg-green-100 transition-colors">
+                        <div className="flex items-center gap-2">
+                          <Package className="w-4 h-4 text-green-700" />
+                          <span className="text-sm font-semibold text-green-800">
+                            What's Included ({groupedLines.bundles[line.merchandise.id].length} items)
+                          </span>
+                        </div>
+                        <ChevronDown
+                          className={`w-4 h-4 text-green-700 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                        />
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="bg-green-50/30">
+                        {groupedLines.bundles[line.merchandise.id].map((includedLine: any) =>
+                          renderCartLine(includedLine, true),
+                        )}
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )}
+                </Card>
+              )
+            })}
           </div>
 
-          {/* ... existing order summary code ... */}
+          {/* Order Summary */}
+          <div className="lg:col-span-1">
+            <Card className="p-6 sticky top-4">
+              <h2 className="text-xl font-serif font-bold text-[#0B1C2C] mb-4">Order Summary</h2>
+
+              <div className="space-y-3 mb-6">
+                <div className="flex justify-between text-[#0B1C2C]">
+                  <span>Subtotal</span>
+                  <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-[#0B1C2C]/70 text-sm">
+                  <span>Shipping</span>
+                  <span>Calculated at checkout</span>
+                </div>
+                <div className="border-t border-gray-200 pt-3 flex justify-between text-lg font-bold text-[#0B1C2C]">
+                  <span>Total</span>
+                  <span>${total.toFixed(2)}</span>
+                </div>
+              </div>
+
+              <Button
+                onClick={handleCheckout}
+                className="w-full bg-[#C8A55C] hover:bg-[#a88947] text-white py-6 text-lg"
+              >
+                Proceed to Checkout
+              </Button>
+
+              <p className="text-xs text-[#0B1C2C]/60 text-center mt-4">Taxes and shipping calculated at checkout</p>
+            </Card>
+          </div>
         </div>
       </div>
     </main>
