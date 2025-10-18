@@ -25,29 +25,15 @@ export function JudgeMePlatformScript() {
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: `
-            try {
-              window.jdgm = window.jdgm || {};
-              window.jdgm.SHOP_DOMAIN = '${shopDomain}';
-              window.jdgm.PLATFORM = 'shopify';
-              window.jdgm.PUBLIC_TOKEN = '${publicToken}';
-              console.log('[v0] Judge.me platform initialized with PUBLIC_TOKEN');
-            } catch (error) {
-              console.error('[v0] Judge.me platform init error:', error);
-            }
+            window.jdgm = window.jdgm || {};
+            window.jdgm.SHOP_DOMAIN = '${shopDomain}';
+            window.jdgm.PLATFORM = 'shopify';
+            window.jdgm.PUBLIC_TOKEN = '${publicToken}';
           `,
         }}
       />
 
-      <Script
-        src="https://cdnwidget.judge.me/widget_preloader.js"
-        strategy="lazyOnload"
-        onLoad={() => {
-          console.log("[v0] Judge.me widget preloader loaded successfully")
-        }}
-        onError={(e) => {
-          console.error("[v0] Judge.me widget preloader failed to load:", e)
-        }}
-      />
+      <Script src="https://cdnwidget.judge.me/widget_preloader.js" strategy="lazyOnload" />
     </>
   )
 }
