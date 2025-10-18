@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Facebook, Instagram, Youtube, Sparkles } from "lucide-react"
+import { JudgemeFooterWidget } from "./judgeme/judgeme-footer-widget"
 
 const PinterestIcon = () => (
   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -19,167 +20,171 @@ const XIcon = () => (
   </svg>
 )
 
-export function Footer() {
+export async function Footer() {
   return (
-    <footer className="bg-navy text-ivory">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          {/* Company Info */}
-          <div className="space-y-4">
-            <h3 className="text-gold font-bold text-lg">Atlantic Flagpoles</h3>
-            <p className="text-sm leading-relaxed">
-              Premium American-made flagpoles with a lifetime guarantee. The last flagpole you will ever need.
-            </p>
-            <div className="flex flex-col gap-3 pt-4">
-              <Link
-                href="/flagpole-finder"
-                className="relative bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] hover:from-[#a88947] hover:to-[#C8A55C] px-4 py-2.5 rounded-md text-white font-semibold transition-all text-sm shadow-lg hover:shadow-xl group overflow-hidden text-center"
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] opacity-50 blur-xl animate-pulse" />
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  <Sparkles className="w-4 h-4" />
-                  Flagpole Finder
-                </span>
-              </Link>
-              <Link
-                href="/?quiz=open"
-                className="bg-[#0B1C2C] hover:bg-[#0B1C2C]/90 px-4 py-2.5 rounded-md text-white font-semibold transition-colors text-sm text-center"
-              >
-                Flagpole Quiz
-              </Link>
+    <>
+      <JudgemeFooterWidget />
+
+      <footer className="bg-navy text-ivory">
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            {/* Company Info */}
+            <div className="space-y-4">
+              <h3 className="text-gold font-bold text-lg">Atlantic Flagpoles</h3>
+              <p className="text-sm leading-relaxed">
+                Premium American-made flagpoles with a lifetime guarantee. The last flagpole you will ever need.
+              </p>
+              <div className="flex flex-col gap-3 pt-4">
+                <Link
+                  href="/flagpole-finder"
+                  className="relative bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] hover:from-[#a88947] hover:to-[#C8A55C] px-4 py-2.5 rounded-md text-white font-semibold transition-all text-sm shadow-lg hover:shadow-xl group overflow-hidden text-center"
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] opacity-50 blur-xl animate-pulse" />
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    <Sparkles className="w-4 h-4" />
+                    Flagpole Finder
+                  </span>
+                </Link>
+                <Link
+                  href="/?quiz=open"
+                  className="bg-[#0B1C2C] hover:bg-[#0B1C2C]/90 px-4 py-2.5 rounded-md text-white font-semibold transition-colors text-sm text-center"
+                >
+                  Flagpole Quiz
+                </Link>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div className="space-y-4">
+              <h4 className="text-gold font-semibold">Quick Links</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link href="/products" className="hover:text-gold transition-colors">
+                    Products
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about" className="hover:text-gold transition-colors">
+                    About Us
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/warranty" className="hover:text-gold transition-colors">
+                    Warranty
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="hover:text-gold transition-colors">
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Customer Service */}
+            <div className="space-y-4">
+              <h4 className="text-gold font-semibold">Customer Service</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link href="/shipping" className="hover:text-gold transition-colors">
+                    Shipping Info
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/returns" className="hover:text-gold transition-colors">
+                    Returns
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/faq" className="hover:text-gold transition-colors">
+                    FAQ
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/installation" className="hover:text-gold transition-colors">
+                    Installation Guide
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Connect With Us */}
+            <div className="space-y-4">
+              <h4 className="text-gold font-semibold">Connect With Us</h4>
+              <p className="text-sm">Follow us on social media for updates and special offers</p>
+              <div className="flex gap-4">
+                <Link
+                  href="https://www.facebook.com/AtlanticFlagpole"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-gold transition-colors"
+                  aria-label="Facebook"
+                >
+                  <Facebook className="w-5 h-5" />
+                </Link>
+                <Link
+                  href="http://instagram.com/atlanticflagpole"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-gold transition-colors"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="w-5 h-5" />
+                </Link>
+                <Link
+                  href="https://x.com/AtlanticFlagP"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-gold transition-colors"
+                  aria-label="X (Twitter)"
+                >
+                  <XIcon />
+                </Link>
+                <Link
+                  href="https://www.youtube.com/user/telescopingflagpole"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-gold transition-colors"
+                  aria-label="YouTube"
+                >
+                  <Youtube className="w-5 h-5" />
+                </Link>
+                <Link
+                  href="https://www.pinterest.com/atlanticflagandpole"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-gold transition-colors"
+                  aria-label="Pinterest"
+                >
+                  <PinterestIcon />
+                </Link>
+                <Link
+                  href="https://www.tumblr.com/best-flag-pole"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-gold transition-colors"
+                  aria-label="Tumblr"
+                >
+                  <TumblrIcon />
+                </Link>
+              </div>
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div className="space-y-4">
-            <h4 className="text-gold font-semibold">Quick Links</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/products" className="hover:text-gold transition-colors">
-                  Products
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="hover:text-gold transition-colors">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/warranty" className="hover:text-gold transition-colors">
-                  Warranty
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-gold transition-colors">
-                  Contact
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Customer Service */}
-          <div className="space-y-4">
-            <h4 className="text-gold font-semibold">Customer Service</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/shipping" className="hover:text-gold transition-colors">
-                  Shipping Info
-                </Link>
-              </li>
-              <li>
-                <Link href="/returns" className="hover:text-gold transition-colors">
-                  Returns
-                </Link>
-              </li>
-              <li>
-                <Link href="/faq" className="hover:text-gold transition-colors">
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <Link href="/installation" className="hover:text-gold transition-colors">
-                  Installation Guide
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Connect With Us */}
-          <div className="space-y-4">
-            <h4 className="text-gold font-semibold">Connect With Us</h4>
-            <p className="text-sm">Follow us on social media for updates and special offers</p>
-            <div className="flex gap-4">
-              <Link
-                href="https://www.facebook.com/AtlanticFlagpole"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-gold transition-colors"
-                aria-label="Facebook"
-              >
-                <Facebook className="w-5 h-5" />
+          {/* Bottom Bar */}
+          <div className="border-t border-afp-navy-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+            <p>&copy; {new Date().getFullYear()} Atlantic Flagpoles. All rights reserved.</p>
+            <div className="flex gap-6">
+              <Link href="/privacy" className="hover:text-gold transition-colors">
+                Privacy Policy
               </Link>
-              <Link
-                href="http://instagram.com/atlanticflagpole"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-gold transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram className="w-5 h-5" />
-              </Link>
-              <Link
-                href="https://x.com/AtlanticFlagP"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-gold transition-colors"
-                aria-label="X (Twitter)"
-              >
-                <XIcon />
-              </Link>
-              <Link
-                href="https://www.youtube.com/user/telescopingflagpole"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-gold transition-colors"
-                aria-label="YouTube"
-              >
-                <Youtube className="w-5 h-5" />
-              </Link>
-              <Link
-                href="https://www.pinterest.com/atlanticflagandpole"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-gold transition-colors"
-                aria-label="Pinterest"
-              >
-                <PinterestIcon />
-              </Link>
-              <Link
-                href="https://www.tumblr.com/best-flag-pole"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-gold transition-colors"
-                aria-label="Tumblr"
-              >
-                <TumblrIcon />
+              <Link href="/terms" className="hover:text-gold transition-colors">
+                Terms of Service
               </Link>
             </div>
           </div>
         </div>
-
-        {/* Bottom Bar */}
-        <div className="border-t border-afp-navy-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-          <p>&copy; {new Date().getFullYear()} Atlantic Flagpoles. All rights reserved.</p>
-          <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-gold transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-gold transition-colors">
-              Terms of Service
-            </Link>
-          </div>
-        </div>
-      </div>
-    </footer>
+      </footer>
+    </>
   )
 }

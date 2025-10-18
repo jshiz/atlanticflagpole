@@ -8,6 +8,7 @@ import { HeaderSkeleton } from "@/components/header-skeleton"
 import { Footer } from "@/components/footer"
 import { LiveChatButton } from "@/components/live-chat-button"
 import { CartProvider } from "@/components/cart/cart-context"
+import { JudgeMePlatformScript } from "@/components/judgeme/judgeme-platform-script"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -49,6 +50,7 @@ export default function RootLayout({
           <Footer />
           <LiveChatButton />
         </CartProvider>
+        <JudgeMePlatformScript />
       </body>
     </html>
   )

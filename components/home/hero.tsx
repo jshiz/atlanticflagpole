@@ -3,7 +3,14 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
-export function Hero() {
+interface HeroProps {
+  judgemeStats?: {
+    averageRating: number
+    totalReviews: number
+  }
+}
+
+export function Hero({ judgemeStats }: HeroProps = {}) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 6,
@@ -29,6 +36,9 @@ export function Hero() {
 
     return () => clearInterval(timer)
   }, [])
+
+  const rating = judgemeStats?.averageRating || 4.9
+  const reviewCount = judgemeStats?.totalReviews || 437
 
   return (
     <section className="relative w-full min-h-[600px] md:min-h-[700px] lg:min-h-[900px] overflow-hidden">
@@ -115,17 +125,13 @@ export function Hero() {
               </Link>
 
               <div className="absolute -top-2.5 -right-2.5 md:-top-3 md:-right-3 flex items-center gap-1 md:gap-1.5 bg-white px-2 py-1 md:px-2.5 md:py-1.5 rounded-full shadow-lg border-2 border-[#C8A55C] rotate-12">
-                <img
-                  src="/images/design-mode/award.png"
-                  alt="Award"
-                  className="w-5 h-5 md:w-6 md:h-6 object-contain"
-                />
+                <img src="/images/design-mode/award.png" alt="Award" className="w-5 h-5 md:w-6 md:h-6 object-contain" />
                 <div className="flex flex-col leading-none">
                   <div className="flex items-center gap-0.5">
                     <span className="text-[#C8A55C] text-[10px] md:text-xs">★★★★★</span>
                   </div>
                   <span className="text-[#0B1C2C] text-[9px] md:text-[10px] font-bold whitespace-nowrap">
-                    4.9 Reviews
+                    {rating.toFixed(1)} ({reviewCount})
                   </span>
                 </div>
               </div>

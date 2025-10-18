@@ -79,6 +79,25 @@ Once you've created the collections and menu in Shopify:
 3. The megamenu will show featured products from each collection
 4. Subcategories will appear in dropdown menus
 
+## Judge.me Integration
+
+See [JUDGEME_SETUP.md](./JUDGEME_SETUP.md) for detailed instructions on setting up Judge.me reviews integration.
+
+### Quick Setup
+
+1. Get your Judge.me API token from https://judge.me
+2. Add environment variable to Vercel:
+   - `JUDGEME_API_TOKEN` - Your private API token (server-side only)
+3. Redeploy your site
+
+### Features
+
+- Header review badge
+- Footer featured reviews
+- Product page reviews
+- Testimonials page (`/testimonials`)
+- Real-time review stats
+
 ## Important Notes
 
 - **Collection Handles Must Match**: The handle in Shopify must exactly match the URL (e.g., `flagpoles` collection → `/collections/flagpoles`)
@@ -101,6 +120,3 @@ If collections still aren't showing:
 - Check that collection handles match exactly (no spaces, lowercase)
 - Verify products are added to collections
 - Check Shopify API permissions include read access to products and collections
-\`\`\`
-
-```typescript file="" isHidden

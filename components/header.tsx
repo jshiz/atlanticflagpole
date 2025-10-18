@@ -16,13 +16,15 @@ export async function Header() {
   if (cached) {
     console.log("[v0] ✅ Using cached header data")
     return (
-      <HeaderClient
-        menuData={cached.menuData}
-        megaMenuData={cached.megaMenuData}
-        submenuProductsData={cached.submenuProductsData}
-        nflFlagProducts={cached.nflFlagProducts}
-        christmasTreeProducts={cached.christmasTreeProducts}
-      />
+      <>
+        <HeaderClient
+          menuData={cached.menuData}
+          megaMenuData={cached.megaMenuData}
+          submenuProductsData={cached.submenuProductsData}
+          nflFlagProducts={cached.nflFlagProducts}
+          christmasTreeProducts={cached.christmasTreeProducts}
+        />
+      </>
     )
   }
 
@@ -147,12 +149,14 @@ export async function Header() {
   setCache(cacheKey, headerData)
 
   return (
-    <HeaderClient
-      menuData={headerData.menuData}
-      megaMenuData={headerData.megaMenuData}
-      submenuProductsData={headerData.submenuProductsData}
-      nflFlagProducts={headerData.nflFlagProducts}
-      christmasTreeProducts={headerData.christmasTreeProducts}
-    />
+    <>
+      <HeaderClient
+        menuData={headerData.menuData}
+        megaMenuData={headerData.megaMenuData}
+        submenuProductsData={headerData.submenuProductsData}
+        nflFlagProducts={headerData.nflFlagProducts}
+        christmasTreeProducts={headerData.christmasTreeProducts}
+      />
+    </>
   )
 }
