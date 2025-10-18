@@ -306,4 +306,11 @@
     scrollbar-width: thin;
     scrollbar-color: #c8a55c #0b1c2c;
   }
+
+  /* Adding extra small breakpoint for very small screens */
+  @media (min-width: 375px) {
+    .xs\:max-w-\[180px\] {
+      max-width: 180px;
+    }
+  }
 }

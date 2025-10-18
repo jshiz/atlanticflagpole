@@ -43,33 +43,49 @@ export interface JudgemeWidgetData {
 }
 
 const JUDGEME_API_BASE = "https://judge.me/api/v1"
+const FALLBACK_SHOP_DOMAIN = "atlantic-flag-and-pole-inc.myshopify.com"
 
 function isJudgemeConfigured(): boolean {
-  const shopDomain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
   const apiToken = process.env.JUDGEME_API_TOKEN
-  return !!(shopDomain && apiToken)
+  return !!apiToken
+}
+
+function getShopDomain(): string {
+  const shopDomain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || FALLBACK_SHOP_DOMAIN
+
+  // Ensure it's in the correct myshopify.com format
+  if (!shopDomain.includes(".myshopify.com")) {
+    console.warn(
+      `[v0] Shop domain "${shopDomain}" doesn't include .myshopify.com, using fallback: ${FALLBACK_SHOP_DOMAIN}`,
+    )
+    return FALLBACK_SHOP_DOMAIN
+  }
+
+  return shopDomain
 }
 
 async function judgemeApiFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const shopDomain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
+  const shopDomain = getShopDomain()
   const apiToken = process.env.JUDGEME_API_TOKEN
 
-  if (!shopDomain || !apiToken) {
-    console.warn("[v0] Judge.me API credentials not configured - using fallback data")
+  if (!apiToken) {
+    console.warn("[v0] Judge.me API token not configured - using fallback data")
     return null as T
   }
 
   const url = new URL(endpoint, JUDGEME_API_BASE)
   url.searchParams.set("shop_domain", shopDomain)
+  url.searchParams.set("api_token", apiToken)
 
   const headers: HeadersInit = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${apiToken}`,
     ...options.headers,
   }
 
   try {
     console.log(`[v0] Judge.me API request to ${endpoint}`)
+    console.log(`[v0] Using shop_domain: ${shopDomain}`)
+    console.log(`[v0] API token present: ${!!apiToken}`)
 
     const response = await fetch(url.toString(), {
       ...options,
@@ -163,11 +179,7 @@ export async function getJudgemeProductData(productHandle: string): Promise<Judg
 
 export async function getJudgemeWidgetHtml(productHandle: string): Promise<string> {
   try {
-    const shopDomain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
-
-    if (!shopDomain) {
-      return ""
-    }
+    const shopDomain = getShopDomain()
 
     const url = `https://judge.me/api/v1/widgets/product_review?shop_domain=${shopDomain}&handle=${productHandle}&platform=shopify`
     const response = await fetch(url, { next: { revalidate: 300 } })
