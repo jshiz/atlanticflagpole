@@ -6,9 +6,8 @@ import { Card } from "@/components/ui/card"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import Image from "next/image"
 import Link from "next/link"
-import { Loader } from "@/components/ui/loader"
 import { Minus, Plus, Trash2, ShoppingBag, ChevronDown, Package } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 export default function CartPage() {
   const { cart, loading, updateCartLine, removeFromCart } = useCart()
@@ -17,13 +16,21 @@ export default function CartPage() {
   console.log("[v0] Cart page - cart:", cart)
   console.log("[v0] Cart page - checkoutUrl:", cart?.checkoutUrl)
 
-  if (loading && !cart) {
-    return (
-      <div className="min-h-screen bg-[#F5F3EF] flex items-center justify-center">
-        <Loader className="w-8 h-8" />
-      </div>
-    )
-  }
+  useEffect(() => {
+    if (cart?.lines?.edges) {
+      const lines = cart.lines.edges.map((edge) => edge.node)
+      const bundleParentIds = new Set<string>()
+
+      lines.forEach((line) => {
+        const bundleParent = line.attributes?.find((attr: any) => attr.key === "BundleParent")?.value
+        if (bundleParent) {
+          bundleParentIds.add(bundleParent)
+        }
+      })
+
+      setExpandedBundles(bundleParentIds)
+    }
+  }, [cart])
 
   const lines = cart?.lines?.edges ? cart.lines.edges.map((edge) => edge.node) : []
   const isEmpty = lines.length === 0
@@ -96,7 +103,10 @@ export default function CartPage() {
     const image = productImages[0] || variant.image
 
     return (
-      <div key={line.id} className={`flex gap-4 ${isIncluded ? "pl-12 py-3 border-l-2 border-green-300" : "p-4"}`}>
+      <div
+        key={line.id}
+        className={`flex gap-4 ${isIncluded ? "pl-12 py-3 border-l-4 border-green-500 bg-green-50/30" : "p-4"}`}
+      >
         <div
           className={`relative flex-shrink-0 rounded-lg overflow-hidden bg-white ${isIncluded ? "w-16 h-16" : "w-24 h-24"}`}
         >
@@ -114,7 +124,7 @@ export default function CartPage() {
           )}
           {isIncluded && (
             <div className="absolute inset-0 bg-green-600/10 flex items-center justify-center">
-              <span className="text-xs font-bold text-green-700">✓</span>
+              <span className="text-lg font-bold text-green-700">✓</span>
             </div>
           )}
         </div>
@@ -186,25 +196,25 @@ export default function CartPage() {
             {groupedLines.regular.map((line) => {
               const hasBundleItems =
                 groupedLines.bundles[line.merchandise.id] && groupedLines.bundles[line.merchandise.id].length > 0
-              const isExpanded = hasBundleItems ? true : expandedBundles.has(line.merchandise.id)
+              const isExpanded = expandedBundles.has(line.merchandise.id)
 
               return (
                 <Card key={line.id}>
                   {renderCartLine(line)}
                   {hasBundleItems && (
                     <Collapsible open={isExpanded} onOpenChange={() => toggleBundle(line.merchandise.id)}>
-                      <CollapsibleTrigger className="w-full px-4 py-2 bg-green-50 border-t border-green-200 flex items-center justify-between hover:bg-green-100 transition-colors">
+                      <CollapsibleTrigger className="w-full px-4 py-3 bg-gradient-to-r from-green-50 to-green-100 border-t-2 border-green-300 flex items-center justify-between hover:from-green-100 hover:to-green-200 transition-colors">
                         <div className="flex items-center gap-2">
-                          <Package className="w-4 h-4 text-green-700" />
-                          <span className="text-sm font-semibold text-green-800">
-                            What's Included ({groupedLines.bundles[line.merchandise.id].length} items)
+                          <Package className="w-5 h-5 text-green-700" />
+                          <span className="text-sm font-bold text-green-800">
+                            Premier Kit Included ({groupedLines.bundles[line.merchandise.id].length} items)
                           </span>
                         </div>
                         <ChevronDown
-                          className={`w-4 h-4 text-green-700 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                          className={`w-5 h-5 text-green-700 transition-transform ${isExpanded ? "rotate-180" : ""}`}
                         />
                       </CollapsibleTrigger>
-                      <CollapsibleContent className="bg-green-50/30">
+                      <CollapsibleContent className="bg-white">
                         {groupedLines.bundles[line.merchandise.id].map((includedLine: any) =>
                           renderCartLine(includedLine, true),
                         )}
