@@ -29,8 +29,8 @@ async function shopifyFetch<T>(query: string, variables?: Record<string, any>): 
 }
 
 const PRODUCTS_BY_TAG_QUERY = `
-  query getProductsByTag($query: String!, $first: Int!, $sortKey: ProductSortKeys!) {
-    products(first: $first, query: $query, sortKey: $sortKey) {
+  query getProductsByTag($query: String!, $first: Int!, $sortKey: ProductSortKeys!, $reverse: Boolean!) {
+    products(first: $first, query: $query, sortKey: $sortKey, reverse: $reverse) {
       nodes {
         id
         handle
@@ -94,12 +94,42 @@ function getTagsForCollection(handle: string): string[] {
   return [handle.replace(/-/g, " ")]
 }
 
+function calculateRelevancyScore(product: any, collectionHandle: string, tags: string[]): number {
+  let score = 0
+  const title = product.title.toLowerCase()
+  const productTags = (product.tags || []).map((t: string) => t.toLowerCase())
+  const handle = collectionHandle.toLowerCase().replace(/-/g, " ")
+
+  // Exact title match
+  if (title.includes(handle)) score += 100
+
+  // Tag matches
+  for (const tag of tags) {
+    if (productTags.includes(tag.toLowerCase())) score += 50
+  }
+
+  // Product type relevancy
+  if (product.productType && handle.includes(product.productType.toLowerCase())) {
+    score += 30
+  }
+
+  // Price factor (higher priced items get slight boost for quality signal)
+  const price = Number.parseFloat(product.priceRange?.minVariantPrice?.amount || "0")
+  score += Math.min(price / 10, 20) // Cap at 20 points
+
+  // Availability boost
+  if (product.availableForSale) score += 10
+
+  return score
+}
+
 interface CollectionPageProps {
   params: {
     handle: string
   }
   searchParams: {
     sort?: string
+    reverse?: string
     type?: string
     vendor?: string
     tag?: string
@@ -111,6 +141,7 @@ interface CollectionPageProps {
 
 export default async function CollectionPage({ params, searchParams }: CollectionPageProps) {
   const sortKey = searchParams.sort || "BEST_SELLING"
+  const reverse = searchParams.reverse === "true"
   const filters = buildFilters(searchParams)
 
   let collection = null
@@ -122,11 +153,15 @@ export default async function CollectionPage({ params, searchParams }: Collectio
       handle: params.handle,
       filters,
       sortKey: sortKey as any,
+      reverse, // Pass reverse parameter
     })
     collection = data.collection
 
     if (collection) {
       products = toNodes(collection.products)
+      console.log(
+        `[v0] ✅ Found ${products.length} products in collection "${params.handle}" (sort: ${sortKey}, reverse: ${reverse})`,
+      )
     }
   } catch (error) {
     console.error("[v0] Error fetching collection:", error)
@@ -140,12 +175,15 @@ export default async function CollectionPage({ params, searchParams }: Collectio
     console.log(`[v0] Trying tags for "${params.handle}":`, tagsToTry)
 
     try {
+      const fallbackSortKey = sortKey === "BEST_SELLING" ? "BEST_SELLING" : sortKey
+
       // Try each tag until we find products
       for (const tag of tagsToTry) {
         const data = await shopifyFetch<{ products: any }>(PRODUCTS_BY_TAG_QUERY, {
           query: `tag:${tag}`,
           first: 250,
-          sortKey: sortKey as any,
+          sortKey: fallbackSortKey as any,
+          reverse,
         })
 
         const tagProducts = toNodes(data.products)
@@ -158,7 +196,18 @@ export default async function CollectionPage({ params, searchParams }: Collectio
 
       // Remove duplicates based on product ID
       const uniqueProducts = Array.from(new Map(products.map((p) => [p.id, p])).values())
-      products = uniqueProducts
+
+      const scoredProducts = uniqueProducts.map((p) => ({
+        ...p,
+        _relevancyScore: calculateRelevancyScore(p, params.handle, tagsToTry),
+      }))
+
+      if (sortKey === "BEST_SELLING" || sortKey === "RELEVANCE") {
+        scoredProducts.sort((a, b) => b._relevancyScore - a._relevancyScore)
+        console.log(`[v0] 🎯 Sorted ${scoredProducts.length} products by relevancy`)
+      }
+
+      products = scoredProducts
 
       // Create a synthetic collection object
       if (products.length > 0) {
@@ -203,7 +252,7 @@ export default async function CollectionPage({ params, searchParams }: Collectio
             {collection.title}
             {isFallback && (
               <span className="ml-3 text-sm font-normal text-[#C8A55C] bg-[#C8A55C]/10 px-3 py-1 rounded-full">
-                Tag Search
+                Smart Search
               </span>
             )}
           </h1>
