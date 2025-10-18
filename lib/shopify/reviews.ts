@@ -42,12 +42,12 @@ export async function getProductReviews(productHandle: string): Promise<ReviewsD
       variables: { handle: productHandle },
     })
 
-    if (!result.body.data?.product) {
+    if (!result.data?.product) {
       console.log(`[v0] No product found for handle: ${productHandle}`)
       return getDefaultReviewsData()
     }
 
-    const metafields = result.body.data.product.metafields || []
+    const metafields = result.data.product.metafields || []
 
     // Parse Judge.me metafields
     const reviewsMetafield = metafields.find((m) => m.namespace === "judgeme" && m.key === "reviews")

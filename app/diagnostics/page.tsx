@@ -1,147 +1,15 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, XCircle, AlertCircle, ExternalLink } from "lucide-react"
+import { CheckCircle2, XCircle, AlertCircle, ExternalLink, Clock, Zap, Database, TrendingUp } from "lucide-react"
 import Link from "next/link"
+import { runDiagnostics } from "@/lib/diagnostics"
 
 export const dynamic = "force-dynamic"
 
-type TestResult = {
-  name: string
-  status: "success" | "error" | "warning"
-  message: string
-  details?: any
-}
+export default async function DiagnosticsPage() {
+  const report = await runDiagnostics()
 
-async function fetchAPI(url: string) {
-  try {
-    const res = await fetch(url, { cache: "no-store" })
-    return await res.json()
-  } catch (error) {
-    return { ok: false, error: "Failed to fetch" }
-  }
-}
-
-export default async function UnifiedDiagnosticsPage() {
-  const results: TestResult[] = []
-
-  // Test 1: Environment Variables
-  const storeDomain = process.env.SHOPIFY_STORE_DOMAIN || process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
-  const storefrontToken = process.env.SHOPIFY_STOREFRONT_TOKEN
-  const apiVersion = process.env.SHOPIFY_STOREFRONT_API_VERSION || process.env.SHOPIFY_API_VERSION || "2025-07"
-
-  if (!storeDomain || !storefrontToken) {
-    results.push({
-      name: "Environment Variables",
-      status: "error",
-      message: "Missing required environment variables",
-      details: {
-        SHOPIFY_STORE_DOMAIN: storeDomain || "NOT SET",
-        SHOPIFY_STOREFRONT_TOKEN: storefrontToken ? "SET" : "NOT SET",
-        SHOPIFY_API_VERSION: apiVersion,
-        fix: "Add SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_TOKEN in Vercel project settings",
-      },
-    })
-  } else {
-    results.push({
-      name: "Environment Variables",
-      status: "success",
-      message: "All required environment variables are set",
-      details: {
-        SHOPIFY_STORE_DOMAIN: storeDomain,
-        SHOPIFY_STOREFRONT_TOKEN: "SET (hidden)",
-        SHOPIFY_API_VERSION: apiVersion,
-      },
-    })
-  }
-
-  // Test 2: Products API
-  const productsResult = await fetchAPI(
-    `${process.env.VERCEL_URL ? "https://" + process.env.VERCEL_URL : ""}/api/shopify/test-products`,
-  )
-
-  if (productsResult.ok && productsResult.data?.products?.nodes) {
-    const products = productsResult.data.products.nodes
-    if (products.length === 0) {
-      results.push({
-        name: "Products API",
-        status: "warning",
-        message: "API connection works, but no products found",
-        details: {
-          count: 0,
-          fix: "Publish products to the 'Headless' sales channel in Shopify Admin",
-        },
-      })
-    } else {
-      results.push({
-        name: "Products API",
-        status: "success",
-        message: `Successfully fetched ${products.length} products`,
-        details: {
-          count: products.length,
-          sampleProducts: products.slice(0, 3).map((p: any) => ({
-            title: p.title,
-            handle: p.handle,
-            id: p.id,
-          })),
-        },
-      })
-    }
-  } else {
-    results.push({
-      name: "Products API",
-      status: "error",
-      message: "Failed to fetch products",
-      details: {
-        error: productsResult.error || "Unknown error",
-        fix: "Check SHOPIFY_STOREFRONT_TOKEN is the PUBLIC token (starts with 'febe')",
-      },
-    })
-  }
-
-  // Test 3: Collections API
-  const collectionsResult = await fetchAPI(
-    `${process.env.VERCEL_URL ? "https://" + process.env.VERCEL_URL : ""}/api/shopify/test-collections`,
-  )
-
-  if (collectionsResult.ok && collectionsResult.data?.collections?.nodes) {
-    const collections = collectionsResult.data.collections.nodes
-    if (collections.length === 0) {
-      results.push({
-        name: "Collections API",
-        status: "warning",
-        message: "API connection works, but no collections found",
-        details: {
-          count: 0,
-          fix: "Create collections in Shopify Admin → Products → Collections",
-        },
-      })
-    } else {
-      results.push({
-        name: "Collections API",
-        status: "success",
-        message: `Successfully fetched ${collections.length} collections`,
-        details: {
-          count: collections.length,
-          collections: collections.map((c: any) => ({
-            title: c.title,
-            handle: c.handle,
-          })),
-        },
-      })
-    }
-  } else {
-    results.push({
-      name: "Collections API",
-      status: "error",
-      message: "Failed to fetch collections",
-      details: {
-        error: collectionsResult.error || "Unknown error",
-        fix: "Check your Shopify API configuration",
-      },
-    })
-  }
-
-  const getStatusIcon = (status: TestResult["status"]) => {
+  const getStatusIcon = (status: "success" | "error" | "warning") => {
     switch (status) {
       case "success":
         return <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -152,10 +20,10 @@ export default async function UnifiedDiagnosticsPage() {
     }
   }
 
-  const getStatusBadge = (status: TestResult["status"]) => {
+  const getStatusBadge = (status: "success" | "error" | "warning") => {
     switch (status) {
       case "success":
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Working</Badge>
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Healthy</Badge>
       case "error":
         return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Error</Badge>
       case "warning":
@@ -163,15 +31,29 @@ export default async function UnifiedDiagnosticsPage() {
     }
   }
 
-  const hasErrors = results.some((r) => r.status === "error")
-  const allSuccess = results.every((r) => r.status === "success")
+  const getPriorityBadge = (priority: "high" | "medium" | "low") => {
+    switch (priority) {
+      case "high":
+        return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">High Priority</Badge>
+      case "medium":
+        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Medium</Badge>
+      case "low":
+        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">Low</Badge>
+    }
+  }
+
+  const hasErrors = Object.values(report.apiHealth).some((r) => r.status === "error")
+  const hasWarnings = Object.values(report.apiHealth).some((r) => r.status === "warning")
+  const allSuccess = Object.values(report.apiHealth).every((r) => r.status === "success")
 
   return (
     <main className="min-h-screen bg-[#F5F3EF] py-12">
-      <div className="container mx-auto px-4 max-w-5xl">
+      <div className="container mx-auto px-4 max-w-6xl">
         <div className="mb-8">
-          <h1 className="text-4xl font-serif font-bold text-[#0B1C2C] mb-2">Shopify Integration Diagnostics</h1>
-          <p className="text-[#0B1C2C]/70">Complete diagnostic report for your Atlantic Flagpole Shopify integration</p>
+          <h1 className="text-4xl font-serif font-bold text-[#0B1C2C] mb-2">Atlantic Flagpole System Diagnostics</h1>
+          <p className="text-[#0B1C2C]/70">
+            Comprehensive health check and performance analysis for your headless Shopify store
+          </p>
         </div>
 
         {/* Overall Status */}
@@ -188,7 +70,7 @@ export default async function UnifiedDiagnosticsPage() {
               ) : hasErrors ? (
                 <>
                   <XCircle className="h-6 w-6 text-red-600" />
-                  Issues Detected
+                  Critical Issues Detected
                 </>
               ) : (
                 <>
@@ -199,127 +81,224 @@ export default async function UnifiedDiagnosticsPage() {
             </CardTitle>
             <CardDescription>
               {allSuccess
-                ? "Your Shopify integration is fully configured and working correctly!"
+                ? "Your Shopify integration is fully configured and performing optimally!"
                 : hasErrors
-                  ? "Critical issues found. Follow the recommendations below to fix them."
-                  : "Your integration is working but needs attention."}
+                  ? "Critical issues found. Review recommendations below to resolve them."
+                  : "Your integration is working but needs attention for optimal performance."}
             </CardDescription>
           </CardHeader>
         </Card>
 
-        {/* Test Results */}
-        <div className="space-y-4 mb-6">
-          {results.map((result, index) => (
-            <Card key={index}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    {getStatusIcon(result.status)}
-                    <CardTitle className="text-lg">{result.name}</CardTitle>
-                  </div>
-                  {getStatusBadge(result.status)}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm mb-3 text-[#0B1C2C]/80">{result.message}</p>
+        {/* Performance Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-[#0B1C2C]/70">Load Time</CardTitle>
+                <Clock className="h-4 w-4 text-[#0B1C2C]/50" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-[#0B1C2C]">{report.performance.totalLoadTime}ms</div>
+              <p className="text-xs text-[#0B1C2C]/60 mt-1">
+                {report.performance.totalLoadTime < 1000
+                  ? "Excellent"
+                  : report.performance.totalLoadTime < 3000
+                    ? "Good"
+                    : "Needs improvement"}
+              </p>
+            </CardContent>
+          </Card>
 
-                {result.details && (
-                  <div className="bg-[#0B1C2C]/5 p-4 rounded-lg space-y-3">
-                    {result.details.fix && (
-                      <div className="bg-yellow-50 border border-yellow-200 p-3 rounded">
-                        <p className="font-semibold text-sm mb-1 text-yellow-900">How to Fix:</p>
-                        <p className="text-sm text-yellow-800">{result.details.fix}</p>
-                      </div>
-                    )}
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-[#0B1C2C]/70">API Calls</CardTitle>
+                <Zap className="h-4 w-4 text-[#0B1C2C]/50" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-[#0B1C2C]">{report.performance.apiCallCount}</div>
+              <p className="text-xs text-[#0B1C2C]/60 mt-1">
+                {report.performance.apiCallCount < 10
+                  ? "Optimized"
+                  : report.performance.apiCallCount < 20
+                    ? "Moderate"
+                    : "High"}
+              </p>
+            </CardContent>
+          </Card>
 
-                    {result.details.sampleProducts && (
-                      <div>
-                        <p className="font-semibold text-sm mb-2">Sample Products:</p>
-                        <div className="space-y-2">
-                          {result.details.sampleProducts.map((product: any, i: number) => (
-                            <div key={i} className="bg-white p-3 rounded border border-[#0B1C2C]/10">
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <p className="font-medium text-sm">{product.title}</p>
-                                  <p className="text-xs text-[#0B1C2C]/60 font-mono">{product.handle}</p>
-                                </div>
-                                <Link
-                                  href={`/products/${product.handle}`}
-                                  className="text-[#0B1C2C] hover:underline flex items-center gap-1 text-sm"
-                                >
-                                  View <ExternalLink className="w-3 h-3" />
-                                </Link>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-[#0B1C2C]/70">Total Products</CardTitle>
+                <Database className="h-4 w-4 text-[#0B1C2C]/50" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-[#0B1C2C]">{report.siteStructure.totalProducts}</div>
+              <p className="text-xs text-[#0B1C2C]/60 mt-1">Active products</p>
+            </CardContent>
+          </Card>
 
-                    {result.details.collections && (
-                      <div>
-                        <p className="font-semibold text-sm mb-2">Collections Found:</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                          {result.details.collections.map((collection: any, i: number) => (
-                            <div
-                              key={i}
-                              className="bg-white p-2 rounded border border-[#0B1C2C]/10 flex items-center justify-between"
-                            >
-                              <div>
-                                <p className="text-sm font-medium">{collection.title}</p>
-                                <code className="text-xs text-[#0B1C2C]/60">{collection.handle}</code>
-                              </div>
-                              <Link
-                                href={`/collections/${collection.handle}`}
-                                className="text-[#0B1C2C] hover:underline"
-                              >
-                                <ExternalLink className="w-4 h-4" />
-                              </Link>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {result.details.SHOPIFY_STORE_DOMAIN && (
-                      <div>
-                        <p className="font-semibold text-sm mb-2">Configuration:</p>
-                        <div className="space-y-1 font-mono text-xs bg-white p-3 rounded border border-[#0B1C2C]/10">
-                          <div className="flex justify-between">
-                            <span className="text-[#0B1C2C]/60">SHOPIFY_STORE_DOMAIN:</span>
-                            <span className="font-semibold">{result.details.SHOPIFY_STORE_DOMAIN}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-[#0B1C2C]/60">SHOPIFY_STOREFRONT_TOKEN:</span>
-                            <span className="font-semibold">{result.details.SHOPIFY_STOREFRONT_TOKEN}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-[#0B1C2C]/60">SHOPIFY_API_VERSION:</span>
-                            <span className="font-semibold">{result.details.SHOPIFY_API_VERSION}</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-[#0B1C2C]/70">Collections</CardTitle>
+                <TrendingUp className="h-4 w-4 text-[#0B1C2C]/50" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-[#0B1C2C]">
+                {report.collections.filter((c) => c.status === "exists").length}/{report.collections.length}
+              </div>
+              <p className="text-xs text-[#0B1C2C]/60 mt-1">Collections found</p>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Quick Links */}
+        {/* API Health Checks */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>API Health Status</CardTitle>
+            <CardDescription>Real-time connectivity and API endpoint health</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {Object.entries(report.apiHealth).map(([key, result]) => (
+              <div key={key} className="flex items-center justify-between p-4 bg-[#0B1C2C]/5 rounded-lg">
+                <div className="flex items-center gap-3">
+                  {getStatusIcon(result.status)}
+                  <div>
+                    <p className="font-medium text-sm capitalize">{key.replace(/([A-Z])/g, " $1").trim()}</p>
+                    <p className="text-xs text-[#0B1C2C]/60">{result.message}</p>
+                    {result.details && <p className="text-xs text-[#0B1C2C]/50 mt-1">{result.details}</p>}
+                  </div>
+                </div>
+                {getStatusBadge(result.status)}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Collections Status */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Collections Status</CardTitle>
+            <CardDescription>
+              Verification of all collections referenced in your navigation and mega menus
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {report.collections.map((collection, index) => (
+                <div
+                  key={index}
+                  className={`p-4 rounded-lg border-2 ${
+                    collection.status === "exists" ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"
+                  }`}
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <p className="font-medium text-sm">{collection.name}</p>
+                      <code className="text-xs text-[#0B1C2C]/60">{collection.handle}</code>
+                    </div>
+                    {collection.status === "exists" ? (
+                      <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+                    ) : (
+                      <XCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
+                    )}
+                  </div>
+                  <p className="text-xs text-[#0B1C2C]/70">{collection.message}</p>
+                  {collection.productCount !== undefined && (
+                    <p className="text-xs text-[#0B1C2C]/60 mt-1">{collection.productCount} products</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recommendations */}
+        {report.recommendations.length > 0 && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Actionable Recommendations</CardTitle>
+              <CardDescription>Prioritized improvements to enhance performance and functionality</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {report.recommendations.map((rec, index) => (
+                <div key={index} className="p-4 bg-[#0B1C2C]/5 rounded-lg">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <AlertCircle className="h-5 w-5 text-[#0B1C2C]/70 flex-shrink-0" />
+                      <span className="font-medium text-sm">{rec.category}</span>
+                    </div>
+                    {getPriorityBadge(rec.priority)}
+                  </div>
+                  <div className="ml-7 space-y-2">
+                    <div>
+                      <p className="text-sm font-medium text-[#0B1C2C]/90">Issue:</p>
+                      <p className="text-sm text-[#0B1C2C]/70">{rec.issue}</p>
+                    </div>
+                    <div className="bg-blue-50 border border-blue-200 p-3 rounded">
+                      <p className="text-sm font-medium text-blue-900 mb-1">Solution:</p>
+                      <p className="text-sm text-blue-800">{rec.solution}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Site Structure Overview */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Site Structure Overview</CardTitle>
+            <CardDescription>Current state of your headless storefront architecture</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="p-4 bg-[#0B1C2C]/5 rounded-lg">
+                <p className="text-2xl font-bold text-[#0B1C2C]">{report.siteStructure.totalMenuItems}</p>
+                <p className="text-sm text-[#0B1C2C]/70">Menu Items</p>
+              </div>
+              <div className="p-4 bg-[#0B1C2C]/5 rounded-lg">
+                <p className="text-2xl font-bold text-[#0B1C2C]">{report.siteStructure.megaMenus}</p>
+                <p className="text-sm text-[#0B1C2C]/70">Mega Menus</p>
+              </div>
+              <div className="p-4 bg-[#0B1C2C]/5 rounded-lg">
+                <p className="text-2xl font-bold text-[#0B1C2C]">{report.siteStructure.totalProducts}</p>
+                <p className="text-sm text-[#0B1C2C]/70">Total Products</p>
+              </div>
+              <div className="p-4 bg-[#0B1C2C]/5 rounded-lg">
+                <p className="text-2xl font-bold text-red-600">{report.siteStructure.missingCollections}</p>
+                <p className="text-sm text-[#0B1C2C]/70">Missing Collections</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
         <Card>
           <CardHeader>
-            <CardTitle>Quick Links</CardTitle>
+            <CardTitle>Quick Actions</CardTitle>
             <CardDescription>Navigate to key pages and test API endpoints</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <Link
+                href="/"
+                className="px-4 py-3 bg-[#0B1C2C] text-white rounded-lg hover:bg-[#0B1C2C]/90 transition-colors text-center"
+              >
+                View Homepage →
+              </Link>
               <Link
                 href="/products"
                 className="px-4 py-3 bg-[#0B1C2C] text-white rounded-lg hover:bg-[#0B1C2C]/90 transition-colors text-center"
               >
-                View All Products →
+                Browse Products →
               </Link>
               <Link
                 href="/collections"
@@ -332,62 +311,20 @@ export default async function UnifiedDiagnosticsPage() {
               <Link
                 href="/api/shopify/test-products"
                 target="_blank"
-                className="px-4 py-3 border-2 border-[#0B1C2C] text-[#0B1C2C] rounded-lg hover:bg-[#0B1C2C]/5 transition-colors text-center text-sm"
+                className="px-4 py-3 border-2 border-[#0B1C2C] text-[#0B1C2C] rounded-lg hover:bg-[#0B1C2C]/5 transition-colors text-center text-sm flex items-center justify-center gap-2"
               >
-                Test Products API
+                Test Products API <ExternalLink className="w-4 h-4" />
               </Link>
               <Link
                 href="/api/shopify/test-collections"
                 target="_blank"
-                className="px-4 py-3 border-2 border-[#0B1C2C] text-[#0B1C2C] rounded-lg hover:bg-[#0B1C2C]/5 transition-colors text-center text-sm"
+                className="px-4 py-3 border-2 border-[#0B1C2C] text-[#0B1C2C] rounded-lg hover:bg-[#0B1C2C]/5 transition-colors text-center text-sm flex items-center justify-center gap-2"
               >
-                Test Collections API
+                Test Collections API <ExternalLink className="w-4 h-4" />
               </Link>
             </div>
           </CardContent>
         </Card>
-
-        {/* Setup Guide */}
-        {hasErrors && (
-          <Card className="mt-6 border-blue-200 bg-blue-50">
-            <CardHeader>
-              <CardTitle className="text-lg">Complete Setup Guide</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-sm">
-              <div>
-                <p className="font-semibold mb-2">1. Set Environment Variables in Vercel</p>
-                <p className="text-[#0B1C2C]/70 mb-2">Go to your Vercel project → Settings → Environment Variables</p>
-                <div className="bg-white p-3 rounded border border-blue-200 font-mono text-xs space-y-1">
-                  <div>SHOPIFY_STORE_DOMAIN=your-store.myshopify.com</div>
-                  <div>SHOPIFY_STOREFRONT_TOKEN=your_public_storefront_token</div>
-                  <div>SHOPIFY_STOREFRONT_API_VERSION=2025-07</div>
-                </div>
-              </div>
-
-              <div>
-                <p className="font-semibold mb-2">2. Use the PUBLIC Storefront Token</p>
-                <p className="text-[#0B1C2C]/70">
-                  Make sure SHOPIFY_STOREFRONT_TOKEN is the PUBLIC token (starts with 'febe'), not the private Admin API
-                  token
-                </p>
-              </div>
-
-              <div>
-                <p className="font-semibold mb-2">3. Publish Products to Headless Channel</p>
-                <p className="text-[#0B1C2C]/70">
-                  Products → Select products → More actions → Manage → Enable "Headless" channel
-                </p>
-              </div>
-
-              <div>
-                <p className="font-semibold mb-2">4. Redeploy Your Site</p>
-                <p className="text-[#0B1C2C]/70">
-                  After setting environment variables, trigger a new deployment in Vercel
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </div>
     </main>
   )

@@ -34,7 +34,7 @@ export function Hero() {
     <section className="relative w-full min-h-[600px] md:min-h-[700px] lg:min-h-[900px] overflow-hidden">
       {/* Full Background Image */}
       <img
-        src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/AtlanticFlagPoleHero-GGcq1dhWXSAN3gOTUl0l1TJBWaNu2a.jpg"
+        src="/images/design-mode/AtlanticFlagPoleHero.jpg"
         alt="Beautiful home with American flag on premium flagpole"
         className="absolute inset-0 w-full h-full object-cover object-[75%_center]"
       />
@@ -116,7 +116,7 @@ export function Hero() {
 
               <div className="absolute -top-2.5 -right-2.5 md:-top-3 md:-right-3 flex items-center gap-1 md:gap-1.5 bg-white px-2 py-1 md:px-2.5 md:py-1.5 rounded-full shadow-lg border-2 border-[#C8A55C] rotate-12">
                 <img
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/award-ahFIFGNcg0OL4HphdqPlGjfDeSvpUK.png"
+                  src="/images/design-mode/award.png"
                   alt="Award"
                   className="w-5 h-5 md:w-6 md:h-6 object-contain"
                 />

@@ -2,67 +2,50 @@ import { getMenu } from "@/lib/menus"
 import { getCollectionWithProducts, searchProducts } from "@/lib/shopify/catalog"
 import { HeaderClient } from "@/components/header-client"
 import { getProducts } from "@/lib/shopify"
+import { getCached, setCache } from "@/lib/cache"
 
 function extractCollectionHandle(url: string): string | null {
-  // Try to extract from /collections/handle format
   const match = url.match(/\/collections\/([^/?]+)/)
   return match ? match[1] : null
 }
 
 export async function Header() {
-  const menuData = await getMenu("ultimate-menu")
+  const cacheKey = "header-data"
+  const cached = getCached<any>(cacheKey)
+
+  if (cached) {
+    console.log("[v0] ✅ Using cached header data")
+    return (
+      <HeaderClient
+        menuData={cached.menuData}
+        megaMenuData={cached.megaMenuData}
+        submenuProductsData={cached.submenuProductsData}
+        nflFlagProducts={cached.nflFlagProducts}
+        christmasTreeProducts={cached.christmasTreeProducts}
+      />
+    )
+  }
+
+  console.log("[v0] 🔄 Fetching fresh header data...")
+  const startTime = Date.now()
+
+  const [menuData, nflFlagProducts, christmasTreeProducts] = await Promise.all([
+    getMenu("ultimate-menu"),
+    getProducts({ first: 12, query: "tag:nfl-flags" }).catch(() => []),
+    getProducts({ first: 8, query: "tag:Christmas Tree" }).catch(() => []),
+  ])
+
+  console.log(`[v0] ✅ Found ${nflFlagProducts?.length || 0} NFL flag products`)
+  console.log(`[v0] ✅ Found ${christmasTreeProducts?.length || 0} Christmas tree products`)
 
   const megaMenuData: Record<string, any> = {}
   const submenuProductsData: Record<string, any[]> = {}
 
-  let nflFlagProducts: any[] = []
-  try {
-    const products = await getProducts({
-      first: 12,
-      query: "tag:nfl-flags",
-    })
-    nflFlagProducts = products || []
-    console.log(`[v0] ✅ Found ${nflFlagProducts.length} NFL flag products`)
-  } catch (error) {
-    console.error("[v0] ❌ Error fetching NFL flag products:", error)
-  }
-
-  let christmasTreeProducts: any[] = []
-  try {
-    const products = await getProducts({
-      first: 8,
-      query: "tag:Christmas Tree",
-    })
-    christmasTreeProducts = products || []
-    console.log(`[v0] ✅ Found ${christmasTreeProducts.length} Christmas tree products`)
-  } catch (error) {
-    console.error("[v0] ❌ Error fetching Christmas tree products:", error)
-  }
-
-  const christmasCollections = [
-    "flagpole-christmas-trees",
-    "warm-white-flagpole-trees",
-    "multicolor-flagpole-trees",
-    "smart-magic-flagpole-trees",
-    "best-selling-christmas-trees",
-    "flagpole-tree-accessories",
-  ]
-
-  for (const collectionHandle of christmasCollections) {
-    try {
-      const collection = await getCollectionWithProducts(collectionHandle, 4)
-      if (collection?.products?.nodes && collection.products.nodes.length > 0) {
-        submenuProductsData[collectionHandle] = collection.products.nodes
-        console.log(
-          `[v0] ✅ Found ${collection.products.nodes.length} products for Christmas collection "${collectionHandle}"`,
-        )
-      }
-    } catch (error) {
-      console.error(`[v0] ❌ Error fetching Christmas collection "${collectionHandle}":`, error)
-    }
-  }
+  // Only fetch collections that actually exist in Shopify
 
   if (menuData?.items) {
+    const fetchPromises: Promise<void>[] = []
+
     for (const item of menuData.items) {
       const title = item.title.toLowerCase()
 
@@ -71,21 +54,25 @@ export async function Header() {
         continue
       }
 
+      // Fetch submenu products in parallel
       if (item.items && item.items.length > 0) {
         for (const subItem of item.items) {
           const collectionHandle = extractCollectionHandle(subItem.url)
           if (collectionHandle) {
-            try {
-              const collection = await getCollectionWithProducts(collectionHandle, 4)
-              if (collection?.products?.nodes && collection.products.nodes.length > 0) {
-                submenuProductsData[subItem.id] = collection.products.nodes
-                console.log(
-                  `[v0] ✅ Found ${collection.products.nodes.length} products for submenu "${subItem.title}" (${collectionHandle})`,
-                )
-              }
-            } catch (error) {
-              console.log(`[v0] ⚠️ Could not fetch products for submenu "${subItem.title}"`)
-            }
+            fetchPromises.push(
+              getCollectionWithProducts(collectionHandle, 4)
+                .then((collection) => {
+                  if (collection?.products?.nodes && collection.products.nodes.length > 0) {
+                    submenuProductsData[subItem.id] = collection.products.nodes
+                    console.log(
+                      `[v0] ✅ Found ${collection.products.nodes.length} products for submenu "${subItem.title}"`,
+                    )
+                  }
+                })
+                .catch(() => {
+                  console.log(`[v0] ⚠️ Could not fetch products for submenu "${subItem.title}"`)
+                }),
+            )
           }
         }
       }
@@ -94,96 +81,78 @@ export async function Header() {
 
       if (title.includes("flagpole") && !title.includes("kit")) {
         collectionConfig = [
-          { handle: "telescoping-flagpoles", tags: ["telescoping", "telescoping flagpole"] },
-          { handle: "aluminum-flagpoles", tags: ["aluminum", "aluminum flagpole", "Aluminum Flagpoles"] },
-        ]
-      } else if (title.includes("kit") || title.includes("bundle")) {
-        collectionConfig = [
-          { handle: "flagpole-kits", tags: ["kit", "bundle", "flagpole kit"] },
-          { handle: "presidential-package", tags: ["presidential", "premium", "deluxe"] },
+          { handle: "telescoping-flagpoles", tags: ["telescoping"] },
+          { handle: "aluminum-flagpoles", tags: ["aluminum", "Aluminum Flagpoles"] },
         ]
       } else if (title.includes("flag") && !title.includes("flagpole")) {
         collectionConfig = [
-          { handle: "american-flags", tags: ["american flag", "usa flag", "us flag"] },
-          { handle: "state-flags", tags: ["state flag", "state"] },
-        ]
-      } else if (title.includes("accessor")) {
-        collectionConfig = [
-          { handle: "flagpole-lighting", tags: ["light", "lighting", "solar light", "led light"] },
-          { handle: "flagpole-mounts", tags: ["mount", "bracket", "wall mount"] },
-          { handle: "flagpole-toppers", tags: ["topper", "finial", "eagle", "ball"] },
-        ]
-      } else if (title.includes("holiday") || title.includes("seasonal")) {
-        collectionConfig = [
-          {
-            handle: "holiday-seasonal",
-            tags: [
-              "holiday",
-              "seasonal",
-              "christmas",
-              "halloween",
-              "thanksgiving",
-              "easter",
-              "4th of july",
-              "memorial day",
-              "veterans day",
-              "patriotic",
-            ],
-          },
+          { handle: "american-flags", tags: ["american flag"] },
+          { handle: "state-flags", tags: ["state flag"] },
         ]
       }
 
       if (collectionConfig.length > 0) {
-        const allProducts: any[] = []
+        const collectionPromise = Promise.all(
+          collectionConfig.map(async (config) => {
+            try {
+              const collection = await getCollectionWithProducts(config.handle, 2)
+              if (collection?.products?.nodes && collection.products.nodes.length > 0) {
+                console.log(
+                  `[v0] ✅ Found ${collection.products.nodes.length} products from collection "${config.handle}"`,
+                )
+                return collection.products.nodes
+              }
 
-        for (const config of collectionConfig) {
-          try {
-            const collection = await getCollectionWithProducts(config.handle, 2)
-            if (collection?.products?.nodes && collection.products.nodes.length > 0) {
-              allProducts.push(...collection.products.nodes)
-              console.log(
-                `[v0] ✅ Found ${collection.products.nodes.length} products from collection "${config.handle}" for "${item.title}"`,
-              )
-            } else {
-              console.log(`[v0] 🔄 Collection "${config.handle}" not found, trying tag-based search...`)
-
+              // Fallback to tag search
               for (const tag of config.tags) {
                 const tagResults = await searchProducts({ tag, first: 2 })
                 if (tagResults?.nodes && tagResults.nodes.length > 0) {
-                  allProducts.push(...tagResults.nodes)
-                  console.log(`[v0] ✅ Found ${tagResults.nodes.length} products with tag "${tag}" for "${item.title}"`)
-                  break
+                  console.log(`[v0] ✅ Found ${tagResults.nodes.length} products with tag "${tag}"`)
+                  return tagResults.nodes
                 }
               }
+            } catch (error) {
+              console.error(`[v0] ❌ Error fetching products for "${config.handle}"`)
             }
-          } catch (error) {
-            console.error(`[v0] ❌ Error fetching products for "${config.handle}":`, error)
+            return []
+          }),
+        ).then((results) => {
+          const allProducts = results.flat()
+          if (allProducts.length > 0) {
+            const uniqueProducts = Array.from(new Map(allProducts.map((p) => [p.id, p])).values())
+            megaMenuData[item.id] = {
+              products: { nodes: uniqueProducts.slice(0, 4) },
+            }
+            console.log(`[v0] ✅ Total ${uniqueProducts.length} unique products for "${item.title}"`)
           }
-        }
+        })
 
-        if (allProducts.length > 0) {
-          const uniqueProducts = Array.from(new Map(allProducts.map((p) => [p.id, p])).values())
-
-          megaMenuData[item.id] = {
-            products: {
-              nodes: uniqueProducts.slice(0, 4),
-            },
-          }
-          console.log(`[v0] ✅ Total ${uniqueProducts.length} unique products for "${item.title}" megamenu`)
-        } else {
-          console.log(`[v0] ⚠️ No products found for "${item.title}"`)
-        }
+        fetchPromises.push(collectionPromise)
       }
     }
+
+    await Promise.all(fetchPromises)
   }
+
+  const endTime = Date.now()
+  console.log(`[v0] ⚡ Header data fetched in ${endTime - startTime}ms`)
+
+  const headerData = {
+    menuData,
+    megaMenuData,
+    submenuProductsData,
+    nflFlagProducts: nflFlagProducts || [],
+    christmasTreeProducts: christmasTreeProducts || [],
+  }
+  setCache(cacheKey, headerData)
 
   return (
     <HeaderClient
-      menuData={menuData}
-      megaMenuData={megaMenuData}
-      submenuProductsData={submenuProductsData}
-      nflFlagProducts={nflFlagProducts}
-      christmasTreeProducts={christmasTreeProducts}
+      menuData={headerData.menuData}
+      megaMenuData={headerData.megaMenuData}
+      submenuProductsData={headerData.submenuProductsData}
+      nflFlagProducts={headerData.nflFlagProducts}
+      christmasTreeProducts={headerData.christmasTreeProducts}
     />
   )
 }
