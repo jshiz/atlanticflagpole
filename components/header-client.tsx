@@ -79,31 +79,26 @@ export function HeaderClient({
   return (
     <>
       <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-        <div className="container mx-auto px-2 sm:px-4">
-          <div className="flex items-center justify-between h-16 gap-2 sm:gap-3 md:gap-4">
-            {/* Left: Menu Button */}
-            <button
-              className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors p-1.5 sm:p-2 flex-shrink-0"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? (
-                <X className="w-5 h-5 sm:w-6 sm:h-6" />
-              ) : (
-                <MenuIcon className="w-5 h-5 sm:w-6 sm:h-6" />
-              )}
-            </button>
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
+            {/* Left Section: Menu + Search */}
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 min-w-0">
+              <button
+                className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors p-2 flex-shrink-0"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
+              </button>
 
-            {/* Left-Center: Search Bar - Responsive width */}
-            <div className="flex-1 max-w-[140px] xs:max-w-[180px] sm:max-w-xs md:max-w-md">
-              <SearchBarWrapper className="w-full" />
+              {/* Search Bar - Constrained width to prevent overlap */}
+              <div className="w-40 sm:w-48 md:w-56 lg:w-72 xl:w-80 flex-shrink-0">
+                <SearchBarWrapper className="w-full" />
+              </div>
             </div>
 
-            {/* Center: Logo - Better responsive positioning */}
-            <Link
-              href="/"
-              className="flex items-center gap-1.5 sm:gap-2 group absolute left-1/2 -translate-x-1/2 pointer-events-auto z-10"
-            >
+            {/* Center Section: Logo - Flexbox centered with proper spacing */}
+            <Link href="/" className="flex items-center gap-2 group flex-shrink-0 mx-2 sm:mx-4">
               <Image
                 src="/images/favicon.png"
                 alt="Atlantic Flagpoles"
@@ -112,28 +107,28 @@ export function HeaderClient({
                 className="w-8 h-8 sm:w-10 sm:h-10 group-hover:scale-105 transition-transform duration-300 flex-shrink-0"
               />
               <div className="hidden sm:block">
-                <span className="text-base sm:text-lg font-serif font-bold text-[#0B1C2C] tracking-tight block leading-none">
+                <span className="text-base sm:text-lg font-serif font-bold text-[#0B1C2C] tracking-tight block leading-none whitespace-nowrap">
                   ATLANTIC
                 </span>
-                <span className="text-[10px] sm:text-xs font-serif font-medium text-[#C8A55C] tracking-widest block leading-none">
+                <span className="text-[10px] sm:text-xs font-serif font-medium text-[#C8A55C] tracking-widest block leading-none whitespace-nowrap">
                   FLAGPOLES
                 </span>
               </div>
             </Link>
 
-            {/* Right-Center: Judge.me Badge and Medals - Hidden on smaller screens */}
-            {(judgemeBadge || judgemeMedals) && (
-              <div className="hidden xl:flex items-center gap-2 absolute left-1/2 translate-x-32 2xl:translate-x-40">
-                {judgemeBadge}
-                {judgemeMedals}
-              </div>
-            )}
+            {/* Right Section: Judge.me + Cart + Account */}
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              {/* Judge.me Badge and Medals - Hidden on smaller screens */}
+              {(judgemeBadge || judgemeMedals) && (
+                <div className="hidden xl:flex items-center gap-2">
+                  {judgemeBadge}
+                  {judgemeMedals}
+                </div>
+              )}
 
-            {/* Right: Cart and Account - Improved spacing */}
-            <div className="flex items-center gap-2 sm:gap-3 md:gap-4 ml-auto flex-shrink-0">
               <Link
                 href="/cart"
-                className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors group p-1.5 sm:p-2"
+                className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors group p-2"
                 aria-label="Shopping cart"
               >
                 <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 group-hover:scale-110 transition-transform duration-300" />
@@ -146,7 +141,7 @@ export function HeaderClient({
 
               <Link
                 href="/account"
-                className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors p-1.5 sm:p-2"
+                className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors p-2"
                 aria-label="Account"
               >
                 <User className="w-5 h-5 sm:w-6 sm:h-6" />

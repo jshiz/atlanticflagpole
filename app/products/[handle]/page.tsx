@@ -3,7 +3,10 @@ import { getProduct, getProducts } from "@/lib/shopify"
 import { ProductDetails } from "@/components/products/product-details"
 import ProductSeo from "@/components/product-seo"
 import { getProductReviews } from "@/lib/shopify/reviews"
+import { getBundleData } from "@/lib/shopify/bundles"
 import type { Metadata } from "next"
+
+export const revalidate = 3600 // Revalidate every hour
 
 interface ProductPageProps {
   params: {
@@ -40,6 +43,8 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
+  console.log("[v0] Loading product page:", params.handle)
+
   const product = await getProduct(params.handle)
 
   if (!product) {
@@ -47,6 +52,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   const reviewsData = await getProductReviews(params.handle)
+
+  const bundleData = await getBundleData(params.handle)
+
+  if (bundleData?.includesPremier) {
+    console.log("[v0] Analytics: bundle_view", {
+      product: params.handle,
+      bundleType: bundleData.bundleType || "premier_kit",
+      componentCount: bundleData.components.length,
+    })
+  }
 
   const allProducts = await getProducts({ first: 20 })
   const relatedProducts = allProducts
@@ -57,7 +72,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
     )
     .slice(0, 4)
 
-  // Get potential bundle products (similar or complementary items)
   const bundleProducts = allProducts.filter((p) => p.id !== product.id).slice(0, 2)
 
   return (
@@ -68,6 +82,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         relatedProducts={relatedProducts}
         bundleProducts={bundleProducts}
         reviewsData={reviewsData}
+        bundleData={bundleData}
       />
     </main>
   )

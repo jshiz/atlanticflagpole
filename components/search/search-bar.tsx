@@ -97,30 +97,30 @@ export function SearchBar({
             autoFocus={autoFocus}
             onBlur={onBlur}
             onFocus={() => results.length > 0 && setIsOpen(true)}
-            className="w-full pl-8 sm:pl-10 pr-8 sm:pr-10 text-sm h-9 sm:h-10"
+            className="w-full pl-10 pr-10 text-sm h-10"
           />
-          <Search className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           {query && (
             <Button
               type="button"
               variant="ghost"
               size="icon"
               onClick={handleClear}
-              className="absolute right-0.5 sm:right-1 top-1/2 -translate-y-1/2 h-6 w-6 sm:h-7 sm:w-7"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
             >
-              <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <X className="w-4 h-4" />
             </Button>
           )}
         </div>
       </form>
 
       {isOpen && results.length > 0 && (
-        <div className="absolute z-50 left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-xl max-h-[70vh] sm:max-h-96 overflow-y-auto">
+        <div className="absolute z-50 left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-xl max-h-96 overflow-y-auto">
           {results.slice(0, 8).map((product) => (
             <Link
               key={product.id}
               href={`/products/${product.handle}`}
-              className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0 cursor-pointer"
+              className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
               onClick={() => {
                 setIsOpen(false)
                 setQuery("")
@@ -132,16 +132,16 @@ export function SearchBar({
                   alt={product.title}
                   width={48}
                   height={48}
-                  className="rounded object-cover flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12"
+                  className="rounded object-cover flex-shrink-0 w-12 h-12"
                 />
               ) : (
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
-                  <Search className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
+                  <Search className="w-5 h-5 text-gray-400" />
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-[#0B1C2C] truncate text-xs sm:text-sm">{product.title}</div>
-                <div className="text-[10px] sm:text-xs text-gray-500 flex items-center gap-1 sm:gap-2">
+                <div className="font-medium text-[#0B1C2C] truncate text-sm">{product.title}</div>
+                <div className="text-xs text-gray-500 flex items-center gap-2">
                   {product.productType && <span className="truncate">{product.productType}</span>}
                   {product.price && (
                     <span className="font-semibold text-[#C8A55C] flex-shrink-0">
@@ -158,7 +158,7 @@ export function SearchBar({
                 setIsOpen(false)
                 router.push(`/search?q=${encodeURIComponent(query.trim())}`)
               }}
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-[#C8A55C] hover:bg-gray-50 font-medium transition-colors cursor-pointer"
+              className="w-full px-4 py-3 text-sm text-[#C8A55C] hover:bg-gray-50 font-medium transition-colors"
             >
               View all {results.length} results →
             </button>
@@ -167,17 +167,17 @@ export function SearchBar({
       )}
 
       {isOpen && isLoading && (
-        <div className="absolute z-50 left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-xl p-3 sm:p-4">
-          <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-gray-500">
-            <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-gray-300 border-t-[#C8A55C] rounded-full animate-spin" />
+        <div className="absolute z-50 left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-xl p-4">
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+            <div className="w-4 h-4 border-2 border-gray-300 border-t-[#C8A55C] rounded-full animate-spin" />
             Searching...
           </div>
         </div>
       )}
 
       {isOpen && !isLoading && query.trim().length >= 2 && results.length === 0 && (
-        <div className="absolute z-50 left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-xl p-3 sm:p-4">
-          <div className="text-xs sm:text-sm text-gray-500 text-center">No products found for "{query}"</div>
+        <div className="absolute z-50 left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-xl p-4">
+          <div className="text-sm text-gray-500 text-center">No products found for "{query}"</div>
         </div>
       )}
     </div>

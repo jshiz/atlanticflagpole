@@ -50,9 +50,9 @@ export async function getProductReviews(productHandle: string): Promise<ReviewsD
     const metafields = result.data.product.metafields || []
 
     // Parse Judge.me metafields
-    const reviewsMetafield = metafields.find((m) => m.namespace === "judgeme" && m.key === "reviews")
-    const ratingMetafield = metafields.find((m) => m.namespace === "judgeme" && m.key === "rating")
-    const countMetafield = metafields.find((m) => m.namespace === "judgeme" && m.key === "review_count")
+    const reviewsMetafield = metafields.find((m) => m?.namespace === "judgeme" && m?.key === "reviews")
+    const ratingMetafield = metafields.find((m) => m?.namespace === "judgeme" && m?.key === "rating")
+    const countMetafield = metafields.find((m) => m?.namespace === "judgeme" && m?.key === "review_count")
 
     let reviews: ProductReview[] = []
     let averageRating = 0

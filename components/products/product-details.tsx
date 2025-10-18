@@ -14,9 +14,12 @@ import { TrustBadges } from "./trust-badges"
 import { FrequentlyBoughtTogether } from "./frequently-bought-together"
 import { RelatedProducts } from "./related-products"
 import { CustomerReviews } from "./customer-reviews"
+import { BundleBreakdown } from "@/components/bundle/bundle-breakdown"
+import { StickyCta } from "@/components/bundle/sticky-cta"
 import type { ShopifyProduct } from "@/lib/shopify"
+import type { BundleData } from "@/lib/shopify/bundles"
 import { toNodes } from "@/lib/connection"
-import { Check, Shield, Truck, Award } from "lucide-react"
+import { Check, Shield, Truck, Award, Package } from "lucide-react"
 import type { ReviewsData } from "@/lib/shopify/reviews"
 
 interface ProductDetailsProps {
@@ -24,6 +27,7 @@ interface ProductDetailsProps {
   relatedProducts?: ShopifyProduct[]
   bundleProducts?: ShopifyProduct[]
   reviewsData: ReviewsData
+  bundleData?: BundleData
 }
 
 export function ProductDetails({
@@ -31,6 +35,7 @@ export function ProductDetails({
   relatedProducts = [],
   bundleProducts = [],
   reviewsData,
+  bundleData,
 }: ProductDetailsProps) {
   const images = toNodes(product.images)
   const [selectedImage, setSelectedImage] = useState(images[0])
@@ -49,6 +54,8 @@ export function ProductDetails({
   const scrollToReviews = () => {
     document.getElementById("reviews")?.scrollIntoView({ behavior: "smooth" })
   }
+
+  const isPremierBundle = bundleData?.includesPremier || false
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -72,6 +79,12 @@ export function ProductDetails({
             {hasDiscount && (
               <Badge className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-lg px-4 py-2">
                 {discountPercentage}% OFF
+              </Badge>
+            )}
+            {isPremierBundle && (
+              <Badge className="absolute top-4 left-4 bg-[#C8A55C] hover:bg-[#a88947] text-white text-sm px-3 py-1.5 flex items-center gap-1.5">
+                <Package className="w-4 h-4" />
+                Includes Premier Kit
               </Badge>
             )}
           </div>
@@ -105,12 +118,18 @@ export function ProductDetails({
               {product.title}
             </h1>
 
+            {isPremierBundle && (
+              <Badge className="mb-4 bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1.5 text-sm font-semibold">
+                <Package className="w-4 h-4 mr-1.5" />
+                Includes Premier Kit
+              </Badge>
+            )}
+
             <div className="flex items-center gap-4 mb-4">
               <ProductReviewsSummary onViewReviews={scrollToReviews} />
             </div>
 
             <ProductWatching />
-            {/* </CHANGE> */}
 
             <div className="flex items-center gap-3 mt-4">
               <span className="text-4xl font-bold text-[#0B1C2C]">${price.toFixed(2)}</span>
@@ -134,7 +153,6 @@ export function ProductDetails({
           <Separator />
 
           <ShippingEstimate />
-          {/* </CHANGE> */}
 
           {/* Variant Selection */}
           {variants.length > 1 && (
@@ -172,12 +190,10 @@ export function ProductDetails({
                 </svg>
                 Pay
               </Button>
-              {/* </CHANGE> */}
             </div>
           )}
 
           <TrustBadges />
-          {/* </CHANGE> */}
 
           {/* Features */}
           <Card className="p-6 bg-white">
@@ -215,19 +231,31 @@ export function ProductDetails({
         </div>
       </div>
 
+      {bundleData?.includesPremier && (
+        <div className="mb-12">
+          <BundleBreakdown bundleData={bundleData} />
+        </div>
+      )}
+
       {bundleProducts.length > 0 && (
         <div className="mb-12">
           <FrequentlyBoughtTogether mainProduct={product} bundleProducts={bundleProducts} />
         </div>
       )}
-      {/* </CHANGE> */}
 
       <CustomerReviews reviewsData={reviewsData} />
 
-      {/* </CHANGE> */}
-
       {relatedProducts.length > 0 && <RelatedProducts products={relatedProducts} />}
-      {/* </CHANGE> */}
+
+      {isPremierBundle && selectedVariant && bundleData && (
+        <StickyCta
+          productTitle={product.title}
+          price={price.toString()}
+          currencyCode={selectedVariant.price.currencyCode}
+          variantId={selectedVariant.id}
+          bundleData={bundleData}
+        />
+      )}
     </div>
   )
 }

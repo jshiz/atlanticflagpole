@@ -23,21 +23,33 @@ async function shopifyFetch<T>(query: string, variables?: Record<string, any>): 
   return json.data
 }
 
-// Build a Shopify search query (supports title, vendor, type, tag, sku)
 function buildSearchQuery(q: string) {
-  const safe = q.replace(/["']/g, "") // basic sanitize
-  // Search across: title, sku, vendor, product_type, tag
-  return [`title:*${safe}*`, `sku:${safe}`, `vendor:${safe}`, `product_type:${safe}`, `tag:${safe}`].join(" OR ")
+  const safe = q.replace(/[^a-zA-Z0-9\s-]/g, "").trim() // Better sanitization
+  if (!safe) return ""
+
+  // Search across multiple fields with proper weighting
+  const terms = safe.split(/\s+/).filter(Boolean)
+  const queries = terms.flatMap((term) => [
+    `title:*${term}*`,
+    `vendor:*${term}*`,
+    `product_type:*${term}*`,
+    `tag:${term}`,
+  ])
+
+  return queries.join(" OR ")
 }
 
 export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams.get("q")?.trim()
-  if (!q) return NextResponse.json({ items: [] })
+  if (!q || q.length < 2) return NextResponse.json({ items: [] })
 
   try {
+    const searchQuery = buildSearchQuery(q)
+    if (!searchQuery) return NextResponse.json({ items: [] })
+
     const data = await shopifyFetch<{ products: any }>(PRODUCT_SEARCH, {
-      q: buildSearchQuery(q),
-      first: 100,
+      q: searchQuery,
+      first: 50, // Reduced from 100 for better performance
     })
 
     const items = data.products.nodes.map((p: any) => ({
@@ -48,15 +60,8 @@ export async function GET(req: NextRequest) {
       productType: p.productType,
       image: p.featuredImage?.url ?? null,
       price: p.priceRange?.minVariantPrice,
-      variants: p.variants?.nodes?.map((v: any) => ({
-        id: v.id,
-        title: v.title,
-        sku: v.sku,
-        price: v.price,
-      })),
     }))
 
-    console.log(`[v0] Search for "${q}" returned ${items.length} products`)
     return NextResponse.json({ items })
   } catch (error) {
     console.error("[v0] Search error:", error)

@@ -269,3 +269,22 @@ export const PRODUCT_REVIEWS_QUERY = /* GraphQL */ `
     }
   }
 `
+
+export const PRODUCT_BUNDLE_QUERY = /* GraphQL */ `
+  query ProductBundle($handle: String!) {
+    product(handle: $handle) {
+      id
+      title
+      handle
+      metafields(identifiers: [
+        { namespace: "bundle", key: "components" }
+        { namespace: "bundle", key: "includes_premier" }
+      ]) {
+        namespace
+        key
+        value
+        type
+      }
+    }
+  }
+`

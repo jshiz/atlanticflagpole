@@ -11,6 +11,9 @@ async function JudgemeDiagnostics() {
   const hasClientId = !!clientId
   const hasClientSecret = !!clientSecret
 
+  const tokenLength = apiToken?.length || 0
+  const isTokenLikelyValid = tokenLength > 20 && tokenLength < 100
+
   let apiTestResult = null
   let apiTestError = null
 
@@ -33,6 +36,10 @@ async function JudgemeDiagnostics() {
         try {
           const data = await response.json()
           apiTestResult.data = data
+          if (data.error) {
+            apiTestResult.isError = true
+            apiTestResult.errorMessage = data.error
+          }
         } catch (e) {
           apiTestError = "Failed to parse JSON response"
         }
@@ -63,12 +70,26 @@ async function JudgemeDiagnostics() {
               <span className="text-muted-foreground">{hasShopDomain ? `✓ Set (${shopDomain})` : "✗ Not set"}</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-full ${hasApiToken ? "bg-green-500" : "bg-red-500"}`} />
+              <div
+                className={`w-3 h-3 rounded-full ${hasApiToken && isTokenLikelyValid ? "bg-green-500" : hasApiToken ? "bg-yellow-500" : "bg-red-500"}`}
+              />
               <span className="font-mono text-sm">JUDGEME_API_TOKEN</span>
               <span className="text-muted-foreground">
-                {hasApiToken ? `✓ Set (${apiToken?.substring(0, 10)}...)` : "✗ Not set"}
+                {hasApiToken ? (
+                  <>
+                    {isTokenLikelyValid ? "✓" : "⚠"} Set ({tokenLength} chars: {apiToken?.substring(0, 10)}...
+                    {apiToken?.substring(tokenLength - 4)})
+                  </>
+                ) : (
+                  "✗ Not set"
+                )}
               </span>
             </div>
+            {hasApiToken && !isTokenLikelyValid && (
+              <div className="ml-6 text-sm text-yellow-600 dark:text-yellow-400">
+                ⚠ Token length ({tokenLength} chars) seems unusual. Verify you copied the complete Private API Token.
+              </div>
+            )}
             <div className="flex items-center gap-2">
               <div className={`w-3 h-3 rounded-full ${hasClientId ? "bg-green-500" : "bg-yellow-500"}`} />
               <span className="font-mono text-sm">JUDGEME_CLIENT_ID</span>
@@ -105,7 +126,7 @@ async function JudgemeDiagnostics() {
                 <div>
                   <span className="text-sm text-muted-foreground">Status Code</span>
                   <p
-                    className={`font-mono text-lg ${apiTestResult.status === 200 ? "text-green-600" : "text-red-600"}`}
+                    className={`font-mono text-lg ${apiTestResult.status === 200 && apiTestResult.isJson && !apiTestResult.isError ? "text-green-600" : "text-red-600"}`}
                   >
                     {apiTestResult.status} {apiTestResult.statusText}
                   </p>
@@ -118,18 +139,36 @@ async function JudgemeDiagnostics() {
                 </div>
               </div>
 
-              {apiTestResult.isJson && apiTestResult.data ? (
+              {apiTestResult.isJson && apiTestResult.data && !apiTestResult.isError ? (
                 <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded p-4">
                   <p className="text-green-800 dark:text-green-200 font-semibold mb-2">✓ API Connected Successfully!</p>
-                  <pre className="text-xs overflow-auto bg-background p-2 rounded">
-                    {JSON.stringify(apiTestResult.data, null, 2)}
-                  </pre>
+                  <p className="text-sm text-green-700 dark:text-green-300 mb-2">
+                    Judge.me API is responding correctly with JSON data.
+                  </p>
+                  <details className="text-xs">
+                    <summary className="cursor-pointer text-green-600 dark:text-green-400 mb-2">
+                      Show API Response
+                    </summary>
+                    <pre className="overflow-auto bg-background p-2 rounded max-h-60">
+                      {JSON.stringify(apiTestResult.data, null, 2)}
+                    </pre>
+                  </details>
+                </div>
+              ) : apiTestResult.isError ? (
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded p-4">
+                  <p className="text-red-800 dark:text-red-200 font-semibold mb-2">✗ API Authentication Failed</p>
+                  <p className="text-sm text-red-700 dark:text-red-300 mb-2">
+                    Judge.me returned an error: <span className="font-mono">{apiTestResult.errorMessage}</span>
+                  </p>
+                  <p className="text-sm text-red-700 dark:text-red-300">
+                    This usually means the API token or shop domain is incorrect.
+                  </p>
                 </div>
               ) : (
                 <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded p-4">
                   <p className="text-red-800 dark:text-red-200 font-semibold mb-2">✗ API Authentication Failed</p>
                   <p className="text-sm text-red-700 dark:text-red-300 mb-2">
-                    The API token or shop domain is incorrect. Judge.me returned HTML instead of JSON data.
+                    Judge.me returned HTML instead of JSON data. This means authentication failed.
                   </p>
                   <details className="text-xs">
                     <summary className="cursor-pointer text-red-600 dark:text-red-400 mb-2">
@@ -154,26 +193,47 @@ async function JudgemeDiagnostics() {
                 <li>Go to your Judge.me admin dashboard</li>
                 <li>Navigate to Settings → Integrations</li>
                 <li>Look for "View API tokens" or "Judge.me API"</li>
-                <li>Copy your Private API Token</li>
+                <li>
+                  Copy your <strong>Private API Token</strong> (not the Public one)
+                </li>
                 <li>Add it as JUDGEME_API_TOKEN in Vercel environment variables</li>
                 <li>Redeploy your application</li>
               </ol>
             </div>
-          ) : !apiTestResult?.isJson ? (
+          ) : !apiTestResult?.isJson || apiTestResult?.isError ? (
             <div className="space-y-3">
-              <p className="text-muted-foreground">Your API token or shop domain appears to be incorrect:</p>
+              <p className="text-muted-foreground font-semibold">
+                Your API token or shop domain appears to be incorrect:
+              </p>
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded p-4 space-y-2">
+                <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">Expected Values:</p>
+                <div className="text-sm space-y-1 font-mono text-blue-800 dark:text-blue-200">
+                  <p>Shop Domain: atlantic-flag-and-pole-inc.myshopify.com</p>
+                  <p>API Token: Private API Token (starts with "u-" and is about 27 characters)</p>
+                </div>
+              </div>
               <ol className="list-decimal list-inside space-y-2 text-sm">
-                <li>Verify you're using the Private API Token (not Public API Token)</li>
-                <li>Confirm the shop domain is: atlantic-flag-and-pole-inc.myshopify.com</li>
-                <li>Double-check the token was copied correctly (no extra spaces)</li>
+                <li>
+                  Verify you're using the <strong>Private API Token</strong> (not Public, not OAuth Client ID/Secret)
+                </li>
+                <li>The Private API Token should start with "u-" and be about 27 characters long</li>
+                <li>
+                  Confirm the shop domain is exactly:{" "}
+                  <code className="bg-muted px-1 rounded">atlantic-flag-and-pole-inc.myshopify.com</code>
+                </li>
+                <li>Double-check the token was copied correctly (no extra spaces or line breaks)</li>
                 <li>Update the JUDGEME_API_TOKEN environment variable in Vercel</li>
                 <li>Redeploy your application</li>
               </ol>
             </div>
           ) : (
             <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded p-4">
-              <p className="text-green-800 dark:text-green-200">
-                ✓ Judge.me is configured correctly and working! Your site should now display live review data.
+              <p className="text-green-800 dark:text-green-200 font-semibold mb-2">
+                ✓ Judge.me is configured correctly and working!
+              </p>
+              <p className="text-sm text-green-700 dark:text-green-300">
+                Your site should now display live review data from Judge.me. Check your homepage and product pages to
+                see the widgets in action.
               </p>
             </div>
           )}
