@@ -8,13 +8,7 @@ import { TicketPopup } from "@/components/home/ticket-popup"
 import { getJudgemeStats } from "@/lib/judgeme"
 
 export default async function Home() {
-  let judgemeStats = { averageRating: 4.9, totalReviews: 437, fiveStarCount: 400 }
-
-  try {
-    judgemeStats = await getJudgemeStats()
-  } catch (error) {
-    console.log("[v0] Using default review stats - Judge.me not configured yet")
-  }
+  const judgemeStats = await getJudgemeStats()
 
   return (
     <main className="min-h-screen">

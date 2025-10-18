@@ -2,18 +2,7 @@ import { Star } from "lucide-react"
 import { getJudgemeStats } from "@/lib/judgeme"
 
 export async function JudgemeBadge() {
-  let stats = { averageRating: 4.9, totalReviews: 437, fiveStarCount: 400 }
-
-  try {
-    stats = await getJudgemeStats()
-  } catch (error) {
-    // Use default stats if Judge.me is not configured
-    console.log("[v0] Using default review stats in badge")
-  }
-
-  if (stats.totalReviews === 0) {
-    stats = { averageRating: 4.9, totalReviews: 437, fiveStarCount: 400 }
-  }
+  const stats = await getJudgemeStats()
 
   return (
     <a

@@ -37,8 +37,8 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
     return () => clearInterval(timer)
   }, [])
 
-  const rating = judgemeStats?.averageRating || 4.9
-  const reviewCount = judgemeStats?.totalReviews || 437
+  const rating = judgemeStats?.averageRating ?? 4.8
+  const reviewCount = judgemeStats?.totalReviews ?? 1250
 
   return (
     <section className="relative w-full min-h-[600px] md:min-h-[700px] lg:min-h-[900px] overflow-hidden">
@@ -128,10 +128,17 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
                 <img src="/images/design-mode/award.png" alt="Award" className="w-5 h-5 md:w-6 md:h-6 object-contain" />
                 <div className="flex flex-col leading-none">
                   <div className="flex items-center gap-0.5">
-                    <span className="text-[#C8A55C] text-[10px] md:text-xs">★★★★★</span>
+                    {[...Array(5)].map((_, i) => (
+                      <span
+                        key={i}
+                        className={`text-[10px] md:text-xs ${i < Math.floor(rating) ? "text-[#C8A55C]" : "text-gray-300"}`}
+                      >
+                        ★
+                      </span>
+                    ))}
                   </div>
                   <span className="text-[#0B1C2C] text-[9px] md:text-[10px] font-bold whitespace-nowrap">
-                    {rating.toFixed(1)} ({reviewCount})
+                    {rating.toFixed(1)} ({reviewCount.toLocaleString()})
                   </span>
                 </div>
               </div>

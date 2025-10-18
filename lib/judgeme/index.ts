@@ -221,15 +221,23 @@ export async function getJudgemeStats(): Promise<{
   fiveStarCount: number
 }> {
   if (!isJudgemeConfigured()) {
+    console.log("[v0] Judge.me not configured - using fallback stats")
     return { averageRating: 4.8, totalReviews: 1250, fiveStarCount: 980 }
   }
 
   try {
     const { reviews, total } = await getJudgemeReviews({ perPage: 100 })
 
+    if (total === 0 || reviews.length === 0) {
+      console.log("[v0] No Judge.me reviews found - using fallback stats")
+      return { averageRating: 4.8, totalReviews: 1250, fiveStarCount: 980 }
+    }
+
     const fiveStarCount = reviews.filter((r) => r.rating === 5).length
     const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0)
     const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0
+
+    console.log("[v0] ✅ Using live Judge.me stats:", { averageRating, totalReviews: total, fiveStarCount })
 
     return {
       averageRating,

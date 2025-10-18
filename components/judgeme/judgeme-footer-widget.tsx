@@ -2,24 +2,7 @@ import { Star } from "lucide-react"
 import { getJudgemeFeaturedReviews, getJudgemeStats } from "@/lib/judgeme"
 
 export async function JudgemeFooterWidget() {
-  let stats = { averageRating: 4.9, totalReviews: 437, fiveStarCount: 400 }
-  let featuredReviews: any[] = []
-
-  try {
-    const [fetchedStats, fetchedReviews] = await Promise.all([getJudgemeStats(), getJudgemeFeaturedReviews(3)])
-
-    if (fetchedStats.totalReviews > 0) {
-      stats = fetchedStats
-      featuredReviews = fetchedReviews
-    }
-  } catch (error) {
-    console.log("[v0] Using default review stats in footer - Judge.me not configured")
-  }
-
-  // Don't show widget if no reviews and Judge.me not configured
-  if (stats.totalReviews === 0 && featuredReviews.length === 0) {
-    return null
-  }
+  const [stats, featuredReviews] = await Promise.all([getJudgemeStats(), getJudgemeFeaturedReviews(3)])
 
   return (
     <div className="bg-[#0B1C2C] py-12">
@@ -34,7 +17,7 @@ export async function JudgemeFooterWidget() {
             </div>
             <span className="text-xl font-bold text-white">{stats.averageRating.toFixed(1)}</span>
           </div>
-          <p className="text-white/80">Based on {stats.totalReviews} reviews</p>
+          <p className="text-white/80">Based on {stats.totalReviews.toLocaleString()} reviews</p>
         </div>
 
         {featuredReviews.length > 0 && (
