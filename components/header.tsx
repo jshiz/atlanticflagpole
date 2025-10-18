@@ -30,7 +30,7 @@ export async function Header() {
   const startTime = Date.now()
 
   const [menuData, nflFlagProducts, christmasTreeProducts] = await Promise.all([
-    getMenu("ultimate-menu"),
+    getMenu("main-menu-new"),
     getProducts({ first: 12, query: "tag:nfl-flags" }).catch(() => []),
     getProducts({ first: 8, query: "tag:Christmas Tree" }).catch(() => []),
   ])

@@ -242,6 +242,53 @@ export async function getCollections(first = 10): Promise<ShopifyCollection[]> {
   return toNodes(data.collections)
 }
 
+export async function getAllCollections(): Promise<ShopifyCollection[]> {
+  const allCollections: ShopifyCollection[] = []
+  let hasNextPage = true
+  let cursor: string | null = null
+
+  while (hasNextPage) {
+    const query = /* gql */ `
+      query getAllCollections($first: Int!, $after: String) {
+        collections(first: $first, after: $after, sortKey: TITLE) {
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+          nodes {
+            id
+            title
+            handle
+            description
+            image {
+              url
+              altText
+              thumbhash
+            }
+          }
+        }
+      }
+    `
+
+    const { data } = await shopifyFetch<{
+      collections: {
+        pageInfo: { hasNextPage: boolean; endCursor: string }
+      } & ConnectionLike<ShopifyCollection>
+    }>({
+      query,
+      variables: { first: 250, after: cursor },
+      tags: ["collections"],
+    })
+
+    allCollections.push(...toNodes(data.collections))
+    hasNextPage = data.collections?.pageInfo?.hasNextPage || false
+    cursor = data.collections?.pageInfo?.endCursor || null
+  }
+
+  console.log(`[v0] Fetched ${allCollections.length} total collections from Shopify`)
+  return allCollections
+}
+
 export async function getCollectionProducts({
   collection,
   limit = DEFAULT_PAGE_SIZE,

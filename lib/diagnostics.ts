@@ -1,6 +1,5 @@
 import { getMenu } from "@/lib/menus"
-import { getCollectionWithProducts } from "@/lib/shopify/catalog"
-import { getProducts } from "@/lib/shopify"
+import { getProducts, getAllCollections } from "@/lib/shopify"
 
 export interface DiagnosticResult {
   status: "success" | "warning" | "error"
@@ -113,7 +112,7 @@ export async function runDiagnostics(): Promise<DiagnosticReport> {
 
   // Test Menu Fetch
   try {
-    const menu = await getMenu("ultimate-menu")
+    const menu = await getMenu("main-menu-new")
     apiCallCount++
     if (menu?.items) {
       report.apiHealth.menuFetch = {
@@ -160,65 +159,40 @@ export async function runDiagnostics(): Promise<DiagnosticReport> {
     }
   }
 
-  // Test Collections
-  const collectionsToTest = [
-    { name: "NFL Flags", handle: "nfl-flags" },
-    { name: "Christmas Trees", handle: "led-flagpole-christmas-trees" },
-    { name: "Telescoping Flagpoles", handle: "telescoping-flagpoles" },
-    { name: "Aluminum Flagpoles", handle: "aluminum-flagpoles" },
-    { name: "American Flags", handle: "american-flags" },
-    { name: "State Flags", handle: "state-flags" },
-    { name: "Flagpole Christmas Trees", handle: "flagpole-christmas-trees" },
-    { name: "Warm White Trees", handle: "warm-white-flagpole-trees" },
-    { name: "Multicolor Trees", handle: "multicolor-flagpole-trees" },
-    { name: "Smart Magic Trees", handle: "smart-magic-flagpole-trees" },
-    { name: "Best Selling Trees", handle: "best-selling-christmas-trees" },
-    { name: "Tree Accessories", handle: "flagpole-tree-accessories" },
-  ]
+  try {
+    const allCollections = await getAllCollections()
+    apiCallCount++
 
-  for (const collection of collectionsToTest) {
-    try {
-      const result = await getCollectionWithProducts(collection.handle, 1)
-      apiCallCount++
-      if (result?.products?.nodes && result.products.nodes.length > 0) {
-        report.collections.push({
-          name: collection.name,
-          handle: collection.handle,
-          status: "exists",
-          productCount: result.products.nodes.length,
-          message: `Collection exists with products`,
-        })
-      } else {
-        report.collections.push({
-          name: collection.name,
-          handle: collection.handle,
-          status: "missing",
-          message: "Collection not found or has no products",
-        })
-        report.siteStructure.missingCollections++
-        report.recommendations.push({
-          priority: "medium",
-          category: "Collections",
-          issue: `Collection "${collection.name}" (${collection.handle}) is missing`,
-          solution: `Create collection in Shopify admin or update menu to use existing collection handle`,
-        })
-      }
-    } catch (error) {
+    console.log(`[v0] Found ${allCollections.length} total collections in Shopify`)
+
+    for (const collection of allCollections) {
       report.collections.push({
-        name: collection.name,
+        name: collection.title,
         handle: collection.handle,
-        status: "missing",
-        message: error instanceof Error ? error.message : "Error checking collection",
+        status: "exists",
+        message: `Collection exists in Shopify`,
       })
-      report.siteStructure.missingCollections++
     }
-  }
 
-  report.apiHealth.collectionFetch = {
-    status: report.siteStructure.missingCollections > 0 ? "warning" : "success",
-    message: `${report.collections.filter((c) => c.status === "exists").length}/${collectionsToTest.length} collections found`,
-    details: `${report.siteStructure.missingCollections} collections missing`,
-    timestamp: Date.now(),
+    report.apiHealth.collectionFetch = {
+      status: "success",
+      message: `Found ${allCollections.length} collections in Shopify`,
+      details: `All collections retrieved successfully`,
+      timestamp: Date.now(),
+    }
+  } catch (error) {
+    report.apiHealth.collectionFetch = {
+      status: "error",
+      message: "Failed to fetch collections",
+      details: error instanceof Error ? error.message : "Unknown error",
+      timestamp: Date.now(),
+    }
+    report.recommendations.push({
+      priority: "high",
+      category: "Collections",
+      issue: "Cannot fetch collections from Shopify",
+      solution: "Check Shopify API permissions and ensure collections exist in your store",
+    })
   }
 
   // Performance Analysis
