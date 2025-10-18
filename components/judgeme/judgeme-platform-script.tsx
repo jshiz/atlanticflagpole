@@ -4,37 +4,50 @@ import Script from "next/script"
  * Judge.me Platform Script
  * This script initializes Judge.me widgets on the headless site.
  * Required for all Judge.me widgets to function properly.
- *
- * Note: This script will only load if Judge.me API token is configured.
- * This prevents script errors when OAuth setup is incomplete.
  */
 export function JudgeMePlatformScript() {
   const apiToken = process.env.JUDGEME_API_TOKEN
 
-  // Don't load Judge.me scripts if not configured
   if (!apiToken) {
+    console.log("[v0] Judge.me Platform Script - Skipping load (no API token)")
     return null
   }
 
   const shopDomain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || "atlantic-flag-and-pole-inc.myshopify.com"
+  const publicToken = "XFfCjOfRCyY7W7TCYv-V-tt_Vrc"
+
+  console.log("[v0] Judge.me Platform Script - Loading with API Token")
 
   return (
     <>
-      {/* Judge.me Platform Initialization Script */}
       <Script
         id="judgeme-platform-init"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: `
-            window.jdgm = window.jdgm || {};
-            window.jdgm.SHOP_DOMAIN = '${shopDomain}';
-            window.jdgm.PLATFORM = 'headless';
+            try {
+              window.jdgm = window.jdgm || {};
+              window.jdgm.SHOP_DOMAIN = '${shopDomain}';
+              window.jdgm.PLATFORM = 'shopify';
+              window.jdgm.PUBLIC_TOKEN = '${publicToken}';
+              console.log('[v0] Judge.me platform initialized with PUBLIC_TOKEN');
+            } catch (error) {
+              console.error('[v0] Judge.me platform init error:', error);
+            }
           `,
         }}
       />
 
-      {/* Judge.me Widget Loader Script */}
-      <Script src={`https://cdn.judge.me/loader.js?shop=${shopDomain}`} strategy="lazyOnload" />
+      <Script
+        src="https://cdnwidget.judge.me/widget_preloader.js"
+        strategy="lazyOnload"
+        onLoad={() => {
+          console.log("[v0] Judge.me widget preloader loaded successfully")
+        }}
+        onError={(e) => {
+          console.error("[v0] Judge.me widget preloader failed to load:", e)
+        }}
+      />
     </>
   )
 }

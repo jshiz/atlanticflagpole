@@ -61,31 +61,43 @@ async function judgemeApiFetch<T>(endpoint: string, options: RequestInit = {}): 
 
   const url = new URL(endpoint, JUDGEME_API_BASE)
   url.searchParams.set("shop_domain", shopDomain)
-  url.searchParams.set("api_token", apiToken)
+
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${apiToken}`,
+    ...options.headers,
+  }
 
   try {
+    console.log(`[v0] Judge.me API request to ${endpoint}`)
+
     const response = await fetch(url.toString(), {
       ...options,
-      headers: {
-        "Content-Type": "application/json",
-        ...options.headers,
-      },
+      headers,
       next: { revalidate: 300 }, // Cache for 5 minutes
     })
 
+    console.log(`[v0] Judge.me API response: ${response.status} ${response.statusText}`)
+
     if (!response.ok) {
+      const responseText = await response.text()
       console.warn(`[v0] Judge.me API returned ${response.status} for ${endpoint}`)
+      console.warn(`[v0] Response body: ${responseText.substring(0, 200)}`)
       return null as T
     }
 
     const contentType = response.headers.get("content-type")
     if (!contentType || !contentType.includes("application/json")) {
+      const responseText = await response.text()
       console.warn(`[v0] Judge.me API returned non-JSON response (${contentType}) for ${endpoint}`)
+      console.warn(`[v0] Response body: ${responseText.substring(0, 200)}`)
       return null as T
     }
 
     try {
-      return await response.json()
+      const data = await response.json()
+      console.log(`[v0] ✅ Judge.me API success for ${endpoint}`)
+      return data
     } catch (parseError) {
       console.warn(`[v0] Failed to parse Judge.me API response for ${endpoint}:`, parseError)
       return null as T
