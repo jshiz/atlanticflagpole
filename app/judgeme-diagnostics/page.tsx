@@ -16,13 +16,9 @@ async function JudgemeDiagnostics() {
 
   if (hasShopDomain && hasApiToken) {
     try {
-      const url = `https://judge.me/api/v1/reviews?shop_domain=${shopDomain}&per_page=1`
+      const url = `https://judge.me/api/v1/reviews?shop_domain=${shopDomain}&api_token=${apiToken}&per_page=1`
       const response = await fetch(url, {
         cache: "no-store",
-        headers: {
-          Authorization: `Bearer ${apiToken}`,
-          "Content-Type": "application/json",
-        },
       })
       const contentType = response.headers.get("content-type")
 
@@ -131,15 +127,13 @@ async function JudgemeDiagnostics() {
                 </div>
               ) : (
                 <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded p-4">
-                  <p className="text-red-800 dark:text-red-200 font-semibold mb-2">
-                    ✗ API Returned HTML Instead of JSON
-                  </p>
+                  <p className="text-red-800 dark:text-red-200 font-semibold mb-2">✗ API Authentication Failed</p>
                   <p className="text-sm text-red-700 dark:text-red-300 mb-2">
-                    This usually means your OAuth token is invalid, expired, or the authentication method is incorrect.
+                    The API token or shop domain is incorrect. Judge.me returned HTML instead of JSON data.
                   </p>
                   <details className="text-xs">
                     <summary className="cursor-pointer text-red-600 dark:text-red-400 mb-2">
-                      Show HTML Response Preview
+                      Show Response Preview
                     </summary>
                     <pre className="overflow-auto bg-background p-2 rounded max-h-40">{apiTestResult.htmlPreview}</pre>
                   </details>
@@ -155,33 +149,24 @@ async function JudgemeDiagnostics() {
 
           {!hasApiToken ? (
             <div className="space-y-3">
-              <p className="text-muted-foreground">You need to complete the OAuth flow to get your API token:</p>
+              <p className="text-muted-foreground">You need to get your Private API Token from Judge.me:</p>
               <ol className="list-decimal list-inside space-y-2 text-sm">
-                <li>
-                  Visit the{" "}
-                  <a
-                    href={`https://judge.me/oauth/authorize?client_id=${clientId || "YOUR_CLIENT_ID"}&redirect_uri=${process.env.NEXT_PUBLIC_SITE_URL || "https://atlanticflagpole.vercel.app"}/api/judgeme/callback&response_type=code`}
-                    className="text-blue-600 hover:underline"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Judge.me OAuth authorization page
-                  </a>
-                </li>
-                <li>Authorize the connection</li>
-                <li>Copy the access token from the callback page or Vercel logs</li>
+                <li>Go to your Judge.me admin dashboard</li>
+                <li>Navigate to Settings → Integrations</li>
+                <li>Look for "View API tokens" or "Judge.me API"</li>
+                <li>Copy your Private API Token</li>
                 <li>Add it as JUDGEME_API_TOKEN in Vercel environment variables</li>
                 <li>Redeploy your application</li>
               </ol>
             </div>
           ) : !apiTestResult?.isJson ? (
             <div className="space-y-3">
-              <p className="text-muted-foreground">Your API token appears to be invalid or expired:</p>
+              <p className="text-muted-foreground">Your API token or shop domain appears to be incorrect:</p>
               <ol className="list-decimal list-inside space-y-2 text-sm">
-                <li>Verify the token is the OAuth access token (not client ID or secret)</li>
-                <li>Re-run the OAuth flow to get a new token if needed</li>
+                <li>Verify you're using the Private API Token (not Public API Token)</li>
+                <li>Confirm the shop domain is: atlantic-flag-and-pole-inc.myshopify.com</li>
+                <li>Double-check the token was copied correctly (no extra spaces)</li>
                 <li>Update the JUDGEME_API_TOKEN environment variable in Vercel</li>
-                <li>Make sure the token is added as a server-side variable (not NEXT_PUBLIC_)</li>
                 <li>Redeploy your application</li>
               </ol>
             </div>
