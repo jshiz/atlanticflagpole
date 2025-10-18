@@ -1,5 +1,8 @@
 import { getProducts, getCollections } from "@/lib/shopify"
 
+export const dynamic = "force-dynamic"
+export const revalidate = 3600 // Revalidate every hour
+
 export default async function sitemap() {
   const base = "https://atlanticflagpole.vercel.app"
 

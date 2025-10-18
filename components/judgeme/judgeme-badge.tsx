@@ -20,9 +20,9 @@ export async function JudgemeBadge() {
       href="https://judge.me/reviews/stores/atlanticflagpole.com"
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+      className="flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-[#C8A55C]/10 to-[#C8A55C]/5 hover:from-[#C8A55C]/20 hover:to-[#C8A55C]/10 rounded-full transition-all duration-300 border border-[#C8A55C]/20"
     >
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-0.5">
         {[...Array(5)].map((_, i) => (
           <Star
             key={i}
@@ -30,8 +30,8 @@ export async function JudgemeBadge() {
           />
         ))}
       </div>
-      <span className="text-sm font-medium text-white">{stats.averageRating.toFixed(1)}</span>
-      <span className="text-xs text-white/80">({stats.totalReviews} reviews)</span>
+      <span className="text-sm font-semibold text-[#0B1C2C]">{stats.averageRating.toFixed(1)}</span>
+      <span className="text-xs text-gray-600">({stats.totalReviews.toLocaleString()})</span>
     </a>
   )
 }

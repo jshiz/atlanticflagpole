@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import Link from "next/link"
 import { useState } from "react"
 import { ShoppingCart, MenuIcon, X, User } from "lucide-react"
@@ -19,6 +21,8 @@ interface HeaderClientProps {
   submenuProductsData?: Record<string, any[]>
   nflFlagProducts: ShopifyProduct[]
   christmasTreeProducts: ShopifyProduct[]
+  judgemeBadge?: React.ReactNode
+  judgemeMedals?: React.ReactNode
 }
 
 export function HeaderClient({
@@ -27,6 +31,8 @@ export function HeaderClient({
   submenuProductsData = {},
   nflFlagProducts,
   christmasTreeProducts,
+  judgemeBadge,
+  judgemeMedals,
 }: HeaderClientProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
@@ -107,6 +113,14 @@ export function HeaderClient({
                 </span>
               </div>
             </Link>
+
+            {/* Right-Center: Judge.me Badge and Medals */}
+            {(judgemeBadge || judgemeMedals) && (
+              <div className="hidden lg:flex items-center gap-2 absolute left-1/2 translate-x-32">
+                {judgemeBadge}
+                {judgemeMedals}
+              </div>
+            )}
 
             {/* Right: Cart and Account */}
             <div className="flex items-center gap-4 ml-auto">

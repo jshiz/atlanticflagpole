@@ -74,12 +74,24 @@ async function judgemeApiFetch<T>(endpoint: string, options: RequestInit = {}): 
     })
 
     if (!response.ok) {
-      throw new Error(`Judge.me API error: ${response.status}`)
+      console.warn(`[v0] Judge.me API returned ${response.status} for ${endpoint}`)
+      return null as T
     }
 
-    return await response.json()
+    const contentType = response.headers.get("content-type")
+    if (!contentType || !contentType.includes("application/json")) {
+      console.warn(`[v0] Judge.me API returned non-JSON response (${contentType}) for ${endpoint}`)
+      return null as T
+    }
+
+    try {
+      return await response.json()
+    } catch (parseError) {
+      console.warn(`[v0] Failed to parse Judge.me API response for ${endpoint}:`, parseError)
+      return null as T
+    }
   } catch (error) {
-    console.error("[v0] Judge.me API fetch error:", error)
+    console.warn("[v0] Judge.me API fetch error:", error)
     return null as T
   }
 }

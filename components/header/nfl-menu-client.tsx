@@ -54,8 +54,6 @@ export function NFLMenuClient({ nflFlagProducts, onLinkClick }: NFLMenuClientPro
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 12.5vw, 5vw"
-                  onError={() => console.log(`[v0] ❌ Failed to load logo for ${team.name}`)}
-                  onLoad={() => console.log(`[v0] ✅ Loaded logo for ${team.name}`)}
                 />
                 <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-0.5">
                   <span className="text-white text-[8px] font-semibold text-center leading-tight">{team.name}</span>
@@ -82,8 +80,6 @@ export function NFLMenuClient({ nflFlagProducts, onLinkClick }: NFLMenuClientPro
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 12.5vw, 5vw"
-                  onError={() => console.log(`[v0] ❌ Failed to load logo for ${team.name}`)}
-                  onLoad={() => console.log(`[v0] ✅ Loaded logo for ${team.name}`)}
                 />
                 <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-0.5">
                   <span className="text-white text-[8px] font-semibold text-center leading-tight">{team.name}</span>

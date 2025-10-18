@@ -26,8 +26,11 @@ This guide will help you set up Judge.me reviews integration for Atlantic Flagpo
    - `JUDGEME_CLIENT_SECRET`
    - `JUDGEME_REDIRECT_URI`
 7. **Complete the OAuth flow**:
-   - Judge.me will provide an authorization URL
-   - Visit that URL and authorize the app
+   - **IMPORTANT**: The authorization URL is `https://app.judge.me/oauth/authorize` (note: `app.judge.me`, not `judge.me`)
+   - Visit: `https://app.judge.me/oauth/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&response_type=code`
+   - Replace `YOUR_CLIENT_ID` with your actual Client ID
+   - Replace `YOUR_REDIRECT_URI` with your callback URL (must be URL-encoded)
+   - Authorize the app
    - You'll be redirected to `/api/judgeme/callback`
    - The callback will exchange the code for an access token
    - Check your Vercel deployment logs for the access token

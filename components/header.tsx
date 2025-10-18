@@ -3,6 +3,8 @@ import { getCollectionWithProducts, searchProducts } from "@/lib/shopify/catalog
 import { HeaderClient } from "@/components/header-client"
 import { getProducts } from "@/lib/shopify"
 import { getCached, setCache } from "@/lib/cache"
+import { JudgemeBadge } from "@/components/judgeme/judgeme-badge"
+import { JudgemeMedals } from "@/components/judgeme/judgeme-medals"
 
 function extractCollectionHandle(url: string): string | null {
   const match = url.match(/\/collections\/([^/?]+)/)
@@ -23,6 +25,8 @@ export async function Header() {
           submenuProductsData={cached.submenuProductsData}
           nflFlagProducts={cached.nflFlagProducts}
           christmasTreeProducts={cached.christmasTreeProducts}
+          judgemeBadge={<JudgemeBadge />}
+          judgemeMedals={<JudgemeMedals />}
         />
       </>
     )
@@ -156,6 +160,8 @@ export async function Header() {
         submenuProductsData={headerData.submenuProductsData}
         nflFlagProducts={headerData.nflFlagProducts}
         christmasTreeProducts={headerData.christmasTreeProducts}
+        judgemeBadge={<JudgemeBadge />}
+        judgemeMedals={<JudgemeMedals />}
       />
     </>
   )
