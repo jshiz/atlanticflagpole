@@ -42,11 +42,9 @@ export async function GET(request: NextRequest) {
 
     const tokenData = await tokenResponse.json()
 
-    console.log("[v0] Judge.me OAuth successful! Access token received:", {
-      hasAccessToken: !!tokenData.access_token,
-      tokenType: tokenData.token_type,
-      scope: tokenData.scope,
-    })
+    console.log("[v0] Judge.me OAuth successful! Full token response:", tokenData)
+    console.log("[v0] ⚠️ IMPORTANT: Copy this access token to your environment variables:")
+    console.log("[v0] JUDGEME_API_TOKEN =", tokenData.access_token)
 
     // In a production app, you would store this token securely
     // For now, we'll redirect to a success page with instructions
