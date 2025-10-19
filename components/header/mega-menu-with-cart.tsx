@@ -189,7 +189,7 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
 
   return (
     <>
-      <div className="grid grid-cols-12 gap-6 max-w-7xl mx-auto">
+      <div className="grid grid-cols-12 gap-6 max-w-7xl mx-auto max-h-[calc(100vh-200px)] overflow-y-auto">
         {/* Left Sidebar - Categories */}
         <div className="col-span-2 border-r border-gray-100 pr-6">
           <div className="sticky top-4">

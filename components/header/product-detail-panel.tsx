@@ -134,16 +134,14 @@ export function ProductDetailPanel({ product, isOpen, onClose, position }: Produ
 
   return (
     <>
-      <div className="fixed inset-0 bg-transparent z-[100] pointer-events-none" onClick={onClose} />
-
       <div
         className="fixed z-[110] bg-white shadow-2xl rounded-lg overflow-hidden transition-all duration-300 ease-out animate-in slide-in-from-right"
         style={{
           top: "140px", // Below header
           right: "20px", // From right edge
-          width: "480px", // Smaller, more manageable width
+          width: "480px",
           maxWidth: "calc(100vw - 40px)",
-          maxHeight: "calc(100vh - 160px)",
+          maxHeight: "calc(100vh - 160px)", // Ensure panel doesn't get cut off
         }}
       >
         <button
@@ -153,7 +151,7 @@ export function ProductDetailPanel({ product, isOpen, onClose, position }: Produ
           <X className="w-4 h-4 text-gray-700" />
         </button>
 
-        <div className="overflow-y-auto max-h-[calc(100vh-160px)] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+        <div className="overflow-y-auto max-h-[calc(100vh-160px)] scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
           <div className="relative aspect-[4/3] bg-gray-100">
             {product.images?.nodes?.[0] && (
               <Image
@@ -161,6 +159,7 @@ export function ProductDetailPanel({ product, isOpen, onClose, position }: Produ
                 alt={product.images.nodes[0].altText || product.title}
                 fill
                 className="object-cover"
+                sizes="480px"
               />
             )}
             {hasDiscount && (

@@ -78,7 +78,7 @@ export function HeaderClient({
 
   return (
     <>
-      <header className="sticky top-0 z-60 bg-white border-b border-gray-200 shadow-sm">
+      <header className="sticky top-0 z-[100] bg-white border-b border-gray-200 shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16 gap-4">
             <div className="flex items-center gap-3 flex-shrink-0">
@@ -191,7 +191,7 @@ export function HeaderClient({
 
                 {/* Mega Menu Dropdown */}
                 {activeDropdown && (
-                  <div className="absolute left-0 right-0 top-full bg-white border-t border-gray-200 shadow-2xl shadow-black/10 z-70">
+                  <div className="absolute left-0 right-0 top-full bg-white border-t border-gray-200 shadow-2xl shadow-black/10 z-[90] max-h-[calc(100vh-140px)] overflow-y-auto">
                     <div className="container mx-auto px-4 py-8">
                       {menuItems.map((item) => {
                         if (activeDropdown !== item.id) return null

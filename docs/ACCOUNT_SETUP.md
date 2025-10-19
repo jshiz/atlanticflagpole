@@ -42,9 +42,8 @@ SHOPIFY_CUSTOMER_ACCOUNT_LOGOUT_URL=https://shopify.com/12345678/auth/logout
 NEXT_PUBLIC_SITE_URL=https://your-domain.com
 SESSION_SECRET=your_random_secret_key_min_32_chars
 
-# Judge.me (Optional - for reviews)
+# Judge.me (Optional - for reviews, server-side only)
 JUDGEME_API_TOKEN=your_judgeme_api_token
-NEXT_PUBLIC_JUDGEME_PUBLIC_TOKEN=your_judgeme_public_token
 \`\`\`
 
 ## Shopify Customer Account API Setup

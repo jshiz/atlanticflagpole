@@ -12,7 +12,6 @@ import { JudgeMePlatformScript } from "@/components/judgeme/judgeme-platform-scr
 import { StickyCartBar } from "@/components/cart/sticky-cart-bar"
 import { PhoenixHomeTrialBar } from "@/components/phoenix-home-trial-bar"
 import { GeoProvider } from "@/lib/geo/context"
-import { LoadingScreen } from "@/components/loading-screen"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -45,8 +44,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans ${inter.variable} ${jetbrainsMono.variable} ${cinzel.variable}`}>
-        <LoadingScreen />
+      <body className={`font-sans ${inter.variable} ${jetbrainsMono.variable} ${cinzel.variable} animate-fade-in-page`}>
         <CartProvider>
           <GeoProvider>
             <PhoenixHomeTrialBar />
