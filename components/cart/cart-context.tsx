@@ -22,7 +22,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<ShopifyCart | null>(null)
   const [loading, setLoading] = useState(false)
 
-  // Load cart from localStorage on mount
   useEffect(() => {
     const loadCart = async () => {
       const cartId = localStorage.getItem(CART_ID_KEY)
@@ -35,7 +34,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             localStorage.removeItem(CART_ID_KEY)
           }
         } catch (error) {
-          console.error("Error loading cart:", error)
+          console.error("[v0] Error loading cart:", error)
           localStorage.removeItem(CART_ID_KEY)
         }
       }
@@ -45,17 +44,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addToCart = useCallback(
     async (variantId: string, quantity = 1) => {
+      if (loading) {
+        console.log("[v0] Add to cart already in progress")
+        return
+      }
+
       setLoading(true)
       try {
         let currentCart = cart
 
-        // Create cart if it doesn't exist
         if (!currentCart) {
           currentCart = await createCart()
           localStorage.setItem(CART_ID_KEY, currentCart.id)
         }
 
-        // Add item to cart
         const updatedCart = await addCartLines(currentCart.id, [
           {
             merchandiseId: variantId,
@@ -71,7 +73,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           description: `${quantity} item${quantity > 1 ? "s" : ""} added to your cart`,
         })
       } catch (error) {
-        console.error("Error adding to cart:", error)
+        console.error("[v0] Error adding to cart:", error)
         toast({
           title: "Failed to add to cart",
           description: "Please try again",
@@ -81,12 +83,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setLoading(false)
       }
     },
-    [cart],
+    [cart, loading],
   )
 
   const updateCartLine = useCallback(
     async (lineId: string, quantity: number) => {
       if (!cart) return
+
+      if (loading) {
+        console.log("[v0] Update cart already in progress")
+        return
+      }
 
       setLoading(true)
       try {
@@ -97,7 +104,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           title: "Cart updated",
         })
       } catch (error) {
-        console.error("Error updating cart:", error)
+        console.error("[v0] Error updating cart:", error)
         toast({
           title: "Failed to update cart",
           description: "Please try again",
@@ -107,12 +114,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setLoading(false)
       }
     },
-    [cart],
+    [cart, loading],
   )
 
   const removeFromCart = useCallback(
     async (lineId: string) => {
       if (!cart) return
+
+      if (loading) {
+        console.log("[v0] Remove from cart already in progress")
+        return
+      }
 
       setLoading(true)
       try {
@@ -123,7 +135,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           title: "Item removed from cart",
         })
       } catch (error) {
-        console.error("Error removing from cart:", error)
+        console.error("[v0] Error removing from cart:", error)
         toast({
           title: "Failed to remove item",
           description: "Please try again",
@@ -133,7 +145,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setLoading(false)
       }
     },
-    [cart],
+    [cart, loading],
   )
 
   const clearCart = useCallback(() => {

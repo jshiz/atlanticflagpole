@@ -41,9 +41,14 @@ function rewriteToProducts(req: NextRequest, type: "Flagpole" | "Flag" | "Access
 }
 
 export function middleware(req: NextRequest) {
-  // Middleware disabled - let Next.js handle routing naturally
-  // Collections will be handled by app/collections/[handle]/page.tsx
-  return NextResponse.next()
+  try {
+    // Middleware disabled - let Next.js handle routing naturally
+    // Collections will be handled by app/collections/[handle]/page.tsx
+    return NextResponse.next()
+  } catch (error) {
+    console.error("[v0] Middleware error:", error)
+    return NextResponse.next()
+  }
 }
 
 export const config = {

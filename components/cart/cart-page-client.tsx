@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card"
 import Image from "next/image"
 import Link from "next/link"
 import { Minus, Plus, Trash2, ShoppingBag, Package, Shield, Truck, Award, Zap, MapPin } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { getBundleConfig } from "@/lib/bundles/bundle-config"
 import { useRouter } from "next/navigation"
 import { useGeo } from "@/lib/geo/context"
@@ -32,14 +32,66 @@ export function CartPageClient() {
   const [addOnProducts, setAddOnProducts] = useState<ShopifyProduct[]>([])
   const [savingsProducts, setSavingsProducts] = useState<ShopifyProduct[]>([])
   const [loadingProducts, setLoadingProducts] = useState(true)
+  const [isUpdating, setIsUpdating] = useState(false)
+  const updateTimeoutRef = useRef<NodeJS.Timeout>()
+
+  const handleCartUpdate = useCallback(
+    async (updateFn: () => Promise<void>) => {
+      if (isUpdating) {
+        console.log("[v0] Cart update already in progress, skipping")
+        return
+      }
+
+      setIsUpdating(true)
+      try {
+        await updateFn()
+      } catch (error) {
+        console.error("[v0] Cart update failed:", error)
+      } finally {
+        if (updateTimeoutRef.current) {
+          clearTimeout(updateTimeoutRef.current)
+        }
+        updateTimeoutRef.current = setTimeout(() => {
+          setIsUpdating(false)
+        }, 300)
+      }
+    },
+    [isUpdating],
+  )
+
+  const handleCheckout = useCallback(() => {
+    if (!isUpdating) {
+      router.push("/checkout")
+    }
+  }, [router, isUpdating])
+
+  const handleQuickAdd = useCallback(
+    async (product: ShopifyProduct) => {
+      const variantId = product.variants.edges[0]?.node.id
+      if (variantId) {
+        await handleCartUpdate(() => addToCart(variantId, 1))
+      }
+    },
+    [addToCart, handleCartUpdate],
+  )
+
+  useEffect(() => {
+    return () => {
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const fetchGeoProducts = async () => {
       try {
         console.log("[v0] Cart - fetching geo products, location:", location)
 
-        // Fetch from the geo products API
         const response = await fetch("/api/geo/products")
+        if (!response.ok) {
+          throw new Error(`Failed to fetch geo products: ${response.status}`)
+        }
         const data = await response.json()
 
         console.log("[v0] Cart - geo products response:", data)
@@ -61,14 +113,15 @@ export function CartPageClient() {
       try {
         setLoadingProducts(true)
 
-        // Fetch all products and filter client-side for better reliability
         const [productsRes] = await Promise.all([fetch("/api/products?first=50")])
 
+        if (!productsRes.ok) {
+          throw new Error(`Failed to fetch products: ${productsRes.status}`)
+        }
         const productsData = await productsRes.json()
         console.log("[v0] Cart - fetched products for upsells:", productsData)
 
         if (productsData.products && Array.isArray(productsData.products)) {
-          // Filter for accessories (products with "accessory" or "mount" or "hardware" in tags)
           const accessories = productsData.products
             .filter((p: ShopifyProduct) =>
               p.tags.some(
@@ -81,7 +134,6 @@ export function CartPageClient() {
             )
             .slice(0, 6)
 
-          // Filter for sale items (products with compareAtPrice)
           const saleItems = productsData.products
             .filter((p: ShopifyProduct) => {
               const hasComparePrice =
@@ -199,17 +251,6 @@ export function CartPageClient() {
     )
   }
 
-  const handleCheckout = () => {
-    router.push("/checkout")
-  }
-
-  const handleQuickAdd = async (product: ShopifyProduct) => {
-    const variantId = product.variants.edges[0]?.node.id
-    if (variantId) {
-      await addToCart(variantId, 1)
-    }
-  }
-
   const renderCartLine = (line: any) => {
     const product = line.merchandise.product
     const variant = line.merchandise
@@ -239,7 +280,6 @@ export function CartPageClient() {
               )}
             </div>
 
-            {/* Bundle Items with Plus Signs */}
             {componentsWithImages.length > 0 && (
               <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border-2 border-green-200">
                 <div className="flex items-center gap-2 mb-3">
@@ -330,8 +370,9 @@ export function CartPageClient() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => removeFromCart(line.id)}
+              onClick={() => handleCartUpdate(() => removeFromCart(line.id))}
               className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              disabled={isUpdating}
             >
               <Trash2 className="w-5 h-5" />
             </Button>
@@ -347,8 +388,8 @@ export function CartPageClient() {
                   variant="ghost"
                   size="icon"
                   className="h-10 w-10 hover:bg-gray-100"
-                  onClick={() => updateCartLine(line.id, line.quantity - 1)}
-                  disabled={line.quantity <= 1}
+                  onClick={() => handleCartUpdate(() => updateCartLine(line.id, line.quantity - 1))}
+                  disabled={line.quantity <= 1 || isUpdating}
                 >
                   <Minus className="w-4 h-4" />
                 </Button>
@@ -357,7 +398,8 @@ export function CartPageClient() {
                   variant="ghost"
                   size="icon"
                   className="h-10 w-10 hover:bg-gray-100"
-                  onClick={() => updateCartLine(line.id, line.quantity + 1)}
+                  onClick={() => handleCartUpdate(() => updateCartLine(line.id, line.quantity + 1))}
+                  disabled={isUpdating}
                 >
                   <Plus className="w-4 h-4" />
                 </Button>
@@ -428,6 +470,7 @@ export function CartPageClient() {
                       size="sm"
                       className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white text-xs py-1"
                       onClick={() => handleQuickAdd(product)}
+                      disabled={isUpdating}
                     >
                       Add to Cart
                     </Button>
@@ -451,7 +494,7 @@ export function CartPageClient() {
                   <div
                     key={product.id}
                     className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={() => handleQuickAdd(product)}
+                    onClick={() => !isUpdating && handleQuickAdd(product)}
                   >
                     {product.featuredImage && (
                       <div className="relative aspect-square mb-2 rounded overflow-hidden">
@@ -467,7 +510,11 @@ export function CartPageClient() {
                     <p className="text-sm font-bold text-[#C8A55C]">
                       ${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}
                     </p>
-                    <Button size="sm" className="w-full mt-2 bg-green-600 hover:bg-green-700 text-white text-xs py-1">
+                    <Button
+                      size="sm"
+                      className="w-full mt-2 bg-green-600 hover:bg-green-700 text-white text-xs py-1"
+                      disabled={isUpdating}
+                    >
                       Quick Add
                     </Button>
                   </div>
@@ -497,7 +544,7 @@ export function CartPageClient() {
                     <div
                       key={product.id}
                       className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer relative"
-                      onClick={() => handleQuickAdd(product)}
+                      onClick={() => !isUpdating && handleQuickAdd(product)}
                     >
                       {savings > 0 && (
                         <div className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full font-bold z-10">
@@ -519,7 +566,11 @@ export function CartPageClient() {
                         <p className="text-sm font-bold text-red-600">${price.toFixed(2)}</p>
                         {compareAt && <p className="text-xs text-gray-500 line-through">${compareAt.toFixed(2)}</p>}
                       </div>
-                      <Button size="sm" className="w-full bg-red-600 hover:bg-red-700 text-white text-xs py-1">
+                      <Button
+                        size="sm"
+                        className="w-full bg-red-600 hover:bg-red-700 text-white text-xs py-1"
+                        disabled={isUpdating}
+                      >
                         Add & Save
                       </Button>
                     </div>
@@ -559,6 +610,7 @@ export function CartPageClient() {
               onClick={handleCheckout}
               size="lg"
               className="w-full bg-[#C8A55C] hover:bg-[#a88947] text-white py-6 text-lg font-bold shadow-lg"
+              disabled={isUpdating}
             >
               Proceed to Checkout
             </Button>

@@ -2,11 +2,16 @@ import { redirect } from "next/navigation"
 import { getSession } from "./session"
 
 export async function requireAuth() {
-  const session = await getSession()
+  try {
+    const session = await getSession()
 
-  if (!session) {
+    if (!session) {
+      redirect("/account/login")
+    }
+
+    return session
+  } catch (error) {
+    console.error("[v0] Auth check failed:", error)
     redirect("/account/login")
   }
-
-  return session
 }

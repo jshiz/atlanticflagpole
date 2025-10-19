@@ -10,26 +10,41 @@ const CLIENT_ID = process.env.SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID || ""
 const REDIRECT_URI = `${process.env.NEXT_PUBLIC_SITE_URL}/api/auth/callback`
 
 export async function GET(request: NextRequest) {
+  let hasRedirected = false
+
+  const redirectToLogin = (error: string) => {
+    if (hasRedirected) return
+    hasRedirected = true
+    return NextResponse.redirect(new URL(`/account/login?error=${error}`, request.url))
+  }
+
   try {
     const searchParams = request.nextUrl.searchParams
     const code = searchParams.get("code")
     const state = searchParams.get("state")
 
     if (!code || !state) {
-      return NextResponse.redirect(new URL("/account/login?error=missing_params", request.url))
+      return redirectToLogin("missing_params")
     }
 
-    // Verify state
-    const cookieStore = await cookies()
-    const storedState = cookieStore.get("oauth_state")?.value
-    const codeVerifier = cookieStore.get("code_verifier")?.value
+    let cookieStore
+    let storedState
+    let codeVerifier
+
+    try {
+      cookieStore = await cookies()
+      storedState = cookieStore.get("oauth_state")?.value
+      codeVerifier = cookieStore.get("code_verifier")?.value
+    } catch (error) {
+      console.error("[v0] Cookie access failed:", error)
+      return redirectToLogin("invalid_state")
+    }
 
     if (!storedState || !codeVerifier || storedState !== state) {
       console.error("[v0] State mismatch or missing code verifier")
-      return NextResponse.redirect(new URL("/account/login?error=invalid_state", request.url))
+      return redirectToLogin("invalid_state")
     }
 
-    // Exchange code for tokens
     const tokenResponse = await fetch(TOKEN_URL, {
       method: "POST",
       headers: {
@@ -47,18 +62,21 @@ export async function GET(request: NextRequest) {
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text()
       console.error("[v0] Token exchange failed:", errorText)
-      return NextResponse.redirect(new URL("/account/login?error=token_exchange_failed", request.url))
+      return redirectToLogin("token_exchange_failed")
     }
 
     const tokens = await tokenResponse.json()
     const { access_token, id_token, refresh_token, expires_in } = tokens
 
-    // Decode ID token to get customer info
-    const idTokenPayload: any = jwtDecode(id_token)
+    let idTokenPayload: any
+    try {
+      idTokenPayload = jwtDecode(id_token)
+      console.log("[v0] ID token payload:", idTokenPayload)
+    } catch (error) {
+      console.error("[v0] Token decode failed:", error)
+      return redirectToLogin("token_exchange_failed")
+    }
 
-    console.log("[v0] ID token payload:", idTokenPayload)
-
-    // Create session
     await createSession({
       customerId: idTokenPayload.sub,
       email: idTokenPayload.email,
@@ -71,15 +89,22 @@ export async function GET(request: NextRequest) {
     })
 
     // Clean up OAuth cookies
-    cookieStore.delete("code_verifier")
-    cookieStore.delete("oauth_state")
-    cookieStore.delete("oauth_nonce")
+    try {
+      cookieStore.delete("code_verifier")
+      cookieStore.delete("oauth_state")
+      cookieStore.delete("oauth_nonce")
+    } catch (error) {
+      console.error("[v0] Cookie cleanup failed:", error)
+    }
 
     console.log("[v0] Session created successfully, redirecting to account")
 
-    return NextResponse.redirect(new URL("/account", request.url))
+    if (!hasRedirected) {
+      hasRedirected = true
+      return NextResponse.redirect(new URL("/account", request.url))
+    }
   } catch (error) {
     console.error("[v0] Callback error:", error)
-    return NextResponse.redirect(new URL("/account/login?error=callback_failed", request.url))
+    return redirectToLogin("callback_failed")
   }
 }
