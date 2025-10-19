@@ -6,10 +6,9 @@ export function LoadingScreen() {
   const [isVisible, setIsVisible] = useState(true)
 
   useEffect(() => {
-    // Hide loading screen after a short delay
     const timer = setTimeout(() => {
       setIsVisible(false)
-    }, 1500)
+    }, 3000)
 
     return () => clearTimeout(timer)
   }, [])
@@ -17,97 +16,106 @@ export function LoadingScreen() {
   if (!isVisible) return null
 
   return (
-    <div className="fixed inset-0 z-[100] bg-gradient-to-br from-[#0B1C2C] via-[#1a3a52] to-[#0B1C2C] flex items-center justify-center animate-out fade-out duration-500">
-      <div className="relative">
-        {/* Animated American Flag */}
-        <div className="relative w-64 h-40 perspective-1000">
-          <svg
-            viewBox="0 0 320 200"
-            className="w-full h-full"
-            style={{
-              filter: "drop-shadow(0 10px 30px rgba(0,0,0,0.3))",
-            }}
-          >
-            {/* Flag stripes with wave animation */}
-            <defs>
-              <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#B22234" />
-                <stop offset="50%" stopColor="#B22234" />
-                <stop offset="100%" stopColor="#B22234" />
-              </linearGradient>
-              <filter id="wave-shadow">
-                <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
-                <feOffset dx="2" dy="2" result="offsetblur" />
-                <feComponentTransfer>
-                  <feFuncA type="linear" slope="0.3" />
-                </feComponentTransfer>
-                <feMerge>
-                  <feMergeNode />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
+    <div className="fixed inset-0 z-[100] bg-gradient-to-br from-[#0B1C2C] via-[#1a3a52] to-[#0B1C2C] flex items-center justify-center animate-out fade-out duration-700">
+      <div className="relative flex flex-col items-center gap-8">
+        <div className="relative">
+          {/* Flagpole */}
+          <div className="absolute left-0 top-0 w-2 h-64 bg-gradient-to-b from-[#C8A55C] via-[#B8954C] to-[#A8853C] rounded-full shadow-lg" />
+          <div className="absolute left-0 top-0 w-3 h-4 bg-[#C8A55C] rounded-full" />
 
-            {/* Red stripes */}
-            {[0, 2, 4, 6, 8, 10, 12].map((i) => (
+          {/* Flag */}
+          <div className="ml-2 relative w-72 h-48">
+            <svg
+              viewBox="0 0 380 250"
+              className="w-full h-full"
+              style={{
+                filter: "drop-shadow(0 15px 40px rgba(0,0,0,0.4))",
+              }}
+            >
+              <defs>
+                {/* Wave animation path */}
+                <path id="wave1" d="M 0 0 Q 95 -8 190 0 T 380 0" fill="none" />
+                <path id="wave2" d="M 0 0 Q 95 8 190 0 T 380 0" fill="none" />
+              </defs>
+
+              {/* Red stripes with wave effect */}
+              {[0, 2, 4, 6, 8, 10, 12].map((i) => (
+                <g key={`red-${i}`}>
+                  <path
+                    d={`M 0 ${i * 19.23} Q 95 ${i * 19.23 - 6} 190 ${i * 19.23} T 380 ${i * 19.23} L 380 ${i * 19.23 + 19.23} Q 285 ${i * 19.23 + 19.23 + 6} 190 ${i * 19.23 + 19.23} T 0 ${i * 19.23 + 19.23} Z`}
+                    fill="#B22234"
+                    className="animate-wave"
+                    style={{
+                      animationDelay: `${i * 0.08}s`,
+                      transformOrigin: "left center",
+                    }}
+                  />
+                </g>
+              ))}
+
+              {/* White stripes with wave effect */}
+              {[1, 3, 5, 7, 9, 11].map((i) => (
+                <g key={`white-${i}`}>
+                  <path
+                    d={`M 0 ${i * 19.23} Q 95 ${i * 19.23 + 6} 190 ${i * 19.23} T 380 ${i * 19.23} L 380 ${i * 19.23 + 19.23} Q 285 ${i * 19.23 + 19.23 - 6} 190 ${i * 19.23 + 19.23} T 0 ${i * 19.23 + 19.23} Z`}
+                    fill="#FFFFFF"
+                    className="animate-wave"
+                    style={{
+                      animationDelay: `${i * 0.08}s`,
+                      transformOrigin: "left center",
+                    }}
+                  />
+                </g>
+              ))}
+
+              {/* Blue canton with wave */}
               <path
-                key={`red-${i}`}
-                d={`M 0 ${i * 15.38} Q 80 ${i * 15.38 - 5} 160 ${i * 15.38} T 320 ${i * 15.38} L 320 ${i * 15.38 + 15.38} Q 240 ${i * 15.38 + 15.38 + 5} 160 ${i * 15.38 + 15.38} T 0 ${i * 15.38 + 15.38} Z`}
-                fill="#B22234"
+                d="M 0 0 Q 38 -4 76 0 T 152 0 L 152 134.62 Q 114 138.62 76 134.62 T 0 134.62 Z"
+                fill="#3C3B6E"
                 className="animate-wave"
                 style={{
-                  animationDelay: `${i * 0.1}s`,
+                  transformOrigin: "left center",
                 }}
               />
-            ))}
 
-            {/* White stripes */}
-            {[1, 3, 5, 7, 9, 11].map((i) => (
-              <path
-                key={`white-${i}`}
-                d={`M 0 ${i * 15.38} Q 80 ${i * 15.38 - 5} 160 ${i * 15.38} T 320 ${i * 15.38} L 320 ${i * 15.38 + 15.38} Q 240 ${i * 15.38 + 15.38 + 5} 160 ${i * 15.38 + 15.38} T 0 ${i * 15.38 + 15.38} Z`}
-                fill="white"
-                className="animate-wave"
-                style={{
-                  animationDelay: `${i * 0.1}s`,
-                }}
-              />
-            ))}
-
-            {/* Blue canton */}
-            <path
-              d="M 0 0 Q 32 -3 64 0 T 128 0 L 128 107.69 Q 96 110.69 64 107.69 T 0 107.69 Z"
-              fill="#3C3B6E"
-              className="animate-wave"
-            />
-
-            {/* Stars (simplified) */}
-            {Array.from({ length: 50 }).map((_, i) => {
-              const row = Math.floor(i / 6)
-              const col = i % 6
-              const x = 10 + col * 20
-              const y = 10 + row * 18
-              return (
-                <circle
-                  key={`star-${i}`}
-                  cx={x}
-                  cy={y}
-                  r="2"
-                  fill="white"
-                  className="animate-pulse"
-                  style={{
-                    animationDelay: `${i * 0.02}s`,
-                  }}
-                />
-              )
-            })}
-          </svg>
+              {/* Stars in proper 50-star pattern */}
+              {Array.from({ length: 9 }).map((_, row) => {
+                const starsInRow = row % 2 === 0 ? 6 : 5
+                const offsetX = row % 2 === 0 ? 12 : 24
+                return Array.from({ length: starsInRow }).map((_, col) => {
+                  const x = offsetX + col * 24
+                  const y = 12 + row * 14
+                  return (
+                    <g key={`star-${row}-${col}`}>
+                      <polygon
+                        points={`${x},${y - 4} ${x + 1.5},${y - 1} ${x + 4.5},${y - 1} ${x + 2},${y + 1} ${x + 3},${y + 4} ${x},${y + 2} ${x - 3},${y + 4} ${x - 2},${y + 1} ${x - 4.5},${y - 1} ${x - 1.5},${y - 1}`}
+                        fill="white"
+                        className="animate-pulse"
+                        style={{
+                          animationDelay: `${(row * starsInRow + col) * 0.03}s`,
+                          animationDuration: "2s",
+                        }}
+                      />
+                    </g>
+                  )
+                })
+              })}
+            </svg>
+          </div>
         </div>
 
-        {/* Loading text */}
-        <div className="mt-8 text-center">
-          <h2 className="text-2xl font-serif font-bold text-white mb-2">ATLANTIC FLAGPOLE</h2>
-          <p className="text-[#C8A55C] text-sm tracking-widest animate-pulse">Loading...</p>
+        <div className="text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <h2 className="text-3xl font-serif font-bold text-white mb-4 tracking-wide">ATLANTIC FLAGPOLE</h2>
+          <p className="text-[#C8A55C] text-base tracking-[0.3em] font-medium mt-2">
+            <span className="inline-block animate-pulse">LOADING</span>
+            <span className="inline-block animate-bounce ml-1">.</span>
+            <span className="inline-block animate-bounce ml-0.5" style={{ animationDelay: "0.1s" }}>
+              .
+            </span>
+            <span className="inline-block animate-bounce ml-0.5" style={{ animationDelay: "0.2s" }}>
+              .
+            </span>
+          </p>
         </div>
       </div>
     </div>
