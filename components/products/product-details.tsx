@@ -5,29 +5,21 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
 import { AddToCartButton } from "@/components/cart/add-to-cart-button"
-import { ProductWatching } from "./product-watching"
-import { ShippingEstimate } from "./shipping-estimate"
-import { ProductReviewsSummary } from "./product-reviews-summary"
-import { TrustBadges } from "./trust-badges"
-import { ProductValueShowcase } from "./product-value-showcase"
+import { ProductAccordion } from "./product-accordion"
+import { JudgeMeBadge, JudgeMeReviewWidget } from "./judgeme-widgets"
 import { FrequentlyBoughtTogether } from "./frequently-bought-together"
 import { RelatedProducts } from "./related-products"
-import { CustomerReviews } from "./customer-reviews"
-import { BundleBreakdown } from "@/components/bundle/bundle-breakdown"
 import { StickyCta } from "@/components/bundle/sticky-cta"
 import type { ShopifyProduct } from "@/lib/shopify"
 import type { BundleData } from "@/lib/shopify/bundles"
 import { toNodes } from "@/lib/connection"
 import { Check, Shield, Truck, Award, Package } from "lucide-react"
-import type { ReviewsData } from "@/lib/shopify/reviews"
 
 interface ProductDetailsProps {
   product: ShopifyProduct
   relatedProducts?: ShopifyProduct[]
   bundleProducts?: ShopifyProduct[]
-  reviewsData: ReviewsData
   bundleData?: BundleData
 }
 
@@ -35,7 +27,6 @@ export function ProductDetails({
   product,
   relatedProducts = [],
   bundleProducts = [],
-  reviewsData,
   bundleData,
 }: ProductDetailsProps) {
   const images = toNodes(product.images)
@@ -52,14 +43,134 @@ export function ProductDetails({
   const hasDiscount = compareAtPrice && compareAtPrice > price
   const discountPercentage = hasDiscount ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100) : 0
 
-  const scrollToReviews = () => {
-    document.getElementById("reviews")?.scrollIntoView({ behavior: "smooth" })
-  }
-
   const isPremierBundle = bundleData?.includesPremier || false
 
+  const accordionItems = [
+    {
+      title: "Description",
+      content: <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml || product.description || "" }} />,
+      defaultOpen: true,
+    },
+  ]
+
+  if (isPremierBundle && bundleData) {
+    accordionItems.push({
+      title: "Premier Kit Includes",
+      content: (
+        <div className="space-y-3">
+          <p className="font-semibold text-[#C8A55C] mb-4">Complete Kit Components:</p>
+          <ul className="space-y-2">
+            {bundleData.components.map((component, index) => (
+              <li key={index} className="flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <span className="font-medium">{component.title}</span>
+                  {component.quantity > 1 && <span className="text-gray-600"> (x{component.quantity})</span>}
+                  {component.notes && <p className="text-sm text-gray-600 mt-1">{component.notes}</p>}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ),
+    })
+  }
+
+  accordionItems.push({
+    title: "Why This Is The Best Deal",
+    content: (
+      <div className="space-y-4">
+        <p className="font-semibold text-[#C8A55C]">Unmatched Quality & Value</p>
+        <ul className="space-y-2">
+          <li className="flex items-start gap-2">
+            <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+            <span>Made in USA with premium materials and craftsmanship</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+            <span>Lifetime warranty - we stand behind our products forever</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+            <span>365-day home trial - risk-free purchase guarantee</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+            <span>Rated #1 by thousands of satisfied customers</span>
+          </li>
+          {hasDiscount && (
+            <li className="flex items-start gap-2">
+              <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+              <span className="font-semibold text-red-600">
+                Save ${(compareAtPrice! - price).toFixed(2)} with this special offer
+              </span>
+            </li>
+          )}
+        </ul>
+      </div>
+    ),
+  })
+
+  accordionItems.push({
+    title: "Specifications",
+    content: (
+      <div className="space-y-2">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <p className="font-semibold text-sm">Product Type</p>
+            <p className="text-sm text-gray-600">{product.productType || "Flagpole Kit"}</p>
+          </div>
+          {bundleData?.flagSize && (
+            <div>
+              <p className="font-semibold text-sm">Flag Size</p>
+              <p className="text-sm text-gray-600">{bundleData.flagSize}</p>
+            </div>
+          )}
+          {bundleData?.groundSleeveSize && (
+            <div>
+              <p className="font-semibold text-sm">Ground Sleeve</p>
+              <p className="text-sm text-gray-600">{bundleData.groundSleeveSize}</p>
+            </div>
+          )}
+          <div>
+            <p className="font-semibold text-sm">Availability</p>
+            <p className="text-sm text-gray-600">{selectedVariant?.availableForSale ? "In Stock" : "Out of Stock"}</p>
+          </div>
+        </div>
+      </div>
+    ),
+  })
+
+  accordionItems.push({
+    title: "Shipping & Warranty",
+    content: (
+      <div className="space-y-4">
+        <div>
+          <p className="font-semibold mb-2">Free Shipping</p>
+          <p className="text-sm text-gray-600">
+            All orders ship free within the continental United States. Most orders ship within 1-2 business days.
+          </p>
+        </div>
+        <div>
+          <p className="font-semibold mb-2">Lifetime Warranty</p>
+          <p className="text-sm text-gray-600">
+            Every Atlantic Flagpole product is backed by our lifetime warranty. If anything goes wrong, we'll make it
+            right - no questions asked.
+          </p>
+        </div>
+        <div>
+          <p className="font-semibold mb-2">365-Day Home Trial</p>
+          <p className="text-sm text-gray-600">
+            Try your flagpole at home for a full year. If you're not completely satisfied, return it for a full refund.
+          </p>
+        </div>
+      </div>
+    ),
+  })
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <main className="max-w-screen-xl mx-auto px-4 md:px-8 py-8">
+      {/* Product Gallery & Info Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12">
         {/* Image Gallery */}
         <div className="space-y-4">
@@ -78,18 +189,26 @@ export function ProductDetails({
               </div>
             )}
             {hasDiscount && (
-              <Badge className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-lg px-4 py-2">
-                {discountPercentage}% OFF
-              </Badge>
+              <div className="absolute -top-2 -left-2">
+                <div className="relative">
+                  {/* Shadow/backing */}
+                  <div className="absolute inset-0 bg-red-700 rounded-lg transform rotate-3" />
+                  {/* Main badge */}
+                  <Badge className="relative bg-red-600 hover:bg-red-700 text-white text-lg px-4 py-2 shadow-xl border-2 border-white font-bold">
+                    {discountPercentage}% OFF
+                  </Badge>
+                </div>
+              </div>
             )}
             {isPremierBundle && (
-              <Badge className="absolute top-4 left-4 bg-[#C8A55C] hover:bg-[#a88947] text-white text-sm px-3 py-1.5 flex items-center gap-1.5">
+              <Badge className="absolute top-4 right-4 bg-[#C8A55C] hover:bg-[#a88947] text-white text-sm px-3 py-1.5 flex items-center gap-1.5">
                 <Package className="w-4 h-4" />
                 Includes Premier Kit
               </Badge>
             )}
           </div>
 
+          {/* Thumbnail Grid */}
           {images.length > 1 && (
             <div className="grid grid-cols-4 gap-4">
               {images.map((image, index) => (
@@ -115,7 +234,7 @@ export function ProductDetails({
         {/* Product Info */}
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl md:text-4xl font-serif font-bold text-[#0B1C2C] mb-4 text-balance">
+            <h1 className="text-3xl md:text-4xl font-serif font-bold text-[#0B1C2C] mb-4 text-balance leading-tight">
               {product.title}
             </h1>
 
@@ -126,18 +245,18 @@ export function ProductDetails({
               </Badge>
             )}
 
-            <div className="flex items-center gap-4 mb-4">
-              <ProductReviewsSummary onViewReviews={scrollToReviews} />
+            <div className="mb-4">
+              <JudgeMeBadge productHandle={product.handle} />
             </div>
 
-            <ProductWatching />
-
-            <div className="flex items-center gap-3 mt-4">
+            <div className="flex items-baseline gap-3 flex-wrap">
               <span className="text-4xl font-bold text-[#0B1C2C]">${price.toFixed(2)}</span>
               {hasDiscount && compareAtPrice && (
                 <>
-                  <span className="text-xl text-gray-500 line-through">${compareAtPrice.toFixed(2)}</span>
-                  <Badge variant="destructive" className="text-sm">
+                  <span className="text-2xl text-gray-400 line-through font-semibold">
+                    ${compareAtPrice.toFixed(2)}
+                  </span>
+                  <Badge className="bg-red-600 hover:bg-red-700 text-white text-base px-3 py-1.5 font-bold shadow-md">
                     Save ${(compareAtPrice - price).toFixed(2)}
                   </Badge>
                 </>
@@ -145,85 +264,64 @@ export function ProductDetails({
             </div>
           </div>
 
-          {product.description && (
-            <div className="prose prose-sm max-w-none">
-              <p className="text-[#0B1C2C]/80 leading-relaxed">{product.description}</p>
-            </div>
-          )}
-
-          <Separator />
-
-          <ShippingEstimate />
-
-          {/* Variant Selection */}
           {variants.length > 1 && (
             <div className="space-y-3">
               <label className="text-sm font-semibold text-[#0B1C2C]">Select Option:</label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-wrap gap-3">
                 {variants.map((variant) => (
                   <Button
                     key={variant.id}
                     variant={selectedVariant?.id === variant.id ? "default" : "outline"}
                     onClick={() => setSelectedVariant(variant)}
-                    className={selectedVariant?.id === variant.id ? "bg-[#C8A55C] hover:bg-[#a88947]" : ""}
+                    className={`max-w-[150px] h-auto py-3 px-4 text-sm leading-tight ${
+                      selectedVariant?.id === variant.id ? "bg-[#C8A55C] hover:bg-[#a88947]" : ""
+                    }`}
                   >
-                    {variant.title}
+                    <span className="line-clamp-2 text-balance">{variant.title}</span>
                   </Button>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Add to Cart */}
           {selectedVariant && (
             <div className="space-y-3">
-              <AddToCartButton variantId={selectedVariant.id} availableForSale={selectedVariant.availableForSale} />
-
-              <Button
-                variant="outline"
-                className="w-full py-6 text-base font-semibold border-2 hover:bg-[#5A31F4] hover:text-white hover:border-[#5A31F4] bg-transparent"
-                size="lg"
-              >
-                <svg className="w-16 h-5 mr-2" viewBox="0 0 80 20" fill="currentColor">
-                  <path d="M13.937 5.194c-.897 0-1.72.448-2.318 1.194V5.418h-2.692v13.164h2.767v-4.478c.598.672 1.421 1.12 2.243 1.12 2.094 0 3.814-1.791 3.814-4.925 0-3.134-1.72-5.105-3.814-5.105zm-.598 7.687c-1.047 0-1.87-.896-1.87-2.537 0-1.642.823-2.538 1.87-2.538 1.047 0 1.87.896 1.87 2.538 0 1.641-.823 2.537-1.87 2.537z" />
-                  <path d="M23.117 5.194c-2.617 0-4.561 1.94-4.561 4.925 0 2.985 1.944 4.925 4.561 4.925 2.617 0 4.561-1.94 4.561-4.925 0-2.985-1.944-4.925-4.561-4.925zm0 7.687c-1.047 0-1.87-.896-1.87-2.537 0-1.642.823-2.538 1.87-2.538 1.047 0 1.87.896 1.87 2.538 0 1.641-.823 2.537-1.87 2.537z" />
-                  <path d="M35.154 5.194c-.897 0-1.72.448-2.318 1.194V5.418h-2.692v13.164h2.767v-4.478c.598.672 1.421 1.12 2.243 1.12 2.094 0 3.814-1.791 3.814-4.925 0-3.134-1.72-5.105-3.814-5.105zm-.598 7.687c-1.047 0-1.87-.896-1.87-2.537 0-1.642.823-2.538 1.87-2.538 1.047 0 1.87.896 1.87 2.538 0 1.641-.823 2.537-1.87 2.537z" />
-                </svg>
-                Pay
-              </Button>
+              <AddToCartButton
+                variantId={selectedVariant.id}
+                availableForSale={selectedVariant.availableForSale}
+                className="w-full py-6 text-lg"
+              />
             </div>
           )}
 
-          <TrustBadges />
-
-          {/* Features */}
+          {/* Trust Features */}
           <Card className="p-6 bg-white">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-start gap-3">
-                <Shield className="w-5 h-5 text-[#C8A55C] mt-0.5" />
+                <Shield className="w-5 h-5 text-[#C8A55C] mt-0.5 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold text-[#0B1C2C] text-sm">Lifetime Guarantee</h3>
                   <p className="text-xs text-[#0B1C2C]/70">Built to last forever</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Truck className="w-5 h-5 text-[#C8A55C] mt-0.5" />
+                <Truck className="w-5 h-5 text-[#C8A55C] mt-0.5 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold text-[#0B1C2C] text-sm">Free Shipping</h3>
                   <p className="text-xs text-[#0B1C2C]/70">On all orders</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Award className="w-5 h-5 text-[#C8A55C] mt-0.5" />
+                <Award className="w-5 h-5 text-[#C8A55C] mt-0.5 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold text-[#0B1C2C] text-sm">Made in USA</h3>
                   <p className="text-xs text-[#0B1C2C]/70">Handcrafted quality</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-[#C8A55C] mt-0.5" />
+                <Check className="w-5 h-5 text-[#C8A55C] mt-0.5 flex-shrink-0" />
                 <div>
-                  <h3 className="font-semibold text-[#0B1C2C] text-sm">30-Day Returns</h3>
+                  <h3 className="font-semibold text-[#0B1C2C] text-sm">365-Day Trial</h3>
                   <p className="text-xs text-[#0B1C2C]/70">Risk-free purchase</p>
                 </div>
               </div>
@@ -232,30 +330,28 @@ export function ProductDetails({
         </div>
       </div>
 
-      <div className="mb-12">
-        <ProductValueShowcase
-          product={product}
-          bundleData={bundleData}
-          averageRating={reviewsData.averageRating}
-          reviewCount={reviewsData.totalReviews}
-        />
-      </div>
+      <section className="mb-12">
+        <ProductAccordion items={accordionItems} />
+      </section>
 
-      {bundleData?.includesPremier && (
-        <div className="mb-12">
-          <BundleBreakdown bundleData={bundleData} />
-        </div>
-      )}
+      <section id="reviews" className="mb-12">
+        <h2 className="text-2xl md:text-3xl font-bold text-[#0B1C2C] mb-6">Customer Reviews</h2>
+        <JudgeMeReviewWidget productHandle={product.handle} productId={product.id} />
+      </section>
 
+      {/* Frequently Bought Together */}
       {bundleProducts.length > 0 && (
-        <div className="mb-12">
+        <section className="mb-12">
           <FrequentlyBoughtTogether mainProduct={product} bundleProducts={bundleProducts} />
-        </div>
+        </section>
       )}
 
-      <CustomerReviews reviewsData={reviewsData} />
-
-      {relatedProducts.length > 0 && <RelatedProducts products={relatedProducts} />}
+      {/* Related Products */}
+      {relatedProducts.length > 0 && (
+        <section className="mb-12">
+          <RelatedProducts products={relatedProducts} />
+        </section>
+      )}
 
       {isPremierBundle && selectedVariant && bundleData && (
         <StickyCta
@@ -266,6 +362,6 @@ export function ProductDetails({
           bundleData={bundleData}
         />
       )}
-    </div>
+    </main>
   )
 }

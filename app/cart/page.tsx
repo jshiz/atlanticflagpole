@@ -3,10 +3,9 @@
 import { useCart } from "@/components/cart/cart-context"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import Image from "next/image"
 import Link from "next/link"
-import { Minus, Plus, Trash2, ShoppingBag, ChevronDown, Package } from "lucide-react"
+import { Minus, Plus, Trash2, ShoppingBag, Package, Shield, Truck, Award } from "lucide-react"
 import { useState, useEffect } from "react"
 import { getBundleConfig } from "@/lib/bundles/bundle-config"
 
@@ -94,55 +93,21 @@ export default function CartPage() {
   const lines = cart?.lines?.edges ? cart.lines.edges.map((edge) => edge.node) : []
   const isEmpty = lines.length === 0
 
-  const groupedLines = lines.reduce(
-    (acc, line) => {
-      const productHandle = line.merchandise.product.handle
-      const bundleConfig = getBundleConfig(productHandle)
-
-      // Check if this is a bundle product
-      if (bundleConfig && bundleConfig.includesPremier) {
-        // This is a bundle parent - add to regular lines
-        acc.regular.push(line)
-        // Store bundle config for later use
-        acc.bundleConfigs[line.id] = bundleConfig
-      } else {
-        // Regular product
-        acc.regular.push(line)
-      }
-
-      return acc
-    },
-    {
-      regular: [] as any[],
-      bundleConfigs: {} as Record<string, any>,
-    },
-  )
-
-  const toggleBundle = (bundleId: string) => {
-    setExpandedBundles((prev) => {
-      const next = new Set(prev)
-      if (next.has(bundleId)) {
-        next.delete(bundleId)
-      } else {
-        next.add(bundleId)
-      }
-      return next
-    })
-  }
-
   const subtotal = cart?.cost?.subtotalAmount ? Number.parseFloat(cart.cost.subtotalAmount.amount) : 0
   const total = cart?.cost?.totalAmount ? Number.parseFloat(cart.cost.totalAmount.amount) : 0
 
   if (isEmpty) {
     return (
-      <main className="min-h-screen bg-[#F5F3EF]">
+      <main className="min-h-screen bg-gradient-to-b from-[#F5F3EF] to-white">
         <div className="container mx-auto px-4 py-16">
-          <Card className="max-w-md mx-auto p-8 text-center">
-            <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <h2 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-2">Your cart is empty</h2>
-            <p className="text-[#0B1C2C]/70 mb-6">Add some premium flagpoles to get started!</p>
-            <Button asChild className="bg-[#C8A55C] hover:bg-[#a88947]">
-              <Link href="/products">Shop Products</Link>
+          <Card className="max-w-md mx-auto p-12 text-center shadow-xl">
+            <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+              <ShoppingBag className="w-12 h-12 text-gray-400" />
+            </div>
+            <h2 className="text-3xl font-serif font-bold text-[#0B1C2C] mb-3">Your Cart is Empty</h2>
+            <p className="text-[#0B1C2C]/70 mb-8 text-lg">Start shopping for premium American-made flagpoles!</p>
+            <Button asChild size="lg" className="bg-[#C8A55C] hover:bg-[#a88947] text-white px-8">
+              <Link href="/collections/flagpoles">Shop Flagpoles</Link>
             </Button>
           </Card>
         </div>
@@ -151,219 +116,254 @@ export default function CartPage() {
   }
 
   const handleCheckout = () => {
-    console.log("[v0] Checkout button clicked, redirecting to:", cart?.checkoutUrl)
     if (cart?.checkoutUrl) {
       window.location.href = cart.checkoutUrl
-    } else {
-      console.error("[v0] No checkout URL available")
     }
   }
 
-  const renderCartLine = (line: any, isIncluded = false) => {
+  const renderCartLine = (line: any) => {
     const product = line.merchandise.product
     const variant = line.merchandise
     const price = Number.parseFloat(line.cost.totalAmount.amount)
     const productImages = product.images?.edges ? product.images.edges.map((edge: any) => edge.node) : []
     const image = productImages[0] || variant.image
+    const bundleConfig = getBundleConfig(product.handle)
+    const componentsWithImages = bundleComponentImages[line.id] || bundleConfig?.components || []
 
     return (
-      <div
-        key={line.id}
-        className={`flex gap-4 ${isIncluded ? "pl-12 py-3 border-l-4 border-green-500 bg-green-50/30" : "p-4"}`}
-      >
-        <div
-          className={`relative flex-shrink-0 rounded-lg overflow-hidden bg-white ${isIncluded ? "w-16 h-16" : "w-24 h-24"}`}
-        >
-          {image ? (
-            <Image
-              src={image.url || "/placeholder.svg"}
-              alt={image.altText || product.title}
-              fill
-              className="object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-100">
-              <span className="text-gray-400 text-xs">No image</span>
+      <Card key={line.id} className="overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+          {/* Column 1: Product Image & Bundle Items */}
+          <div className="space-y-4">
+            <div className="relative aspect-square rounded-lg overflow-hidden bg-white shadow-md">
+              {image ? (
+                <Image
+                  src={image.url || "/placeholder.svg"}
+                  alt={image.altText || product.title}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                  <Package className="w-16 h-16 text-gray-400" />
+                </div>
+              )}
             </div>
-          )}
-          {isIncluded && (
-            <div className="absolute inset-0 bg-green-600/10 flex items-center justify-center">
-              <span className="text-lg font-bold text-green-700">✓</span>
+
+            {/* Bundle Items with Plus Signs */}
+            {componentsWithImages.length > 0 && (
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border-2 border-green-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <Package className="w-5 h-5 text-green-700" />
+                  <h4 className="font-bold text-green-800 text-sm">Premier Kit Included</h4>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {componentsWithImages.slice(0, 6).map((component: any, idx: number) => (
+                    <div key={idx} className="relative">
+                      <div className="aspect-square rounded-md overflow-hidden bg-white shadow-sm border border-green-200">
+                        {component.imageUrl ? (
+                          <Image
+                            src={component.imageUrl || "/placeholder.svg"}
+                            alt={component.imageAlt || component.title}
+                            fill
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gray-50">
+                            <Package className="w-6 h-6 text-gray-300" />
+                          </div>
+                        )}
+                      </div>
+                      {/* Plus sign badge in bottom right */}
+                      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-600 rounded-full flex items-center justify-center shadow-md">
+                        <Plus className="w-3 h-3 text-white" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {componentsWithImages.length > 6 && (
+                  <p className="text-xs text-green-700 mt-2 text-center font-semibold">
+                    +{componentsWithImages.length - 6} more items
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Column 2: Product Details */}
+          <div className="flex flex-col justify-between">
+            <div>
+              <Link
+                href={`/products/${product.handle}`}
+                className="text-xl font-serif font-bold text-[#0B1C2C] hover:text-[#C8A55C] transition-colors line-clamp-2 mb-2"
+              >
+                {product.title}
+              </Link>
+              {variant.title !== "Default Title" && (
+                <p className="text-sm text-[#0B1C2C]/70 mb-3 font-medium">{variant.title}</p>
+              )}
+
+              {/* Trust badges */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                <div className="flex items-center gap-1 text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full">
+                  <Shield className="w-3 h-3" />
+                  <span>Lifetime Warranty</span>
+                </div>
+                <div className="flex items-center gap-1 text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full">
+                  <Award className="w-3 h-3" />
+                  <span>Made in USA</span>
+                </div>
+                <div className="flex items-center gap-1 text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded-full">
+                  <Truck className="w-3 h-3" />
+                  <span>Free Shipping</span>
+                </div>
+              </div>
+
+              {/* Bundle details */}
+              {componentsWithImages.length > 0 && (
+                <div className="bg-white border border-green-200 rounded-lg p-3 space-y-1">
+                  <p className="text-xs font-bold text-green-800 mb-2">Includes:</p>
+                  {componentsWithImages.slice(0, 4).map((component: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2 text-xs text-gray-700">
+                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                      <span className="line-clamp-1">{component.title}</span>
+                    </div>
+                  ))}
+                  {componentsWithImages.length > 4 && (
+                    <p className="text-xs text-green-600 font-semibold pt-1">
+                      + {componentsWithImages.length - 4} more items
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </div>
 
-        <div className="flex-1 min-w-0">
-          <Link
-            href={`/products/${product.handle}`}
-            className={`font-semibold text-[#0B1C2C] hover:text-[#C8A55C] transition-colors line-clamp-2 ${isIncluded ? "text-sm" : ""}`}
-          >
-            {product.title}
-          </Link>
-          {variant.title !== "Default Title" && (
-            <p className={`text-[#0B1C2C]/70 mt-1 ${isIncluded ? "text-xs" : "text-sm"}`}>{variant.title}</p>
-          )}
-          {isIncluded && (
-            <p className="text-xs text-green-700 font-semibold mt-1 flex items-center gap-1">
-              <Package className="w-3 h-3" />
-              Included in Premier Kit
-            </p>
-          )}
-          {!isIncluded && <p className="text-lg font-bold text-[#0B1C2C] mt-2">${price.toFixed(2)}</p>}
-        </div>
-
-        {!isIncluded && (
-          <div className="flex flex-col items-end justify-between">
+          {/* Column 3: Price & Actions */}
+          <div className="flex flex-col justify-between items-end">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => removeFromCart(line.id)}
               className="text-red-600 hover:text-red-700 hover:bg-red-50"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-5 h-5" />
             </Button>
 
-            <div className="flex items-center gap-2 border border-gray-300 rounded-md">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => updateCartLine(line.id, line.quantity - 1)}
-                disabled={line.quantity <= 1}
-              >
-                <Minus className="w-3 h-3" />
-              </Button>
-              <span className="w-8 text-center font-semibold">{line.quantity}</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => updateCartLine(line.id, line.quantity + 1)}
-              >
-                <Plus className="w-3 h-3" />
-              </Button>
+            <div className="text-right space-y-4">
+              <div>
+                <p className="text-sm text-gray-500 mb-1">Price</p>
+                <p className="text-3xl font-bold text-[#C8A55C]">${price.toFixed(2)}</p>
+              </div>
+
+              <div className="flex items-center gap-3 border-2 border-gray-300 rounded-lg p-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 hover:bg-gray-100"
+                  onClick={() => updateCartLine(line.id, line.quantity - 1)}
+                  disabled={line.quantity <= 1}
+                >
+                  <Minus className="w-4 h-4" />
+                </Button>
+                <span className="w-12 text-center font-bold text-lg">{line.quantity}</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 hover:bg-gray-100"
+                  onClick={() => updateCartLine(line.id, line.quantity + 1)}
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
-        )}
-      </div>
-    )
-  }
-
-  const renderBundleComponent = (component: BundleComponentWithImage, index: number) => {
-    return (
-      <div key={index} className="flex gap-4 pl-12 py-3 border-l-4 border-green-500 bg-green-50/30">
-        <div className="relative flex-shrink-0 rounded-lg overflow-hidden bg-white w-16 h-16">
-          {component.imageUrl ? (
-            <Image
-              src={component.imageUrl || "/placeholder.svg"}
-              alt={component.imageAlt || component.title}
-              fill
-              className="object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-100">
-              <Package className="w-8 h-8 text-gray-400" />
-            </div>
-          )}
-          <div className="absolute inset-0 bg-green-600/10 flex items-center justify-center">
-            <span className="text-lg font-bold text-green-700">✓</span>
-          </div>
         </div>
-
-        <div className="flex-1 min-w-0">
-          <Link
-            href={`/products/${component.handle}`}
-            className="font-semibold text-[#0B1C2C] hover:text-[#C8A55C] transition-colors text-sm line-clamp-2"
-          >
-            {component.title}
-          </Link>
-          {component.variantTitle && <p className="text-xs text-[#0B1C2C]/70 mt-1">{component.variantTitle}</p>}
-          {component.notes && <p className="text-xs text-[#0B1C2C]/60 mt-1 italic">{component.notes}</p>}
-          <p className="text-xs text-green-700 font-semibold mt-1 flex items-center gap-1">
-            <Package className="w-3 h-3" />
-            Included in Premier Kit • Qty: {component.quantity}
-          </p>
-        </div>
-      </div>
+      </Card>
     )
   }
 
   return (
-    <main className="min-h-screen bg-[#F5F3EF]">
+    <main className="min-h-screen bg-gradient-to-b from-[#F5F3EF] to-white">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl md:text-4xl font-serif font-bold text-[#0B1C2C] mb-8">Shopping Cart</h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#0B1C2C]">Shopping Cart</h1>
+          <div className="text-right">
+            <p className="text-sm text-gray-600">Secure Checkout</p>
+            <div className="flex items-center gap-1 text-green-600">
+              <Shield className="w-4 h-4" />
+              <span className="text-xs font-semibold">SSL Encrypted</span>
+            </div>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Cart Items */}
-          <div className="lg:col-span-2 space-y-4">
-            {groupedLines.regular.map((line) => {
-              const bundleConfig = groupedLines.bundleConfigs[line.id]
-              const componentsWithImages = bundleComponentImages[line.id] || bundleConfig?.components || []
-              const hasBundleItems = componentsWithImages.length > 0
-              const isExpanded = expandedBundles.has(line.id)
+          {/* Cart Items - 2 columns */}
+          <div className="lg:col-span-2 space-y-6">
+            {lines.map((line) => renderCartLine(line))}
 
-              return (
-                <Card key={line.id}>
-                  {renderCartLine(line)}
-                  {hasBundleItems && (
-                    <Collapsible open={isExpanded} onOpenChange={() => toggleBundle(line.id)}>
-                      <CollapsibleTrigger className="w-full px-4 py-3 bg-gradient-to-r from-green-50 to-green-100 border-t-2 border-green-300 flex items-center justify-between hover:from-green-100 hover:to-green-200 transition-colors">
-                        <div className="flex items-center gap-2">
-                          <Package className="w-5 h-5 text-green-700" />
-                          <span className="text-sm font-bold text-green-800">
-                            Premier Kit Included ({componentsWithImages.length} items)
-                          </span>
-                          {bundleConfig?.flagSize && (
-                            <span className="text-xs text-green-700 ml-2">• Flag: {bundleConfig.flagSize}</span>
-                          )}
-                          {bundleConfig?.groundSleeveSize && (
-                            <span className="text-xs text-green-700">• Sleeve: {bundleConfig.groundSleeveSize}</span>
-                          )}
-                        </div>
-                        <ChevronDown
-                          className={`w-5 h-5 text-green-700 transition-transform ${isExpanded ? "rotate-180" : ""}`}
-                        />
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="bg-white">
-                        {componentsWithImages.map((component: BundleComponentWithImage, index: number) =>
-                          renderBundleComponent(component, index),
-                        )}
-                      </CollapsibleContent>
-                    </Collapsible>
-                  )}
-                </Card>
-              )
-            })}
+            {/* Upsell Section */}
+            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 p-6">
+              <h3 className="text-lg font-bold text-[#0B1C2C] mb-4">Complete Your Setup</h3>
+              <div className="grid grid-cols-3 gap-4">
+                {/* Placeholder for upsell products */}
+                <div className="text-center">
+                  <div className="aspect-square bg-white rounded-lg mb-2" />
+                  <p className="text-xs font-semibold">Solar Light</p>
+                  <p className="text-sm font-bold text-[#C8A55C]">$49.99</p>
+                </div>
+              </div>
+            </Card>
           </div>
 
-          {/* Order Summary */}
+          {/* Order Summary - Sticky */}
           <div className="lg:col-span-1">
-            <Card className="p-6 sticky top-4">
-              <h2 className="text-xl font-serif font-bold text-[#0B1C2C] mb-4">Order Summary</h2>
+            <Card className="p-6 sticky top-4 shadow-xl">
+              <h2 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-6">Order Summary</h2>
 
-              <div className="space-y-3 mb-6">
+              <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-[#0B1C2C]">
-                  <span>Subtotal</span>
+                  <span>
+                    Subtotal ({lines.length} {lines.length === 1 ? "item" : "items"})
+                  </span>
                   <span className="font-semibold">${subtotal.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-[#0B1C2C]/70 text-sm">
-                  <span>Shipping</span>
-                  <span>Calculated at checkout</span>
+                <div className="flex justify-between text-green-600 font-semibold">
+                  <span className="flex items-center gap-1">
+                    <Truck className="w-4 h-4" />
+                    Shipping
+                  </span>
+                  <span>FREE</span>
                 </div>
-                <div className="border-t border-gray-200 pt-3 flex justify-between text-lg font-bold text-[#0B1C2C]">
+                <div className="border-t-2 border-gray-200 pt-4 flex justify-between text-xl font-bold text-[#0B1C2C]">
                   <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span className="text-[#C8A55C]">${total.toFixed(2)}</span>
                 </div>
               </div>
 
               <Button
                 onClick={handleCheckout}
-                className="w-full bg-[#C8A55C] hover:bg-[#a88947] text-white py-6 text-lg"
+                size="lg"
+                className="w-full bg-[#C8A55C] hover:bg-[#a88947] text-white py-6 text-lg font-bold shadow-lg"
               >
                 Proceed to Checkout
               </Button>
 
-              <p className="text-xs text-[#0B1C2C]/60 text-center mt-4">Taxes and shipping calculated at checkout</p>
+              {/* Trust badges */}
+              <div className="mt-6 pt-6 border-t border-gray-200 space-y-3">
+                <div className="flex items-center gap-3 text-sm text-gray-700">
+                  <Shield className="w-5 h-5 text-green-600" />
+                  <span>Secure SSL Encryption</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-gray-700">
+                  <Award className="w-5 h-5 text-blue-600" />
+                  <span>Lifetime Warranty</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-gray-700">
+                  <Truck className="w-5 h-5 text-purple-600" />
+                  <span>Free Shipping & Returns</span>
+                </div>
+              </div>
             </Card>
           </div>
         </div>
