@@ -8,6 +8,7 @@ import Link from "next/link"
 import { Minus, Plus, Trash2, ShoppingBag, Package, Shield, Truck, Award } from "lucide-react"
 import { useState, useEffect } from "react"
 import { getBundleConfig } from "@/lib/bundles/bundle-config"
+import { useRouter } from "next/router"
 
 interface BundleComponentWithImage {
   title: string
@@ -23,6 +24,7 @@ export default function CartPage() {
   const { cart, loading, updateCartLine, removeFromCart } = useCart()
   const [expandedBundles, setExpandedBundles] = useState<Set<string>>(new Set())
   const [bundleComponentImages, setBundleComponentImages] = useState<Record<string, BundleComponentWithImage[]>>({})
+  const router = useRouter()
 
   console.log("[v0] Cart page - cart:", cart)
   console.log("[v0] Cart page - checkoutUrl:", cart?.checkoutUrl)
@@ -116,9 +118,7 @@ export default function CartPage() {
   }
 
   const handleCheckout = () => {
-    if (cart?.checkoutUrl) {
-      window.location.href = cart.checkoutUrl
-    }
+    router.push("/checkout")
   }
 
   const renderCartLine = (line: any) => {

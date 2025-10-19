@@ -3,6 +3,7 @@ import { parseShopifyDomain } from "./parse-shopify-domain"
 import { DEFAULT_PAGE_SIZE, DEFAULT_SORT_KEY } from "./constants"
 import { toNodes } from "@/lib/connection"
 import type { ConnectionLike } from "@/lib/connection"
+import { searchProducts } from "./catalog"
 
 const rawStoreDomain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
 const fallbackStoreDomain = "v0-template.myshopify.com"
@@ -907,4 +908,4 @@ export async function sf<T = any>(query: string, variables?: Record<string, any>
   return data
 }
 
-export { shopifyFetch }
+export { shopifyFetch, searchProducts }

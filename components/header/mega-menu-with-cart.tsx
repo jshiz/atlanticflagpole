@@ -4,14 +4,11 @@ import type React from "react"
 
 import Link from "next/link"
 import Image from "next/image"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { Star, ShoppingCart, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/components/cart/cart-context"
 import { cn } from "@/lib/utils"
-import { ProductPreviewCard } from "./product-preview-card"
-import { ProductDetailPanel } from "./product-detail-panel"
-import type { ShopifyProduct } from "@/lib/shopify/types"
 
 interface MenuItem {
   id: string
@@ -147,11 +144,7 @@ function QuickAddButton({ product }: { product: Product }) {
 
 export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLinkClick }: MegaMenuWithCartProps) {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
-  const [hoveredProduct, setHoveredProduct] = useState<Product | null>(null)
   const [displayProducts, setDisplayProducts] = useState<Product[]>([])
-  const [selectedProduct, setSelectedProduct] = useState<ShopifyProduct | null>(null)
-  const [panelPosition, setPanelPosition] = useState<{ top: number; left: number } | undefined>(undefined)
-  const productRefs = useRef<Map<string, HTMLDivElement>>(new Map())
 
   useEffect(() => {
     const activeProducts = featuredProducts.filter((p) => {
@@ -170,169 +163,114 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
     return 4.0 + (hash % 10) / 10
   }
 
-  const previewableProducts = featuredProducts.filter(
-    (p) => p.handle.includes("telescoping") || p.handle.includes("flagpole") || p.handle.includes("kit"),
-  )
-
-  const handleProductClick = (e: React.MouseEvent, product: Product) => {
-    e.preventDefault()
-    const productElement = productRefs.current.get(product.id)
-    if (productElement) {
-      const rect = productElement.getBoundingClientRect()
-      setPanelPosition({
-        top: rect.top + window.scrollY,
-        left: rect.right + 20,
-      })
-    }
-    setSelectedProduct(product as unknown as ShopifyProduct)
-  }
-
   return (
-    <>
-      <div className="grid grid-cols-12 gap-6 max-w-7xl mx-auto max-h-[calc(100vh-200px)] overflow-y-auto">
-        {/* Left Sidebar - Categories */}
-        <div className="col-span-2 border-r border-gray-100 pr-6">
-          <div className="sticky top-4">
-            <h3 className="text-base font-serif font-bold text-[#0B1C2C] mb-4 pb-2 border-b-2 border-[#C8A55C]">
-              {title}
-            </h3>
-            <ul className="space-y-1">
-              {menuItems.map((item) => (
-                <li key={item.id} className="relative">
-                  <Link
-                    href={item.url}
-                    onClick={onLinkClick}
-                    onMouseEnter={() => {
-                      setHoveredCategory(item.id)
-                      const matchingProduct = previewableProducts.find((p) =>
-                        item.title.toLowerCase().includes(p.title.toLowerCase().split(" ")[0]),
-                      )
-                      if (matchingProduct) {
-                        setHoveredProduct(matchingProduct)
-                      }
-                    }}
-                    onMouseLeave={() => {
-                      setHoveredCategory(null)
-                      setHoveredProduct(null)
-                    }}
-                    className="group flex items-center justify-between text-[#0B1C2C] hover:text-[#C8A55C] transition-colors text-sm py-1.5 px-2 rounded hover:bg-[#F5F3EF]"
-                  >
-                    <span className="group-hover:translate-x-0.5 transition-transform">{item.title}</span>
-                    {item.items && item.items.length > 0 && <span className="text-xs text-gray-400">→</span>}
-                  </Link>
+    <div className="grid grid-cols-12 gap-4 max-w-7xl mx-auto max-h-[70vh] overflow-y-auto">
+      {/* Left Sidebar - Categories */}
+      <div className="col-span-2 border-r border-gray-100 pr-4">
+        <div className="sticky top-2">
+          <h3 className="text-sm font-serif font-bold text-[#0B1C2C] mb-3 pb-2 border-b border-[#C8A55C]">{title}</h3>
+          <ul className="space-y-0.5">
+            {menuItems.map((item) => (
+              <li key={item.id} className="relative">
+                <Link
+                  href={item.url}
+                  onClick={onLinkClick}
+                  onMouseEnter={() => setHoveredCategory(item.id)}
+                  onMouseLeave={() => setHoveredCategory(null)}
+                  className="group flex items-center justify-between text-[#0B1C2C] hover:text-[#C8A55C] transition-colors text-xs py-1 px-2 rounded hover:bg-[#F5F3EF]"
+                >
+                  <span className="group-hover:translate-x-0.5 transition-transform">{item.title}</span>
+                  {item.items && item.items.length > 0 && <span className="text-[10px] text-gray-400">→</span>}
+                </Link>
 
-                  {hoveredProduct && hoveredCategory === item.id && (
-                    <div
-                      onMouseEnter={() => setHoveredProduct(hoveredProduct)}
-                      onMouseLeave={() => setHoveredProduct(null)}
-                    >
-                      <ProductPreviewCard product={hoveredProduct} onClose={() => setHoveredProduct(null)} />
-                    </div>
-                  )}
-
-                  {hoveredCategory === item.id && item.items && item.items.length > 0 && !hoveredProduct && (
-                    <ul className="ml-4 mt-1 space-y-1 animate-in slide-in-from-left duration-200">
-                      {item.items.slice(0, 10).map((subItem) => (
-                        <li key={subItem.id}>
-                          <Link
-                            href={subItem.url}
-                            onClick={onLinkClick}
-                            className="text-xs text-gray-600 hover:text-[#C8A55C] transition-colors block py-1 px-2 rounded hover:bg-[#F5F3EF]"
-                          >
-                            {subItem.title}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              ))}
-            </ul>
-            <Link
-              href={`/collections/${title.toLowerCase().replace(/\s+/g, "-")}`}
-              onClick={onLinkClick}
-              className="inline-flex items-center gap-1 mt-4 text-[#C8A55C] hover:text-[#a88947] font-semibold text-xs group"
-            >
-              View All
-              <span className="group-hover:translate-x-0.5 transition-transform">→</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Right Side - Products Grid with Quick Add */}
-        <div className="col-span-10">
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Featured Products</h4>
-            <span className="text-xs text-gray-500">{displayProducts.length} products</span>
-          </div>
-
-          {displayProducts && displayProducts.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-              {displayProducts.slice(0, 12).map((product) => {
-                const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
-                const rating = getProductRating(product.id)
-
-                return (
-                  <div
-                    key={product.id}
-                    className="group pb-3"
-                    ref={(el) => {
-                      if (el) productRefs.current.set(product.id, el)
-                    }}
-                  >
-                    <button
-                      onClick={(e) => handleProductClick(e, product)}
-                      className="block w-full text-left cursor-pointer"
-                    >
-                      <div className="relative aspect-square bg-gray-50 rounded-lg overflow-hidden mb-2 shadow-sm group-hover:shadow-md transition-shadow">
-                        {product.featuredImage ? (
-                          <Image
-                            src={product.featuredImage.url || "/placeholder.svg"}
-                            alt={product.featuredImage.altText || product.title}
-                            fill
-                            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-300">
-                            <span className="text-3xl">🏴</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <h5 className="text-xs font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-3 mb-1.5 min-h-[3rem] leading-relaxed">
-                        {product.title}
-                      </h5>
-
-                      <div className="mb-2">
-                        <StarRating rating={rating} size="sm" />
-                      </div>
-
-                      <p className="text-sm font-bold text-[#C8A55C] mb-3">${price.toFixed(2)}</p>
-                    </button>
-
-                    <div className="h-9">
-                      <QuickAddButton product={product} />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          ) : (
-            <div className="text-center py-12 text-gray-400">
-              <p className="text-sm">No products available</p>
-            </div>
-          )}
+                {hoveredCategory === item.id && item.items && item.items.length > 0 && (
+                  <ul className="ml-3 mt-0.5 space-y-0.5 animate-in slide-in-from-left duration-200">
+                    {item.items.slice(0, 8).map((subItem) => (
+                      <li key={subItem.id}>
+                        <Link
+                          href={subItem.url}
+                          onClick={onLinkClick}
+                          className="text-[10px] text-gray-600 hover:text-[#C8A55C] transition-colors block py-0.5 px-2 rounded hover:bg-[#F5F3EF]"
+                        >
+                          {subItem.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+          <Link
+            href={`/collections/${title.toLowerCase().replace(/\s+/g, "-")}`}
+            onClick={onLinkClick}
+            className="inline-flex items-center gap-1 mt-3 text-[#C8A55C] hover:text-[#a88947] font-semibold text-[10px] group"
+          >
+            View All
+            <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+          </Link>
         </div>
       </div>
 
-      {/* Product Detail Panel */}
-      <ProductDetailPanel
-        product={selectedProduct}
-        isOpen={!!selectedProduct}
-        onClose={() => setSelectedProduct(null)}
-        position={panelPosition}
-      />
-    </>
+      {/* Right Side - Condensed Products Grid */}
+      <div className="col-span-10">
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Featured Products</h4>
+          <span className="text-[10px] text-gray-500">{displayProducts.length} products</span>
+        </div>
+
+        {displayProducts && displayProducts.length > 0 ? (
+          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+            {displayProducts.slice(0, 12).map((product) => {
+              const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
+              const rating = getProductRating(product.id)
+
+              return (
+                <Link
+                  key={product.id}
+                  href={`/products/${product.handle}`}
+                  onClick={onLinkClick}
+                  className="group block"
+                >
+                  <div className="relative aspect-square bg-gray-50 rounded-md overflow-hidden mb-1.5 shadow-sm group-hover:shadow-md transition-shadow">
+                    {product.featuredImage ? (
+                      <Image
+                        src={product.featuredImage.url || "/placeholder.svg"}
+                        alt={product.featuredImage.altText || product.title}
+                        fill
+                        sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, (max-width: 1024px) 20vw, 16vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-300">
+                        <span className="text-2xl">🏴</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <h5 className="text-[10px] font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-1 leading-tight">
+                    {product.title}
+                  </h5>
+
+                  <div className="mb-1">
+                    <StarRating rating={rating} size="sm" />
+                  </div>
+
+                  <p className="text-xs font-bold text-[#C8A55C] mb-2">${price.toFixed(2)}</p>
+
+                  <div className="h-7">
+                    <QuickAddButton product={product} />
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-400">
+            <p className="text-xs">No products available</p>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }

@@ -12,6 +12,7 @@ import { JudgeMePlatformScript } from "@/components/judgeme/judgeme-platform-scr
 import { StickyCartBar } from "@/components/cart/sticky-cart-bar"
 import { PhoenixHomeTrialBar } from "@/components/phoenix-home-trial-bar"
 import { GeoProvider } from "@/lib/geo/context"
+import { LocationBanner } from "@/components/geo/location-banner"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -55,6 +56,7 @@ export default function RootLayout({
             <Footer />
             <LiveChatButton />
             <StickyCartBar />
+            <LocationBanner />
           </GeoProvider>
         </CartProvider>
         <JudgeMePlatformScript />
