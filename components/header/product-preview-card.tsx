@@ -46,7 +46,7 @@ interface ProductPreviewCardProps {
 export function ProductPreviewCard({ product, onClose }: ProductPreviewCardProps) {
   const { addToCart, loading } = useCart()
   const [added, setAdded] = useState(false)
-  const [selectedVariant, setSelectedVariant] = useState(product.variants.edges[0]?.node)
+  const [selectedVariant, setSelectedVariant] = useState(product.variants?.edges?.[0]?.node)
 
   const price = Number.parseFloat(selectedVariant?.price?.amount || product.priceRange.minVariantPrice.amount)
   const rating = 4.5 // Mock rating
@@ -120,13 +120,13 @@ export function ProductPreviewCard({ product, onClose }: ProductPreviewCardProps
             {product.description && <p className="text-sm text-gray-600 mb-4 line-clamp-3">{product.description}</p>}
 
             {/* Variant Selector */}
-            {product.variants.edges.length > 1 && (
+            {product.variants?.edges && product.variants.edges.length > 1 && (
               <div className="mb-4">
                 <label className="text-xs font-semibold text-gray-700 mb-2 block">Select Option:</label>
                 <select
                   value={selectedVariant?.id}
                   onChange={(e) => {
-                    const variant = product.variants.edges.find((v) => v.node.id === e.target.value)?.node
+                    const variant = product.variants.edges?.find((v) => v.node.id === e.target.value)?.node
                     if (variant) setSelectedVariant(variant)
                   }}
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C8A55C]"

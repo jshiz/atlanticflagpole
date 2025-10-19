@@ -189,14 +189,16 @@ export function ProductDetails({
               </div>
             )}
             {hasDiscount && (
-              <div className="absolute -top-2 -left-2">
+              <div className="absolute top-0 left-0 z-10">
                 <div className="relative">
-                  {/* Shadow/backing */}
-                  <div className="absolute inset-0 bg-red-700 rounded-lg transform rotate-3" />
-                  {/* Main badge */}
-                  <Badge className="relative bg-red-600 hover:bg-red-700 text-white text-lg px-4 py-2 shadow-xl border-2 border-white font-bold">
-                    {discountPercentage}% OFF
-                  </Badge>
+                  {/* Main ribbon */}
+                  <div className="bg-gradient-to-br from-red-600 to-red-700 text-white font-bold text-base px-6 py-2.5 shadow-lg">
+                    <span className="relative z-10">{discountPercentage}% OFF</span>
+                  </div>
+                  {/* Folded corner effect - left side */}
+                  <div className="absolute -bottom-2 left-0 w-0 h-0 border-l-[20px] border-l-transparent border-t-[8px] border-t-red-900" />
+                  {/* Folded corner effect - right side */}
+                  <div className="absolute -bottom-2 right-0 w-0 h-0 border-r-[20px] border-r-transparent border-t-[8px] border-t-red-900" />
                 </div>
               </div>
             )}

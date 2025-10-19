@@ -157,11 +157,22 @@ function ProductCard({ product }: { product: ShopifyProduct }) {
   const compareAtPrice = product.compareAtPriceRange?.minVariantPrice
 
   const hasDiscount = compareAtPrice && Number.parseFloat(compareAtPrice.amount) > Number.parseFloat(price.amount)
+  const discountPercentage = hasDiscount
+    ? Math.round(
+        ((Number.parseFloat(compareAtPrice.amount) - Number.parseFloat(price.amount)) /
+          Number.parseFloat(compareAtPrice.amount)) *
+          100,
+      )
+    : 0
 
   return (
-    <Card className="group overflow-hidden border-2 border-afp-navy/10 transition-all hover:border-afp-gold hover:shadow-lg">
+    <Card
+      className={`group overflow-hidden border-2 border-afp-navy/10 transition-all hover:border-afp-gold hover:shadow-lg ${
+        hasDiscount ? "sale-glow" : ""
+      }`}
+    >
       <Link href={`/products/${product.handle}`}>
-        <div className="relative aspect-square overflow-hidden bg-gray-100">
+        <div className="relative aspect-square overflow-hidden bg-gray-50">
           {image ? (
             <Image
               src={image.url || "/placeholder.svg"}
@@ -174,7 +185,6 @@ function ProductCard({ product }: { product: ShopifyProduct }) {
               <span className="text-gray-400">No image</span>
             </div>
           )}
-          {hasDiscount && <Badge className="absolute right-2 top-2 bg-red-600 text-white">Sale</Badge>}
         </div>
         <div className="p-4">
           <h3 className="mb-2 line-clamp-2 text-lg font-semibold text-afp-navy group-hover:text-afp-gold">
@@ -183,20 +193,40 @@ function ProductCard({ product }: { product: ShopifyProduct }) {
           {product.description && (
             <p className="mb-3 line-clamp-2 text-sm text-afp-charcoal/70">{product.description}</p>
           )}
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline gap-2 flex-wrap mb-4">
             <span className="text-xl font-bold text-afp-navy">${Number.parseFloat(price.amount).toFixed(2)}</span>
             {hasDiscount && (
-              <span className="text-sm text-gray-500 line-through">
-                ${Number.parseFloat(compareAtPrice.amount).toFixed(2)}
-              </span>
+              <>
+                <span className="text-sm text-gray-500 line-through">
+                  ${Number.parseFloat(compareAtPrice.amount).toFixed(2)}
+                </span>
+                <Badge className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold">
+                  {discountPercentage}% OFF
+                </Badge>
+              </>
             )}
           </div>
-          <Button className="mt-4 w-full btn-gold group-hover:bg-afp-gold-700">
+          <Button className="w-full btn-gold group-hover:bg-afp-gold-700">
             View Details
             <ExternalLink className="ml-2 h-4 w-4" />
           </Button>
         </div>
       </Link>
+
+      <style jsx>{`
+        @keyframes subtle-glow {
+          0%, 100% {
+            box-shadow: 0 0 5px rgba(220, 38, 38, 0.1), 0 0 10px rgba(220, 38, 38, 0.05);
+          }
+          50% {
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.2), 0 0 20px rgba(220, 38, 38, 0.1);
+          }
+        }
+        
+        :global(.sale-glow) {
+          animation: subtle-glow 3s ease-in-out infinite;
+        }
+      `}</style>
     </Card>
   )
 }
