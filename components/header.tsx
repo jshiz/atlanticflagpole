@@ -63,7 +63,7 @@ export async function Header() {
             const collectionHandle = extractCollectionHandle(subItem.url)
             if (collectionHandle) {
               fetchPromises.push(
-                getCollectionWithProducts(collectionHandle, 12)
+                getCollectionWithProducts(collectionHandle, 24)
                   .then((collection) => {
                     if (collection?.products?.nodes && collection.products.nodes.length > 0) {
                       submenuProductsData[subItem.id] = collection.products.nodes
@@ -105,7 +105,7 @@ export async function Header() {
           const collectionPromise = Promise.all(
             collectionConfig.map(async (config) => {
               try {
-                const collection = await getCollectionWithProducts(config.handle, 12)
+                const collection = await getCollectionWithProducts(config.handle, 30)
                 if (collection?.products?.nodes && collection.products.nodes.length > 0) {
                   console.log(
                     `[v0] ✅ Found ${collection.products.nodes.length} products from collection "${config.handle}"`,
@@ -114,7 +114,7 @@ export async function Header() {
                 }
 
                 for (const tag of config.tags) {
-                  const tagResults = await searchProducts({ tag, first: 12 })
+                  const tagResults = await searchProducts({ tag, first: 30 })
                   if (tagResults?.nodes && tagResults.nodes.length > 0) {
                     console.log(`[v0] ✅ Found ${tagResults.nodes.length} products with tag "${tag}"`)
                     return tagResults.nodes
@@ -128,11 +128,15 @@ export async function Header() {
           ).then((results) => {
             const allProducts = results.flat()
             if (allProducts.length > 0) {
-              const uniqueProducts = Array.from(new Map(allProducts.map((p) => [p.id, p])).values())
+              const activeProducts = allProducts.filter((p) => {
+                const hasVariant = p.variants?.edges?.[0]?.node
+                return hasVariant?.availableForSale
+              })
+              const uniqueProducts = Array.from(new Map(activeProducts.map((p) => [p.id, p])).values())
               megaMenuData[item.id] = {
-                products: { nodes: uniqueProducts.slice(0, 18) },
+                products: { nodes: uniqueProducts.slice(0, 24) },
               }
-              console.log(`[v0] ✅ Total ${uniqueProducts.length} unique products for "${item.title}"`)
+              console.log(`[v0] ✅ Total ${uniqueProducts.length} unique active products for "${item.title}"`)
             }
           })
 
@@ -153,7 +157,7 @@ export async function Header() {
       nflFlagProducts: nflFlagProducts || [],
       christmasTreeProducts: christmasTreeProducts || [],
     }
-    setCache(cacheKey, headerData)
+    setCache(cacheKey, headerData, 3600000) // 1 hour in milliseconds
 
     return (
       <>

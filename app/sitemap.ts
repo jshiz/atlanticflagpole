@@ -1,38 +1,75 @@
-import { getProducts, getCollections } from "@/lib/shopify"
+import { getAllProducts, getAllCollections } from "@/lib/shopify"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 3600 // Revalidate every hour
 
-export default async function sitemap() {
-  const base = "https://atlanticflagpole.vercel.app"
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://atlanticflagpole.vercel.app"
 
-  let products: Awaited<ReturnType<typeof getProducts>> = []
-  let collections: Awaited<ReturnType<typeof getCollections>> = []
+export default async function sitemap() {
+  let products: Awaited<ReturnType<typeof getAllProducts>> = []
+  let collections: Awaited<ReturnType<typeof getAllCollections>> = []
 
   try {
-    const results = await Promise.all([getProducts({ first: 250 }), getCollections(250)])
+    console.log("[v0] Generating sitemap...")
+    const results = await Promise.all([getAllProducts(), getAllCollections()])
     products = results[0]
     collections = results[1]
+    console.log(`[v0] Sitemap: ${products.length} products, ${collections.length} collections`)
   } catch (error) {
     console.error("[v0] Sitemap generation: Failed to fetch Shopify data", error)
-    // Continue with empty arrays - sitemap will only include static routes
   }
 
+  // Static routes
   const routes = [
-    { url: `${base}/`, lastModified: new Date() },
-    { url: `${base}/collections`, lastModified: new Date() },
-    { url: `${base}/products`, lastModified: new Date() },
+    {
+      url: SITE_URL,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
+      priority: 1.0,
+    },
+    {
+      url: `${SITE_URL}/collections`,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/products`,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/help-center`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    },
+    {
+      url: `${SITE_URL}/testimonials`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    },
   ]
 
-  const prodRoutes = products.map((p) => ({
-    url: `${base}/products/${p.handle}`,
+  // Collection routes
+  const collectionRoutes = collections.map((c) => ({
+    url: `${SITE_URL}/collections/${c.handle}`,
     lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
   }))
 
-  const colRoutes = collections.map((c) => ({
-    url: `${base}/collections/${c.handle}`,
-    lastModified: new Date(),
-  }))
+  // Product routes
+  const productRoutes = products
+    .filter((p) => p.availableForSale) // Only include available products
+    .map((p) => ({
+      url: `${SITE_URL}/products/${p.handle}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    }))
 
-  return [...routes, ...colRoutes, ...prodRoutes]
+  return [...routes, ...collectionRoutes, ...productRoutes]
 }

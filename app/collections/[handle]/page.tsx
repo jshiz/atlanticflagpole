@@ -5,10 +5,15 @@ import { AdvancedFiltersWrapper } from "@/components/collections/advanced-filter
 import { COLLECTION_WITH_FILTERS } from "@/lib/shopify/queries"
 import { toNodes } from "@/lib/connection"
 import { navigationConfig, singleNavItems } from "@/lib/navigation-config"
+import { generateCollectionMetadata } from "@/lib/seo/metadata"
+import { generateCollectionSchema, generateBreadcrumbSchema } from "@/lib/seo/structured-data"
+import { StructuredData } from "@/components/seo/structured-data"
+import type { Metadata } from "next"
 
 const SHOPIFY_STORE_DOMAIN = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || "v0-template.myshopify.com"
 const SHOPIFY_STOREFRONT_TOKEN = process.env.SHOPIFY_STOREFRONT_TOKEN || ""
 const SHOPIFY_API_VERSION = process.env.SHOPIFY_STOREFRONT_API_VERSION || "2025-07"
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://atlanticflagpole.vercel.app"
 
 async function shopifyFetch<T>(query: string, variables?: Record<string, any>): Promise<T> {
   const res = await fetch(`https://${SHOPIFY_STORE_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`, {
@@ -139,6 +144,34 @@ interface CollectionPageProps {
   }
 }
 
+export async function generateMetadata({ params }: CollectionPageProps): Promise<Metadata> {
+  try {
+    const data = await shopifyFetch<{ collection: any }>(COLLECTION_WITH_FILTERS, {
+      handle: params.handle,
+      filters: [],
+      sortKey: "BEST_SELLING",
+      reverse: false,
+    })
+
+    if (data.collection) {
+      return generateCollectionMetadata(data.collection)
+    }
+  } catch (error) {
+    console.error("[v0] Error generating collection metadata:", error)
+  }
+
+  // Fallback metadata
+  const title = params.handle
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ")
+
+  return {
+    title: `${title} | Atlantic Flagpole`,
+    description: `Shop our collection of ${title.toLowerCase()} at Atlantic Flagpole`,
+  }
+}
+
 export default async function CollectionPage({ params, searchParams }: CollectionPageProps) {
   const sortKey = searchParams.sort || "BEST_SELLING"
   const reverse = searchParams.reverse === "true"
@@ -234,8 +267,18 @@ export default async function CollectionPage({ params, searchParams }: Collectio
   const productTypes = [...new Set(products.map((p: any) => p.productType).filter(Boolean))]
   const vendors = [...new Set(products.map((p: any) => p.vendor).filter(Boolean))]
 
+  const collectionSchema = generateCollectionSchema(collection)
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: "Home", url: SITE_URL },
+    { name: "Collections", url: `${SITE_URL}/collections` },
+    { name: collection.title, url: `${SITE_URL}/collections/${params.handle}` },
+  ])
+
   return (
     <main className="min-h-screen bg-[#F5F3EF]">
+      <StructuredData data={collectionSchema} />
+      <StructuredData data={breadcrumbSchema} />
+
       <div className="container mx-auto px-4 py-12">
         {collection.image && (
           <div className="mb-8 rounded-lg overflow-hidden">

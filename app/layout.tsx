@@ -11,6 +11,7 @@ import { CartProvider } from "@/components/cart/cart-context"
 import { JudgeMePlatformScript } from "@/components/judgeme/judgeme-platform-script"
 import { StickyCartBar } from "@/components/cart/sticky-cart-bar"
 import { PhoenixHomeTrialBar } from "@/components/phoenix-home-trial-bar"
+import { GeoProvider } from "@/lib/geo/context"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -45,14 +46,16 @@ export default function RootLayout({
     <html lang="en">
       <body className={`font-sans ${inter.variable} ${jetbrainsMono.variable} ${cinzel.variable}`}>
         <CartProvider>
-          <PhoenixHomeTrialBar />
-          <Suspense fallback={<HeaderSkeleton />}>
-            <Header />
-          </Suspense>
-          <Suspense fallback={null}>{children}</Suspense>
-          <Footer />
-          <LiveChatButton />
-          <StickyCartBar />
+          <GeoProvider>
+            <PhoenixHomeTrialBar />
+            <Suspense fallback={<HeaderSkeleton />}>
+              <Header />
+            </Suspense>
+            <Suspense fallback={null}>{children}</Suspense>
+            <Footer />
+            <LiveChatButton />
+            <StickyCartBar />
+          </GeoProvider>
         </CartProvider>
         <JudgeMePlatformScript />
       </body>

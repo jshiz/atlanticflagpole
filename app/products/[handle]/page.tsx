@@ -5,6 +5,10 @@ import ProductSeo from "@/components/product-seo"
 import { getProductReviews } from "@/lib/shopify/reviews"
 import { getBundleData } from "@/lib/shopify/bundles"
 import type { Metadata } from "next"
+import { LocalizedRecommendations } from "@/components/products/localized-recommendations"
+import { generateProductMetadata } from "@/lib/seo/metadata"
+import { generateProductSchema, generateBreadcrumbSchema } from "@/lib/seo/structured-data"
+import { StructuredData } from "@/components/seo/structured-data"
 
 export const revalidate = 3600 // Revalidate every hour
 
@@ -18,28 +22,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const product = await getProduct(params.handle)
   if (!product) return {}
 
-  const images = product.images?.edges ? product.images.edges.map((edge) => edge.node) : []
-  const img = images[0]?.url
-  const title = `${product.title} | Atlantic Flagpole`
-  const description = product.description?.slice(0, 150) ?? "Atlantic Flagpole"
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      type: "website",
-      url: `https://atlanticflagpole.vercel.app/products/${params.handle}`,
-      images: img ? [{ url: img, width: 1200, height: 1200, alt: product.title }] : [],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: img ? [img] : [],
-    },
-  }
+  return generateProductMetadata(product)
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
@@ -74,8 +57,40 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const bundleProducts = allProducts.filter((p) => p.id !== product.id).slice(0, 2)
 
+  const fallbackProducts = allProducts
+    .filter((p) => p.id !== product.id && p.availableForSale)
+    .slice(0, 8)
+    .map((p) => ({
+      id: p.id,
+      handle: p.handle,
+      title: p.title,
+      vendor: p.vendor || "",
+      productType: p.productType || "",
+      tags: p.tags || [],
+      availableForSale: p.availableForSale,
+      featuredImage: p.images?.nodes?.[0],
+      priceRange: p.priceRange,
+      compareAtPriceRange: p.compareAtPriceRange,
+      variants: p.variants,
+    }))
+
+  const productSchema = generateProductSchema(product, reviewsData)
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: "Home", url: process.env.NEXT_PUBLIC_SITE_URL || "https://atlanticflagpole.vercel.app" },
+    {
+      name: "Products",
+      url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://atlanticflagpole.vercel.app"}/products`,
+    },
+    {
+      name: product.title,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://atlanticflagpole.vercel.app"}/products/${product.handle}`,
+    },
+  ])
+
   return (
     <main className="min-h-screen bg-[#F5F3EF]">
+      <StructuredData data={productSchema} />
+      <StructuredData data={breadcrumbSchema} />
       <ProductSeo product={product} />
       <ProductDetails
         product={product}
@@ -84,6 +99,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         reviewsData={reviewsData}
         bundleData={bundleData}
       />
+      <LocalizedRecommendations fallbackProducts={fallbackProducts} />
     </main>
   )
 }

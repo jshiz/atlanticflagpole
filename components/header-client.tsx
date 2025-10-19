@@ -78,20 +78,20 @@ export function HeaderClient({
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+      <header className="sticky top-0 z-60 bg-white border-b border-gray-200 shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16 gap-4">
-            <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="flex items-center gap-3 flex-shrink-0">
               <button
-                className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors p-2 flex-shrink-0"
+                className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors p-2"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label="Toggle menu"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
               </button>
 
-              {/* Logo - Next to hamburger */}
-              <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
+              {/* Logo */}
+              <Link href="/" className="flex items-center gap-2 group">
                 <Image
                   src="/images/favicon.png"
                   alt="Atlantic Flagpole Logo"
@@ -99,7 +99,7 @@ export function HeaderClient({
                   height={40}
                   className="w-10 h-10 group-hover:scale-105 transition-transform duration-300"
                 />
-                <div className="hidden md:block">
+                <div className="hidden lg:block">
                   <span className="text-lg font-serif font-bold text-[#0B1C2C] tracking-tight block leading-none whitespace-nowrap">
                     ATLANTIC
                   </span>
@@ -108,14 +108,14 @@ export function HeaderClient({
                   </span>
                 </div>
               </Link>
+            </div>
 
-              <div className="flex-1 max-w-2xl">
-                <SearchBarWrapper className="w-full" />
-              </div>
+            <div className="flex-1 max-w-3xl mx-auto">
+              <SearchBarWrapper className="w-full" />
             </div>
 
             <div className="flex items-center gap-3 flex-shrink-0">
-              {/* Judge.me Badge only - removed medals */}
+              {/* Judge.me Badge */}
               {judgemeBadge && <div className="hidden lg:block">{judgemeBadge}</div>}
 
               <Link
@@ -191,7 +191,7 @@ export function HeaderClient({
 
                 {/* Mega Menu Dropdown */}
                 {activeDropdown && (
-                  <div className="absolute left-0 right-0 top-full bg-white border-t border-gray-200 shadow-2xl shadow-black/10">
+                  <div className="absolute left-0 right-0 top-full bg-white border-t border-gray-200 shadow-2xl shadow-black/10 z-70">
                     <div className="container mx-auto px-4 py-8">
                       {menuItems.map((item) => {
                         if (activeDropdown !== item.id) return null
