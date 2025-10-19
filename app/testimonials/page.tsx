@@ -8,6 +8,8 @@ export const metadata = {
   description: "Read what our customers have to say about Atlantic Flagpole products and service.",
 }
 
+export const revalidate = 3600 // Revalidate every 1 hour for testimonials page
+
 export default async function TestimonialsPage() {
   const [stats, allReviews] = await Promise.all([getJudgemeStats(), getAllJudgemeReviews(50)])
 

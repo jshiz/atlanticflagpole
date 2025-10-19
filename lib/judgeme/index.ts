@@ -155,6 +155,10 @@ async function judgemeApiFetch<T>(endpoint: string, options: RequestInit = {}): 
   }
 }
 
+import { getCached, setCache } from "@/lib/cache"
+
+const JUDGEME_CACHE_DURATION = 10 * 60 * 1000 // 10 minutes
+
 export async function getJudgemeReviews(params: {
   productHandle?: string
   page?: number
@@ -167,6 +171,13 @@ export async function getJudgemeReviews(params: {
   }
 
   try {
+    const cacheKey = `judgeme-reviews-${JSON.stringify(params)}`
+    const cached = getCached<{ reviews: JudgemeReview[]; currentPage: number; perPage: number }>(cacheKey)
+    if (cached) {
+      console.log(`[v0] ✅ Returning cached Judge.me reviews for ${cacheKey}`)
+      return cached
+    }
+
     const queryParams = new URLSearchParams()
     if (params.productHandle) queryParams.set("product_handle", params.productHandle)
     if (params.page) queryParams.set("page", params.page.toString())
@@ -184,11 +195,16 @@ export async function getJudgemeReviews(params: {
       return { reviews: [], currentPage: 1, perPage: 10 }
     }
 
-    return {
+    const result = {
       reviews: data.reviews || [],
       currentPage: data.current_page || 1,
       perPage: data.per_page || 10,
     }
+
+    setCache(cacheKey, result, JUDGEME_CACHE_DURATION)
+    console.log(`[v0] 💾 Cached Judge.me reviews for ${cacheKey}`)
+
+    return result
   } catch (error) {
     console.error("[v0] Error fetching Judge.me reviews:", error)
     return { reviews: [], currentPage: 1, perPage: 10 }
@@ -242,6 +258,13 @@ export async function getJudgemeReviewsCount(params?: {
   }
 
   try {
+    const cacheKey = `judgeme-count-${JSON.stringify(params || {})}`
+    const cached = getCached<number>(cacheKey)
+    if (cached !== null) {
+      console.log(`[v0] ✅ Returning cached Judge.me count for ${cacheKey}`)
+      return cached
+    }
+
     const queryParams = new URLSearchParams()
     if (params?.productHandle) queryParams.set("product_handle", params.productHandle)
     if (params?.minRating) queryParams.set("min_rating", params.minRating.toString())
@@ -252,7 +275,12 @@ export async function getJudgemeReviewsCount(params?: {
       return 0
     }
 
-    return data.count || 0
+    const count = data.count || 0
+
+    setCache(cacheKey, count, JUDGEME_CACHE_DURATION)
+    console.log(`[v0] 💾 Cached Judge.me count for ${cacheKey}`)
+
+    return count
   } catch (error) {
     console.error("[v0] Error fetching Judge.me reviews count:", error)
     return 0
@@ -265,6 +293,13 @@ export async function getAllJudgemeReviews(limit = 100): Promise<JudgemeReview[]
   }
 
   try {
+    const cacheKey = `judgeme-all-reviews-${limit}`
+    const cached = getCached<JudgemeReview[]>(cacheKey)
+    if (cached) {
+      console.log(`[v0] ✅ Returning cached all Judge.me reviews (limit: ${limit})`)
+      return cached
+    }
+
     const allReviews: JudgemeReview[] = []
     let page = 1
     const perPage = 50
@@ -283,7 +318,12 @@ export async function getAllJudgemeReviews(limit = 100): Promise<JudgemeReview[]
       page++
     }
 
-    return allReviews.slice(0, limit)
+    const result = allReviews.slice(0, limit)
+
+    setCache(cacheKey, result, JUDGEME_CACHE_DURATION)
+    console.log(`[v0] 💾 Cached all Judge.me reviews (${result.length} reviews)`)
+
+    return result
   } catch (error) {
     console.error("[v0] Error fetching all Judge.me reviews:", error)
     return []
@@ -296,7 +336,18 @@ export async function getJudgemeFeaturedReviews(limit = 10): Promise<JudgemeRevi
   }
 
   try {
+    const cacheKey = `judgeme-featured-${limit}`
+    const cached = getCached<JudgemeReview[]>(cacheKey)
+    if (cached) {
+      console.log(`[v0] ✅ Returning cached featured Judge.me reviews (limit: ${limit})`)
+      return cached
+    }
+
     const { reviews } = await getJudgemeReviews({ featured: true, perPage: limit })
+
+    setCache(cacheKey, reviews, JUDGEME_CACHE_DURATION)
+    console.log(`[v0] 💾 Cached featured Judge.me reviews (${reviews.length} reviews)`)
+
     return reviews
   } catch (error) {
     console.error("[v0] Error fetching featured Judge.me reviews:", error)
@@ -315,25 +366,36 @@ export async function getJudgemeStats(): Promise<{
   }
 
   try {
-    const totalReviews = await getJudgemeReviewsCount()
+    const cacheKey = "judgeme-stats"
+    const cached = getCached<{ averageRating: number; totalReviews: number; fiveStarCount: number }>(cacheKey)
+    if (cached) {
+      console.log("[v0] ✅ Returning cached Judge.me stats")
+      return cached
+    }
+
     const { reviews } = await getJudgemeReviews({ perPage: 100 })
 
-    if (totalReviews === 0 || reviews.length === 0) {
+    if (reviews.length === 0) {
       console.log("[v0] No Judge.me reviews found - using fallback stats")
       return { averageRating: 4.8, totalReviews: 1250, fiveStarCount: 980 }
     }
+
+    const totalReviews = await getJudgemeReviewsCount()
 
     const fiveStarCount = reviews.filter((r) => r.rating === 5).length
     const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0)
     const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0
 
-    console.log("[v0] ✅ Using live Judge.me stats:", { averageRating, totalReviews, fiveStarCount })
-
-    return {
+    const stats = {
       averageRating,
       totalReviews,
       fiveStarCount,
     }
+
+    setCache(cacheKey, stats, JUDGEME_CACHE_DURATION)
+    console.log("[v0] 💾 Cached Judge.me stats:", stats)
+
+    return stats
   } catch (error) {
     console.error("[v0] Error fetching Judge.me stats:", error)
     return { averageRating: 4.8, totalReviews: 1250, fiveStarCount: 980 }
