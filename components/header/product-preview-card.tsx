@@ -48,7 +48,7 @@ export function ProductPreviewCard({ product, onClose }: ProductPreviewCardProps
   const [added, setAdded] = useState(false)
   const [selectedVariant, setSelectedVariant] = useState(product.variants.edges[0]?.node)
 
-  const price = Number.parseFloat(selectedVariant?.price.amount || product.priceRange.minVariantPrice.amount)
+  const price = Number.parseFloat(selectedVariant?.price?.amount || product.priceRange.minVariantPrice.amount)
   const rating = 4.5 // Mock rating
 
   const handleAddToCart = async () => {
