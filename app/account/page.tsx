@@ -9,6 +9,10 @@ export const metadata = {
   description: "Manage your Atlantic Flagpole account, orders, and preferences",
 }
 
+export const dynamic = "force-dynamic"
+export const fetchCache = "force-no-store"
+export const revalidate = 0
+
 export default async function AccountOverviewPage() {
   const session = await requireAuth()
 

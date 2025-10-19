@@ -10,6 +10,10 @@ export const metadata = {
   description: "Manage your shipping and billing addresses",
 }
 
+export const dynamic = "force-dynamic"
+export const fetchCache = "force-no-store"
+export const revalidate = 0
+
 export default async function AddressesPage() {
   const session = await requireAuth()
 

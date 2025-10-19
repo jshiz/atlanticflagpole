@@ -8,6 +8,10 @@ export const metadata = {
   description: "View your order history and track shipments",
 }
 
+export const dynamic = "force-dynamic"
+export const fetchCache = "force-no-store"
+export const revalidate = 0
+
 export default async function OrdersPage() {
   const session = await requireAuth()
 

@@ -8,6 +8,8 @@ export const metadata = {
   description: "Manage your account security settings",
 }
 
+export const dynamic = "force-dynamic"
+
 export default async function SecurityPage() {
   await requireAuth()
 

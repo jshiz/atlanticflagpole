@@ -14,7 +14,9 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = generateHomeMetadata()
 
-export const revalidate = 600 // Revalidate every 10 minutes
+export const dynamic = "force-dynamic"
+export const fetchCache = "force-no-store"
+export const revalidate = 0
 
 export default async function Home() {
   const judgemeStats = await getJudgemeStats()

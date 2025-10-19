@@ -8,6 +8,8 @@ export const metadata = {
   description: "View and manage your product reviews",
 }
 
+export const dynamic = "force-dynamic"
+
 export default async function ReviewsPage() {
   const session = await requireAuth()
 

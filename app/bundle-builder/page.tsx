@@ -1,5 +1,7 @@
 import { BundleBuilder } from "@/components/bundle/bundle-builder"
 
+export const dynamic = "force-dynamic"
+
 export default function BundleBuilderPage() {
   return (
     <main className="min-h-screen bg-[#F5F3EF]">

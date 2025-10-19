@@ -6,6 +6,8 @@ export const metadata = {
   description: "View your saved products",
 }
 
+export const dynamic = "force-dynamic"
+
 export default async function WishlistPage() {
   await requireAuth()
 
