@@ -12,6 +12,8 @@ interface ExpandableReviewsProps {
 export function ExpandableReviews({ reviews }: ExpandableReviewsProps) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
 
+  const highRatedReviews = reviews.filter((review) => review.rating >= 4)
+
   const toggleReview = (index: number) => {
     setExpandedIndex(expandedIndex === index ? null : index)
   }
@@ -27,7 +29,7 @@ export function ExpandableReviews({ reviews }: ExpandableReviewsProps) {
         <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">Trusted by Thousands</h2>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-          {reviews.map((review, index) => {
+          {highRatedReviews.map((review, index) => {
             const isExpanded = expandedIndex === index
             const hasMedia = review.pictures && review.pictures.length > 0
 

@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { Facebook, Instagram, Youtube, Sparkles, Award, Shield, Trophy, Star } from "lucide-react"
+import Image from "next/image"
+import { Facebook, Instagram, Youtube, Sparkles } from "lucide-react"
 import { JudgemeFooterWidget } from "./judgeme/judgeme-footer-widget"
 
 const PinterestIcon = () => (
@@ -25,7 +26,8 @@ export async function Footer() {
     <>
       <JudgemeFooterWidget />
 
-      <footer className="bg-gradient-to-b from-[#0A2740] to-[#0B1C2C] text-white pb-32">
+      {/* Main Footer Background Changed to Navy Blue Gradient */}
+      <footer className="bg-gradient-to-b from-[#0B1C2C] to-[#0A2740] text-white pb-32">
         {/* Newsletter & Contact Section - Centered */}
         <div className="border-b border-white/10">
           <div className="container mx-auto px-4 py-16">
@@ -33,23 +35,23 @@ export async function Footer() {
               <div className="grid md:grid-cols-2 gap-12">
                 {/* Newsletter Block - Centered */}
                 <div className="text-center space-y-4">
-                  <div className="w-14 h-14 rounded-full bg-[#E63946] flex items-center justify-center mx-auto mb-4">
+                  <div className="w-14 h-14 rounded-full bg-[#1F6FFF] flex items-center justify-center mx-auto mb-4">
                     <Sparkles className="w-7 h-7 text-white" />
                   </div>
-                  <h3 className="text-[#C8A55C] font-bold text-2xl">Stay In The Loop</h3>
-                  <p className="text-white/80 max-w-md mx-auto">
+                  <h3 className="text-white font-bold text-2xl">Stay In The Loop</h3>
+                  <p className="text-white/90 max-w-md mx-auto">
                     Get exclusive deals, new product launches, and flagpole tips delivered to your inbox.
                   </p>
                   <form className="flex gap-2 max-w-md mx-auto pt-2">
                     <input
                       type="email"
                       placeholder="Enter your email"
-                      className="flex-1 px-4 py-3 rounded-lg bg-white/5 text-white border border-white/10 focus:border-[#1F6FFF] focus:outline-none focus:ring-2 focus:ring-[#1F6FFF]/50 placeholder:text-white/40"
+                      className="flex-1 px-4 py-3 rounded-lg bg-white/10 text-white border border-white/20 focus:border-[#1F6FFF] focus:outline-none focus:ring-2 focus:ring-[#1F6FFF]/50 placeholder:text-white/60"
                       aria-label="Email address for newsletter"
                     />
                     <button
                       type="submit"
-                      className="px-6 py-3 bg-[#E63946] hover:bg-[#D62839] text-white font-semibold rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                      className="px-6 py-3 bg-[#1F6FFF] hover:bg-[#1557CC] text-white font-semibold rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-105"
                     >
                       Subscribe
                     </button>
@@ -58,7 +60,7 @@ export async function Footer() {
 
                 {/* Contact Card - Centered */}
                 <div className="text-center space-y-4">
-                  <div className="w-14 h-14 rounded-full bg-[#1F6FFF] flex items-center justify-center mx-auto mb-4">
+                  <div className="w-14 h-14 rounded-full bg-[#C8A55C] flex items-center justify-center mx-auto mb-4">
                     <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
@@ -68,7 +70,7 @@ export async function Footer() {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-[#C8A55C] font-bold text-2xl">Got a Question?</h3>
+                  <h3 className="text-white font-bold text-2xl">Got a Question?</h3>
                   <a
                     href="tel:518-400-0765"
                     className="text-3xl font-bold text-white hover:text-[#C8A55C] transition-colors block"
@@ -79,7 +81,7 @@ export async function Footer() {
                     <input
                       type="search"
                       placeholder="What can we help you find today?"
-                      className="w-full px-4 py-3 rounded-lg bg-white/5 text-white border border-white/10 focus:border-[#1F6FFF] focus:outline-none focus:ring-2 focus:ring-[#1F6FFF]/50 placeholder:text-white/40"
+                      className="w-full px-4 py-3 rounded-lg bg-white/10 text-white border border-white/20 focus:border-[#1F6FFF] focus:outline-none focus:ring-2 focus:ring-[#1F6FFF]/50 placeholder:text-white/60"
                       aria-label="Search"
                     />
                   </div>
@@ -89,42 +91,54 @@ export async function Footer() {
           </div>
         </div>
 
-        {/* Trust Badges - Centered with Red Accents */}
-        <div className="border-b border-white/10">
+        {/* Trust Badges Section with Red Background Accent */}
+        <div className="bg-[#E63946] border-b border-white/10">
           <div className="container mx-auto px-4 py-16">
             <div className="max-w-5xl mx-auto text-center">
-              <h3 className="text-[#C8A55C] font-bold text-2xl mb-8">Trusted & Secure</h3>
+              <h3 className="text-white font-bold text-2xl mb-8">Trusted & Secure</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-[#E63946] transition-all hover:shadow-lg hover:shadow-[#E63946]/20">
-                  <div className="w-12 h-12 rounded-full bg-[#E63946]/10 flex items-center justify-center mx-auto mb-3">
-                    <Award className="w-6 h-6 text-[#E63946]" />
-                  </div>
-                  <div className="text-[#C8A55C] font-bold text-xl mb-1">A+</div>
-                  <div className="text-xs text-white/60">BBB Rating</div>
+                {/* Phoenix Flagpole Securi-Lok Logo */}
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center">
+                  <Image
+                    src="https://cdn.shopify.com/s/files/1/2133/9559/files/phoenix-flagpole-sticker-logo-final-2020-securi-lok-opt.png?v=1760562626"
+                    alt="Phoenix Flagpole Securi-Lok Technology"
+                    width={150}
+                    height={150}
+                    className="w-full h-auto max-w-[120px]"
+                  />
                 </div>
 
-                <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-[#1F6FFF] transition-all hover:shadow-lg hover:shadow-[#1F6FFF]/20">
-                  <div className="w-12 h-12 rounded-full bg-[#1F6FFF]/10 flex items-center justify-center mx-auto mb-3">
-                    <Shield className="w-6 h-6 text-[#1F6FFF]" />
-                  </div>
-                  <div className="text-[#C8A55C] font-bold text-xl mb-1">100%</div>
-                  <div className="text-xs text-white/60">Made in USA</div>
+                {/* Made in USA Badge */}
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center">
+                  <Image
+                    src="https://cdn.shopify.com/s/files/1/2133/9559/files/flagpole-made-in-the-usa.png?v=1687894210"
+                    alt="Made in the USA - American Made Flagpoles"
+                    width={150}
+                    height={150}
+                    className="w-full h-auto max-w-[120px]"
+                  />
                 </div>
 
-                <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-[#C8A55C] transition-all hover:shadow-lg hover:shadow-[#C8A55C]/20">
-                  <div className="w-12 h-12 rounded-full bg-[#C8A55C]/10 flex items-center justify-center mx-auto mb-3">
-                    <Trophy className="w-6 h-6 text-[#C8A55C]" />
-                  </div>
-                  <div className="text-[#C8A55C] font-bold text-xl mb-1">Lifetime</div>
-                  <div className="text-xs text-white/60">Warranty</div>
+                {/* 365-Day Satisfaction Guarantee */}
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center">
+                  <Image
+                    src="https://cdn.shopify.com/s/files/1/2133/9559/files/365-day-satisfaction-guarantee-phoenix-flagpole-200px.png?v=1687894210"
+                    alt="365-Day Satisfaction Guarantee"
+                    width={150}
+                    height={150}
+                    className="w-full h-auto max-w-[120px]"
+                  />
                 </div>
 
-                <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-[#E63946] transition-all hover:shadow-lg hover:shadow-[#E63946]/20">
-                  <div className="w-12 h-12 rounded-full bg-[#E63946]/10 flex items-center justify-center mx-auto mb-3">
-                    <Star className="w-6 h-6 text-[#E63946]" />
-                  </div>
-                  <div className="text-[#C8A55C] font-bold text-xl mb-1">365-Day</div>
-                  <div className="text-xs text-white/60">Home Trial</div>
+                {/* 911 Limited Edition */}
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center">
+                  <Image
+                    src="https://cdn.shopify.com/s/files/1/2133/9559/files/911-limited-edition-phoenix-flagpole-flagpole-bundle-200px.png?v=1687894210"
+                    alt="911 Limited Edition Phoenix Flagpole Bundle"
+                    width={150}
+                    height={150}
+                    className="w-full h-auto max-w-[120px]"
+                  />
                 </div>
               </div>
             </div>
@@ -136,8 +150,8 @@ export async function Footer() {
           <div className="max-w-6xl mx-auto">
             {/* Company Info & CTAs - Centered */}
             <div className="text-center mb-16 pb-16 border-b border-white/10">
-              <h3 className="text-[#C8A55C] font-bold text-3xl mb-4">Atlantic Flagpole</h3>
-              <p className="text-white/80 max-w-2xl mx-auto mb-8 text-lg leading-relaxed">
+              <h3 className="text-white font-bold text-3xl mb-4">Atlantic Flagpole</h3>
+              <p className="text-white/90 max-w-2xl mx-auto mb-8 text-lg leading-relaxed">
                 Premium American-made flagpoles with a lifetime guarantee. The last flagpole you will ever need.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
@@ -152,7 +166,7 @@ export async function Footer() {
                 </Link>
                 <Link
                   href="/?quiz=open"
-                  className="bg-[#E63946] hover:bg-[#D62839] px-6 py-3 rounded-lg text-white font-semibold transition-all shadow-lg hover:shadow-xl text-center"
+                  className="bg-[#1F6FFF] hover:bg-[#1557CC] px-6 py-3 rounded-lg text-white font-semibold transition-all shadow-lg hover:shadow-xl text-center"
                 >
                   Flagpole Quiz
                 </Link>
@@ -163,25 +177,25 @@ export async function Footer() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16 text-center">
               {/* Quick Links */}
               <div className="space-y-4">
-                <h4 className="text-[#C8A55C] font-semibold text-lg mb-6">Quick Links</h4>
+                <h4 className="text-white font-semibold text-lg mb-6">Quick Links</h4>
                 <ul className="space-y-3">
                   <li>
-                    <Link href="/products" className="text-white/80 hover:text-[#C8A55C] transition-colors">
+                    <Link href="/products" className="text-white/90 hover:text-white transition-colors">
                       Products
                     </Link>
                   </li>
                   <li>
-                    <Link href="/about" className="text-white/80 hover:text-[#C8A55C] transition-colors">
+                    <Link href="/about" className="text-white/90 hover:text-white transition-colors">
                       About Us
                     </Link>
                   </li>
                   <li>
-                    <Link href="/warranty" className="text-white/80 hover:text-[#C8A55C] transition-colors">
+                    <Link href="/warranty" className="text-white/90 hover:text-white transition-colors">
                       Warranty
                     </Link>
                   </li>
                   <li>
-                    <Link href="/contact" className="text-white/80 hover:text-[#C8A55C] transition-colors">
+                    <Link href="/contact" className="text-white/90 hover:text-white transition-colors">
                       Contact
                     </Link>
                   </li>
@@ -190,25 +204,25 @@ export async function Footer() {
 
               {/* Customer Service */}
               <div className="space-y-4">
-                <h4 className="text-[#C8A55C] font-semibold text-lg mb-6">Customer Service</h4>
+                <h4 className="text-white font-semibold text-lg mb-6">Customer Service</h4>
                 <ul className="space-y-3">
                   <li>
-                    <Link href="/shipping" className="text-white/80 hover:text-[#C8A55C] transition-colors">
+                    <Link href="/shipping" className="text-white/90 hover:text-white transition-colors">
                       Shipping Info
                     </Link>
                   </li>
                   <li>
-                    <Link href="/returns" className="text-white/80 hover:text-[#C8A55C] transition-colors">
+                    <Link href="/returns" className="text-white/90 hover:text-white transition-colors">
                       Returns
                     </Link>
                   </li>
                   <li>
-                    <Link href="/faq" className="text-white/80 hover:text-[#C8A55C] transition-colors">
+                    <Link href="/faq" className="text-white/90 hover:text-white transition-colors">
                       FAQ
                     </Link>
                   </li>
                   <li>
-                    <Link href="/installation" className="text-white/80 hover:text-[#C8A55C] transition-colors">
+                    <Link href="/installation" className="text-white/90 hover:text-white transition-colors">
                       Installation Guide
                     </Link>
                   </li>
@@ -217,28 +231,28 @@ export async function Footer() {
 
               {/* Info Center */}
               <div className="space-y-4">
-                <h4 className="text-[#C8A55C] font-semibold text-lg mb-6">Info Center</h4>
+                <h4 className="text-white font-semibold text-lg mb-6">Info Center</h4>
                 <ul className="space-y-3">
                   <li>
                     <Link
                       href="/info-center/phoenix-365-day-home-trial"
-                      className="text-white/80 hover:text-[#E63946] transition-colors font-medium"
+                      className="text-white/90 hover:text-white transition-colors font-medium"
                     >
                       365-Day Home Trial
                     </Link>
                   </li>
                   <li>
-                    <Link href="/reviews" className="text-white/80 hover:text-[#C8A55C] transition-colors">
+                    <Link href="/reviews" className="text-white/90 hover:text-white transition-colors">
                       Customer Reviews
                     </Link>
                   </li>
                   <li>
-                    <Link href="/testimonials" className="text-white/80 hover:text-[#C8A55C] transition-colors">
+                    <Link href="/testimonials" className="text-white/90 hover:text-white transition-colors">
                       Testimonials
                     </Link>
                   </li>
                   <li>
-                    <Link href="/blog" className="text-white/80 hover:text-[#C8A55C] transition-colors">
+                    <Link href="/blog" className="text-white/90 hover:text-white transition-colors">
                       Blog
                     </Link>
                   </li>
@@ -248,8 +262,8 @@ export async function Footer() {
 
             {/* Social Media - Centered */}
             <div className="text-center mb-12 pb-12 border-b border-white/10">
-              <h4 className="text-[#C8A55C] font-semibold text-lg mb-6">Connect With Us</h4>
-              <p className="text-white/80 mb-6 max-w-md mx-auto">
+              <h4 className="text-white font-semibold text-lg mb-6">Connect With Us</h4>
+              <p className="text-white/90 mb-6 max-w-md mx-auto">
                 Follow us on social media for updates, tips, and special offers
               </p>
               <div className="flex gap-4 justify-center">
@@ -257,7 +271,7 @@ export async function Footer() {
                   href="https://www.facebook.com/AtlanticFlagpole"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-12 h-12 rounded-full bg-white/5 hover:bg-[#1F6FFF] flex items-center justify-center transition-all hover:scale-110"
+                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white hover:text-[#E63946] flex items-center justify-center transition-all hover:scale-110"
                   aria-label="Facebook"
                 >
                   <Facebook className="w-5 h-5" />
@@ -266,7 +280,7 @@ export async function Footer() {
                   href="http://instagram.com/atlanticflagpole"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-12 h-12 rounded-full bg-white/5 hover:bg-[#E63946] flex items-center justify-center transition-all hover:scale-110"
+                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white hover:text-[#E63946] flex items-center justify-center transition-all hover:scale-110"
                   aria-label="Instagram"
                 >
                   <Instagram className="w-5 h-5" />
@@ -275,7 +289,7 @@ export async function Footer() {
                   href="https://x.com/AtlanticFlagP"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-12 h-12 rounded-full bg-white/5 hover:bg-[#1F6FFF] flex items-center justify-center transition-all hover:scale-110"
+                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white hover:text-[#E63946] flex items-center justify-center transition-all hover:scale-110"
                   aria-label="X (Twitter)"
                 >
                   <XIcon />
@@ -284,7 +298,7 @@ export async function Footer() {
                   href="https://www.youtube.com/user/telescopingflagpole"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-12 h-12 rounded-full bg-white/5 hover:bg-[#E63946] flex items-center justify-center transition-all hover:scale-110"
+                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white hover:text-[#E63946] flex items-center justify-center transition-all hover:scale-110"
                   aria-label="YouTube"
                 >
                   <Youtube className="w-5 h-5" />
@@ -293,7 +307,7 @@ export async function Footer() {
                   href="https://www.pinterest.com/atlanticflagandpole"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-12 h-12 rounded-full bg-white/5 hover:bg-[#E63946] flex items-center justify-center transition-all hover:scale-110"
+                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white hover:text-[#E63946] flex items-center justify-center transition-all hover:scale-110"
                   aria-label="Pinterest"
                 >
                   <PinterestIcon />
@@ -302,7 +316,7 @@ export async function Footer() {
                   href="https://www.tumblr.com/best-flag-pole"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-12 h-12 rounded-full bg-white/5 hover:bg-[#1F6FFF] flex items-center justify-center transition-all hover:scale-110"
+                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white hover:text-[#E63946] flex items-center justify-center transition-all hover:scale-110"
                   aria-label="Tumblr"
                 >
                   <TumblrIcon />
@@ -310,20 +324,33 @@ export async function Footer() {
               </div>
             </div>
 
+            {/* Safe Checkout Badge */}
+            <div className="text-center mb-12 pb-12 border-b border-white/10">
+              <div className="max-w-2xl mx-auto bg-white rounded-xl p-8 shadow-lg">
+                <Image
+                  src="https://cdn.shopify.com/s/files/1/2133/9559/files/Guaranteed_Safe_Checkout_-_Fast_Shipping.png?v=1682186986"
+                  alt="Guaranteed Safe Checkout - Fast Shipping"
+                  width={800}
+                  height={200}
+                  className="w-full h-auto"
+                />
+              </div>
+            </div>
+
             {/* Bottom Bar - Centered */}
             <div className="text-center space-y-4">
-              <div className="flex flex-wrap justify-center gap-6 text-sm text-white/60 mb-4">
-                <Link href="/privacy" className="hover:text-[#C8A55C] transition-colors">
+              <div className="flex flex-wrap justify-center gap-6 text-sm text-white/80 mb-4">
+                <Link href="/privacy" className="hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
-                <Link href="/terms" className="hover:text-[#C8A55C] transition-colors">
+                <Link href="/terms" className="hover:text-white transition-colors">
                   Terms of Service
                 </Link>
-                <Link href="/sitemap" className="hover:text-[#C8A55C] transition-colors">
+                <Link href="/sitemap" className="hover:text-white transition-colors">
                   Sitemap
                 </Link>
               </div>
-              <p className="text-sm text-white/60">
+              <p className="text-sm text-white/80">
                 &copy; {new Date().getFullYear()} Atlantic Flagpole. All rights reserved.
               </p>
             </div>
