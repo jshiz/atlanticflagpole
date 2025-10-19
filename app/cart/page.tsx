@@ -8,7 +8,7 @@ import Link from "next/link"
 import { Minus, Plus, Trash2, ShoppingBag, Package, Shield, Truck, Award } from "lucide-react"
 import { useState, useEffect } from "react"
 import { getBundleConfig } from "@/lib/bundles/bundle-config"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 
 interface BundleComponentWithImage {
   title: string

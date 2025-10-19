@@ -17,6 +17,8 @@ interface GeoEvent {
 const COOKIE_NAME = "geo_analytics"
 const MAX_EVENTS = 100
 
+export const dynamic = "force-dynamic"
+
 export async function POST(request: NextRequest) {
   try {
     const event: GeoEvent = await request.json()
