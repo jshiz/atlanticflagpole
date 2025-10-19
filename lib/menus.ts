@@ -156,43 +156,93 @@ function normalizeMenuItem(item: ShopifyMenuItem): MenuItem {
   }
 }
 
+const FALLBACK_MENU: Menu = {
+  items: [
+    { id: "1", title: "Home", url: "/" },
+    { id: "2", title: "Products", url: "/products" },
+    { id: "3", title: "Collections", url: "/collections" },
+    { id: "4", title: "About", url: "/about" },
+    { id: "5", title: "Contact", url: "/contact" },
+  ],
+}
+
+async function fetchWithRetry(url: string, options: RequestInit, retries = 3, timeout = 10000): Promise<Response> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), timeout)
+
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      })
+
+      clearTimeout(timeoutId)
+      return response
+    } catch (error: any) {
+      const isLastRetry = i === retries - 1
+      const isTimeout = error.name === "AbortError"
+
+      console.error(`[v0] Menu fetch attempt ${i + 1}/${retries} failed:`, error.message)
+
+      if (isLastRetry) {
+        throw new Error(isTimeout ? "Request timeout" : error.message)
+      }
+
+      // Exponential backoff: 1s, 2s, 4s
+      const delay = Math.pow(2, i) * 1000
+      await new Promise((resolve) => setTimeout(resolve, delay))
+    }
+  }
+
+  throw new Error("Max retries exceeded")
+}
+
 /**
  * Fetches a menu from Shopify by handle
  * @param handle - The menu handle (e.g., "main-menu", "footer")
- * @returns Normalized menu data or null if not found
+ * @returns Normalized menu data or fallback menu if fetch fails
  */
 export async function getMenu(handle: string): Promise<Menu | null> {
   try {
-    const res = await fetch(`https://${SHOPIFY_STORE_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
+    const res = await fetchWithRetry(
+      `https://${SHOPIFY_STORE_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
+        },
+        body: JSON.stringify({
+          query: MENU_QUERY,
+          variables: { handle },
+        }),
+        cache: "no-store",
       },
-      body: JSON.stringify({
-        query: MENU_QUERY,
-        variables: { handle },
-      }),
-      cache: "no-store", // Disable caching to always fetch fresh menu data
-    })
+      3, // 3 retries
+      10000, // 10 second timeout
+    )
 
     if (!res.ok) {
       console.error(`[v0] Failed to fetch menu "${handle}":`, res.statusText)
-      return null
+      console.log(`[v0] Using fallback menu for "${handle}"`)
+      return FALLBACK_MENU
     }
 
     const json = await res.json()
 
     if (json.errors) {
       console.error(`[v0] GraphQL errors fetching menu "${handle}":`, json.errors)
-      return null
+      console.log(`[v0] Using fallback menu for "${handle}"`)
+      return FALLBACK_MENU
     }
 
     const menu: ShopifyMenu | null = json.data?.menu
 
     if (!menu) {
       console.warn(`[v0] Menu "${handle}" not found in Shopify`)
-      return null
+      console.log(`[v0] Using fallback menu for "${handle}"`)
+      return FALLBACK_MENU
     }
 
     // Normalize all menu items
@@ -205,7 +255,8 @@ export async function getMenu(handle: string): Promise<Menu | null> {
     }
   } catch (error) {
     console.error(`[v0] Error fetching menu "${handle}":`, error)
-    return null
+    console.log(`[v0] Using fallback menu for "${handle}" due to error`)
+    return FALLBACK_MENU
   }
 }
 

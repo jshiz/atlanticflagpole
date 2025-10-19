@@ -13,6 +13,39 @@ const SHOPIFY_STOREFRONT_TOKEN = process.env.SHOPIFY_STOREFRONT_TOKEN || ""
 
 const SHOPIFY_STOREFRONT_API_URL = `https://${SHOPIFY_STORE_DOMAIN}/api/2025-07/graphql.json`
 
+async function fetchWithRetry(url: string, options: RequestInit, retries = 3, timeout = 10000): Promise<Response> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), timeout)
+
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      })
+
+      clearTimeout(timeoutId)
+      return response
+    } catch (error: any) {
+      const isLastRetry = i === retries - 1
+      const isTimeout = error.name === "AbortError"
+
+      console.error(`[v0] Fetch attempt ${i + 1}/${retries} failed:`, error.message)
+
+      if (isLastRetry) {
+        throw new Error(isTimeout ? "Request timeout" : error.message)
+      }
+
+      // Exponential backoff: 1s, 2s, 4s
+      const delay = Math.pow(2, i) * 1000
+      console.log(`[v0] Retrying in ${delay}ms...`)
+      await new Promise((resolve) => setTimeout(resolve, delay))
+    }
+  }
+
+  throw new Error("Max retries exceeded")
+}
+
 async function shopifyFetch<T>({
   query,
   variables = {},
@@ -23,19 +56,23 @@ async function shopifyFetch<T>({
   tags?: string[]
 }): Promise<{ data: T; errors?: any[] }> {
   try {
-    const response = await fetch(SHOPIFY_STOREFRONT_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
+    const response = await fetchWithRetry(
+      SHOPIFY_STOREFRONT_API_URL,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
+        },
+        body: JSON.stringify({
+          query,
+          variables,
+        }),
+        cache: "no-store",
       },
-      body: JSON.stringify({
-        query,
-        variables,
-      }),
-      cache: "no-store",
-      // next: { revalidate: 3600, tags },
-    })
+      3, // 3 retries
+      10000, // 10 second timeout
+    )
 
     if (!response.ok) {
       const errorBody = await response.text()

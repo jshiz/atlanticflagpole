@@ -46,38 +46,24 @@ export async function detectLocationClient(): Promise<GeoLocation | null> {
       const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000
 
       if (age < SEVEN_DAYS) {
-        console.log("[v0] Using cached geo location")
         return data
       }
     }
 
-    // Try ipapi.co with timeout and error handling
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 3000) // 3 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 5000)
 
-    const response = await fetch("https://ipapi.co/json/", {
+    const response = await fetch("/api/geo/detect", {
       signal: controller.signal,
     })
 
     clearTimeout(timeoutId)
 
     if (!response.ok) {
-      console.warn("[v0] Geo API rate limited or failed, using fallback")
       return null
     }
 
-    const data = await response.json()
-
-    const location: GeoLocation = {
-      city: data.city || "",
-      region: data.region || "",
-      region_code: data.region_code || "",
-      country: data.country_name || "",
-      country_code: data.country_code || "",
-      postal: data.postal || "",
-      latitude: data.latitude || 0,
-      longitude: data.longitude || 0,
-    }
+    const location = await response.json()
 
     // Cache in localStorage for 7 days
     localStorage.setItem(
@@ -91,7 +77,6 @@ export async function detectLocationClient(): Promise<GeoLocation | null> {
     return location
   } catch (error) {
     // Silently fail - geo features are optional
-    console.log("[v0] Geo detection unavailable, using default content")
     return null
   }
 }

@@ -40,12 +40,9 @@ export function GeoProvider({ children }: { children: ReactNode }) {
       .then((geo) => {
         if (geo) {
           setLocation(geo)
-          console.log("[v0] Geo detected:", geo.region_code, geo.region)
         } else {
-          // Try fallback method
           const fallback = detectLocationFallback()
           if (fallback) {
-            console.log("[v0] Using fallback geo detection")
             setLocation(fallback as GeoLocation)
           }
         }

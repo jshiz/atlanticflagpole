@@ -10,6 +10,38 @@ export interface CustomerAccountConfig {
   accessToken: string
 }
 
+async function fetchWithRetry(url: string, options: RequestInit, retries = 3, timeout = 10000): Promise<Response> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), timeout)
+
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      })
+
+      clearTimeout(timeoutId)
+      return response
+    } catch (error: any) {
+      const isLastRetry = i === retries - 1
+      const isTimeout = error.name === "AbortError"
+
+      console.error(`[v0] Customer Account API attempt ${i + 1}/${retries} failed:`, error.message)
+
+      if (isLastRetry) {
+        throw new Error(isTimeout ? "Request timeout" : error.message)
+      }
+
+      // Exponential backoff: 1s, 2s, 4s
+      const delay = Math.pow(2, i) * 1000
+      await new Promise((resolve) => setTimeout(resolve, delay))
+    }
+  }
+
+  throw new Error("Max retries exceeded")
+}
+
 async function customerAccountFetch<T>({
   query,
   variables = {},
@@ -20,18 +52,23 @@ async function customerAccountFetch<T>({
   accessToken: string
 }): Promise<{ data: T; errors?: any[] }> {
   try {
-    const response = await fetch(CUSTOMER_ACCOUNT_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+    const response = await fetchWithRetry(
+      CUSTOMER_ACCOUNT_API_URL,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          query,
+          variables,
+        }),
+        cache: "no-store",
       },
-      body: JSON.stringify({
-        query,
-        variables,
-      }),
-      cache: "no-store",
-    })
+      3, // 3 retries
+      10000, // 10 second timeout
+    )
 
     if (!response.ok) {
       const errorBody = await response.text()
