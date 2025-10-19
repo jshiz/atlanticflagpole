@@ -66,7 +66,7 @@ export function LiveChatButton() {
           {/* Chat Messages */}
           <div className="flex-1 p-4 overflow-y-auto bg-gray-50">
             <div className="bg-white rounded-lg p-3 shadow-sm mb-3">
-              <p className="text-sm text-gray-700">👋 Welcome to Atlantic Flagpoles! How can we help you today?</p>
+              <p className="text-sm text-gray-700">👋 Welcome to Atlantic Flagpole! How can we help you today?</p>
               <p className="text-xs text-gray-400 mt-1">AI Assistant</p>
             </div>
             <div className="bg-white rounded-lg p-3 shadow-sm mb-3">

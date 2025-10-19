@@ -141,7 +141,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-[#0B1C2C] mb-1">Address</h3>
-                  <p className="text-[#0B1C2C]/70">Atlantic Flagpoles</p>
+                  <p className="text-[#0B1C2C]/70">Atlantic Flagpole</p>
                   <p className="text-[#0B1C2C]/70">123 Liberty Street</p>
                   <p className="text-[#0B1C2C]/70">Boston, MA 02101</p>
                 </div>

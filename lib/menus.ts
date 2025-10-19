@@ -109,7 +109,7 @@ function normalizeMenuUrl(url: string, type: string, title: string): string {
 
     if (pathname.startsWith("/products/")) {
       const handle = pathname.replace("/products/", "")
-      return `/product/${handle}`
+      return `/products/${handle}`
     }
 
     // Page URLs: /pages/handle → /handle

@@ -9,6 +9,7 @@ import { Star, ShoppingCart, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/components/cart/cart-context"
 import { cn } from "@/lib/utils"
+import { ProductPreviewCard } from "./product-preview-card"
 
 interface MenuItem {
   id: string
@@ -135,12 +136,16 @@ function QuickAddButton({ product }: { product: Product }) {
 
 export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLinkClick }: MegaMenuWithCartProps) {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
+  const [hoveredProduct, setHoveredProduct] = useState<Product | null>(null)
 
   const getProductRating = (productId: string): number => {
-    // Generate consistent mock rating based on product ID
     const hash = productId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
-    return 4.0 + (hash % 10) / 10 // Rating between 4.0 and 4.9
+    return 4.0 + (hash % 10) / 10
   }
+
+  const previewableProducts = featuredProducts.filter(
+    (p) => p.handle.includes("telescoping") || p.handle.includes("flagpole") || p.handle.includes("kit"),
+  )
 
   return (
     <div className="grid grid-cols-12 gap-6 max-w-7xl mx-auto">
@@ -152,18 +157,39 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
           </h3>
           <ul className="space-y-1">
             {menuItems.map((item) => (
-              <li key={item.id}>
+              <li key={item.id} className="relative">
                 <Link
                   href={item.url}
                   onClick={onLinkClick}
-                  onMouseEnter={() => setHoveredCategory(item.id)}
-                  onMouseLeave={() => setHoveredCategory(null)}
+                  onMouseEnter={() => {
+                    setHoveredCategory(item.id)
+                    const matchingProduct = previewableProducts.find((p) =>
+                      item.title.toLowerCase().includes(p.title.toLowerCase().split(" ")[0]),
+                    )
+                    if (matchingProduct) {
+                      setHoveredProduct(matchingProduct)
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredCategory(null)
+                    setHoveredProduct(null)
+                  }}
                   className="group flex items-center justify-between text-[#0B1C2C] hover:text-[#C8A55C] transition-colors text-sm py-1.5 px-2 rounded hover:bg-[#F5F3EF]"
                 >
                   <span className="group-hover:translate-x-0.5 transition-transform">{item.title}</span>
                   {item.items && item.items.length > 0 && <span className="text-xs text-gray-400">→</span>}
                 </Link>
-                {hoveredCategory === item.id && item.items && item.items.length > 0 && (
+
+                {hoveredProduct && hoveredCategory === item.id && (
+                  <div
+                    onMouseEnter={() => setHoveredProduct(hoveredProduct)}
+                    onMouseLeave={() => setHoveredProduct(null)}
+                  >
+                    <ProductPreviewCard product={hoveredProduct} onClose={() => setHoveredProduct(null)} />
+                  </div>
+                )}
+
+                {hoveredCategory === item.id && item.items && item.items.length > 0 && !hoveredProduct && (
                   <ul className="ml-4 mt-1 space-y-1 animate-in slide-in-from-left duration-200">
                     {item.items.slice(0, 10).map((subItem) => (
                       <li key={subItem.id}>
@@ -201,7 +227,7 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
 
         {featuredProducts && featuredProducts.length > 0 ? (
           <div className="grid grid-cols-6 gap-4">
-            {featuredProducts.slice(0, 18).map((product) => {
+            {featuredProducts.slice(0, 12).map((product) => {
               const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
               const rating = getProductRating(product.id)
 

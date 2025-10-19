@@ -8,7 +8,7 @@ import { getProducts } from "@/lib/shopify"
 import { getJudgemeStats } from "@/lib/judgeme"
 
 export async function QuickDeals() {
-  const products = await getProducts({ first: 6, sortKey: "BEST_SELLING" })
+  const products = await getProducts({ first: 8, sortKey: "BEST_SELLING" })
   const judgemeStats = await getJudgemeStats()
 
   return (
@@ -28,7 +28,7 @@ export async function QuickDeals() {
           </div>
         </div>
 
-        <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product) => {
             const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
             const compareAtPrice = product.compareAtPriceRange?.minVariantPrice?.amount
@@ -43,7 +43,7 @@ export async function QuickDeals() {
             return (
               <Card
                 key={product.id}
-                className="group flex-shrink-0 w-[280px] md:w-[calc(16.666%-1.2rem)] overflow-hidden hover:shadow-xl transition-shadow duration-300 snap-start border-2 border-transparent hover:border-[#C8A55C]"
+                className="group overflow-hidden hover:shadow-xl transition-shadow duration-300 border-2 border-transparent hover:border-[#C8A55C]"
               >
                 <div className="relative aspect-square overflow-hidden bg-gray-100">
                   {image && (
@@ -97,7 +97,7 @@ export async function QuickDeals() {
                   {hasDiscount && compareAtPrice && (
                     <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
                       <p className="text-sm text-green-800 font-semibold">
-                        🎉 Save ${(compareAtPrice - price).toFixed(2)} Today!
+                        Save ${(compareAtPrice - price).toFixed(2)} Today!
                       </p>
                     </div>
                   )}

@@ -5,7 +5,7 @@ export default function AboutPage() {
     <main className="min-h-screen bg-[#F5F3EF]">
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto mb-12 text-center">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#0B1C2C] mb-4">About Atlantic Flagpoles</h1>
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#0B1C2C] mb-4">About Atlantic Flagpole</h1>
           <p className="text-lg text-[#0B1C2C]/70">America's trusted source for premium flagpoles since 1985</p>
         </div>
 
@@ -13,17 +13,17 @@ export default function AboutPage() {
           <div className="bg-white rounded-lg overflow-hidden shadow-md">
             <img
               src="/american-flag-waving-on-flagpole-against-blue-sky.jpg"
-              alt="Atlantic Flagpoles"
+              alt="Atlantic Flagpole"
               className="w-full h-64 md:h-96 object-cover"
             />
             <div className="p-8 md:p-12">
               <h2 className="text-3xl font-serif font-bold text-[#0B1C2C] mb-6">Our Story</h2>
               <div className="space-y-4 text-[#0B1C2C]/70 text-lg leading-relaxed">
                 <p>
-                  For over 35 years, Atlantic Flagpoles has been dedicated to providing the highest quality flagpoles
-                  and flags to homes, businesses, and institutions across America. What started as a small family
-                  business has grown into one of the nation's leading flagpole suppliers, but our commitment to quality
-                  and customer service remains unchanged.
+                  For over 35 years, Atlantic Flagpole has been dedicated to providing the highest quality flagpoles and
+                  flags to homes, businesses, and institutions across America. What started as a small family business
+                  has grown into one of the nation's leading flagpole suppliers, but our commitment to quality and
+                  customer service remains unchanged.
                 </p>
                 <p>
                   We believe that flying the American flag is more than just a tradition—it's a powerful expression of

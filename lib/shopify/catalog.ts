@@ -111,7 +111,6 @@ export async function getCollectionWithProducts(handle: string, first = 6) {
       { next: { revalidate: 3600, tags: [`collection:${handle}`] } },
     )
 
-    // Return null if collection doesn't exist instead of throwing error
     if (!data || !data.collection) {
       console.log(`[v0] Collection "${handle}" not found in Shopify`)
       return null

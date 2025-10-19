@@ -70,7 +70,7 @@ export default function ReviewsPage() {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto mb-12 text-center">
           <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#0B1C2C] mb-4">Customer Reviews</h1>
-          <p className="text-lg text-[#0B1C2C]/70">See what our customers are saying about Atlantic Flagpoles</p>
+          <p className="text-lg text-[#0B1C2C]/70">See what our customers are saying about Atlantic Flagpole</p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mb-12">
@@ -115,7 +115,7 @@ export default function ReviewsPage() {
         <div className="mt-12 max-w-4xl mx-auto bg-white rounded-lg p-8 shadow-md text-center">
           <h2 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-4">Share Your Experience</h2>
           <p className="text-[#0B1C2C]/70 mb-6">
-            We'd love to hear about your experience with Atlantic Flagpoles. Your feedback helps us serve you better.
+            We'd love to hear about your experience with Atlantic Flagpole. Your feedback helps us serve you better.
           </p>
           <button className="bg-[#C8A55C] hover:bg-[#a88947] text-white font-medium px-6 py-3 rounded-md transition-colors">
             Write a Review

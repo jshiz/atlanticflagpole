@@ -106,7 +106,7 @@ export function LoadingScreen() {
 
         {/* Loading text */}
         <div className="mt-8 text-center">
-          <h2 className="text-2xl font-serif font-bold text-white mb-2">ATLANTIC FLAGPOLES</h2>
+          <h2 className="text-2xl font-serif font-bold text-white mb-2">ATLANTIC FLAGPOLE</h2>
           <p className="text-[#C8A55C] text-sm tracking-widest animate-pulse">Loading...</p>
         </div>
       </div>

@@ -10,6 +10,7 @@ import { LiveChatButton } from "@/components/live-chat-button"
 import { CartProvider } from "@/components/cart/cart-context"
 import { JudgeMePlatformScript } from "@/components/judgeme/judgeme-platform-script"
 import { StickyCartBar } from "@/components/cart/sticky-cart-bar"
+import { PhoenixHomeTrialBar } from "@/components/phoenix-home-trial-bar"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -30,7 +31,7 @@ const cinzel = Cinzel({
 })
 
 export const metadata: Metadata = {
-  title: "Atlantic Flagpoles - Premium American-Made Flagpoles",
+  title: "Atlantic Flagpole - Premium American-Made Flagpoles",
   description: "The last flagpole you will ever need. Handcrafted in the USA with a lifetime guarantee.",
   generator: "v0.app",
 }
@@ -44,6 +45,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`font-sans ${inter.variable} ${jetbrainsMono.variable} ${cinzel.variable}`}>
         <CartProvider>
+          <PhoenixHomeTrialBar />
           <Suspense fallback={<HeaderSkeleton />}>
             <Header />
           </Suspense>

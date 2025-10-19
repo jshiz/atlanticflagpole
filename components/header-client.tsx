@@ -80,9 +80,8 @@ export function HeaderClient({
     <>
       <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
-            {/* Left Section: Menu + Search */}
-            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 min-w-0">
+          <div className="flex items-center justify-between h-16 gap-4">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
               <button
                 className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors p-2 flex-shrink-0"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -91,47 +90,40 @@ export function HeaderClient({
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
               </button>
 
-              {/* Search Bar - Constrained width to prevent overlap */}
-              <div className="w-40 sm:w-48 md:w-56 lg:w-72 xl:w-80 flex-shrink-0">
+              {/* Logo - Next to hamburger */}
+              <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
+                <Image
+                  src="/images/favicon.png"
+                  alt="Atlantic Flagpole Logo"
+                  width={40}
+                  height={40}
+                  className="w-10 h-10 group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="hidden md:block">
+                  <span className="text-lg font-serif font-bold text-[#0B1C2C] tracking-tight block leading-none whitespace-nowrap">
+                    ATLANTIC
+                  </span>
+                  <span className="text-xs font-serif font-medium text-[#C8A55C] tracking-widest block leading-none whitespace-nowrap">
+                    FLAGPOLE
+                  </span>
+                </div>
+              </Link>
+
+              <div className="flex-1 max-w-2xl">
                 <SearchBarWrapper className="w-full" />
               </div>
             </div>
 
-            {/* Center Section: Logo - Flexbox centered with proper spacing */}
-            <Link href="/" className="flex items-center gap-2 group flex-shrink-0 mx-2 sm:mx-4">
-              <Image
-                src="/images/favicon.png"
-                alt="Atlantic Flagpoles"
-                width={40}
-                height={40}
-                className="w-8 h-8 sm:w-10 sm:h-10 group-hover:scale-105 transition-transform duration-300 flex-shrink-0"
-              />
-              <div className="hidden sm:block">
-                <span className="text-base sm:text-lg font-serif font-bold text-[#0B1C2C] tracking-tight block leading-none whitespace-nowrap">
-                  ATLANTIC
-                </span>
-                <span className="text-[10px] sm:text-xs font-serif font-medium text-[#C8A55C] tracking-widest block leading-none whitespace-nowrap">
-                  FLAGPOLES
-                </span>
-              </div>
-            </Link>
-
-            {/* Right Section: Judge.me + Cart + Account */}
-            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-              {/* Judge.me Badge and Medals - Hidden on smaller screens */}
-              {(judgemeBadge || judgemeMedals) && (
-                <div className="hidden xl:flex items-center gap-2">
-                  {judgemeBadge}
-                  {judgemeMedals}
-                </div>
-              )}
+            <div className="flex items-center gap-3 flex-shrink-0">
+              {/* Judge.me Badge only - removed medals */}
+              {judgemeBadge && <div className="hidden lg:block">{judgemeBadge}</div>}
 
               <Link
                 href="/cart"
                 className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors group p-2"
                 aria-label="Shopping cart"
               >
-                <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 group-hover:scale-110 transition-transform duration-300" />
+                <ShoppingCart className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
                 {cartItemCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-[#C8A55C] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                     {cartItemCount}
@@ -144,7 +136,7 @@ export function HeaderClient({
                 className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors p-2"
                 aria-label="Account"
               >
-                <User className="w-5 h-5 sm:w-6 sm:h-6" />
+                <User className="w-6 h-6" />
               </Link>
             </div>
           </div>
