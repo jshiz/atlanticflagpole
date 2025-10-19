@@ -14,6 +14,8 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = generateHomeMetadata()
 
+export const revalidate = 300 // Revalidate every 5 minutes
+
 export default async function Home() {
   const judgemeStats = await getJudgemeStats()
   const { reviews } = await getJudgemeReviews({ perPage: 12, minRating: 4 })
