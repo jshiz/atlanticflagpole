@@ -10,6 +10,8 @@ import Link from "next/link"
 import { AlertCircle, CheckCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
 
+export const dynamic = "force-dynamic"
+
 export default function SignupPage() {
   const router = useRouter()
   const [formData, setFormData] = useState({
