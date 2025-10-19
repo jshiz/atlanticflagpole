@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import Link from "next/link"
 import { useState } from "react"
 import { ShoppingCart, MenuIcon, X, User } from "lucide-react"
@@ -14,6 +13,7 @@ import { NFLMenuClient } from "@/components/header/nfl-menu-client"
 import { ChristmasTreeMegaMenu } from "@/components/header/christmas-tree-mega-menu"
 import { isNFLMenuItem, isChristmasTreeMenuItem } from "@/lib/nfl-teams"
 import type { ShopifyProduct } from "@/lib/shopify/types"
+import { MegaMenuWithCart } from "@/components/header/mega-menu-with-cart"
 
 interface HeaderClientProps {
   menuData: Menu | null
@@ -280,97 +280,16 @@ export function HeaderClient({
                           )
                         }
 
-                        const displayProducts =
-                          hoveredSubmenuId && submenuProductsData[hoveredSubmenuId]
-                            ? submenuProductsData[hoveredSubmenuId]
-                            : itemData?.products?.nodes || []
+                        const displayProducts = itemData?.products?.nodes || []
 
                         return (
-                          <div key={item.id} className="grid grid-cols-12 gap-8 max-w-7xl mx-auto">
-                            {/* Left Sidebar - Categories */}
-                            <div className="col-span-3 border-r border-gray-100 pr-8">
-                              <div className="sticky top-4">
-                                <h3 className="text-lg font-serif font-bold text-[#0B1C2C] mb-4 pb-3 border-b-2 border-[#C8A55C]">
-                                  {item.title}
-                                </h3>
-                                <ul className="space-y-3">
-                                  {item.items?.map((subItem) => (
-                                    <li key={subItem.id}>
-                                      <Link
-                                        href={subItem.url}
-                                        onMouseEnter={() => setHoveredSubmenuId(subItem.id)}
-                                        onMouseLeave={() => setHoveredSubmenuId(null)}
-                                        className="group flex items-center gap-2 text-[#0B1C2C] hover:text-[#C8A55C] transition-all duration-300 text-sm py-1"
-                                      >
-                                        <span className="w-1 h-1 rounded-full bg-[#C8A55C] opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        <span className="group-hover:translate-x-1 transition-transform duration-300">
-                                          {subItem.title}
-                                        </span>
-                                      </Link>
-                                    </li>
-                                  ))}
-                                </ul>
-                                <Link
-                                  href={item.url}
-                                  className="inline-flex items-center gap-2 mt-6 text-[#C8A55C] hover:text-[#a88947] font-bold text-sm group transition-colors"
-                                >
-                                  View All {item.title}
-                                  <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
-                                </Link>
-                              </div>
-                            </div>
-
-                            {/* Right Side - Featured Products */}
-                            <div className="col-span-9">
-                              <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">
-                                {hoveredSubmenuId
-                                  ? `${item.items?.find((si) => si.id === hoveredSubmenuId)?.title || "Featured"} Products`
-                                  : "Featured Products"}
-                              </h4>
-                              {displayProducts && displayProducts.length > 0 ? (
-                                <div className="grid grid-cols-4 gap-6">
-                                  {displayProducts.slice(0, 4).map((product: any) => (
-                                    <Link key={product.id} href={`/products/${product.handle}`} className="group">
-                                      <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden mb-3 shadow-sm group-hover:shadow-xl transition-all duration-300">
-                                        {product.featuredImage ? (
-                                          <Image
-                                            src={product.featuredImage.url || "/placeholder.svg"}
-                                            alt={product.featuredImage.altText || product.title}
-                                            width={300}
-                                            height={300}
-                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                          />
-                                        ) : (
-                                          <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                            <span className="text-4xl">🏴</span>
-                                          </div>
-                                        )}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                      </div>
-                                      <h5 className="text-sm font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-1.5">
-                                        {product.title}
-                                      </h5>
-                                      <p className="text-sm font-bold text-[#C8A55C]">
-                                        ${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}
-                                      </p>
-                                    </Link>
-                                  ))}
-                                </div>
-                              ) : (
-                                <div className="grid grid-cols-4 gap-6">
-                                  {item.items?.slice(0, 4).map((subItem) => (
-                                    <Link key={subItem.id} href={subItem.url} className="group">
-                                      <div className="aspect-square bg-gradient-to-br from-[#0B1C2C] to-[#112b44] rounded-xl overflow-hidden mb-3 flex items-center justify-center shadow-sm group-hover:shadow-xl transition-all duration-300">
-                                        <span className="text-5xl">🏴</span>
-                                      </div>
-                                      <h5 className="text-sm font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors">
-                                        {subItem.title}
-                                      </h5>
-                                    </Link>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
+                          <div key={item.id}>
+                            <MegaMenuWithCart
+                              title={item.title}
+                              menuItems={item.items || []}
+                              featuredProducts={displayProducts}
+                              onLinkClick={() => setActiveDropdown(null)}
+                            />
                           </div>
                         )
                       })}

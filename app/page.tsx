@@ -1,6 +1,7 @@
 import { Hero } from "@/components/home/hero"
-import { WhyBetter } from "@/components/home/why-better"
-import { FeaturedGrid } from "@/components/home/featured-grid"
+import { FeaturedProductsShowcase } from "@/components/home/featured-products-showcase"
+import { WhyPhoenixTrust } from "@/components/home/why-phoenix-trust"
+import { PhoenixVsCompetition } from "@/components/home/phoenix-vs-competition"
 import { ReviewsMarquee } from "@/components/home/reviews-marquee"
 import { CTA } from "@/components/home/cta"
 import { QuickDeals } from "@/components/home/quick-deals"
@@ -13,9 +14,10 @@ export default async function Home() {
   return (
     <main className="min-h-screen">
       <Hero judgemeStats={judgemeStats} />
+      <FeaturedProductsShowcase />
       <QuickDeals />
-      <WhyBetter />
-      <FeaturedGrid />
+      <WhyPhoenixTrust />
+      <PhoenixVsCompetition />
       <ReviewsMarquee />
       <CTA />
       <TicketPopup />

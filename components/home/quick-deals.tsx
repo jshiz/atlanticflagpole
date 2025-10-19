@@ -3,11 +3,13 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
 import Link from "next/link"
-import { Clock, TrendingUp } from "lucide-react"
+import { Clock, TrendingUp, Star, Package } from "lucide-react"
 import { getProducts } from "@/lib/shopify"
+import { getJudgemeStats } from "@/lib/judgeme"
 
 export async function QuickDeals() {
-  const products = await getProducts({ first: 5, sortKey: "BEST_SELLING" })
+  const products = await getProducts({ first: 6, sortKey: "BEST_SELLING" })
+  const judgemeStats = await getJudgemeStats()
 
   return (
     <section className="py-16 bg-white">
@@ -35,11 +37,13 @@ export async function QuickDeals() {
             const hasDiscount = compareAtPrice && compareAtPrice > price
             const savingsPercent = hasDiscount ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100) : 0
             const image = product.images.nodes[0]
+            const isBundle =
+              product.title.toLowerCase().includes("kit") || product.title.toLowerCase().includes("bundle")
 
             return (
               <Card
                 key={product.id}
-                className="group flex-shrink-0 w-[280px] md:w-[calc(20%-1.2rem)] overflow-hidden hover:shadow-xl transition-shadow duration-300 snap-start"
+                className="group flex-shrink-0 w-[280px] md:w-[calc(16.666%-1.2rem)] overflow-hidden hover:shadow-xl transition-shadow duration-300 snap-start border-2 border-transparent hover:border-[#C8A55C]"
               >
                 <div className="relative aspect-square overflow-hidden bg-gray-100">
                   {image && (
@@ -55,10 +59,33 @@ export async function QuickDeals() {
                       {savingsPercent}% OFF
                     </Badge>
                   )}
+                  {isBundle && (
+                    <Badge className="absolute top-4 left-4 bg-[#C8A55C] hover:bg-[#a88947] text-white text-xs px-2 py-1 flex items-center gap-1">
+                      <Package className="w-3 h-3" />
+                      Complete Kit
+                    </Badge>
+                  )}
                 </div>
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-serif font-bold text-[#0B1C2C] mb-2 line-clamp-2">{product.title}</h3>
-                  <p className="text-sm text-[#0B1C2C]/70 mb-4 line-clamp-2">{product.description}</p>
+                  <div className="flex items-center gap-1 mb-2">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-3 h-3 ${
+                          i < Math.floor(judgemeStats.averageRating)
+                            ? "fill-[#C8A55C] text-[#C8A55C]"
+                            : "fill-gray-300 text-gray-300"
+                        }`}
+                      />
+                    ))}
+                    <span className="text-xs text-[#0B1C2C]/60 ml-1">
+                      ({judgemeStats.totalReviews.toLocaleString()})
+                    </span>
+                  </div>
+
+                  <h3 className="text-xl font-serif font-bold text-[#0B1C2C] mb-2 line-clamp-2 min-h-[56px]">
+                    {product.title}
+                  </h3>
 
                   <div className="flex items-center gap-3 mb-4">
                     <span className="text-2xl font-bold text-[#C8A55C]">${price.toFixed(2)}</span>
@@ -70,7 +97,7 @@ export async function QuickDeals() {
                   {hasDiscount && compareAtPrice && (
                     <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
                       <p className="text-sm text-green-800 font-semibold">
-                        Save ${(compareAtPrice - price).toFixed(2)} Today!
+                        🎉 Save ${(compareAtPrice - price).toFixed(2)} Today!
                       </p>
                     </div>
                   )}
@@ -85,8 +112,16 @@ export async function QuickDeals() {
         </div>
 
         <div className="text-center mt-8">
-          <Button asChild variant="outline" size="lg" className="font-semibold bg-transparent">
-            <Link href="/bundle-builder">Build Your Own Bundle →</Link>
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="font-semibold bg-transparent border-2 border-[#C8A55C] text-[#C8A55C] hover:bg-[#C8A55C] hover:text-white"
+          >
+            <Link href="/bundle-builder">
+              <Package className="w-5 h-5 mr-2" />
+              Build Your Own Bundle →
+            </Link>
           </Button>
         </div>
       </div>

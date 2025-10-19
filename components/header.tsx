@@ -48,8 +48,6 @@ export async function Header() {
     const megaMenuData: Record<string, any> = {}
     const submenuProductsData: Record<string, any[]> = {}
 
-    // Only fetch collections that actually exist in Shopify
-
     if (menuData?.items) {
       const fetchPromises: Promise<void>[] = []
 
@@ -67,7 +65,7 @@ export async function Header() {
             const collectionHandle = extractCollectionHandle(subItem.url)
             if (collectionHandle) {
               fetchPromises.push(
-                getCollectionWithProducts(collectionHandle, 4)
+                getCollectionWithProducts(collectionHandle, 12)
                   .then((collection) => {
                     if (collection?.products?.nodes && collection.products.nodes.length > 0) {
                       submenuProductsData[subItem.id] = collection.products.nodes
@@ -96,13 +94,20 @@ export async function Header() {
             { handle: "american-flags", tags: ["american flag"] },
             { handle: "state-flags", tags: ["state flag"] },
           ]
+        } else if (title.includes("part") || title.includes("accessor")) {
+          collectionConfig = [
+            { handle: "phoenix-parts-and-accessories", tags: ["accessory", "accessories"] },
+            { handle: "flagpole-lighting", tags: ["light", "lighting", "solar light"] },
+            { handle: "flagpole-toppers", tags: ["topper", "finial", "eagle", "ball"] },
+            { handle: "flagpole-mounts", tags: ["mount", "bracket", "wall mount"] },
+          ]
         }
 
         if (collectionConfig.length > 0) {
           const collectionPromise = Promise.all(
             collectionConfig.map(async (config) => {
               try {
-                const collection = await getCollectionWithProducts(config.handle, 2)
+                const collection = await getCollectionWithProducts(config.handle, 12)
                 if (collection?.products?.nodes && collection.products.nodes.length > 0) {
                   console.log(
                     `[v0] ✅ Found ${collection.products.nodes.length} products from collection "${config.handle}"`,
@@ -110,9 +115,8 @@ export async function Header() {
                   return collection.products.nodes
                 }
 
-                // Fallback to tag search
                 for (const tag of config.tags) {
-                  const tagResults = await searchProducts({ tag, first: 2 })
+                  const tagResults = await searchProducts({ tag, first: 12 })
                   if (tagResults?.nodes && tagResults.nodes.length > 0) {
                     console.log(`[v0] ✅ Found ${tagResults.nodes.length} products with tag "${tag}"`)
                     return tagResults.nodes
@@ -128,7 +132,7 @@ export async function Header() {
             if (allProducts.length > 0) {
               const uniqueProducts = Array.from(new Map(allProducts.map((p) => [p.id, p])).values())
               megaMenuData[item.id] = {
-                products: { nodes: uniqueProducts.slice(0, 4) },
+                products: { nodes: uniqueProducts.slice(0, 18) },
               }
               console.log(`[v0] ✅ Total ${uniqueProducts.length} unique products for "${item.title}"`)
             }

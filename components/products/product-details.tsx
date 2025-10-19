@@ -11,6 +11,7 @@ import { ProductWatching } from "./product-watching"
 import { ShippingEstimate } from "./shipping-estimate"
 import { ProductReviewsSummary } from "./product-reviews-summary"
 import { TrustBadges } from "./trust-badges"
+import { ProductValueShowcase } from "./product-value-showcase"
 import { FrequentlyBoughtTogether } from "./frequently-bought-together"
 import { RelatedProducts } from "./related-products"
 import { CustomerReviews } from "./customer-reviews"
@@ -229,6 +230,15 @@ export function ProductDetails({
             </div>
           </Card>
         </div>
+      </div>
+
+      <div className="mb-12">
+        <ProductValueShowcase
+          product={product}
+          bundleData={bundleData}
+          averageRating={reviewsData.averageRating}
+          reviewCount={reviewsData.totalReviews}
+        />
       </div>
 
       {bundleData?.includesPremier && (

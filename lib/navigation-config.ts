@@ -267,6 +267,120 @@ export const navigationConfig: MegaMenu[] = [
       },
     ],
   },
+  {
+    label: "Phoenix Parts and Accessories",
+    categories: [
+      {
+        label: "Lighting",
+        items: [
+          {
+            label: "Solar Flagpole Lights",
+            href: "/collections/flagpole-lighting",
+            collection: "flagpole-lighting",
+            tags: ["light", "lighting", "solar light", "led light"],
+            description: "Solar and LED flagpole lights",
+          },
+          {
+            label: "800 Series Solar Light",
+            href: "/collections/800-series-solar-light",
+            collection: "800-series-solar-light",
+            tags: ["800 series", "solar", "premium light"],
+            description: "Premium 800 series solar lights",
+          },
+        ],
+      },
+      {
+        label: "Hardware & Mounts",
+        items: [
+          {
+            label: "Flagpole Mounts",
+            href: "/collections/flagpole-mounts",
+            collection: "flagpole-mounts",
+            tags: ["mount", "bracket", "wall mount"],
+            description: "Wall and ground mounts",
+          },
+          {
+            label: "Ground Sleeves",
+            href: "/collections/ground-sleeves",
+            collection: "ground-sleeves",
+            tags: ["ground sleeve", "sleeve", "foundation"],
+            description: "ABS ground sleeves for flagpoles",
+          },
+          {
+            label: "Anti-Theft Devices",
+            href: "/collections/anti-theft",
+            collection: "anti-theft",
+            tags: ["anti-theft", "security", "lock", "securi-shur"],
+            description: "Securi-Shur locking devices",
+          },
+          {
+            label: "Ground Sleeve Caps",
+            href: "/collections/ground-sleeve-caps",
+            collection: "ground-sleeve-caps",
+            tags: ["cap", "sleeve cap", "ground cap"],
+            description: "Decorative ground sleeve caps",
+          },
+        ],
+      },
+      {
+        label: "Toppers & Finials",
+        items: [
+          {
+            label: "Eagle Toppers",
+            href: "/collections/eagle-toppers",
+            collection: "eagle-toppers",
+            tags: ["eagle", "gold eagle", "eagle topper"],
+            description: "Gold and bronze eagle toppers",
+          },
+          {
+            label: "Ball Toppers",
+            href: "/collections/ball-toppers",
+            collection: "ball-toppers",
+            tags: ["ball", "gold ball", "ball topper"],
+            description: "Anodized aluminum ball toppers",
+          },
+          {
+            label: "All Flagpole Toppers",
+            href: "/collections/flagpole-toppers",
+            collection: "flagpole-toppers",
+            tags: ["topper", "finial"],
+            description: "All flagpole toppers and finials",
+          },
+        ],
+      },
+      {
+        label: "Flag Attachments",
+        items: [
+          {
+            label: "Flag Harnesses",
+            href: "/collections/flag-harnesses",
+            collection: "flag-harnesses",
+            tags: ["harness", "flag attachment", "double flag"],
+            description: "Freedom Ring flag harnesses",
+          },
+          {
+            label: "Flash Collars",
+            href: "/collections/flash-collars",
+            collection: "flash-collars",
+            tags: ["flash collar", "collar", "decorative collar"],
+            description: "Decorative flash collars",
+          },
+        ],
+      },
+      {
+        label: "Shop All",
+        items: [
+          {
+            label: "All Phoenix Parts",
+            href: "/collections/phoenix-parts-and-accessories",
+            collection: "phoenix-parts-and-accessories",
+            tags: ["phoenix", "parts", "accessories"],
+            description: "Complete Phoenix parts catalog",
+          },
+        ],
+      },
+    ],
+  },
 ]
 
 export const singleNavItems: NavItem[] = [

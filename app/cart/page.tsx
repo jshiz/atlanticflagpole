@@ -8,13 +8,72 @@ import Image from "next/image"
 import Link from "next/link"
 import { Minus, Plus, Trash2, ShoppingBag, ChevronDown, Package } from "lucide-react"
 import { useState, useEffect } from "react"
+import { getBundleConfig } from "@/lib/bundles/bundle-config"
+
+interface BundleComponentWithImage {
+  title: string
+  handle: string
+  variantTitle?: string
+  quantity: number
+  notes?: string
+  imageUrl?: string
+  imageAlt?: string
+}
 
 export default function CartPage() {
   const { cart, loading, updateCartLine, removeFromCart } = useCart()
   const [expandedBundles, setExpandedBundles] = useState<Set<string>>(new Set())
+  const [bundleComponentImages, setBundleComponentImages] = useState<Record<string, BundleComponentWithImage[]>>({})
 
   console.log("[v0] Cart page - cart:", cart)
   console.log("[v0] Cart page - checkoutUrl:", cart?.checkoutUrl)
+
+  useEffect(() => {
+    const fetchBundleComponentImages = async () => {
+      if (!cart?.lines?.edges) return
+
+      const lines = cart.lines.edges.map((edge) => edge.node)
+      const newBundleComponentImages: Record<string, BundleComponentWithImage[]> = {}
+
+      for (const line of lines) {
+        const productHandle = line.merchandise.product.handle
+        const bundleConfig = getBundleConfig(productHandle)
+
+        if (bundleConfig && bundleConfig.components.length > 0) {
+          const componentsWithImages: BundleComponentWithImage[] = []
+
+          for (const component of bundleConfig.components) {
+            try {
+              // Fetch product data for each component
+              const response = await fetch(`/api/shopify/product?handle=${component.handle}`)
+              if (response.ok) {
+                const productData = await response.json()
+                const image = productData.images?.edges?.[0]?.node
+
+                componentsWithImages.push({
+                  ...component,
+                  imageUrl: image?.url || undefined,
+                  imageAlt: image?.altText || component.title,
+                })
+              } else {
+                // If fetch fails, add component without image
+                componentsWithImages.push(component)
+              }
+            } catch (error) {
+              console.error(`[v0] Error fetching image for ${component.handle}:`, error)
+              componentsWithImages.push(component)
+            }
+          }
+
+          newBundleComponentImages[line.id] = componentsWithImages
+        }
+      }
+
+      setBundleComponentImages(newBundleComponentImages)
+    }
+
+    fetchBundleComponentImages()
+  }, [cart])
 
   useEffect(() => {
     if (cart?.lines?.edges) {
@@ -37,21 +96,26 @@ export default function CartPage() {
 
   const groupedLines = lines.reduce(
     (acc, line) => {
-      const bundleParent = line.attributes?.find((attr: any) => attr.key === "BundleParent")?.value
-      const includedIn = line.attributes?.find((attr: any) => attr.key === "IncludedIn")?.value
+      const productHandle = line.merchandise.product.handle
+      const bundleConfig = getBundleConfig(productHandle)
 
-      if (includedIn === "Premier Kit" && bundleParent) {
-        if (!acc.bundles[bundleParent]) {
-          acc.bundles[bundleParent] = []
-        }
-        acc.bundles[bundleParent].push(line)
+      // Check if this is a bundle product
+      if (bundleConfig && bundleConfig.includesPremier) {
+        // This is a bundle parent - add to regular lines
+        acc.regular.push(line)
+        // Store bundle config for later use
+        acc.bundleConfigs[line.id] = bundleConfig
       } else {
+        // Regular product
         acc.regular.push(line)
       }
 
       return acc
     },
-    { regular: [] as any[], bundles: {} as Record<string, any[]> },
+    {
+      regular: [] as any[],
+      bundleConfigs: {} as Record<string, any>,
+    },
   )
 
   const toggleBundle = (bundleId: string) => {
@@ -185,6 +249,45 @@ export default function CartPage() {
     )
   }
 
+  const renderBundleComponent = (component: BundleComponentWithImage, index: number) => {
+    return (
+      <div key={index} className="flex gap-4 pl-12 py-3 border-l-4 border-green-500 bg-green-50/30">
+        <div className="relative flex-shrink-0 rounded-lg overflow-hidden bg-white w-16 h-16">
+          {component.imageUrl ? (
+            <Image
+              src={component.imageUrl || "/placeholder.svg"}
+              alt={component.imageAlt || component.title}
+              fill
+              className="object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-100">
+              <Package className="w-8 h-8 text-gray-400" />
+            </div>
+          )}
+          <div className="absolute inset-0 bg-green-600/10 flex items-center justify-center">
+            <span className="text-lg font-bold text-green-700">✓</span>
+          </div>
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <Link
+            href={`/products/${component.handle}`}
+            className="font-semibold text-[#0B1C2C] hover:text-[#C8A55C] transition-colors text-sm line-clamp-2"
+          >
+            {component.title}
+          </Link>
+          {component.variantTitle && <p className="text-xs text-[#0B1C2C]/70 mt-1">{component.variantTitle}</p>}
+          {component.notes && <p className="text-xs text-[#0B1C2C]/60 mt-1 italic">{component.notes}</p>}
+          <p className="text-xs text-green-700 font-semibold mt-1 flex items-center gap-1">
+            <Package className="w-3 h-3" />
+            Included in Premier Kit • Qty: {component.quantity}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <main className="min-h-screen bg-[#F5F3EF]">
       <div className="container mx-auto px-4 py-8">
@@ -194,29 +297,36 @@ export default function CartPage() {
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {groupedLines.regular.map((line) => {
-              const hasBundleItems =
-                groupedLines.bundles[line.merchandise.id] && groupedLines.bundles[line.merchandise.id].length > 0
-              const isExpanded = expandedBundles.has(line.merchandise.id)
+              const bundleConfig = groupedLines.bundleConfigs[line.id]
+              const componentsWithImages = bundleComponentImages[line.id] || bundleConfig?.components || []
+              const hasBundleItems = componentsWithImages.length > 0
+              const isExpanded = expandedBundles.has(line.id)
 
               return (
                 <Card key={line.id}>
                   {renderCartLine(line)}
                   {hasBundleItems && (
-                    <Collapsible open={isExpanded} onOpenChange={() => toggleBundle(line.merchandise.id)}>
+                    <Collapsible open={isExpanded} onOpenChange={() => toggleBundle(line.id)}>
                       <CollapsibleTrigger className="w-full px-4 py-3 bg-gradient-to-r from-green-50 to-green-100 border-t-2 border-green-300 flex items-center justify-between hover:from-green-100 hover:to-green-200 transition-colors">
                         <div className="flex items-center gap-2">
                           <Package className="w-5 h-5 text-green-700" />
                           <span className="text-sm font-bold text-green-800">
-                            Premier Kit Included ({groupedLines.bundles[line.merchandise.id].length} items)
+                            Premier Kit Included ({componentsWithImages.length} items)
                           </span>
+                          {bundleConfig?.flagSize && (
+                            <span className="text-xs text-green-700 ml-2">• Flag: {bundleConfig.flagSize}</span>
+                          )}
+                          {bundleConfig?.groundSleeveSize && (
+                            <span className="text-xs text-green-700">• Sleeve: {bundleConfig.groundSleeveSize}</span>
+                          )}
                         </div>
                         <ChevronDown
                           className={`w-5 h-5 text-green-700 transition-transform ${isExpanded ? "rotate-180" : ""}`}
                         />
                       </CollapsibleTrigger>
                       <CollapsibleContent className="bg-white">
-                        {groupedLines.bundles[line.merchandise.id].map((includedLine: any) =>
-                          renderCartLine(includedLine, true),
+                        {componentsWithImages.map((component: BundleComponentWithImage, index: number) =>
+                          renderBundleComponent(component, index),
                         )}
                       </CollapsibleContent>
                     </Collapsible>

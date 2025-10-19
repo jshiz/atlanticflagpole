@@ -25,7 +25,7 @@ export async function Footer() {
     <>
       <JudgemeFooterWidget />
 
-      <footer className="bg-navy text-ivory">
+      <footer className="bg-navy text-ivory pb-32">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             {/* Company Info */}

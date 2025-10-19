@@ -90,6 +90,14 @@ export async function getCollectionWithProducts(handle: string, first = 6) {
                 currencyCode
               }
             }
+            variants(first: 1) {
+              edges {
+                node {
+                  id
+                  availableForSale
+                }
+              }
+            }
           }
         }
       }
