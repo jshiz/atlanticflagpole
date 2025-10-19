@@ -13,6 +13,7 @@ import { StickyCartBar } from "@/components/cart/sticky-cart-bar"
 import { PhoenixHomeTrialBar } from "@/components/phoenix-home-trial-bar"
 import { GeoProvider } from "@/lib/geo/context"
 import { LocationBanner } from "@/components/geo/location-banner"
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -60,6 +61,7 @@ export default function RootLayout({
           </GeoProvider>
         </CartProvider>
         <JudgeMePlatformScript />
+        <Toaster />
       </body>
     </html>
   )

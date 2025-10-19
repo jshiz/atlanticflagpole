@@ -2,7 +2,7 @@
 
 import type React from "react"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { ShoppingCart, MenuIcon, X, User } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
@@ -40,6 +40,23 @@ export function HeaderClient({
   const [quizModalOpen, setQuizModalOpen] = useState(false)
   const { cart } = useCart()
   const cartItemCount = cart?.lines?.edges ? cart.lines.edges.length : 0
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setActiveDropdown(null)
+      }
+    }
+
+    if (activeDropdown) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [activeDropdown])
 
   if (!menuData || !menuData.items || menuData.items.length === 0) {
     return null
@@ -57,7 +74,6 @@ export function HeaderClient({
     return title.includes("resource") || title.includes("about") || title.includes("company")
   }
 
-  // Custom social media icons
   const PinterestIcon = ({ className }: { className?: string }) => (
     <svg className={className} fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.84.051 9.941 0 9.999 0h3.517v6.114h4.801v3.633h-4.82v7.47c.016 1.001.375 2.371 2.207 2.371h.09c.631-.02 1.486-.205 1.936-.419l1.156 3.425c-.436.636-2.4 1.374-4.156 1.404h-.178l.011.002z" />
@@ -143,8 +159,8 @@ export function HeaderClient({
 
           {/* Desktop Navigation Dropdown */}
           {!mobileMenuOpen && (
-            <div className="hidden lg:block border-t border-gray-100">
-              <div className="relative" onMouseLeave={() => setActiveDropdown(null)}>
+            <div className="hidden lg:block border-t border-gray-100" ref={menuRef}>
+              <div className="relative">
                 <nav className="flex items-center justify-center gap-8 py-3">
                   {menuItems.map((item) => {
                     const hasSubmenu = item.items && item.items.length > 0
@@ -164,8 +180,11 @@ export function HeaderClient({
                     }
 
                     return (
-                      <div key={item.id} className="relative" onMouseEnter={() => setActiveDropdown(item.id)}>
-                        <button className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors duration-300 font-semibold text-sm tracking-wide group py-2 relative">
+                      <div key={item.id} className="relative">
+                        <button
+                          onClick={() => setActiveDropdown(activeDropdown === item.id ? null : item.id)}
+                          className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors duration-300 font-semibold text-sm tracking-wide group py-2 relative"
+                        >
                           {isChristmas && (
                             <span className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
                               {[...Array(8)].map((_, i) => (
@@ -191,8 +210,8 @@ export function HeaderClient({
 
                 {/* Mega Menu Dropdown */}
                 {activeDropdown && (
-                  <div className="absolute left-0 right-0 top-full bg-white border-t border-gray-200 shadow-2xl shadow-black/10 z-[90] max-h-[calc(100vh-140px)] overflow-y-auto">
-                    <div className="container mx-auto px-4 py-8">
+                  <div className="absolute left-0 right-0 top-full bg-white border-t border-gray-200 shadow-2xl shadow-black/10 z-[90] animate-in slide-in-from-top-2 duration-300">
+                    <div className="container mx-auto px-4 py-6">
                       {menuItems.map((item) => {
                         if (activeDropdown !== item.id) return null
 
@@ -204,7 +223,7 @@ export function HeaderClient({
                         if (isChristmas) {
                           return (
                             <div key={item.id}>
-                              <h3 className="text-2xl font-serif font-bold text-green-800 mb-6 pb-3 border-b-2 border-green-600 text-center flex items-center justify-center gap-3">
+                              <h3 className="text-2xl font-serif font-bold text-green-800 mb-4 pb-2 border-b-2 border-green-600 text-center flex items-center justify-center gap-3">
                                 <span className="text-3xl">🎄</span>
                                 {item.title}
                                 <span className="text-3xl">🎄</span>
@@ -221,7 +240,7 @@ export function HeaderClient({
                         if (isNFL) {
                           return (
                             <div key={item.id}>
-                              <h3 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-6 pb-3 border-b-2 border-[#C8A55C] text-center">
+                              <h3 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-4 pb-2 border-b-2 border-[#C8A55C] text-center">
                                 {item.title}
                               </h3>
                               <NFLMenuClient
@@ -235,7 +254,7 @@ export function HeaderClient({
                         if (isResource || !itemData) {
                           return (
                             <div key={item.id} className="max-w-4xl mx-auto">
-                              <h3 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-6 pb-3 border-b-2 border-[#C8A55C]">
+                              <h3 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-4 pb-2 border-b-2 border-[#C8A55C]">
                                 {item.title}
                               </h3>
                               <div className="grid grid-cols-3 gap-6">

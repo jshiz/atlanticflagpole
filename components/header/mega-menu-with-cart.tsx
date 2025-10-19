@@ -164,11 +164,11 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
   }
 
   return (
-    <div className="grid grid-cols-12 gap-4 max-w-7xl mx-auto max-h-[70vh] overflow-y-auto">
+    <div className="grid grid-cols-12 gap-3 max-w-7xl mx-auto">
       {/* Left Sidebar - Categories */}
-      <div className="col-span-2 border-r border-gray-100 pr-4">
+      <div className="col-span-2 border-r border-gray-100 pr-3">
         <div className="sticky top-2">
-          <h3 className="text-sm font-serif font-bold text-[#0B1C2C] mb-3 pb-2 border-b border-[#C8A55C]">{title}</h3>
+          <h3 className="text-sm font-serif font-bold text-[#0B1C2C] mb-2 pb-1.5 border-b border-[#C8A55C]">{title}</h3>
           <ul className="space-y-0.5">
             {menuItems.map((item) => (
               <li key={item.id} className="relative">
@@ -204,7 +204,7 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
           <Link
             href={`/collections/${title.toLowerCase().replace(/\s+/g, "-")}`}
             onClick={onLinkClick}
-            className="inline-flex items-center gap-1 mt-3 text-[#C8A55C] hover:text-[#a88947] font-semibold text-[10px] group"
+            className="inline-flex items-center gap-1 mt-2 text-[#C8A55C] hover:text-[#a88947] font-semibold text-[10px] group"
           >
             View All
             <span className="group-hover:translate-x-0.5 transition-transform">→</span>
@@ -214,14 +214,14 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
 
       {/* Right Side - Condensed Products Grid */}
       <div className="col-span-10">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-2">
           <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Featured Products</h4>
           <span className="text-[10px] text-gray-500">{displayProducts.length} products</span>
         </div>
 
         {displayProducts && displayProducts.length > 0 ? (
-          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-            {displayProducts.slice(0, 12).map((product) => {
+          <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2">
+            {displayProducts.slice(0, 16).map((product) => {
               const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
               const rating = getProductRating(product.id)
 
@@ -232,33 +232,33 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
                   onClick={onLinkClick}
                   className="group block"
                 >
-                  <div className="relative aspect-square bg-gray-50 rounded-md overflow-hidden mb-1.5 shadow-sm group-hover:shadow-md transition-shadow">
+                  <div className="relative aspect-square bg-gray-50 rounded overflow-hidden mb-1 shadow-sm group-hover:shadow-md transition-shadow">
                     {product.featuredImage ? (
                       <Image
                         src={product.featuredImage.url || "/placeholder.svg"}
                         alt={product.featuredImage.altText || product.title}
                         fill
-                        sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, (max-width: 1024px) 20vw, 16vw"
+                        sizes="(max-width: 640px) 25vw, (max-width: 768px) 20vw, (max-width: 1024px) 16vw, 12vw"
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-300">
-                        <span className="text-2xl">🏴</span>
+                        <span className="text-xl">🏴</span>
                       </div>
                     )}
                   </div>
 
-                  <h5 className="text-[10px] font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-1 leading-tight">
+                  <h5 className="text-[9px] font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-0.5 leading-tight">
                     {product.title}
                   </h5>
 
-                  <div className="mb-1">
+                  <div className="mb-0.5">
                     <StarRating rating={rating} size="sm" />
                   </div>
 
-                  <p className="text-xs font-bold text-[#C8A55C] mb-2">${price.toFixed(2)}</p>
+                  <p className="text-[10px] font-bold text-[#C8A55C] mb-1">${price.toFixed(2)}</p>
 
-                  <div className="h-7">
+                  <div className="h-6">
                     <QuickAddButton product={product} />
                   </div>
                 </Link>
@@ -266,7 +266,7 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
             })}
           </div>
         ) : (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-6 text-gray-400">
             <p className="text-xs">No products available</p>
           </div>
         )}

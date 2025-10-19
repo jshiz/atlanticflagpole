@@ -12,19 +12,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import {
-  ShoppingBag,
-  User,
-  Truck,
-  CreditCard,
-  Shield,
-  ChevronRight,
-  Package,
-  Lock,
-  Mail,
-  Phone,
-  MapPin,
-} from "lucide-react"
+import { ShoppingBag, User, Truck, CreditCard, Shield, ChevronRight, Package, Mail, Phone, MapPin } from "lucide-react"
 
 type CheckoutStep = "customer" | "shipping" | "payment"
 
@@ -37,7 +25,6 @@ export default function CheckoutPage() {
 
   // Customer info
   const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
 
   // Shipping info
   const [firstName, setFirstName] = useState("")
@@ -64,25 +51,8 @@ export default function CheckoutPage() {
     e.preventDefault()
 
     if (customerType === "login") {
-      // Handle login
-      setProcessing(true)
-      try {
-        const response = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        })
-
-        if (response.ok) {
-          setCurrentStep("shipping")
-        } else {
-          alert("Login failed. Please check your credentials.")
-        }
-      } catch (error) {
-        alert("Login error. Please try again.")
-      } finally {
-        setProcessing(false)
-      }
+      window.location.href = "/api/auth/login"
+      return
     } else {
       // Guest or signup - proceed to shipping
       setCurrentStep("shipping")
@@ -241,21 +211,9 @@ export default function CheckoutPage() {
                   </div>
 
                   {customerType === "login" && (
-                    <div>
-                      <Label htmlFor="password" className="flex items-center gap-2">
-                        <Lock className="w-4 h-4" />
-                        Password
-                      </Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        placeholder="••••••••"
-                        className="mt-1"
-                      />
-                    </div>
+                    <p className="text-xs text-gray-600 text-center">
+                      You'll be redirected to sign in with your Shopify account
+                    </p>
                   )}
 
                   <Button
@@ -264,7 +222,7 @@ export default function CheckoutPage() {
                     className="w-full bg-[#C8A55C] hover:bg-[#a88947] text-white"
                     disabled={processing}
                   >
-                    {processing ? "Processing..." : "Continue to Shipping"}
+                    {customerType === "login" ? "Sign In with Shopify" : "Continue to Shipping"}
                   </Button>
                 </form>
               </Card>

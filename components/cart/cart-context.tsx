@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
 import type { ShopifyCart } from "@/lib/shopify/types"
 import { createCart, addCartLines, updateCartLines, removeCartLines, getCart } from "@/lib/shopify"
+import { toast } from "@/hooks/use-toast"
 
 interface CartContextType {
   cart: ShopifyCart | null
@@ -64,8 +65,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         setCart(updatedCart)
         console.log("[v0] Added to cart")
+
+        toast({
+          title: "Added to cart!",
+          description: `${quantity} item${quantity > 1 ? "s" : ""} added to your cart`,
+        })
       } catch (error) {
         console.error("Error adding to cart:", error)
+        toast({
+          title: "Failed to add to cart",
+          description: "Please try again",
+          variant: "destructive",
+        })
       } finally {
         setLoading(false)
       }
@@ -82,8 +93,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const updatedCart = await updateCartLines(cart.id, [{ id: lineId, quantity }])
         setCart(updatedCart)
         console.log("[v0] Cart updated")
+        toast({
+          title: "Cart updated",
+        })
       } catch (error) {
         console.error("Error updating cart:", error)
+        toast({
+          title: "Failed to update cart",
+          description: "Please try again",
+          variant: "destructive",
+        })
       } finally {
         setLoading(false)
       }
@@ -100,8 +119,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const updatedCart = await removeCartLines(cart.id, [lineId])
         setCart(updatedCart)
         console.log("[v0] Item removed from cart")
+        toast({
+          title: "Item removed from cart",
+        })
       } catch (error) {
         console.error("Error removing from cart:", error)
+        toast({
+          title: "Failed to remove item",
+          description: "Please try again",
+          variant: "destructive",
+        })
       } finally {
         setLoading(false)
       }

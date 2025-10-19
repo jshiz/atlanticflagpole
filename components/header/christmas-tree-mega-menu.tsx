@@ -96,11 +96,11 @@ export function ChristmasTreeMegaMenu({ products, submenuProductsData = {}, onLi
         ))}
       </div>
 
-      <div className="relative grid grid-cols-12 gap-4 max-w-7xl mx-auto max-h-[70vh] overflow-y-auto">
+      <div className="relative grid grid-cols-12 gap-3 max-w-7xl mx-auto">
         {/* Left Sidebar - Navigation Links */}
-        <div className="col-span-2 border-r border-green-100/50 pr-4">
+        <div className="col-span-2 border-r border-green-100/50 pr-3">
           <div className="sticky top-2">
-            <h3 className="text-sm font-serif font-bold text-green-800 mb-3 pb-2 border-b border-green-600">
+            <h3 className="text-sm font-serif font-bold text-green-800 mb-2 pb-1.5 border-b border-green-600">
               Shop Christmas Trees
             </h3>
             <ul className="space-y-0.5">
@@ -122,7 +122,7 @@ export function ChristmasTreeMegaMenu({ products, submenuProductsData = {}, onLi
             <Link
               href="/collections/flagpole-christmas-trees"
               onClick={onLinkClick}
-              className="inline-flex items-center gap-1 mt-3 text-green-600 hover:text-green-700 font-bold text-[10px] group transition-colors"
+              className="inline-flex items-center gap-1 mt-2 text-green-600 hover:text-green-700 font-bold text-[10px] group transition-colors"
             >
               View All
               <span className="group-hover:translate-x-0.5 transition-transform duration-300">→</span>
@@ -132,47 +132,47 @@ export function ChristmasTreeMegaMenu({ products, submenuProductsData = {}, onLi
 
         {/* Right Side - Condensed Products Grid */}
         <div className="col-span-10">
-          <h4 className="text-xs font-semibold text-green-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+          <h4 className="text-xs font-semibold text-green-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
             <span className="text-base">🎄</span>
             {hoveredCollection
               ? `${menuLinks.find((l) => l.collection === hoveredCollection)?.title || "Featured"}`
               : "Featured Christmas Trees"}
           </h4>
           {displayProducts && displayProducts.length > 0 ? (
-            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-              {displayProducts.slice(0, 10).map((product: any) => (
+            <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+              {displayProducts.slice(0, 12).map((product: any) => (
                 <Link
                   key={product.id}
                   href={`/products/${product.handle}`}
                   onClick={onLinkClick}
                   className="group block"
                 >
-                  <div className="relative aspect-square bg-gradient-to-br from-green-50 to-red-50 rounded-md overflow-hidden mb-1.5 shadow-sm group-hover:shadow-md transition-all duration-300 border border-green-100">
+                  <div className="relative aspect-square bg-gradient-to-br from-green-50 to-red-50 rounded overflow-hidden mb-1 shadow-sm group-hover:shadow-md transition-all duration-300 border border-green-100">
                     {product.featuredImage ? (
                       <Image
                         src={product.featuredImage.url || "/placeholder.svg"}
                         alt={product.featuredImage.altText || product.title}
-                        width={150}
-                        height={150}
+                        width={120}
+                        height={120}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-green-300">
-                        <span className="text-2xl">🎄</span>
+                        <span className="text-xl">🎄</span>
                       </div>
                     )}
                   </div>
-                  <h5 className="text-[10px] font-semibold text-green-900 group-hover:text-green-600 transition-colors line-clamp-2 mb-1 leading-tight">
+                  <h5 className="text-[9px] font-semibold text-green-900 group-hover:text-green-600 transition-colors line-clamp-2 mb-0.5 leading-tight">
                     {product.title}
                   </h5>
-                  <p className="text-xs font-bold text-green-700">
+                  <p className="text-[10px] font-bold text-green-700">
                     ${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}
                   </p>
                 </Link>
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 text-green-600">
+            <div className="text-center py-6 text-green-600">
               <p className="text-xs">🎄 Christmas tree products coming soon!</p>
             </div>
           )}
