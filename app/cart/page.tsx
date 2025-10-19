@@ -5,10 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import Image from "next/image"
 import Link from "next/link"
-import { Minus, Plus, Trash2, ShoppingBag, Package, Shield, Truck, Award } from "lucide-react"
+import { Minus, Plus, Trash2, ShoppingBag, Package, Shield, Truck, Award, Zap } from "lucide-react"
 import { useState, useEffect } from "react"
 import { getBundleConfig } from "@/lib/bundles/bundle-config"
 import { useRouter } from "next/navigation"
+import { useGeo } from "@/lib/geo/context"
+import { buildGeoQuery } from "@/lib/geo/mapping"
+import type { GeoProduct } from "@/lib/shopify/queries/geoProducts"
 
 interface BundleComponentWithImage {
   title: string
@@ -21,13 +24,55 @@ interface BundleComponentWithImage {
 }
 
 export default function CartPage() {
-  const { cart, loading, updateCartLine, removeFromCart } = useCart()
+  const { cart, loading, updateCartLine, removeFromCart, addToCart } = useCart()
   const [expandedBundles, setExpandedBundles] = useState<Set<string>>(new Set())
   const [bundleComponentImages, setBundleComponentImages] = useState<Record<string, BundleComponentWithImage[]>>({})
   const router = useRouter()
+  const { location } = useGeo()
+  const [geoProducts, setGeoProducts] = useState<GeoProduct[]>([])
+  const [addOnProducts, setAddOnProducts] = useState<GeoProduct[]>([])
+  const [savingsProducts, setSavingsProducts] = useState<GeoProduct[]>([])
 
   console.log("[v0] Cart page - cart:", cart)
   console.log("[v0] Cart page - checkoutUrl:", cart?.checkoutUrl)
+
+  useEffect(() => {
+    if (location?.region_code) {
+      const query = buildGeoQuery(location.region_code)
+      if (query) {
+        fetch(`/api/geo/products?query=${encodeURIComponent(query)}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.products && data.products.length > 0) {
+              setGeoProducts(data.products.slice(0, 4))
+            }
+          })
+          .catch((err) => console.error("[v0] Failed to fetch geo products:", err))
+      }
+    }
+  }, [location])
+
+  useEffect(() => {
+    fetch(`/api/shopify/products?tag=accessory&limit=6`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.products) {
+          setAddOnProducts(data.products)
+        }
+      })
+      .catch((err) => console.error("[v0] Failed to fetch add-ons:", err))
+  }, [])
+
+  useEffect(() => {
+    fetch(`/api/shopify/products?tag=sale&limit=4`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.products) {
+          setSavingsProducts(data.products)
+        }
+      })
+      .catch((err) => console.error("[v0] Failed to fetch savings:", err))
+  }, [])
 
   useEffect(() => {
     const fetchBundleComponentImages = async () => {
@@ -98,6 +143,14 @@ export default function CartPage() {
   const subtotal = cart?.cost?.subtotalAmount ? Number.parseFloat(cart.cost.subtotalAmount.amount) : 0
   const total = cart?.cost?.totalAmount ? Number.parseFloat(cart.cost.totalAmount.amount) : 0
 
+  const potentialSavings = savingsProducts.reduce((sum, product) => {
+    const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
+    const compareAt = product.compareAtPriceRange?.minVariantPrice?.amount
+      ? Number.parseFloat(product.compareAtPriceRange.minVariantPrice.amount)
+      : price
+    return sum + (compareAt - price)
+  }, 0)
+
   if (isEmpty) {
     return (
       <main className="min-h-screen bg-gradient-to-b from-[#F5F3EF] to-white">
@@ -119,6 +172,13 @@ export default function CartPage() {
 
   const handleCheckout = () => {
     router.push("/checkout")
+  }
+
+  const handleQuickAdd = async (product: GeoProduct) => {
+    const variantId = product.variants.edges[0]?.node.id
+    if (variantId) {
+      await addToCart(variantId, 1)
+    }
   }
 
   const renderCartLine = (line: any) => {
@@ -287,7 +347,12 @@ export default function CartPage() {
     <main className="min-h-screen bg-gradient-to-b from-[#F5F3EF] to-white">
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#0B1C2C]">Shopping Cart</h1>
+          <div>
+            <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#0B1C2C]">Shopping Cart</h1>
+            <p className="text-[#0B1C2C]/60 mt-2">
+              {lines.length} {lines.length === 1 ? "item" : "items"} in your cart
+            </p>
+          </div>
           <div className="text-right">
             <p className="text-sm text-gray-600">Secure Checkout</p>
             <div className="flex items-center gap-1 text-green-600">
@@ -302,18 +367,138 @@ export default function CartPage() {
           <div className="lg:col-span-2 space-y-6">
             {lines.map((line) => renderCartLine(line))}
 
-            {/* Upsell Section */}
-            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 p-6">
-              <h3 className="text-lg font-bold text-[#0B1C2C] mb-4">Complete Your Setup</h3>
-              <div className="grid grid-cols-3 gap-4">
-                {/* Placeholder for upsell products */}
-                <div className="text-center">
-                  <div className="aspect-square bg-white rounded-lg mb-2" />
-                  <p className="text-xs font-semibold">Solar Light</p>
-                  <p className="text-sm font-bold text-[#C8A55C]">$49.99</p>
+            {geoProducts.length > 0 && (
+              <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Package className="w-5 h-5 text-blue-700" />
+                  <h3 className="text-lg font-bold text-[#0B1C2C]">Popular in {location?.region || "Your Area"}</h3>
                 </div>
-              </div>
-            </Card>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {geoProducts.map((product) => (
+                    <div
+                      key={product.id}
+                      className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow"
+                    >
+                      <Link href={`/products/${product.handle}`} className="block">
+                        {product.featuredImage && (
+                          <div className="relative aspect-square mb-2 rounded overflow-hidden">
+                            <Image
+                              src={product.featuredImage.url || "/placeholder.svg"}
+                              alt={product.title}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                        <p className="text-xs font-semibold text-[#0B1C2C] line-clamp-2 mb-1">{product.title}</p>
+                        <p className="text-sm font-bold text-[#C8A55C]">
+                          ${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}
+                        </p>
+                      </Link>
+                      <Button
+                        size="sm"
+                        className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white text-xs py-1"
+                        onClick={() => handleQuickAdd(product)}
+                      >
+                        Add to Cart
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
+
+            {addOnProducts.length > 0 && (
+              <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Plus className="w-5 h-5 text-green-700" />
+                  <h3 className="text-lg font-bold text-[#0B1C2C]">Complete Your Setup</h3>
+                  <span className="ml-auto text-xs bg-green-600 text-white px-2 py-1 rounded-full font-semibold">
+                    Add-Ons
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {addOnProducts.slice(0, 6).map((product) => (
+                    <div
+                      key={product.id}
+                      className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                      onClick={() => handleQuickAdd(product)}
+                    >
+                      {product.featuredImage && (
+                        <div className="relative aspect-square mb-2 rounded overflow-hidden">
+                          <Image
+                            src={product.featuredImage.url || "/placeholder.svg"}
+                            alt={product.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                      <p className="text-xs font-semibold text-[#0B1C2C] line-clamp-2 mb-1">{product.title}</p>
+                      <p className="text-sm font-bold text-[#C8A55C]">
+                        ${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}
+                      </p>
+                      <Button size="sm" className="w-full mt-2 bg-green-600 hover:bg-green-700 text-white text-xs py-1">
+                        Quick Add
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
+
+            {savingsProducts.length > 0 && (
+              <Card className="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Zap className="w-5 h-5 text-red-700" />
+                  <h3 className="text-lg font-bold text-[#0B1C2C]">Last Minute Savings</h3>
+                  <span className="ml-auto text-xs bg-red-600 text-white px-2 py-1 rounded-full font-semibold">
+                    Save ${potentialSavings.toFixed(0)}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {savingsProducts.map((product) => {
+                    const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
+                    const compareAt = product.compareAtPriceRange?.minVariantPrice?.amount
+                      ? Number.parseFloat(product.compareAtPriceRange.minVariantPrice.amount)
+                      : null
+                    const savings = compareAt ? compareAt - price : 0
+
+                    return (
+                      <div
+                        key={product.id}
+                        className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer relative"
+                        onClick={() => handleQuickAdd(product)}
+                      >
+                        {savings > 0 && (
+                          <div className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full font-bold z-10">
+                            Save ${savings.toFixed(0)}
+                          </div>
+                        )}
+                        {product.featuredImage && (
+                          <div className="relative aspect-square mb-2 rounded overflow-hidden">
+                            <Image
+                              src={product.featuredImage.url || "/placeholder.svg"}
+                              alt={product.title}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                        <p className="text-xs font-semibold text-[#0B1C2C] line-clamp-2 mb-1">{product.title}</p>
+                        <div className="flex items-center gap-2 mb-2">
+                          <p className="text-sm font-bold text-red-600">${price.toFixed(2)}</p>
+                          {compareAt && <p className="text-xs text-gray-500 line-through">${compareAt.toFixed(2)}</p>}
+                        </div>
+                        <Button size="sm" className="w-full bg-red-600 hover:bg-red-700 text-white text-xs py-1">
+                          Add & Save
+                        </Button>
+                      </div>
+                    )
+                  })}
+                </div>
+              </Card>
+            )}
           </div>
 
           {/* Order Summary - Sticky */}

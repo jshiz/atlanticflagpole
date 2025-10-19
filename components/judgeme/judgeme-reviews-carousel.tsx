@@ -11,21 +11,23 @@ interface JudgemeReviewsCarouselProps {
 export function JudgemeReviewsCarousel({ reviews }: JudgemeReviewsCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
 
+  const filteredReviews = reviews.filter((review) => review.rating >= 4)
+
   useEffect(() => {
-    if (reviews.length === 0) return
+    if (filteredReviews.length === 0) return
 
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % reviews.length)
+      setCurrentIndex((prev) => (prev + 1) % filteredReviews.length)
     }, 5000)
 
     return () => clearInterval(interval)
-  }, [reviews.length])
+  }, [filteredReviews.length])
 
-  if (reviews.length === 0) {
+  if (filteredReviews.length === 0) {
     return null
   }
 
-  const review = reviews[currentIndex]
+  const review = filteredReviews[currentIndex]
 
   return (
     <div className="bg-white rounded-lg p-6 shadow-sm max-w-md">
@@ -44,7 +46,7 @@ export function JudgemeReviewsCarousel({ reviews }: JudgemeReviewsCarouselProps)
           {review.reviewer.verified_buyer && <p className="text-xs text-[#C8A55C]">Verified Buyer</p>}
         </div>
         <div className="flex gap-1">
-          {reviews.map((_, i) => (
+          {filteredReviews.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrentIndex(i)}

@@ -4,6 +4,8 @@ import { getJudgemeFeaturedReviews, getJudgemeStats } from "@/lib/judgeme"
 export async function JudgemeFooterWidget() {
   const [stats, featuredReviews] = await Promise.all([getJudgemeStats(), getJudgemeFeaturedReviews(3)])
 
+  const highRatedReviews = featuredReviews.filter((review) => review.rating >= 4)
+
   return (
     <div className="bg-[#0B1C2C] py-12">
       <div className="container mx-auto px-4">
@@ -20,9 +22,9 @@ export async function JudgemeFooterWidget() {
           <p className="text-white/80">Based on {(stats.totalReviews || 0).toLocaleString()} reviews</p>
         </div>
 
-        {featuredReviews.length > 0 && (
+        {highRatedReviews.length > 0 && (
           <div className="grid md:grid-cols-3 gap-6">
-            {featuredReviews.map((review) => (
+            {highRatedReviews.map((review) => (
               <div key={review.id} className="bg-white/5 rounded-lg p-6 backdrop-blur-sm">
                 <div className="flex items-center gap-1 mb-3">
                   {[...Array(5)].map((_, i) => (

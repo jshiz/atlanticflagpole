@@ -73,6 +73,7 @@ export function ProductDetails({
           </ul>
         </div>
       ),
+      defaultOpen: false,
     })
   }
 

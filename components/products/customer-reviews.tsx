@@ -17,8 +17,9 @@ export function CustomerReviews({ reviewsData }: CustomerReviewsProps) {
   const [showAll, setShowAll] = useState(false)
   const { reviews, averageRating, totalReviews, ratingDistribution } = reviewsData
 
-  const displayedReviews = showAll ? reviews : reviews.slice(0, 3)
-  const hasReviews = reviews.length > 0
+  const filteredReviews = reviews.filter((review) => review.rating >= 4)
+  const displayedReviews = showAll ? filteredReviews : filteredReviews.slice(0, 3)
+  const hasReviews = filteredReviews.length > 0
 
   return (
     <div className="py-12" id="reviews">
@@ -132,7 +133,7 @@ export function CustomerReviews({ reviewsData }: CustomerReviewsProps) {
                 </Card>
               ))}
 
-              {reviews.length > 3 && (
+              {filteredReviews.length > 3 && (
                 <div className="text-center">
                   <Button
                     variant="outline"
@@ -140,7 +141,7 @@ export function CustomerReviews({ reviewsData }: CustomerReviewsProps) {
                     onClick={() => setShowAll(!showAll)}
                     className="border-[#C8A55C] text-[#C8A55C] hover:bg-[#C8A55C] hover:text-white"
                   >
-                    {showAll ? "Show Less" : `Load More Reviews (${reviews.length - 3} more)`}
+                    {showAll ? "Show Less" : `Load More Reviews (${filteredReviews.length - 3} more)`}
                   </Button>
                 </div>
               )}
