@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Loader } from "@/components/ui/loader"
 import { AppleIcon, CreditCard, Zap } from "lucide-react"
-import { ApplePaySession } from "apple-pay-js-api"
+import { ApplePaySession } from "applepayjs" // Declare the variable here
 
 interface ExpressCheckoutButtonsProps {
   cartId?: string
