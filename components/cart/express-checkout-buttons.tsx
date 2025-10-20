@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Loader } from "@/components/ui/loader"
 import { AppleIcon, CreditCard, Zap } from "lucide-react"
-import { ApplePaySession } from "applepayjs" // Declare the variable here
 
 interface ExpressCheckoutButtonsProps {
   cartId?: string
@@ -25,7 +24,11 @@ export function ExpressCheckoutButtons({
 
   useEffect(() => {
     // Check if Apple Pay is available (Safari/iOS)
-    if (window.ApplePaySession && ApplePaySession.canMakePayments()) {
+    if (
+      typeof window !== "undefined" &&
+      (window as any).ApplePaySession &&
+      (window as any).ApplePaySession.canMakePayments()
+    ) {
       setSupportsApplePay(true)
     }
 
