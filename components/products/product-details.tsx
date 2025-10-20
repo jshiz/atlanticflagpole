@@ -11,6 +11,7 @@ import { JudgeMeBadge, JudgeMeReviewWidget } from "./judgeme-widgets"
 import { FrequentlyBoughtTogether } from "./frequently-bought-together"
 import { RelatedProducts } from "./related-products"
 import { StickyCta } from "@/components/bundle/sticky-cta"
+import { ExpressCheckoutButtons } from "@/components/cart/express-checkout-buttons"
 import type { ShopifyProduct } from "@/lib/shopify"
 import type { BundleData } from "@/lib/shopify/bundles"
 import { toNodes } from "@/lib/connection"
@@ -294,6 +295,10 @@ export function ProductDetails({
                 availableForSale={selectedVariant.availableForSale}
                 className="w-full py-6 text-lg"
               />
+
+              {selectedVariant.availableForSale && (
+                <ExpressCheckoutButtons variantId={selectedVariant.id} quantity={1} />
+              )}
             </div>
           )}
 

@@ -11,6 +11,7 @@ import { getBundleConfig } from "@/lib/bundles/bundle-config"
 import { useRouter } from "next/navigation"
 import { useGeo } from "@/lib/geo/context"
 import type { ShopifyProduct } from "@/lib/shopify/types"
+import { ExpressCheckoutButtons } from "@/components/cart/express-checkout-buttons"
 
 interface BundleComponentWithImage {
   title: string
@@ -606,10 +607,12 @@ export function CartPageClient() {
               </div>
             </div>
 
+            <ExpressCheckoutButtons cartId={cart?.id} />
+
             <Button
               onClick={handleCheckout}
               size="lg"
-              className="w-full bg-[#C8A55C] hover:bg-[#a88947] text-white py-6 text-lg font-bold shadow-lg"
+              className="w-full bg-[#C8A55C] hover:bg-[#a88947] text-white py-6 text-lg font-bold shadow-lg mt-3"
               disabled={isUpdating}
             >
               Proceed to Checkout
