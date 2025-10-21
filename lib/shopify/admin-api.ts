@@ -1,5 +1,5 @@
 /**
- * Shopify Admin API client for fetching store analytics
+ * Shopify Admin API client for fetching store analytics and managing products
  * Requires SHOPIFY_ADMIN_ACCESS_TOKEN environment variable
  */
 
@@ -36,6 +36,10 @@ async function adminApiFetch<T>(query: string, variables?: Record<string, any>):
   }
 
   return json.data
+}
+
+export async function shopifyAdminFetch({ query, variables }: { query: string; variables?: Record<string, any> }) {
+  return adminApiFetch(query, variables)
 }
 
 export async function getProductCount() {

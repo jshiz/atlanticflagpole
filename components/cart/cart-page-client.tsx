@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import Image from "next/image"
 import Link from "next/link"
-import { Minus, Plus, Trash2, ShoppingBag, Package, Shield, Truck, Award, Zap, MapPin } from "lucide-react"
+import { Minus, Plus, Trash2, ShoppingBag, Package, Shield, Truck, Award, Zap, MapPin, Tag, X } from "lucide-react"
 import { useState, useEffect, useCallback, useRef } from "react"
 import { getBundleConfig } from "@/lib/bundles/bundle-config"
 import { useRouter } from "next/navigation"
 import { useGeo } from "@/lib/geo/context"
 import type { ShopifyProduct } from "@/lib/shopify/types"
 import { ExpressCheckoutButtons } from "@/components/cart/express-checkout-buttons"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 interface BundleComponentWithImage {
   title: string
@@ -35,6 +37,11 @@ export function CartPageClient() {
   const [loadingProducts, setLoadingProducts] = useState(true)
   const [isUpdating, setIsUpdating] = useState(false)
   const updateTimeoutRef = useRef<NodeJS.Timeout>()
+
+  const [discountCode, setDiscountCode] = useState("")
+  const [appliedDiscount, setAppliedDiscount] = useState<string | null>(null)
+  const [discountError, setDiscountError] = useState<string | null>(null)
+  const [applyingDiscount, setApplyingDiscount] = useState(false)
 
   const handleCartUpdate = useCallback(
     async (updateFn: () => Promise<void>) => {
@@ -75,6 +82,63 @@ export function CartPageClient() {
     },
     [addToCart, handleCartUpdate],
   )
+
+  const handleApplyDiscount = async () => {
+    if (!discountCode.trim() || !cart?.id) return
+
+    setApplyingDiscount(true)
+    setDiscountError(null)
+
+    try {
+      const response = await fetch("/api/cart/apply-discount", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cartId: cart.id,
+          discountCode: discountCode.trim().toUpperCase(),
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setAppliedDiscount(discountCode.trim().toUpperCase())
+        setDiscountCode("")
+        // Refresh cart to show discount
+        window.location.reload()
+      } else {
+        setDiscountError(data.error || "Invalid discount code")
+      }
+    } catch (error) {
+      console.error("[v0] Error applying discount:", error)
+      setDiscountError("Failed to apply discount code")
+    } finally {
+      setApplyingDiscount(false)
+    }
+  }
+
+  const handleRemoveDiscount = async () => {
+    if (!cart?.id) return
+
+    setApplyingDiscount(true)
+
+    try {
+      const response = await fetch("/api/cart/remove-discount", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cartId: cart.id }),
+      })
+
+      if (response.ok) {
+        setAppliedDiscount(null)
+        window.location.reload()
+      }
+    } catch (error) {
+      console.error("[v0] Error removing discount:", error)
+    } finally {
+      setApplyingDiscount(false)
+    }
+  }
 
   useEffect(() => {
     return () => {
@@ -586,6 +650,70 @@ export function CartPageClient() {
         <div className="lg:col-span-1">
           <Card className="p-6 sticky top-24 shadow-xl">
             <h2 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-6">Order Summary</h2>
+
+            <div className="mb-6 pb-6 border-b border-gray-200">
+              <Label
+                htmlFor="discount-code"
+                className="flex items-center gap-2 text-sm font-semibold text-[#0B1C2C] mb-2"
+              >
+                <Tag className="w-4 h-4 text-[#C8A55C]" />
+                Discount Code
+              </Label>
+
+              {appliedDiscount ? (
+                <div className="flex items-center justify-between bg-green-50 border-2 border-green-200 rounded-lg p-3">
+                  <div className="flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-green-600" />
+                    <span className="font-mono font-bold text-green-800">{appliedDiscount}</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleRemoveDiscount}
+                    disabled={applyingDiscount}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <Input
+                      id="discount-code"
+                      type="text"
+                      value={discountCode}
+                      onChange={(e) => {
+                        setDiscountCode(e.target.value.toUpperCase())
+                        setDiscountError(null)
+                      }}
+                      placeholder="Enter code"
+                      className="flex-1 font-mono"
+                      disabled={applyingDiscount}
+                    />
+                    <Button
+                      onClick={handleApplyDiscount}
+                      disabled={!discountCode.trim() || applyingDiscount}
+                      className="bg-[#C8A55C] hover:bg-[#a88947] text-white"
+                    >
+                      {applyingDiscount ? "Applying..." : "Apply"}
+                    </Button>
+                  </div>
+                  {discountError && (
+                    <p className="text-xs text-red-600 flex items-center gap-1">
+                      <X className="w-3 h-3" />
+                      {discountError}
+                    </p>
+                  )}
+                  <p className="text-xs text-gray-600">
+                    Have a rewards code?{" "}
+                    <Link href="/account/rewards" className="text-[#C8A55C] hover:underline font-semibold">
+                      View your rewards
+                    </Link>
+                  </p>
+                </div>
+              )}
+            </div>
 
             <div className="space-y-4 mb-6">
               <div className="flex justify-between text-[#0B1C2C]">
