@@ -1,13 +1,12 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
-import { AlertCircle, CheckCircle, Gift } from "lucide-react"
+import { AlertCircle, Gift, Mail, KeyRound } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 
 export const dynamic = "force-dynamic"
@@ -17,38 +16,46 @@ export default function SignupPage() {
   const searchParams = useSearchParams()
   const discountCode = searchParams.get("discount")
 
+  const [step, setStep] = useState<"details" | "otp">("details")
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
-    password: "",
   })
+  const [otp, setOtp] = useState("")
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [devOtp, setDevOtp] = useState<string | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     setLoading(true)
 
     try {
-      const response = await fetch("/api/auth/signup", {
+      const response = await fetch("/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          email: formData.email,
+          type: "signup",
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+        }),
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to create account")
+        throw new Error(data.error || "Failed to send code")
       }
 
-      setSuccess(true)
-      setTimeout(() => {
-        router.push("/api/auth/login")
-      }, 2000)
+      // In development, show the OTP
+      if (data.otp) {
+        setDevOtp(data.otp)
+      }
+
+      setStep("otp")
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -56,14 +63,50 @@ export default function SignupPage() {
     }
   }
 
+  const handleVerifyOTP = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    setLoading(true)
+
+    try {
+      const response = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, code: otp }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || "Invalid code")
+      }
+
+      // Redirect to account page on success
+      router.push("/account")
+      router.refresh()
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResendOTP = async () => {
+    setOtp("")
+    setError(null)
+    await handleSendOTP(new Event("submit") as any)
+  }
+
   return (
     <div className="min-h-screen bg-afp-ivory flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-serif font-bold text-afp-navy mb-2">Create Account</h1>
-          <p className="text-gray-600">Join Atlantic Flagpole today</p>
+          <p className="text-gray-600">
+            {step === "details" ? "Join Atlantic Flagpole today" : "Enter the code sent to your email"}
+          </p>
 
-          {discountCode && (
+          {discountCode && step === "details" && (
             <div className="mt-4 p-4 bg-gradient-to-r from-[#C8A55C]/20 to-[#0B1C2C]/20 rounded-lg border-2 border-[#C8A55C]">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Gift className="w-5 h-5 text-[#C8A55C]" />
@@ -84,74 +127,111 @@ export default function SignupPage() {
           </div>
         )}
 
-        {success && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
-            <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-green-800">Account created successfully! Redirecting to sign in...</p>
+        {devOtp && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <strong>Development Mode:</strong> Your code is <code className="font-mono font-bold">{devOtp}</code>
+            </p>
           </div>
         )}
 
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="firstName">First Name</Label>
-                <Input
-                  id="firstName"
-                  type="text"
-                  required
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                  className="mt-1"
-                />
+          {step === "details" ? (
+            <form onSubmit={handleSendOTP} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input
+                    id="firstName"
+                    type="text"
+                    required
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input
+                    id="lastName"
+                    type="text"
+                    required
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    className="mt-1"
+                  />
+                </div>
               </div>
+
               <div>
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  type="text"
-                  required
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                  className="mt-1"
-                />
+                <Label htmlFor="email">Email</Label>
+                <div className="relative mt-1">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    id="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="pl-10"
+                    placeholder="you@example.com"
+                    autoComplete="email"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="mt-1"
-              />
-            </div>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-afp-gold hover:bg-afp-gold-700 text-white h-12 text-base"
+              >
+                {loading ? "Sending Code..." : "Continue"}
+              </Button>
+            </form>
+          ) : (
+            <form onSubmit={handleVerifyOTP} className="space-y-4">
+              <div>
+                <Label htmlFor="otp">Verification Code</Label>
+                <div className="relative mt-1">
+                  <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    id="otp"
+                    type="text"
+                    required
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    className="pl-10 text-center text-2xl tracking-widest font-mono"
+                    placeholder="000000"
+                    maxLength={6}
+                    autoComplete="one-time-code"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-2">Code sent to {formData.email}</p>
+              </div>
 
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                required
-                minLength={8}
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="mt-1"
-              />
-              <p className="text-xs text-gray-500 mt-1">Must be at least 8 characters</p>
-            </div>
+              <Button
+                type="submit"
+                disabled={loading || otp.length !== 6}
+                className="w-full bg-afp-gold hover:bg-afp-gold-700 text-white h-12 text-base"
+              >
+                {loading ? "Creating Account..." : "Verify & Create Account"}
+              </Button>
 
-            <Button
-              type="submit"
-              disabled={loading || success}
-              className="w-full bg-afp-gold hover:bg-afp-gold-700 text-white h-12 text-base"
-            >
-              {loading ? "Creating Account..." : "Create Account"}
-            </Button>
-          </form>
+              <div className="flex items-center justify-between text-sm">
+                <button type="button" onClick={() => setStep("details")} className="text-gray-600 hover:text-afp-navy">
+                  ← Change details
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResendOTP}
+                  disabled={loading}
+                  className="text-afp-gold hover:text-afp-gold-700"
+                >
+                  Resend code
+                </button>
+              </div>
+            </form>
+          )}
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
