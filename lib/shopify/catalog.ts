@@ -208,7 +208,7 @@ export async function searchProducts(searchParams: {
       sortKey,
       reverse,
     },
-    { cache: "no-store" },
+    { next: { revalidate: 300, tags: ["products"] } },
   )
 
   return data.products
@@ -302,7 +302,7 @@ export async function getAllProducts(searchParams: {
         sortKey,
         reverse,
       },
-      { cache: "no-store" },
+      { next: { revalidate: 300, tags: ["products"] } },
     )
 
     const { nodes, pageInfo } = data.products

@@ -217,7 +217,7 @@ export async function getMenu(handle: string): Promise<Menu | null> {
           query: MENU_QUERY,
           variables: { handle },
         }),
-        cache: "no-store",
+        next: { revalidate: 3600, tags: ["menus"] },
       },
       3, // 3 retries
       10000, // 10 second timeout

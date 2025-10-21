@@ -40,6 +40,8 @@ const TicketPopup = dynamic(
   { ssr: false },
 )
 
+const RootDynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "Atlantic Flagpole - Premium American-Made Flagpoles",
   description: "The last flagpole you will ever need. Handcrafted in the USA with a lifetime guarantee.",

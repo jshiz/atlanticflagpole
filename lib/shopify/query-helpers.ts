@@ -19,7 +19,7 @@ export async function shopifyQuery<T = any>({
       "Content-Type": "application/json",
       "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
     },
-    cache: "no-store",
+    next: { revalidate: 300, tags: ["shopify-public"] },
     body: JSON.stringify({ query, variables: variables || {} }),
   })
 
