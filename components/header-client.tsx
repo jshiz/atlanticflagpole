@@ -96,52 +96,50 @@ export function HeaderClient({
     <>
       <header className="sticky top-0 z-[100] bg-white border-b border-gray-200 shadow-sm">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16 gap-4">
-            <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="flex items-center justify-between h-14 gap-3">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <button
-                className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors p-2"
+                className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors p-1.5"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label="Toggle menu"
               >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <MenuIcon className="w-5 h-5" />}
               </button>
 
-              {/* Logo */}
               <Link href="/" className="flex items-center gap-2 group">
                 <Image
                   src="/images/favicon.png"
                   alt="Atlantic Flagpole Logo"
-                  width={40}
-                  height={40}
-                  className="w-10 h-10 group-hover:scale-105 transition-transform duration-300"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="hidden lg:block">
-                  <span className="text-lg font-serif font-bold text-[#0B1C2C] tracking-tight block leading-none whitespace-nowrap">
+                  <span className="text-base font-serif font-bold text-[#0B1C2C] tracking-tight block leading-none whitespace-nowrap">
                     ATLANTIC
                   </span>
-                  <span className="text-xs font-serif font-medium text-[#C8A55C] tracking-widest block leading-none whitespace-nowrap">
+                  <span className="text-[10px] font-serif font-medium text-[#C8A55C] tracking-widest block leading-none whitespace-nowrap">
                     FLAGPOLE
                   </span>
                 </div>
               </Link>
             </div>
 
-            <div className="flex-1 max-w-3xl mx-auto">
+            <div className="flex-1 max-w-2xl mx-auto">
               <SearchBarWrapper className="w-full" />
             </div>
 
-            <div className="flex items-center gap-3 flex-shrink-0">
-              {/* Judge.me Badge */}
-              {judgemeBadge && <div className="hidden lg:block">{judgemeBadge}</div>}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {judgemeBadge && <div className="hidden lg:block scale-90">{judgemeBadge}</div>}
 
               <Link
                 href="/cart"
-                className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors group p-2"
+                className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors group p-1.5"
                 aria-label="Shopping cart"
               >
-                <ShoppingCart className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
+                <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
                 {cartItemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-[#C8A55C] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-[#C8A55C] text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center text-[10px]">
                     {cartItemCount}
                   </span>
                 )}
@@ -149,19 +147,18 @@ export function HeaderClient({
 
               <Link
                 href="/account"
-                className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors p-2"
+                className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors p-1.5"
                 aria-label="Account"
               >
-                <User className="w-6 h-6" />
+                <User className="w-5 h-5" />
               </Link>
             </div>
           </div>
 
-          {/* Desktop Navigation Dropdown */}
           {!mobileMenuOpen && (
             <div className="hidden lg:block border-t border-gray-100" ref={menuRef}>
               <div className="relative">
-                <nav className="flex items-center justify-center gap-8 py-3">
+                <nav className="flex items-center justify-center gap-6 py-2">
                   {menuItems.map((item) => {
                     const hasSubmenu = item.items && item.items.length > 0
                     const isChristmas = isChristmasTreeMenuItem(item.title)
