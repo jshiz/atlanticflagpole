@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getSession } from "@/lib/auth/session"
 import { getCustomerOrders } from "@/lib/shopify/customer-account"
-import { getOrCreateCustomerRewards, addPoints } from "@/lib/rewards/database"
+import { getCustomerRewards, addPoints } from "@/lib/rewards/shopify-rewards"
 import { calculatePointsFromOrder } from "@/lib/rewards/points-calculator"
 
 export const dynamic = "force-dynamic"
@@ -13,26 +13,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Get customer orders
     const ordersData = await getCustomerOrders(session.accessToken, 100)
     const orders = ordersData?.edges || []
 
-    // Get or create rewards account
-    await getOrCreateCustomerRewards(session.customerId, session.email)
+    await getCustomerRewards(session.customerId, session.email)
 
     let pointsAdded = 0
 
-    // Process each order
     for (const orderEdge of orders) {
       const order = orderEdge.node
       const orderId = order.id
       const orderAmount = Number.parseFloat(order.totalPrice.amount)
 
-      // Calculate points
       const points = calculatePointsFromOrder(orderAmount)
 
-      // Add points for this order
-      await addPoints(session.customerId, points, "order_purchase", `Order #${order.number} - $${orderAmount}`, orderId)
+      await addPoints(
+        session.customerId,
+        session.email,
+        points,
+        "order_purchase",
+        `Order #${order.number} - $${orderAmount}`,
+        orderId,
+      )
 
       pointsAdded += points
     }

@@ -1,12 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getSession } from "@/lib/auth/session"
-import {
-  getOrCreateCustomerRewards,
-  canSpinWheelToday,
-  getLastSpinTime,
-  getCustomerRedemptions,
-  getRewardsTransactions,
-} from "@/lib/rewards/database"
+import { getCustomerRewards, canSpinWheelToday, getLastSpinTime } from "@/lib/rewards/shopify-rewards"
 
 export const dynamic = "force-dynamic"
 
@@ -17,24 +11,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Get or create rewards account
-    const rewards = await getOrCreateCustomerRewards(session.customerId, session.email)
+    // Get rewards from Shopify metafields
+    const rewards = await getCustomerRewards(session.customerId, session.email)
 
     // Check if can spin today
-    const canSpin = await canSpinWheelToday(session.customerId)
-    const lastSpin = await getLastSpinTime(session.customerId)
-
-    // Get redemptions and transactions
-    const redemptions = await getCustomerRedemptions(session.customerId)
-    const transactions = await getRewardsTransactions(session.customerId, 20)
+    const canSpin = await canSpinWheelToday(session.customerId, session.email)
+    const lastSpin = await getLastSpinTime(session.customerId, session.email)
 
     return NextResponse.json({
-      totalPoints: rewards.total_points,
-      lifetimePoints: rewards.lifetime_points,
+      totalPoints: rewards.totalPoints,
+      lifetimePoints: rewards.lifetimePoints,
       canSpinToday: canSpin,
       lastSpinTime: lastSpin,
-      redemptions,
-      transactions,
+      redemptions: rewards.redemptions,
+      transactions: rewards.transactions,
     })
   } catch (error: any) {
     console.error("[v0] Error fetching rewards:", error)

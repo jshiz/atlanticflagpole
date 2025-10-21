@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getSession } from "@/lib/auth/session"
-import { deductPoints, createRedemption, getOrCreateCustomerRewards } from "@/lib/rewards/database"
+import { deductPoints, createRedemption, getCustomerRewards } from "@/lib/rewards/shopify-rewards"
 import { generateDiscountCode } from "@/lib/rewards/points-calculator"
 
 export const dynamic = "force-dynamic"
@@ -14,28 +14,31 @@ export async function POST(request: NextRequest) {
 
     const { points, tier } = await request.json()
 
-    // Check if customer has enough points
-    const rewards = await getOrCreateCustomerRewards(session.customerId, session.email)
-    if (rewards.total_points < points) {
+    const rewards = await getCustomerRewards(session.customerId, session.email)
+    if (rewards.totalPoints < points) {
       return NextResponse.json({ error: "Insufficient points" }, { status: 400 })
     }
 
-    // Generate discount code
     const discountCode = generateDiscountCode()
 
-    // Deduct points
-    const success = await deductPoints(session.customerId, points, `Redeemed ${tier.label}`)
+    const success = await deductPoints(session.customerId, session.email, points, `Redeemed ${tier.label}`)
     if (!success) {
       return NextResponse.json({ error: "Failed to deduct points" }, { status: 500 })
     }
 
-    // Create redemption record
     const discountType = tier.label.includes("%") ? "percentage" : "fixed_amount"
     const discountValue = tier.label.includes("%")
       ? Number.parseInt(tier.label.replace("%", "").trim())
       : Number.parseInt(tier.label.replace("$", "").replace("Off", "").trim())
 
-    const redemption = await createRedemption(session.customerId, points, discountCode, discountType, discountValue)
+    const redemption = await createRedemption(
+      session.customerId,
+      session.email,
+      points,
+      discountCode,
+      discountType,
+      discountValue,
+    )
 
     // TODO: Create discount code in Shopify
     // This would require Shopify Admin API integration

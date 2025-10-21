@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getSession } from "@/lib/auth/session"
-import { canSpinWheelToday, recordSpinWheel } from "@/lib/rewards/database"
+import { canSpinWheelToday, recordSpinWheel } from "@/lib/rewards/shopify-rewards"
 import { getRandomSpinResult } from "@/lib/rewards/points-calculator"
 
 export const dynamic = "force-dynamic"
@@ -12,17 +12,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Check if can spin today
-    const canSpin = await canSpinWheelToday(session.customerId)
+    const canSpin = await canSpinWheelToday(session.customerId, session.email)
     if (!canSpin) {
       return NextResponse.json({ error: "You can only spin once per day" }, { status: 400 })
     }
 
-    // Get random result
     const pointsWon = getRandomSpinResult()
 
-    // Record spin and add points
-    await recordSpinWheel(session.customerId, pointsWon)
+    await recordSpinWheel(session.customerId, session.email, pointsWon)
 
     return NextResponse.json({
       success: true,
