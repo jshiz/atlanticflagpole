@@ -1,40 +1,92 @@
 import { Hero } from "@/components/home/hero"
 import { FeaturedProductsShowcase } from "@/components/home/featured-products-showcase"
-import { WhyPhoenixTrust } from "@/components/home/why-phoenix-trust"
-import { PhoenixVsCompetition } from "@/components/home/phoenix-vs-competition"
-import { ExpandableReviews } from "@/components/home/expandable-reviews"
-import { CTA } from "@/components/home/cta"
 import { QuickDeals } from "@/components/home/quick-deals"
-import { TicketPopup } from "@/components/home/ticket-popup"
 import { getJudgemeStats, getJudgemeReviews } from "@/lib/judgeme"
 import { generateOrganizationSchema } from "@/lib/seo/structured-data"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateHomeMetadata } from "@/lib/seo/metadata"
 import type { Metadata } from "next"
+import dynamic from "next/dynamic"
+import { Suspense } from "react"
+import { FadeInOnScroll } from "@/components/ui/fade-in-on-scroll"
+import { HomeClientComponents } from "./home-client"
+
+const WhyPhoenixTrust = dynamic(
+  () => import("@/components/home/why-phoenix-trust").then((mod) => ({ default: mod.WhyPhoenixTrust })),
+  {
+    loading: () => <div className="h-96 bg-[#0B1C2C] animate-pulse" />,
+  },
+)
+
+const PhoenixVsCompetition = dynamic(
+  () => import("@/components/home/phoenix-vs-competition").then((mod) => ({ default: mod.PhoenixVsCompetition })),
+  {
+    loading: () => <div className="h-96 bg-white animate-pulse" />,
+  },
+)
+
+const ExpandableReviews = dynamic(
+  () => import("@/components/home/expandable-reviews").then((mod) => ({ default: mod.ExpandableReviews })),
+  {
+    loading: () => <div className="h-96 bg-[#0A2740] animate-pulse" />,
+  },
+)
+
+const CTA = dynamic(() => import("@/components/home/cta").then((mod) => ({ default: mod.CTA })), {
+  loading: () => <div className="h-64 bg-[#F5F3EF] animate-pulse" />,
+})
 
 export const metadata: Metadata = generateHomeMetadata()
 
-export const dynamic = "force-dynamic"
-export const fetchCache = "force-no-store"
-export const revalidate = 0
+export const revalidate = 3600
 
 export default async function Home() {
-  const judgemeStats = await getJudgemeStats()
-  const { reviews } = await getJudgemeReviews({ perPage: 12, minRating: 4 })
+  const [judgemeStats, { reviews }] = await Promise.all([
+    getJudgemeStats(),
+    getJudgemeReviews({ perPage: 12, minRating: 4 }),
+  ])
 
   const organizationSchema = generateOrganizationSchema()
 
   return (
     <main className="min-h-screen">
       <StructuredData data={organizationSchema} />
+
       <Hero judgemeStats={judgemeStats} />
-      <FeaturedProductsShowcase />
-      <QuickDeals />
-      <WhyPhoenixTrust />
-      <PhoenixVsCompetition />
-      <ExpandableReviews reviews={reviews} />
-      <CTA />
-      <TicketPopup />
+
+      <FadeInOnScroll>
+        <FeaturedProductsShowcase />
+      </FadeInOnScroll>
+
+      <FadeInOnScroll delay={100}>
+        <QuickDeals />
+      </FadeInOnScroll>
+
+      <FadeInOnScroll delay={150}>
+        <Suspense fallback={<div className="h-96 bg-[#0B1C2C] animate-pulse" />}>
+          <WhyPhoenixTrust />
+        </Suspense>
+      </FadeInOnScroll>
+
+      <FadeInOnScroll delay={200}>
+        <Suspense fallback={<div className="h-96 bg-white animate-pulse" />}>
+          <PhoenixVsCompetition />
+        </Suspense>
+      </FadeInOnScroll>
+
+      <FadeInOnScroll delay={250}>
+        <Suspense fallback={<div className="h-96 bg-[#0A2740] animate-pulse" />}>
+          <ExpandableReviews reviews={reviews} />
+        </Suspense>
+      </FadeInOnScroll>
+
+      <FadeInOnScroll delay={300}>
+        <Suspense fallback={<div className="h-64 bg-[#F5F3EF] animate-pulse" />}>
+          <CTA />
+        </Suspense>
+      </FadeInOnScroll>
+
+      <HomeClientComponents />
     </main>
   )
 }

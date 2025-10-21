@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation"
-import { ProductCard } from "@/components/products/product-card"
 import { CollectionFiltersWrapper } from "@/components/collections/collection-filters-wrapper"
 import { AdvancedFiltersWrapper } from "@/components/collections/advanced-filters-wrapper"
 import { COLLECTION_WITH_FILTERS } from "@/lib/shopify/queries"
@@ -8,6 +7,7 @@ import { navigationConfig, singleNavItems } from "@/lib/navigation-config"
 import { generateCollectionMetadata } from "@/lib/seo/metadata"
 import { generateCollectionSchema, generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { StructuredData } from "@/components/seo/structured-data"
+import { InfiniteProductGrid } from "@/components/products/infinite-product-grid"
 import type { Metadata } from "next"
 
 const SHOPIFY_STORE_DOMAIN = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || "v0-template.myshopify.com"
@@ -306,7 +306,7 @@ export default async function CollectionPage({ params, searchParams }: Collectio
             />
           )}
           <p className="text-lg text-[#0B1C2C]/70">
-            {products.length} {products.length === 1 ? "product" : "products"}
+            {products.length}+ {products.length === 1 ? "product" : "products"}
           </p>
         </div>
 
@@ -323,11 +323,10 @@ export default async function CollectionPage({ params, searchParams }: Collectio
           </aside>
 
           <div className="lg:col-span-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {products.map((product: any) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            <InfiniteProductGrid
+              initialProducts={products.slice(0, 24)}
+              searchParams={{ ...searchParams, collection: params.handle }}
+            />
           </div>
         </div>
       </div>

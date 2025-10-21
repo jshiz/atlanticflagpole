@@ -91,40 +91,44 @@ export async function Footer() {
             <div className="max-w-4xl mx-auto text-center">
               <h3 className="text-white font-bold text-xl mb-6">Trusted & Secure</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
                   <Image
                     src="https://cdn.shopify.com/s/files/1/2133/9559/files/phoenix-flagpole-sticker-logo-final-2020-securi-lok-opt.png?v=1760562626"
                     alt="Phoenix Flagpole Securi-Lok Technology"
-                    width={120}
-                    height={120}
-                    className="w-full h-auto max-w-[100px]"
+                    fill
+                    className="object-contain p-4"
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    loading="lazy"
                   />
                 </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
                   <Image
                     src="https://cdn.shopify.com/s/files/1/2133/9559/files/flagpole-made-in-the-usa.png?v=1687894210"
                     alt="Made in the USA - American Made Flagpoles"
-                    width={120}
-                    height={120}
-                    className="w-full h-auto max-w-[100px]"
+                    fill
+                    className="object-contain p-4"
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    loading="lazy"
                   />
                 </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
                   <Image
                     src="https://cdn.shopify.com/s/files/1/2133/9559/files/365-day-satisfaction-guarantee-phoenix-flagpole-200px.png?v=1687894210"
                     alt="365-Day Satisfaction Guarantee"
-                    width={120}
-                    height={120}
-                    className="w-full h-auto max-w-[100px]"
+                    fill
+                    className="object-contain p-4"
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    loading="lazy"
                   />
                 </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
                   <Image
                     src="https://cdn.shopify.com/s/files/1/2133/9559/files/911-limited-edition-phoenix-flagpole-flagpole-bundle-200px.png?v=1687894210"
                     alt="911 Limited Edition Phoenix Flagpole Bundle"
-                    width={120}
-                    height={120}
-                    className="w-full h-auto max-w-[100px]"
+                    fill
+                    className="object-contain p-4"
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    loading="lazy"
                   />
                 </div>
               </div>

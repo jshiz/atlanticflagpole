@@ -7,13 +7,16 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
-import { AlertCircle, CheckCircle } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { AlertCircle, CheckCircle, Gift } from "lucide-react"
+import { useRouter, useSearchParams } from "next/navigation"
 
 export const dynamic = "force-dynamic"
 
 export default function SignupPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const discountCode = searchParams.get("discount")
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -59,6 +62,19 @@ export default function SignupPage() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-serif font-bold text-afp-navy mb-2">Create Account</h1>
           <p className="text-gray-600">Join Atlantic Flagpole today</p>
+
+          {discountCode && (
+            <div className="mt-4 p-4 bg-gradient-to-r from-[#C8A55C]/20 to-[#0B1C2C]/20 rounded-lg border-2 border-[#C8A55C]">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Gift className="w-5 h-5 text-[#C8A55C]" />
+                <p className="font-bold text-[#0B1C2C]">Welcome Bonus Active!</p>
+              </div>
+              <p className="text-sm text-[#0B1C2C]/70">
+                Sign up now and get <span className="font-bold text-[#C8A55C]">$5 OFF</span> your first order with code:{" "}
+                <code className="font-bold">{discountCode}</code>
+              </p>
+            </div>
+          )}
         </div>
 
         {error && (

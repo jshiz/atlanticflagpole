@@ -4,6 +4,7 @@ import { HeaderClient } from "@/components/header-client"
 import { getProducts } from "@/lib/shopify"
 import { getCached, setCache } from "@/lib/cache"
 import { JudgemeBadge } from "@/components/judgeme/judgeme-badge"
+import { getSession } from "@/lib/auth/session"
 
 function extractCollectionHandle(url: string): string | null {
   const match = url.match(/\/collections\/([^/?]+)/)
@@ -12,6 +13,8 @@ function extractCollectionHandle(url: string): string | null {
 
 export async function Header() {
   try {
+    const session = await getSession()
+
     const cacheKey = "header-data"
     const cached = getCached<any>(cacheKey)
 
@@ -26,6 +29,7 @@ export async function Header() {
             nflFlagProducts={cached.nflFlagProducts}
             christmasTreeProducts={cached.christmasTreeProducts}
             judgemeBadge={<JudgemeBadge />}
+            session={session}
           />
         </>
       )
@@ -157,7 +161,7 @@ export async function Header() {
       nflFlagProducts: nflFlagProducts || [],
       christmasTreeProducts: christmasTreeProducts || [],
     }
-    setCache(cacheKey, headerData, 3600000) // 1 hour in milliseconds
+    setCache(cacheKey, headerData, 3600000)
 
     return (
       <>
@@ -168,11 +172,13 @@ export async function Header() {
           nflFlagProducts={headerData.nflFlagProducts}
           christmasTreeProducts={headerData.christmasTreeProducts}
           judgemeBadge={<JudgemeBadge />}
+          session={session}
         />
       </>
     )
   } catch (error) {
     console.error("[v0] ❌ Error in Header component:", error)
+    const session = await getSession()
     return (
       <HeaderClient
         menuData={null}
@@ -181,6 +187,7 @@ export async function Header() {
         nflFlagProducts={[]}
         christmasTreeProducts={[]}
         judgemeBadge={<JudgemeBadge />}
+        session={session}
       />
     )
   }

@@ -1,18 +1,19 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { X } from "lucide-react"
+import { X, Copy, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export function TicketPopup() {
   const [isOpen, setIsOpen] = useState(false)
   const [showButton, setShowButton] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [isCopied, setIsCopied] = useState(false)
 
   useEffect(() => {
     const hasClaimedTicket = localStorage.getItem("vip-ticket-claimed")
     if (hasClaimedTicket) {
-      return // Don't show the ticket if already claimed
+      return
     }
 
     const timer = setTimeout(() => {
@@ -133,8 +134,14 @@ export function TicketPopup() {
     setIsOpen(false)
   }
 
-  const handleClaim = () => {
-    window.location.href = "/products"
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText("WELCOME5")
+    setIsCopied(true)
+    setTimeout(() => setIsCopied(false), 3000)
+  }
+
+  const handleSignUp = () => {
+    window.location.href = "/account/signup?discount=WELCOME5"
   }
 
   return (
@@ -180,26 +187,58 @@ export function TicketPopup() {
 
               <div className="p-8 text-center">
                 <h2 className="text-3xl font-serif font-bold text-[#0B1C2C] mb-4">Congratulations!</h2>
-                <p className="text-lg text-[#0B1C2C]/70 mb-6">You've been selected for an exclusive VIP offer!</p>
+                <p className="text-lg text-[#0B1C2C]/70 mb-6">
+                  You've unlocked an exclusive <span className="font-bold text-[#C8A55C]">$5 OFF</span> your first
+                  order!
+                </p>
 
                 <div className="mb-6 flex justify-center">
                   <img src="/vip-patriots-ticket.svg" alt="VIP Patriots Ticket" className="w-full max-w-lg h-auto" />
                 </div>
 
+                <div className="bg-gradient-to-r from-[#C8A55C]/10 to-[#0B1C2C]/10 rounded-lg p-6 mb-6 border-2 border-dashed border-[#C8A55C]">
+                  <p className="text-sm text-[#0B1C2C]/70 mb-2">Your Sign-Up Bonus Code:</p>
+                  <div className="flex items-center justify-center gap-3">
+                    <code className="text-2xl font-bold text-[#0B1C2C] tracking-wider">WELCOME5</code>
+                    <button
+                      onClick={handleCopyCode}
+                      className="p-2 hover:bg-white/50 rounded-lg transition-colors"
+                      aria-label="Copy code"
+                    >
+                      {isCopied ? (
+                        <Check className="w-5 h-5 text-green-600" />
+                      ) : (
+                        <Copy className="w-5 h-5 text-[#C8A55C]" />
+                      )}
+                    </button>
+                  </div>
+                  <p className="text-xs text-[#0B1C2C]/50 mt-2">
+                    {isCopied ? "Code copied! Use at checkout." : "Click to copy code"}
+                  </p>
+                </div>
+
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button
-                    onClick={handleClaim}
+                    onClick={handleSignUp}
                     size="lg"
                     className="bg-[#C8A55C] hover:bg-[#a88947] text-white font-bold text-lg px-8"
                   >
-                    Claim Your Prize
+                    Sign Up & Save $5
                   </Button>
-                  <Button onClick={handleClose} size="lg" variant="outline" className="font-semibold bg-transparent">
-                    Maybe Later
+                  <Button
+                    onClick={() => {
+                      handleCopyCode()
+                      window.location.href = "/products"
+                    }}
+                    size="lg"
+                    variant="outline"
+                    className="font-semibold bg-transparent border-2 border-[#0B1C2C]"
+                  >
+                    Shop Now
                   </Button>
                 </div>
 
-                <p className="text-sm text-[#0B1C2C]/50 mt-6">Limited time offer. While supplies last.</p>
+                <p className="text-sm text-[#0B1C2C]/50 mt-6">Limited time offer. Code valid for new customers only.</p>
               </div>
             </div>
           </div>

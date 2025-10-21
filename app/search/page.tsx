@@ -1,8 +1,8 @@
-import { getProducts } from "@/lib/shopify"
-import { ProductCard } from "@/components/products/product-card"
+import { searchProducts } from "@/lib/shopify/catalog"
+import { InfiniteProductGrid } from "@/components/products/infinite-product-grid"
 import { SearchFilters } from "@/components/search/search-filters"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 600
 
 interface SearchPageProps {
   searchParams: {
@@ -15,14 +15,16 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const query = searchParams.q || ""
   const sortKey = searchParams.sort || "RELEVANCE"
 
-  let products = []
+  let initialProducts: any[] = []
 
   if (query) {
     try {
-      products = await getProducts({
-        query,
-        sortKey: sortKey as any,
+      const result = await searchProducts({
+        q: query,
+        sort: sortKey,
+        first: 24,
       })
+      initialProducts = result.nodes
     } catch (error) {
       console.error("Error fetching search results:", error)
     }
@@ -37,7 +39,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </h1>
           {query && (
             <p className="text-lg text-[#0B1C2C]/70">
-              {products.length} {products.length === 1 ? "result" : "results"} found
+              {initialProducts.length}+ {initialProducts.length === 1 ? "result" : "results"} found
             </p>
           )}
         </div>
@@ -48,16 +50,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           <div className="text-center py-12">
             <p className="text-lg text-[#0B1C2C]/70">Enter a search term to find products</p>
           </div>
-        ) : products.length === 0 ? (
+        ) : initialProducts.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-lg text-[#0B1C2C]/70">No products found for "{query}"</p>
             <p className="text-sm text-[#0B1C2C]/60 mt-2">Try different keywords or browse our collections</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+          <div className="mt-8">
+            <InfiniteProductGrid initialProducts={initialProducts} searchParams={{ q: query, sort: sortKey }} />
           </div>
         )}
       </div>

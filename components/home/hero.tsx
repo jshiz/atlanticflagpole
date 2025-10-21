@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import Image from "next/image"
 
 interface HeroProps {
   judgemeStats?: {
@@ -43,10 +44,14 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
   return (
     <>
       <section className="relative w-full min-h-[500px] md:min-h-[550px] lg:min-h-[650px] overflow-hidden">
-        <img
+        <Image
           src="/images/design-mode/AtlanticFlagPoleHero.jpg"
           alt="Beautiful home with American flag on premium flagpole"
-          className="absolute inset-0 w-full h-full object-cover object-[75%_center]"
+          fill
+          priority
+          quality={90}
+          sizes="100vw"
+          className="object-cover object-[75%_center]"
         />
 
         <div
@@ -157,25 +162,37 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
               href="https://judge.me/reviews/stores/atlanticflagpole.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-16 h-16 bg-white rounded-full overflow-hidden shadow-lg border-[3px] border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center p-1.5"
+              className="w-16 h-16 bg-white rounded-full overflow-hidden shadow-lg border-[3px] border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center p-1.5 relative"
             >
-              <img src="/images/ten-percent-badge.svg" alt="10% Pledge" className="w-full h-full object-contain" />
+              <Image
+                src="/images/ten-percent-badge.svg"
+                alt="10% Pledge"
+                fill
+                className="object-contain p-1.5"
+                sizes="64px"
+              />
             </Link>
             <Link
               href="https://www.bbb.org/us/ny/albany/profile/flag-poles/atlantic-flag-and-pole-0041-235985313/"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-16 h-16 rounded-full overflow-hidden shadow-lg border-[3px] border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300"
+              className="w-16 h-16 rounded-full overflow-hidden shadow-lg border-[3px] border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 relative"
             >
-              <img src="/images/bbb-logo.webp" alt="BBB Accredited" className="w-full h-full object-cover" />
+              <Image src="/images/bbb-logo.webp" alt="BBB Accredited" fill className="object-cover" sizes="64px" />
             </Link>
             <Link
               href="https://judge.me/reviews/stores/atlanticflagpole.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-16 h-16 bg-white rounded-full overflow-hidden shadow-lg border-[3px] border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center p-1.5"
+              className="w-16 h-16 bg-white rounded-full overflow-hidden shadow-lg border-[3px] border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center p-1.5 relative"
             >
-              <img src="/images/one-percent-planet.svg" alt="1% for Planet" className="w-full h-full object-contain" />
+              <Image
+                src="/images/one-percent-planet.svg"
+                alt="1% for Planet"
+                fill
+                className="object-contain p-1.5"
+                sizes="64px"
+              />
             </Link>
           </div>
         </div>
@@ -184,7 +201,6 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           <p className="text-white text-sm md:text-base font-serif drop-shadow-lg">Prices Starting From $299</p>
         </div>
       </section>
-      {/* </CHANGE> */}
 
       <div className="bg-[#0B1C2C] py-3 overflow-hidden border-y-2 border-[#C8A55C]/30">
         <div className="animate-marquee whitespace-nowrap flex items-center gap-12">
@@ -220,7 +236,6 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           ))}
         </div>
       </div>
-      {/* </CHANGE> */}
 
       <style jsx>{`
         @keyframes marquee {
