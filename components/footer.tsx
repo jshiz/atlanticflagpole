@@ -1,7 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Facebook, Instagram, Youtube, Sparkles } from "lucide-react"
-import { JudgemeFooterWidget } from "./judgeme/judgeme-footer-widget"
 
 const PinterestIcon = () => (
   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -24,8 +23,6 @@ const XIcon = () => (
 export async function Footer() {
   return (
     <>
-      <JudgemeFooterWidget />
-
       <footer className="bg-gradient-to-b from-[#0B1C2C] to-[#0A2740] text-white pb-32">
         <div className="border-b border-white/10">
           <div className="container mx-auto px-4 py-8">
@@ -301,18 +298,6 @@ export async function Footer() {
                 >
                   <TumblrIcon />
                 </Link>
-              </div>
-            </div>
-
-            <div className="text-center mb-6 pb-6 border-b border-white/10">
-              <div className="max-w-2xl mx-auto bg-white rounded-lg p-6 shadow-lg">
-                <Image
-                  src="https://cdn.shopify.com/s/files/1/2133/9559/files/Guaranteed_Safe_Checkout_-_Fast_Shipping.png?v=1682186986"
-                  alt="Guaranteed Safe Checkout - Fast Shipping"
-                  width={800}
-                  height={200}
-                  className="w-full h-auto"
-                />
               </div>
             </div>
 
