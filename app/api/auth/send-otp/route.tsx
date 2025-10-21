@@ -5,8 +5,6 @@ import { generateOTP, storeOTP } from "@/lib/auth/otp"
 const SHOPIFY_STOREFRONT_API_URL = `https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN}/api/${process.env.SHOPIFY_STOREFRONT_API_VERSION || "2025-07"}/graphql.json`
 const SHOPIFY_STOREFRONT_TOKEN = process.env.SHOPIFY_STOREFRONT_TOKEN || ""
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -49,6 +47,8 @@ export async function POST(request: NextRequest) {
 
     try {
       if (process.env.RESEND_API_KEY) {
+        const resend = new Resend(process.env.RESEND_API_KEY)
+
         await resend.emails.send({
           from: "Atlantic Flagpole <noreply@atlanticflagpole.com>",
           to: email,
