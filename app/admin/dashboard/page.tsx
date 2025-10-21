@@ -7,6 +7,7 @@ import { CheckCircle2, XCircle, AlertCircle, Clock, Zap, TrendingUp, Package, Li
 import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import Link from "next/link"
+import { AdminStatsClient } from "@/components/admin/admin-stats-client"
 
 export const dynamic = "force-dynamic"
 
@@ -19,6 +20,7 @@ export default async function AdminDashboardPage() {
   const envVars = {
     NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN: !!process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN,
     SHOPIFY_STOREFRONT_TOKEN: !!process.env.SHOPIFY_STOREFRONT_TOKEN || !!process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+    SHOPIFY_ADMIN_ACCESS_TOKEN: !!process.env.SHOPIFY_ADMIN_ACCESS_TOKEN,
     JUDGEME_API_TOKEN: !!process.env.JUDGEME_API_TOKEN,
     NEXT_PUBLIC_SITE_URL: !!process.env.NEXT_PUBLIC_SITE_URL,
   }
@@ -99,6 +101,8 @@ export default async function AdminDashboardPage() {
             <CardDescription>Last checked: {new Date().toLocaleString()} • Next check in 5 minutes</CardDescription>
           </CardHeader>
         </Card>
+
+        <AdminStatsClient />
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">

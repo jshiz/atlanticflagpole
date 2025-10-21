@@ -7,12 +7,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { AdminNav } from "@/components/admin/admin-nav"
-import { Activity, TrendingUp, AlertCircle, CheckCircle, Clock, Zap } from "lucide-react"
+import { Activity, TrendingUp, AlertCircle, CheckCircle, Zap, Loader2 } from "lucide-react"
+import { Progress } from "@/components/ui/progress"
 
 export default function AdminAnalyticsPage() {
   const [lighthouseScores, setLighthouseScores] = useState<any>(null)
   const [isRunningTest, setIsRunningTest] = useState(false)
   const [selectedPage, setSelectedPage] = useState("/")
+  const [testProgress, setTestProgress] = useState(0)
+  const [testStatus, setTestStatus] = useState("")
 
   const testPages = [
     { path: "/", label: "Home" },
@@ -24,18 +27,61 @@ export default function AdminAnalyticsPage() {
 
   const runLighthouseTest = async (pagePath: string) => {
     setIsRunningTest(true)
+    setTestProgress(0)
+    setTestStatus("Initializing test...")
+    setLighthouseScores(null)
+
+    const progressInterval = setInterval(() => {
+      setTestProgress((prev) => {
+        if (prev >= 90) return prev
+        return prev + Math.random() * 15
+      })
+    }, 500)
+
+    const statusMessages = [
+      "Connecting to Google PageSpeed Insights...",
+      "Loading page...",
+      "Running performance audit...",
+      "Analyzing accessibility...",
+      "Checking best practices...",
+      "Evaluating SEO...",
+      "Generating recommendations...",
+    ]
+
+    let statusIndex = 0
+    const statusInterval = setInterval(() => {
+      if (statusIndex < statusMessages.length) {
+        setTestStatus(statusMessages[statusIndex])
+        statusIndex++
+      }
+    }, 2000)
+
     try {
       const response = await fetch("/api/admin/lighthouse", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: pagePath }),
       })
+
+      if (!response.ok) {
+        throw new Error("Failed to run Lighthouse test")
+      }
+
       const data = await response.json()
       setLighthouseScores(data)
+      setTestProgress(100)
+      setTestStatus("Test completed!")
     } catch (error) {
-      console.error("Lighthouse test failed:", error)
+      console.error("[v0] Lighthouse test failed:", error)
+      setTestStatus("Test failed. Please try again.")
     } finally {
-      setIsRunningTest(false)
+      clearInterval(progressInterval)
+      clearInterval(statusInterval)
+      setTimeout(() => {
+        setIsRunningTest(false)
+        setTestProgress(0)
+        setTestStatus("")
+      }, 1000)
     }
   }
 
@@ -79,7 +125,7 @@ export default function AdminAnalyticsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Site Analytics & Performance</h1>
-            <p className="text-muted-foreground">Monitor performance metrics and optimization opportunities</p>
+            <p className="text-muted-foreground">Real Google Lighthouse scores and optimization insights</p>
           </div>
         </div>
 
@@ -94,7 +140,9 @@ export default function AdminAnalyticsPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Google Lighthouse Performance Testing</CardTitle>
-                <CardDescription>Run comprehensive performance audits on your pages</CardDescription>
+                <CardDescription>
+                  Run real Google PageSpeed Insights tests on your pages (powered by Lighthouse)
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex gap-2 flex-wrap">
@@ -114,105 +162,161 @@ export default function AdminAnalyticsPage() {
                 </div>
 
                 {isRunningTest && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Clock className="h-4 w-4 animate-spin" />
-                    <span>Running Lighthouse test on {selectedPage}...</span>
-                  </div>
+                  <Card className="bg-muted/50">
+                    <CardContent className="pt-6 space-y-4">
+                      <div className="flex items-center gap-3">
+                        <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                        <div className="flex-1">
+                          <p className="font-medium">Running Lighthouse Test</p>
+                          <p className="text-sm text-muted-foreground">{testStatus}</p>
+                        </div>
+                        <span className="text-sm font-medium">{Math.round(testProgress)}%</span>
+                      </div>
+                      <Progress value={testProgress} className="h-2" />
+                      <p className="text-xs text-muted-foreground">
+                        This typically takes 15-30 seconds. Real data from Google PageSpeed Insights API.
+                      </p>
+                    </CardContent>
+                  </Card>
                 )}
 
                 {lighthouseScores && !isRunningTest && (
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Performance</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className={`text-3xl font-bold ${getScoreColor(lighthouseScores.performance)}`}>
-                          {lighthouseScores.performance}
-                        </div>
-                        <Badge variant={getScoreBadge(lighthouseScores.performance)} className="mt-2">
-                          {lighthouseScores.performance >= 90
-                            ? "Good"
-                            : lighthouseScores.performance >= 50
-                              ? "Needs Improvement"
-                              : "Poor"}
-                        </Badge>
-                      </CardContent>
-                    </Card>
+                  <>
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-sm font-medium">Performance</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className={`text-3xl font-bold ${getScoreColor(lighthouseScores.performance)}`}>
+                            {lighthouseScores.performance}
+                          </div>
+                          <Badge variant={getScoreBadge(lighthouseScores.performance)} className="mt-2">
+                            {lighthouseScores.performance >= 90
+                              ? "Good"
+                              : lighthouseScores.performance >= 50
+                                ? "Needs Improvement"
+                                : "Poor"}
+                          </Badge>
+                        </CardContent>
+                      </Card>
 
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Accessibility</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className={`text-3xl font-bold ${getScoreColor(lighthouseScores.accessibility)}`}>
-                          {lighthouseScores.accessibility}
-                        </div>
-                        <Badge variant={getScoreBadge(lighthouseScores.accessibility)} className="mt-2">
-                          {lighthouseScores.accessibility >= 90
-                            ? "Good"
-                            : lighthouseScores.accessibility >= 50
-                              ? "Needs Improvement"
-                              : "Poor"}
-                        </Badge>
-                      </CardContent>
-                    </Card>
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-sm font-medium">Accessibility</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className={`text-3xl font-bold ${getScoreColor(lighthouseScores.accessibility)}`}>
+                            {lighthouseScores.accessibility}
+                          </div>
+                          <Badge variant={getScoreBadge(lighthouseScores.accessibility)} className="mt-2">
+                            {lighthouseScores.accessibility >= 90
+                              ? "Good"
+                              : lighthouseScores.accessibility >= 50
+                                ? "Needs Improvement"
+                                : "Poor"}
+                          </Badge>
+                        </CardContent>
+                      </Card>
 
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Best Practices</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className={`text-3xl font-bold ${getScoreColor(lighthouseScores.bestPractices)}`}>
-                          {lighthouseScores.bestPractices}
-                        </div>
-                        <Badge variant={getScoreBadge(lighthouseScores.bestPractices)} className="mt-2">
-                          {lighthouseScores.bestPractices >= 90
-                            ? "Good"
-                            : lighthouseScores.bestPractices >= 50
-                              ? "Needs Improvement"
-                              : "Poor"}
-                        </Badge>
-                      </CardContent>
-                    </Card>
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-sm font-medium">Best Practices</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className={`text-3xl font-bold ${getScoreColor(lighthouseScores.bestPractices)}`}>
+                            {lighthouseScores.bestPractices}
+                          </div>
+                          <Badge variant={getScoreBadge(lighthouseScores.bestPractices)} className="mt-2">
+                            {lighthouseScores.bestPractices >= 90
+                              ? "Good"
+                              : lighthouseScores.bestPractices >= 50
+                                ? "Needs Improvement"
+                                : "Poor"}
+                          </Badge>
+                        </CardContent>
+                      </Card>
 
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">SEO</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className={`text-3xl font-bold ${getScoreColor(lighthouseScores.seo)}`}>
-                          {lighthouseScores.seo}
-                        </div>
-                        <Badge variant={getScoreBadge(lighthouseScores.seo)} className="mt-2">
-                          {lighthouseScores.seo >= 90
-                            ? "Good"
-                            : lighthouseScores.seo >= 50
-                              ? "Needs Improvement"
-                              : "Poor"}
-                        </Badge>
-                      </CardContent>
-                    </Card>
-                  </div>
-                )}
+                      <Card>
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-sm font-medium">SEO</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className={`text-3xl font-bold ${getScoreColor(lighthouseScores.seo)}`}>
+                            {lighthouseScores.seo}
+                          </div>
+                          <Badge variant={getScoreBadge(lighthouseScores.seo)} className="mt-2">
+                            {lighthouseScores.seo >= 90
+                              ? "Good"
+                              : lighthouseScores.seo >= 50
+                                ? "Needs Improvement"
+                                : "Poor"}
+                          </Badge>
+                        </CardContent>
+                      </Card>
+                    </div>
 
-                {lighthouseScores && !isRunningTest && (
-                  <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value="recommendations">
-                      <AccordionTrigger>Optimization Recommendations</AccordionTrigger>
-                      <AccordionContent className="space-y-3">
-                        {lighthouseScores.recommendations?.map((rec: any, idx: number) => (
-                          <div key={idx} className="flex items-start gap-3 p-3 border rounded-lg">
-                            <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
-                            <div className="flex-1">
-                              <p className="font-medium">{rec.title}</p>
-                              <p className="text-sm text-muted-foreground">{rec.description}</p>
+                    {lighthouseScores.metrics && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-base">Core Web Vitals</CardTitle>
+                          <CardDescription>Key performance metrics from Google</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
+                            <div>
+                              <p className="text-sm text-muted-foreground">First Contentful Paint</p>
+                              <p className="text-lg font-semibold">{lighthouseScores.metrics.fcp}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-muted-foreground">Largest Contentful Paint</p>
+                              <p className="text-lg font-semibold">{lighthouseScores.metrics.lcp}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-muted-foreground">Total Blocking Time</p>
+                              <p className="text-lg font-semibold">{lighthouseScores.metrics.tbt}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-muted-foreground">Cumulative Layout Shift</p>
+                              <p className="text-lg font-semibold">{lighthouseScores.metrics.cls}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-muted-foreground">Speed Index</p>
+                              <p className="text-lg font-semibold">{lighthouseScores.metrics.si}</p>
                             </div>
                           </div>
-                        ))}
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {lighthouseScores.recommendations && lighthouseScores.recommendations.length > 0 && (
+                      <Accordion type="single" collapsible className="w-full">
+                        <AccordionItem value="recommendations">
+                          <AccordionTrigger>
+                            Top Optimization Opportunities ({lighthouseScores.recommendations.length})
+                          </AccordionTrigger>
+                          <AccordionContent className="space-y-3">
+                            {lighthouseScores.recommendations.map((rec: any, idx: number) => (
+                              <div key={idx} className="flex items-start gap-3 p-3 border rounded-lg">
+                                <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                                <div className="flex-1">
+                                  <div className="flex items-center justify-between mb-1">
+                                    <p className="font-medium">{rec.title}</p>
+                                    {rec.savings && (
+                                      <Badge variant="secondary" className="ml-2">
+                                        Save {rec.savings}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  <p className="text-sm text-muted-foreground">{rec.description}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>
