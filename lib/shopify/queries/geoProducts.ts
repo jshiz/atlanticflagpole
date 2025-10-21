@@ -1,3 +1,5 @@
+import { SHOPIFY_STOREFRONT_TOKEN } from "@/lib/env"
+
 export const GEO_PRODUCTS_QUERY = /* GraphQL */ `
   query GeoProducts($query: String!, $first: Int = 8) {
     products(first: $first, query: $query, sortKey: BEST_SELLING) {
@@ -90,7 +92,7 @@ export async function getGeoProducts(query: string): Promise<GeoProduct[]> {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!,
+        "X-Shopify-Storefront-Access-Token": SHOPIFY_STOREFRONT_TOKEN,
       },
       body: JSON.stringify({
         query: GEO_PRODUCTS_QUERY,
