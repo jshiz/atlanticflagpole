@@ -220,7 +220,7 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
         </div>
 
         {displayProducts && displayProducts.length > 0 ? (
-          <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2">
+          <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
             {displayProducts.slice(0, 16).map((product) => {
               const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
               const rating = getProductRating(product.id)
@@ -258,7 +258,7 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
 
                   <p className="text-[10px] font-bold text-[#C8A55C] mb-1">${price.toFixed(2)}</p>
 
-                  <div className="h-6">
+                  <div className="h-9">
                     <QuickAddButton product={product} />
                   </div>
                 </Link>
