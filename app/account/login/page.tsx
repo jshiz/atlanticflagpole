@@ -1,35 +1,50 @@
-import { getSession } from "@/lib/auth/session"
-import { redirect } from "next/navigation"
+"use client"
+
+import type React from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { AlertCircle } from "lucide-react"
+import { useRouter } from "next/navigation"
 
-export const dynamic = "force-dynamic"
+export default function LoginPage() {
+  const router = useRouter()
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  })
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
-export const metadata = {
-  title: "Sign In - Atlantic Flagpole",
-  description: "Sign in to your Atlantic Flagpole account",
-}
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    setLoading(true)
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: { error?: string }
-}) {
-  // If already logged in, redirect to account
-  const session = await getSession()
-  if (session) {
-    redirect("/account")
+    try {
+      const response = await fetch("/api/auth/storefront-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to sign in")
+      }
+
+      // Redirect to account page on success
+      router.push("/account")
+      router.refresh()
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
-
-  const errorMessages: Record<string, string> = {
-    missing_params: "Missing required parameters. Please try again.",
-    invalid_state: "Invalid authentication state. Please try again.",
-    token_exchange_failed: "Failed to complete sign in. Please try again.",
-    callback_failed: "Authentication failed. Please try again.",
-  }
-
-  const error = searchParams.error ? errorMessages[searchParams.error] : null
 
   return (
     <div className="min-h-screen bg-afp-ivory flex items-center justify-center px-4 py-12">
@@ -47,9 +62,47 @@ export default async function LoginPage({
         )}
 
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          <Button asChild className="w-full bg-afp-gold hover:bg-afp-gold-700 text-white h-12 text-base">
-            <Link href="/api/auth/login">Sign In with Shopify</Link>
-          </Button>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="mt-1"
+                autoComplete="email"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                required
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                className="mt-1"
+                autoComplete="current-password"
+              />
+            </div>
+
+            <div className="flex items-center justify-between text-sm">
+              <Link href="/account/forgot-password" className="text-afp-gold hover:text-afp-gold-700">
+                Forgot password?
+              </Link>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-afp-gold hover:bg-afp-gold-700 text-white h-12 text-base"
+            >
+              {loading ? "Signing In..." : "Sign In"}
+            </Button>
+          </form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
