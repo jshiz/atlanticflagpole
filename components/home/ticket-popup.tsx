@@ -11,12 +11,16 @@ export function TicketPopup() {
   const [isCopied, setIsCopied] = useState(false)
 
   useEffect(() => {
+    console.log("[v0] TicketPopup - initializing")
+
     const hasClaimedTicket = localStorage.getItem("vip-ticket-claimed")
     if (hasClaimedTicket) {
+      console.log("[v0] TicketPopup - already claimed")
       return
     }
 
     const timer = setTimeout(() => {
+      console.log("[v0] TicketPopup - showing button")
       setShowButton(true)
     }, 3000)
 
@@ -24,6 +28,7 @@ export function TicketPopup() {
   }, [])
 
   const handleTicketClick = () => {
+    console.log("[v0] TicketPopup - ticket clicked")
     localStorage.setItem("vip-ticket-claimed", "true")
     setIsOpen(true)
     triggerConfetti()
@@ -131,6 +136,7 @@ export function TicketPopup() {
   }
 
   const handleClose = () => {
+    console.log("[v0] TicketPopup - closed")
     setIsOpen(false)
   }
 
@@ -148,9 +154,12 @@ export function TicketPopup() {
     <>
       {showButton && !isOpen && (
         <button
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={() => {
+            console.log("[v0] TicketPopup - expanding")
+            setIsExpanded(!isExpanded)
+          }}
           className={`fixed bottom-6 z-50 w-32 h-auto transition-all duration-500 ease-out hover:scale-110 animate-sway cursor-pointer shadow-2xl ${
-            isExpanded ? "left-6" : "-left-24"
+            isExpanded ? "left-6" : "left-6"
           }`}
           aria-label="Open VIP ticket offer"
         >

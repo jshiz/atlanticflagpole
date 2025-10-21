@@ -15,8 +15,7 @@ import { GeoProvider } from "@/lib/geo/context"
 import { LocationBanner } from "@/components/geo/location-banner"
 import { Toaster } from "@/components/ui/toaster"
 import { CookieConsentBanner } from "@/components/cookie-consent/cookie-consent-banner"
-
-export const dynamic = "force-dynamic"
+import dynamic from "next/dynamic"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,6 +34,11 @@ const cinzel = Cinzel({
   variable: "--font-cinzel",
   display: "swap",
 })
+
+const TicketPopup = dynamic(
+  () => import("@/components/home/ticket-popup").then((mod) => ({ default: mod.TicketPopup })),
+  { ssr: false },
+)
 
 export const metadata: Metadata = {
   title: "Atlantic Flagpole - Premium American-Made Flagpoles",
@@ -62,6 +66,7 @@ export default function RootLayout({
             <StickyCartBar />
             <LocationBanner />
             <CookieConsentBanner />
+            <TicketPopup />
           </GeoProvider>
         </CartProvider>
         <JudgeMePlatformScript />

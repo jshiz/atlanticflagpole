@@ -10,20 +10,26 @@ export function LocationBanner() {
   const [showBanner, setShowBanner] = useState(false)
 
   useEffect(() => {
-    // Check if user has already dismissed the banner
+    console.log("[v0] LocationBanner - loading:", loading, "location:", location)
+
     const isDismissed = localStorage.getItem("location-banner-dismissed")
     if (isDismissed) {
+      console.log("[v0] LocationBanner - previously dismissed")
       setDismissed(true)
       return
     }
 
     // Show banner after location is detected
     if (!loading && location) {
+      console.log("[v0] LocationBanner - showing banner for:", location.region)
       setShowBanner(true)
+    } else if (!loading && !location) {
+      console.log("[v0] LocationBanner - no location detected")
     }
   }, [loading, location])
 
   const handleDismiss = () => {
+    console.log("[v0] LocationBanner - dismissed")
     setDismissed(true)
     setShowBanner(false)
     localStorage.setItem("location-banner-dismissed", "true")

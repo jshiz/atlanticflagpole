@@ -36,25 +36,33 @@ export function GeoProvider({ children }: { children: ReactNode }) {
   })
 
   useEffect(() => {
+    console.log("[v0] GeoProvider - starting location detection")
+
     detectLocationClient()
       .then((geo) => {
         if (geo) {
+          console.log("[v0] GeoProvider - location detected:", geo)
           setLocation(geo)
         } else {
+          console.log("[v0] GeoProvider - no location, trying fallback")
           const fallback = detectLocationFallback()
           if (fallback) {
+            console.log("[v0] GeoProvider - fallback location:", fallback)
             setLocation(fallback as GeoLocation)
           }
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error("[v0] GeoProvider - detection error:", error)
         // Try fallback on error
         const fallback = detectLocationFallback()
         if (fallback) {
+          console.log("[v0] GeoProvider - fallback location after error:", fallback)
           setLocation(fallback as GeoLocation)
         }
       })
       .finally(() => {
+        console.log("[v0] GeoProvider - detection complete")
         setLoading(false)
       })
   }, [])
