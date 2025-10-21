@@ -55,9 +55,10 @@ export function FrequentlyBoughtTogether({ mainProduct, bundleProducts = [] }: F
 
   return (
     <Card className="p-6 bg-white">
-      <h2 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-6">Frequently Bought Together</h2>
+      <h2 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-4">Frequently Bought Together</h2>
+      <p className="text-sm text-[#0B1C2C]/60 mb-6">Complete your setup with these accessories</p>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {/* Main Product */}
         <div className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg">
           <Checkbox
@@ -80,7 +81,7 @@ export function FrequentlyBoughtTogether({ mainProduct, bundleProducts = [] }: F
         </div>
 
         {/* Bundle Products */}
-        {defaultBundles.slice(0, 2).map((product, index) => {
+        {defaultBundles.slice(0, 4).map((product, index) => {
           const variant = toNodes(product.variants)[0]
           const price = variant ? Number.parseFloat(variant.price.amount) : 0
           const image = toNodes(product.images)[0]

@@ -16,8 +16,8 @@ export async function POST(request: NextRequest) {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://atlanticflagpole.com"
     const fullUrl = `${siteUrl}${url}`
 
-    // Google PageSpeed Insights API (free, no API key needed for basic usage)
-    const apiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(fullUrl)}&category=performance&category=accessibility&category=best-practices&category=seo&strategy=mobile`
+    const apiKey = process.env.GOOGLE_PAGESPEED_API_KEY
+    const apiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(fullUrl)}&category=performance&category=accessibility&category=best-practices&category=seo&strategy=mobile${apiKey ? `&key=${apiKey}` : ""}`
 
     console.log("[v0] Running Lighthouse test for:", fullUrl)
 

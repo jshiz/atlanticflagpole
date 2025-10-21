@@ -15,9 +15,9 @@ export function RelatedProducts({ products }: RelatedProductsProps) {
   if (products.length === 0) return null
 
   return (
-    <div className="py-12">
+    <div className="py-0">
       <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#0B1C2C] mb-2">Recommended for you</h2>
-      <p className="text-[#0B1C2C]/60 mb-8">Related Products</p>
+      <p className="text-[#0B1C2C]/60 mb-6">Similar products you might like</p>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
         {products.slice(0, 4).map((product) => {
@@ -60,21 +60,6 @@ export function RelatedProducts({ products }: RelatedProductsProps) {
                   </div>
                 </div>
               </Card>
-
-              <style jsx>{`
-                @keyframes subtle-glow {
-                  0%, 100% {
-                    box-shadow: 0 0 5px rgba(220, 38, 38, 0.1), 0 0 10px rgba(220, 38, 38, 0.05);
-                  }
-                  50% {
-                    box-shadow: 0 0 10px rgba(220, 38, 38, 0.2), 0 0 20px rgba(220, 38, 38, 0.1);
-                  }
-                }
-                
-                :global(.sale-glow) {
-                  animation: subtle-glow 3s ease-in-out infinite;
-                }
-              `}</style>
             </Link>
           )
         })}

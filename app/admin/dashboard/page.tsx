@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import Link from "next/link"
 import { AdminStatsClient } from "@/components/admin/admin-stats-client"
+import { DailyTasksClient } from "@/components/admin/daily-tasks-client"
 
 export const dynamic = "force-dynamic"
 
@@ -256,46 +257,7 @@ export default async function AdminDashboardPage() {
 
           {/* Recommendations/Tasks Tab */}
           <TabsContent value="recommendations" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Daily Tasks & Recommendations</CardTitle>
-                <CardDescription>Prioritized improvements and action items</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {report.recommendations.length === 0 ? (
-                  <div className="text-center py-8 text-[#0B1C2C]/60">
-                    <CheckCircle2 className="h-12 w-12 mx-auto mb-3 text-green-600" />
-                    <p className="font-medium">No action items at this time</p>
-                    <p className="text-sm">Your site is running optimally!</p>
-                  </div>
-                ) : (
-                  <Accordion type="single" collapsible className="w-full">
-                    {report.recommendations.map((rec, index) => (
-                      <AccordionItem key={index} value={`rec-${index}`}>
-                        <AccordionTrigger className="hover:no-underline">
-                          <div className="flex items-center justify-between w-full pr-4">
-                            <div className="flex items-center gap-3">
-                              <AlertCircle className="h-5 w-5 text-[#0B1C2C]/70 flex-shrink-0" />
-                              <div className="text-left">
-                                <p className="font-medium">{rec.category}</p>
-                                <p className="text-sm text-[#0B1C2C]/60">{rec.issue}</p>
-                              </div>
-                            </div>
-                            {getPriorityBadge(rec.priority)}
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <div className="pl-8 bg-blue-50 border border-blue-200 p-4 rounded">
-                            <p className="text-sm font-medium text-blue-900 mb-2">Solution:</p>
-                            <p className="text-sm text-blue-800">{rec.solution}</p>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                )}
-              </CardContent>
-            </Card>
+            <DailyTasksClient />
           </TabsContent>
 
           {/* Structure Tab */}

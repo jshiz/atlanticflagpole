@@ -338,25 +338,25 @@ export function ProductDetails({
         </div>
       </div>
 
-      <section className="mb-12">
+      <section className="mb-8">
         <ProductAccordion items={accordionItems} />
       </section>
 
-      <section id="reviews" className="mb-12">
+      <section id="reviews" className="mb-8">
         <h2 className="text-2xl md:text-3xl font-bold text-[#0B1C2C] mb-6">Customer Reviews</h2>
         <JudgeMeReviewWidget productHandle={product.handle} productId={product.id} />
       </section>
 
       {/* Frequently Bought Together */}
       {bundleProducts.length > 0 && (
-        <section className="mb-12">
+        <section className="mb-8">
           <FrequentlyBoughtTogether mainProduct={product} bundleProducts={bundleProducts} />
         </section>
       )}
 
-      {/* Related Products */}
+      {/* Recommended for you */}
       {relatedProducts.length > 0 && (
-        <section className="mb-12">
+        <section className="mb-8">
           <RelatedProducts products={relatedProducts} />
         </section>
       )}

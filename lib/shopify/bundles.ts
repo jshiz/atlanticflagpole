@@ -109,3 +109,118 @@ export async function getBundleData(productHandle: string): Promise<BundleData> 
     return { isBundle: false, includesPremier: false, components: [] }
   }
 }
+
+export async function getComplementaryProducts(product: any): Promise<any[]> {
+  console.log(`[v0] Finding complementary products for: ${product.handle}`)
+
+  const productType = product.productType?.toLowerCase() || ""
+  const tags = product.tags || []
+
+  // Define complementary product mappings
+  const complementaryMap: Record<string, string[]> = {
+    flagpole: ["flag", "mount", "topper", "lighting", "accessory"],
+    flag: ["flagpole", "mount", "topper"],
+    mount: ["flagpole", "flag"],
+    topper: ["flagpole", "flag"],
+    lighting: ["flagpole"],
+    accessory: ["flagpole", "flag"],
+  }
+
+  // Determine what complements this product
+  let searchTags: string[] = []
+  for (const [type, complements] of Object.entries(complementaryMap)) {
+    if (productType.includes(type)) {
+      searchTags = complements
+      break
+    }
+  }
+
+  // If no specific mapping, use general accessories
+  if (searchTags.length === 0) {
+    searchTags = ["accessory", "flag"]
+  }
+
+  try {
+    const allProducts = await getProducts({ first: 50 })
+
+    // Filter for complementary products
+    const complementary = allProducts.filter((p) => {
+      if (p.id === product.id || !p.availableForSale) return false
+
+      const pType = p.productType?.toLowerCase() || ""
+      const pTags = p.tags || []
+
+      // Check if product type or tags match complementary items
+      return (
+        searchTags.some((tag) => pType.includes(tag) || pTags.some((t) => t.toLowerCase().includes(tag))) ||
+        // Also include products from related collections
+        (product.collections?.nodes || []).some((col: any) =>
+          (p.collections?.nodes || []).some((pCol: any) => pCol.id === col.id),
+        )
+      )
+    })
+
+    console.log(`[v0] Found ${complementary.length} complementary products`)
+    return complementary.slice(0, 4) // Return up to 4 complementary products
+  } catch (error) {
+    console.error("[v0] Error fetching complementary products:", error)
+    return []
+  }
+}
+
+// Helper function to get products (if not already imported)
+async function getProducts(options: { first: number }): Promise<any[]> {
+  const PRODUCTS_QUERY = /* GraphQL */ `
+    query GetProducts($first: Int!) {
+      products(first: $first) {
+        edges {
+          node {
+            id
+            handle
+            title
+            productType
+            tags
+            availableForSale
+            collections(first: 5) {
+              nodes {
+                id
+                handle
+                title
+              }
+            }
+            images(first: 1) {
+              nodes {
+                url
+                altText
+              }
+            }
+            variants(first: 1) {
+              nodes {
+                id
+                price {
+                  amount
+                  currencyCode
+                }
+                compareAtPrice {
+                  amount
+                  currencyCode
+                }
+                availableForSale
+              }
+            }
+          }
+        }
+      }
+    }
+  `
+
+  try {
+    const data = await shopifyFetch<{ products: { edges: Array<{ node: any }> } }>(PRODUCTS_QUERY, {
+      first: options.first,
+    })
+    return data.products.edges.map((edge) => edge.node)
+  } catch (error) {
+    console.error("[v0] Error fetching products:", error)
+    return []
+  }
+}

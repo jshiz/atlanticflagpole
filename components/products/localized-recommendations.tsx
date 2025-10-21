@@ -53,9 +53,10 @@ export function LocalizedRecommendations({ fallbackProducts }: LocalizedRecommen
   }
 
   return (
-    <section className="py-12 bg-white">
+    <section className="py-8 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-[#1B365D] mb-8 text-center">{title}</h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-[#0B1C2C] mb-2">{title}</h2>
+        <p className="text-[#0B1C2C]/60 mb-6">Discover products from different categories</p>
 
         {variant === "grid" ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

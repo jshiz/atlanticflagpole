@@ -3,14 +3,14 @@ import { getProduct, getProducts } from "@/lib/shopify"
 import { ProductDetails } from "@/components/products/product-details"
 import ProductSeo from "@/components/product-seo"
 import { getProductReviews } from "@/lib/shopify/reviews"
-import { getBundleData } from "@/lib/shopify/bundles"
+import { getBundleData, getComplementaryProducts } from "@/lib/shopify/bundles"
 import type { Metadata } from "next"
 import { LocalizedRecommendations } from "@/components/products/localized-recommendations"
 import { generateProductMetadata } from "@/lib/seo/metadata"
 import { generateProductSchema, generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { StructuredData } from "@/components/seo/structured-data"
 
-export const revalidate = 3600 // Revalidate every hour
+export const revalidate = 3600
 
 interface ProductPageProps {
   params: {
@@ -26,8 +26,6 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  console.log("[v0] Loading product page:", params.handle)
-
   const product = await getProduct(params.handle)
 
   if (!product) {
@@ -35,44 +33,39 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   const reviewsData = await getProductReviews(params.handle)
-
   const bundleData = await getBundleData(params.handle)
 
-  if (bundleData?.includesPremier) {
-    console.log("[v0] Analytics: bundle_view", {
-      product: params.handle,
-      bundleType: bundleData.bundleType || "premier_kit",
-      componentCount: bundleData.components.length,
-    })
-  }
+  const bundleProducts = await getComplementaryProducts(product)
 
-  const allProducts = await getProducts({ first: 20 })
-  const relatedProducts = allProducts
-    .filter(
-      (p) =>
-        p.id !== product.id &&
-        (p.productType === product.productType || p.tags?.some((tag) => product.tags?.includes(tag))),
-    )
-    .slice(0, 4)
+  const relatedProducts = await getProducts({ first: 20 }).then((allProducts) =>
+    allProducts
+      .filter(
+        (p) =>
+          p.id !== product.id &&
+          p.availableForSale &&
+          (p.productType === product.productType || p.tags?.some((tag) => product.tags?.includes(tag))),
+      )
+      .slice(0, 4),
+  )
 
-  const bundleProducts = allProducts.filter((p) => p.id !== product.id).slice(0, 2)
-
-  const fallbackProducts = allProducts
-    .filter((p) => p.id !== product.id && p.availableForSale)
-    .slice(0, 8)
-    .map((p) => ({
-      id: p.id,
-      handle: p.handle,
-      title: p.title,
-      vendor: p.vendor || "",
-      productType: p.productType || "",
-      tags: p.tags || [],
-      availableForSale: p.availableForSale,
-      featuredImage: p.images?.nodes?.[0],
-      priceRange: p.priceRange,
-      compareAtPriceRange: p.compareAtPriceRange,
-      variants: p.variants,
-    }))
+  const fallbackProducts = await getProducts({ first: 30 }).then((allProducts) =>
+    allProducts
+      .filter((p) => p.id !== product.id && p.availableForSale && p.productType !== product.productType)
+      .slice(0, 8)
+      .map((p) => ({
+        id: p.id,
+        handle: p.handle,
+        title: p.title,
+        vendor: p.vendor || "",
+        productType: p.productType || "",
+        tags: p.tags || [],
+        availableForSale: p.availableForSale,
+        featuredImage: p.images?.nodes?.[0],
+        priceRange: p.priceRange,
+        compareAtPriceRange: p.compareAtPriceRange,
+        variants: p.variants,
+      })),
+  )
 
   const productSchema = generateProductSchema(product, reviewsData)
   const breadcrumbSchema = generateBreadcrumbSchema([
