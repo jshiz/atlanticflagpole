@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Lock, AlertCircle } from "lucide-react"
 
+export const dynamic = "force-dynamic"
+
 export default function AdminLoginPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")

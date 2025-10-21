@@ -11,6 +11,8 @@ import { AdminNav } from "@/components/admin/admin-nav"
 import { Plus, Save, Eye, Trash2, ImageIcon, Calendar } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
+export const dynamic = "force-dynamic"
+
 interface BlogPost {
   id: string
   title: string

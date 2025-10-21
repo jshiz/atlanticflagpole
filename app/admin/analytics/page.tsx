@@ -10,6 +10,8 @@ import { AdminNav } from "@/components/admin/admin-nav"
 import { Activity, TrendingUp, AlertCircle, CheckCircle, Zap, Loader2 } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 
+export const dynamic = "force-dynamic"
+
 export default function AdminAnalyticsPage() {
   const [lighthouseScores, setLighthouseScores] = useState<any>(null)
   const [isRunningTest, setIsRunningTest] = useState(false)
