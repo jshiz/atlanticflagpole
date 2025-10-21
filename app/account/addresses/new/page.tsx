@@ -3,6 +3,8 @@ import { AddressForm } from "@/components/account/address-form"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
+export const dynamic = "force-dynamic"
+
 export const metadata = {
   title: "Add Address - Atlantic Flagpole",
   description: "Add a new shipping or billing address",

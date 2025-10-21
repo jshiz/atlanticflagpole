@@ -1,5 +1,7 @@
 import { Shield, CheckCircle, Clock, FileText } from "lucide-react"
 
+export const dynamic = "force-dynamic"
+
 export default function WarrantyPage() {
   return (
     <main className="min-h-screen bg-[#F5F3EF]">

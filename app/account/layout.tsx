@@ -2,8 +2,24 @@ import type React from "react"
 import { requireAuth } from "@/lib/auth/protected-route"
 import { User, Package, MapPin, Settings, Heart, Star, LogOut, Home } from "lucide-react"
 import Link from "next/link"
+import { headers } from "next/headers"
+
+export const dynamic = "force-dynamic"
 
 export default async function AccountLayout({ children }: { children: React.ReactNode }) {
+  const headersList = await headers()
+  const pathname = headersList.get("x-pathname") || ""
+
+  // Public routes that don't require authentication
+  const publicRoutes = ["/account/login", "/account/signup"]
+  const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route))
+
+  // If it's a public route, render without the account layout
+  if (isPublicRoute) {
+    return <>{children}</>
+  }
+
+  // For protected routes, require authentication
   const session = await requireAuth()
 
   const initials = `${session.firstName?.[0] || ""}${session.lastName?.[0] || ""}`.toUpperCase() || "U"

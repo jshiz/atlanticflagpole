@@ -44,7 +44,10 @@ export function middleware(req: NextRequest) {
   try {
     // Middleware disabled - let Next.js handle routing naturally
     // Collections will be handled by app/collections/[handle]/page.tsx
-    return NextResponse.next()
+
+    const response = NextResponse.next()
+    response.headers.set("x-pathname", req.nextUrl.pathname)
+    return response
   } catch (error) {
     console.error("[v0] Middleware error:", error)
     return NextResponse.next()
@@ -52,5 +55,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: [],
+  matcher: ["/account/:path*"],
 }

@@ -16,6 +16,8 @@ import { LocationBanner } from "@/components/geo/location-banner"
 import { Toaster } from "@/components/ui/toaster"
 import { CookieConsentBanner } from "@/components/cookie-consent/cookie-consent-banner"
 
+export const dynamic = "force-dynamic"
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",

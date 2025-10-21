@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"
+
 export default function ReturnsPage() {
   return (
     <main className="min-h-screen bg-[#F5F3EF] py-12">

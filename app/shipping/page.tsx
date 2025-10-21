@@ -1,5 +1,7 @@
 import { Truck, Package, RotateCcw, Shield } from "lucide-react"
 
+export const dynamic = "force-dynamic"
+
 export default function ShippingPage() {
   return (
     <main className="min-h-screen bg-[#F5F3EF]">
