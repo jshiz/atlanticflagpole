@@ -1,4 +1,4 @@
-import { SHOPIFY_STOREFRONT_TOKEN } from "@/lib/env"
+import { SHOPIFY_STOREFRONT_TOKEN, SHOPIFY_STORE_DOMAIN, SHOPIFY_STOREFRONT_API_VERSION } from "@/lib/env"
 
 export const GEO_PRODUCTS_QUERY = /* GraphQL */ `
   query GeoProducts($query: String!, $first: Int = 8) {
@@ -87,8 +87,10 @@ export interface GeoProduct {
 export async function getGeoProducts(query: string): Promise<GeoProduct[]> {
   if (!query) return []
 
+  const SHOPIFY_STOREFRONT_API_URL = `https://${SHOPIFY_STORE_DOMAIN}/api/${SHOPIFY_STOREFRONT_API_VERSION}/graphql.json`
+
   try {
-    const response = await fetch(process.env.SHOPIFY_STOREFRONT_API_URL!, {
+    const response = await fetch(SHOPIFY_STOREFRONT_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -101,8 +103,24 @@ export async function getGeoProducts(query: string): Promise<GeoProduct[]> {
       next: { revalidate: 3600 },
     })
 
-    const { data } = await response.json()
-    return data?.products?.nodes || []
+    if (!response.ok) {
+      const errorBody = await response.text()
+      console.error("[v0] Geo products API error:", {
+        status: response.status,
+        body: errorBody,
+        url: SHOPIFY_STOREFRONT_API_URL,
+      })
+      return []
+    }
+
+    const json = await response.json()
+
+    if (json.errors) {
+      console.error("[v0] Geo products GraphQL errors:", json.errors)
+      return []
+    }
+
+    return json.data?.products?.nodes || []
   } catch (error) {
     console.error("[v0] Geo products fetch error:", error)
     return []
