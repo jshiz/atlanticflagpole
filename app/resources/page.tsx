@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { BookOpen, FileText, HelpCircle, ArrowRight } from "lucide-react"
 
+export const dynamic = "force-dynamic"
+
 export default function ResourcesPage() {
   const resourceSections = [
     {

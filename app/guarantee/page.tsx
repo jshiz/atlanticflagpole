@@ -1,5 +1,7 @@
 import { CheckCircle, Shield, RotateCcw, DollarSign } from "lucide-react"
 
+export const dynamic = "force-dynamic"
+
 export default function GuaranteePage() {
   return (
     <main className="min-h-screen bg-[#F5F3EF]">

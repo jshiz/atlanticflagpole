@@ -1,5 +1,7 @@
 import { searchProducts } from "@/lib/shopify/catalog"
 
+export const dynamic = "force-dynamic"
+
 export default async function DebugHeaderPage() {
   const results: Record<string, any> = {}
 

@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { Download, Video, FileText } from "lucide-react"
 
+export const dynamic = "force-dynamic"
+
 export default function InstallationGuidesPage() {
   const guides = [
     {

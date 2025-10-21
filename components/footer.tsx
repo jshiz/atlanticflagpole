@@ -313,6 +313,12 @@ export async function Footer() {
                 <Link href="/terms" className="hover:text-white transition-colors">
                   Terms of Service
                 </Link>
+                <Link href="/cookie-policy" className="hover:text-white transition-colors">
+                  Cookie Policy
+                </Link>
+                <Link href="/cookie-settings" className="hover:text-white transition-colors">
+                  Cookie Settings
+                </Link>
                 <Link href="/sitemap" className="hover:text-white transition-colors">
                   Sitemap
                 </Link>

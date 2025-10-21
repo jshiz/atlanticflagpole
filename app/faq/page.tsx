@@ -1,5 +1,7 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
+export const dynamic = "force-dynamic"
+
 export default function FAQPage() {
   const faqs = [
     {

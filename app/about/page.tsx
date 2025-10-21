@@ -1,5 +1,7 @@
 import { Award, Users, MapPin, Heart } from "lucide-react"
 
+export const dynamic = "force-dynamic"
+
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-[#F5F3EF]">

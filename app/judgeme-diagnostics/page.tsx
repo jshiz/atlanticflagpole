@@ -1,5 +1,7 @@
 import { Suspense } from "react"
 
+export const dynamic = "force-dynamic"
+
 async function JudgemeDiagnostics() {
   const shopDomain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
   const apiToken = process.env.JUDGEME_API_TOKEN
