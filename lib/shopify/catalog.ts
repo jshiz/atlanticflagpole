@@ -90,11 +90,23 @@ export async function getCollectionWithProducts(handle: string, first = 6) {
                 currencyCode
               }
             }
-            variants(first: 1) {
+            variants(first: 10) {
               edges {
                 node {
                   id
                   availableForSale
+                  price {
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+              nodes {
+                id
+                availableForSale
+                price {
+                  amount
+                  currencyCode
                 }
               }
             }
@@ -168,11 +180,23 @@ export async function getProducts(params: { first?: number; query?: string; afte
                 currencyCode
               }
             }
-            variants(first: 1) {
+            variants(first: 10) {
               edges {
                 node {
                   id
                   availableForSale
+                  price {
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+              nodes {
+                id
+                availableForSale
+                price {
+                  amount
+                  currencyCode
                 }
               }
             }
@@ -265,6 +289,26 @@ export async function searchProducts(searchParams: {
               currencyCode
             }
           }
+          variants(first: 10) {
+            edges {
+              node {
+                id
+                availableForSale
+                price {
+                  amount
+                  currencyCode
+                }
+              }
+            }
+            nodes {
+              id
+              availableForSale
+              price {
+                amount
+                currencyCode
+              }
+            }
+          }
         }
       }
     }
@@ -352,6 +396,26 @@ export async function getAllProducts(searchParams: {
             maxVariantPrice {
               amount
               currencyCode
+            }
+          }
+          variants(first: 10) {
+            edges {
+              node {
+                id
+                availableForSale
+                price {
+                  amount
+                  currencyCode
+                }
+              }
+            }
+            nodes {
+              id
+              availableForSale
+              price {
+                amount
+                currencyCode
+              }
             }
           }
         }

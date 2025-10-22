@@ -43,7 +43,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
 
   return (
     <>
-      <section className="relative w-full min-h-[500px] md:min-h-[550px] lg:min-h-[650px] overflow-hidden animate-fade-in">
+      <section className="relative w-full min-h-[500px] md:min-h-[550px] lg:min-h-[650px] overflow-hidden animate-slide-up-hero">
         <Image
           src="/images/design-mode/AtlanticFlagPoleHero.jpg"
           alt="Beautiful home with American flag on premium flagpole"
@@ -250,16 +250,16 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           animation: marquee 30s linear infinite;
         }
 
-        @keyframes fadeIn {
+        @keyframes slideUpHero {
           from {
-            opacity: 0;
+            transform: translateY(100%);
           }
           to {
-            opacity: 1;
+            transform: translateY(0);
           }
         }
-        .animate-fade-in {
-          animation: fadeIn 1s ease-in-out;
+        .animate-slide-up-hero {
+          animation: slideUpHero 1s ease-in-out;
         }
       `}</style>
     </>

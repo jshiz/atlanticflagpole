@@ -312,6 +312,38 @@
     animation: fade-in-page 0.5s ease-out;
   }
 
+  /* Adding coordinated slide-down animation for header */
+  @keyframes slide-down-header {
+    0% {
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-down-header {
+    animation: slide-down-header 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Adding coordinated slide-up animation for hero */
+  @keyframes slide-up-hero {
+    0% {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-up-hero {
+    animation: slide-up-hero 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+  }
+
   @keyframes fade-in {
     0% {
       opacity: 0;
