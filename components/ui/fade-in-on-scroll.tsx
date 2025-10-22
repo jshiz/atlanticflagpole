@@ -10,10 +10,17 @@ interface FadeInOnScrollProps {
 }
 
 export function FadeInOnScroll({ children, className = "", delay = 0, threshold = 0.1 }: FadeInOnScrollProps) {
+  const [mounted, setMounted] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -29,7 +36,7 @@ export function FadeInOnScroll({ children, className = "", delay = 0, threshold 
     }
 
     return () => observer.disconnect()
-  }, [delay, threshold])
+  }, [delay, threshold, mounted])
 
   return (
     <div
