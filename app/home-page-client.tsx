@@ -5,7 +5,7 @@ import { FeaturedProductsShowcase } from "@/components/home/featured-products-sh
 import { QuickDeals } from "@/components/home/quick-deals"
 import { StructuredData } from "@/components/seo/structured-data"
 import dynamic from "next/dynamic"
-import { Suspense, useEffect, useState } from "react"
+import { Suspense } from "react"
 import { FadeInOnScroll } from "@/components/ui/fade-in-on-scroll"
 import { HomeClientComponents } from "./home-client"
 
@@ -41,62 +41,45 @@ interface HomePageClientProps {
 }
 
 export function HomePageClient({ judgemeStats, reviews, organizationSchema }: HomePageClientProps) {
-  const [hasScrolled, setHasScrolled] = useState(false)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setHasScrolled(true)
-      }
-    }
-
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
   return (
     <div className="min-h-screen bg-white">
       <StructuredData data={organizationSchema} />
 
       <Hero judgemeStats={judgemeStats} />
 
-      <div
-        className={`transition-opacity duration-500 ${hasScrolled ? "opacity-100" : "opacity-0 pointer-events-none"}`}
-      >
-        <FadeInOnScroll>
-          <FeaturedProductsShowcase />
-        </FadeInOnScroll>
+      <FadeInOnScroll>
+        <FeaturedProductsShowcase />
+      </FadeInOnScroll>
 
-        <FadeInOnScroll delay={100}>
-          <QuickDeals />
-        </FadeInOnScroll>
+      <FadeInOnScroll delay={100}>
+        <QuickDeals />
+      </FadeInOnScroll>
 
-        <FadeInOnScroll delay={150}>
-          <Suspense fallback={<div className="h-96 bg-[#0B1C2C] animate-pulse" />}>
-            <WhyPhoenixTrust />
-          </Suspense>
-        </FadeInOnScroll>
+      <FadeInOnScroll delay={150}>
+        <Suspense fallback={<div className="h-96 bg-[#0B1C2C] animate-pulse" />}>
+          <WhyPhoenixTrust />
+        </Suspense>
+      </FadeInOnScroll>
 
-        <FadeInOnScroll delay={200}>
-          <Suspense fallback={<div className="h-96 bg-white animate-pulse" />}>
-            <PhoenixVsCompetition />
-          </Suspense>
-        </FadeInOnScroll>
+      <FadeInOnScroll delay={200}>
+        <Suspense fallback={<div className="h-96 bg-white animate-pulse" />}>
+          <PhoenixVsCompetition />
+        </Suspense>
+      </FadeInOnScroll>
 
-        <FadeInOnScroll delay={250}>
-          <Suspense fallback={<div className="h-96 bg-[#0A2740] animate-pulse" />}>
-            <ExpandableReviews reviews={reviews} />
-          </Suspense>
-        </FadeInOnScroll>
+      <FadeInOnScroll delay={250}>
+        <Suspense fallback={<div className="h-96 bg-[#0A2740] animate-pulse" />}>
+          <ExpandableReviews reviews={reviews} />
+        </Suspense>
+      </FadeInOnScroll>
 
-        <FadeInOnScroll delay={300}>
-          <Suspense fallback={<div className="h-64 bg-[#F5F3EF] animate-pulse" />}>
-            <CTAComponent />
-          </Suspense>
-        </FadeInOnScroll>
+      <FadeInOnScroll delay={300}>
+        <Suspense fallback={<div className="h-64 bg-[#F5F3EF] animate-pulse" />}>
+          <CTAComponent />
+        </Suspense>
+      </FadeInOnScroll>
 
-        <HomeClientComponents />
-      </div>
+      <HomeClientComponents />
     </div>
   )
 }
