@@ -31,18 +31,6 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
   const cartItemCount = cart?.lines?.edges?.length || 0
 
   useEffect(() => {
-    console.log("[v0] 🎯 Header mounted with menu data:", menuData)
-    if (menuData) {
-      console.log(
-        "[v0] ✅ Menu items:",
-        menuData.items.map((item) => item.title),
-      )
-    } else {
-      console.log("[v0] ❌ NO MENU DATA - this is the problem!")
-    }
-  }, [menuData])
-
-  useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 100)
     }
@@ -57,7 +45,7 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
       <header className="relative bg-white z-50 border-b-2 border-gray-200">
         {/* Top Bar */}
         <div className="border-b border-gray-200 bg-[#F5F3EF] hidden md:block">
-          <div className="container mx-auto px-4 py-2 flex justify-between items-center text-xs">
+          <div className="container mx-auto px-4 py-2.5 flex justify-between items-center text-sm">
             <div className="flex gap-6">
               <Link href="/guarantee" className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-medium">
                 Our Guarantee
@@ -70,13 +58,15 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
               </Link>
             </div>
             <div className="flex gap-4 items-center">
-              <Link
-                href="/account"
-                className="flex items-center gap-1 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-medium"
+              <a
+                href={`https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN}/account`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-medium"
               >
-                <User className="w-3.5 h-3.5" />
-                My Account
-              </Link>
+                <User className="w-4 h-4" />
+                Account
+              </a>
             </div>
           </div>
         </div>
@@ -84,22 +74,21 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
         {/* Main Header */}
         <div className="bg-white">
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between h-20">
+            <div className="flex items-center justify-between h-24">
               {/* Mobile Menu Button */}
               <button className="lg:hidden text-[#0B1C2C]" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
 
-              {/* Logo */}
               <Link href="/" className="flex items-center gap-3">
                 <Image
                   src="/images/favicon.png"
                   alt="Atlantic Flagpoles Logo"
-                  width={40}
-                  height={40}
-                  className="w-10 h-10"
+                  width={56}
+                  height={56}
+                  className="w-14 h-14"
                 />
-                <span className="text-2xl font-serif font-bold text-[#0B1C2C] tracking-wide hidden sm:block">
+                <span className="text-3xl font-serif font-bold text-[#0B1C2C] tracking-wide hidden sm:block">
                   ATLANTIC FLAGPOLES
                 </span>
               </Link>
@@ -111,8 +100,6 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
 
               {/* Desktop Navigation */}
               <nav className="hidden lg:flex items-center gap-6">
-                {menuItems.length === 0 && <div className="text-red-600 font-bold text-sm">NO MENU ITEMS LOADED</div>}
-
                 {menuItems.map((item) => {
                   const hasSubItems = item.items && item.items.length > 0
 
@@ -121,7 +108,7 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
                       <Link
                         key={item.id}
                         href={item.url}
-                        className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-semibold text-sm whitespace-nowrap"
+                        className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-semibold text-base whitespace-nowrap"
                       >
                         {item.title}
                       </Link>
@@ -135,7 +122,7 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
                       onMouseEnter={() => setActiveDropdown(item.id)}
                       onMouseLeave={() => setActiveDropdown(null)}
                     >
-                      <button className="flex items-center gap-1 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-semibold text-sm whitespace-nowrap">
+                      <button className="flex items-center gap-1 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-semibold text-base whitespace-nowrap">
                         {item.title}
                         <ChevronDown className="w-4 h-4" />
                       </button>
@@ -145,7 +132,7 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
                         <div className="absolute top-full left-0 pt-2 z-50">
                           <div className="bg-white border-2 border-[#C8A55C]/30 rounded-lg shadow-xl min-w-[240px] py-2">
                             <div className="px-4 py-2 border-b border-gray-200">
-                              <Link href={item.url} className="text-[#C8A55C] hover:text-[#0B1C2C] font-bold text-sm">
+                              <Link href={item.url} className="text-[#C8A55C] hover:text-[#0B1C2C] font-bold text-base">
                                 View All {item.title}
                               </Link>
                             </div>
@@ -153,7 +140,7 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
                               <Link
                                 key={subItem.id}
                                 href={subItem.url}
-                                className="block px-4 py-2 text-[#0B1C2C] hover:bg-[#F5F3EF] hover:text-[#C8A55C] transition-colors text-sm"
+                                className="block px-4 py-2 text-[#0B1C2C] hover:bg-[#F5F3EF] hover:text-[#C8A55C] transition-colors text-base"
                               >
                                 {subItem.title}
                               </Link>
@@ -167,21 +154,19 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
 
                 <Link
                   href="/flagpole-finder"
-                  className="relative bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] hover:from-[#a88947] hover:to-[#C8A55C] px-6 py-2.5 rounded-md text-white font-semibold transition-all text-sm shadow-lg hover:shadow-xl group overflow-hidden"
+                  className="relative bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] hover:from-[#a88947] hover:to-[#C8A55C] px-6 py-2.5 rounded-md text-white font-semibold transition-all text-base shadow-lg hover:shadow-xl group overflow-hidden"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     <Sparkles className="w-4 h-4" />
                     Flagpole Finder
                   </span>
-                  {/* Glowing effect */}
                   <span className="absolute inset-0 bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300" />
-                  {/* Animated shine */}
                   <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
                 </Link>
 
                 <button
                   onClick={() => setQuizModalOpen(true)}
-                  className="bg-[#0B1C2C] hover:bg-[#0B1C2C]/90 px-6 py-2.5 rounded-md text-white font-semibold transition-colors text-sm"
+                  className="bg-[#0B1C2C] hover:bg-[#0B1C2C]/90 px-6 py-2.5 rounded-md text-white font-semibold transition-colors text-base"
                 >
                   Flagpole Quiz
                 </button>
@@ -189,7 +174,7 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
 
               {/* Cart Icon */}
               <Link href="/cart" className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors">
-                <ShoppingCart className="w-6 h-6" />
+                <ShoppingCart className="w-7 h-7" />
                 {cartItemCount > 0 && (
                   <span className="absolute -top-2 -right-2 bg-[#C8A55C] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                     {cartItemCount}
@@ -205,17 +190,11 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
                   <SearchBarWrapper />
                 </div>
                 <nav className="flex flex-col gap-3">
-                  {menuItems.length === 0 && (
-                    <div className="text-red-600 font-bold text-sm p-4 bg-red-50 rounded">
-                      NO MENU ITEMS - Check console for details
-                    </div>
-                  )}
-
                   {menuItems.map((item) => (
                     <div key={item.id}>
                       <Link
                         href={item.url}
-                        className="block text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-semibold py-2"
+                        className="block text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-semibold py-2 text-base"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         {item.title}

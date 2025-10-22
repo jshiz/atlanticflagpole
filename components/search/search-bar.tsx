@@ -115,20 +115,20 @@ export function SearchBar({
               if (results.length > 0) setIsOpen(true)
               if (!query) setShowAIAssistant(true)
             }}
-            className="w-full pl-9 pr-20 text-xs md:text-sm h-8 md:h-9 text-center md:text-left bg-gray-50 border-gray-300 focus:bg-white focus:border-[#C8A55C] transition-all rounded-full shadow-sm"
+            className="w-full pl-10 pr-24 text-sm h-10 text-center md:text-left bg-gray-50 border-gray-300 focus:bg-white focus:border-[#C8A55C] transition-all rounded-full shadow-sm"
           />
-          <Search className="absolute left-2.5 md:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
 
-          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
             {query && (
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
                 onClick={handleClear}
-                className="h-6 w-6 hover:bg-gray-100 rounded-full"
+                className="h-7 w-7 hover:bg-gray-100 rounded-full"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-4 h-4" />
               </Button>
             )}
             <Button
@@ -136,67 +136,76 @@ export function SearchBar({
               variant="ghost"
               size="icon"
               onClick={() => setShowAIAssistant(!showAIAssistant)}
-              className="h-6 w-6 hover:bg-[#C8A55C]/10 rounded-full group"
+              className="h-7 w-7 hover:bg-[#C8A55C]/10 rounded-full group"
               title="AI Assistant"
             >
-              <Sparkles className="w-3.5 h-3.5 text-[#C8A55C] group-hover:scale-110 transition-transform" />
+              <Sparkles className="w-4 h-4 text-[#C8A55C] group-hover:scale-110 transition-transform" />
             </Button>
             <Link
               href="/help-center"
-              className="h-6 w-6 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
+              className="h-7 w-7 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
               title="Help Center"
             >
-              <HelpCircle className="w-3.5 h-3.5 text-gray-500 hover:text-[#0B1C2C]" />
+              <HelpCircle className="w-4 h-4 text-gray-500 hover:text-[#0B1C2C]" />
             </Link>
           </div>
         </div>
       </form>
 
       {showAIAssistant && !query && (
-        <div className="absolute z-50 left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-2xl p-4 md:p-6 animate-in slide-in-from-top-2 duration-200">
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="w-5 h-5 text-[#C8A55C]" />
-            <h3 className="font-semibold text-[#0B1C2C]">How can we help you today?</h3>
+        <div className="absolute z-[200] left-0 right-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-top-2 duration-200">
+          <div className="bg-gradient-to-r from-[#0B1C2C] to-[#1a3a52] text-white p-4">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-[#C8A55C]" />
+              <h3 className="font-semibold">AI Assistant</h3>
+            </div>
+            <p className="text-sm text-white/80 mt-1">How can we help you find the perfect flagpole?</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            {aiSuggestions.map((suggestion, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setQuery(suggestion.query)
-                  setShowAIAssistant(false)
-                  router.push(`/search?q=${encodeURIComponent(suggestion.query)}`)
-                }}
-                className="flex items-start gap-3 p-3 text-left hover:bg-gray-50 rounded-lg transition-colors border border-gray-100 hover:border-[#C8A55C] group"
+
+          <div className="p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+              {aiSuggestions.map((suggestion, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setQuery(suggestion.query)
+                    setShowAIAssistant(false)
+                    router.push(`/search?q=${encodeURIComponent(suggestion.query)}`)
+                  }}
+                  className="flex items-start gap-3 p-3 text-left hover:bg-gray-50 rounded-xl transition-all border border-gray-100 hover:border-[#C8A55C] hover:shadow-md group"
+                >
+                  <span className="text-2xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                    {suggestion.icon}
+                  </span>
+                  <span className="text-sm text-gray-700 group-hover:text-[#0B1C2C] leading-tight font-medium">
+                    {suggestion.text}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-gray-100">
+              <Link
+                href="/help-center"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm text-[#0B1C2C] hover:text-[#C8A55C] transition-colors rounded-lg hover:bg-gray-50 border border-gray-200 font-medium"
               >
-                <span className="text-2xl flex-shrink-0">{suggestion.icon}</span>
-                <span className="text-sm text-gray-700 group-hover:text-[#0B1C2C] leading-tight">
-                  {suggestion.text}
-                </span>
-              </button>
-            ))}
-          </div>
-          <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col sm:flex-row gap-2">
-            <Link
-              href="/help-center"
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm text-[#0B1C2C] hover:text-[#C8A55C] transition-colors rounded-lg hover:bg-gray-50"
-            >
-              <HelpCircle className="w-4 h-4" />
-              Visit Help Center
-            </Link>
-            <Link
-              href="/contact"
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm bg-[#C8A55C] text-white hover:bg-[#a88947] transition-colors rounded-lg font-medium"
-            >
-              Contact Support
-            </Link>
+                <HelpCircle className="w-4 h-4" />
+                Help Center
+              </Link>
+              <Link
+                href="/contact"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm bg-[#C8A55C] text-white hover:bg-[#a88947] transition-colors rounded-lg font-semibold shadow-sm"
+              >
+                Contact Support
+              </Link>
+            </div>
           </div>
         </div>
       )}
 
       {/* Search Results Dropdown */}
       {isOpen && results.length > 0 && (
-        <div className="absolute z-50 left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-2xl max-h-96 overflow-y-auto animate-in slide-in-from-top-2 duration-200">
+        <div className="absolute z-[200] left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-2xl max-h-96 overflow-y-auto animate-in slide-in-from-top-2 duration-200">
           {results.slice(0, 8).map((product) => (
             <Link
               key={product.id}

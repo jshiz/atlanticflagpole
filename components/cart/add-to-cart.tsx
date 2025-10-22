@@ -44,10 +44,9 @@ export function AddToCartButton({
   icon = <PlusCircleIcon />,
   ...buttonProps
 }: AddToCartButtonProps) {
-  const { addItem } = useCart()
+  const { addToCart } = useCart()
   const [isLoading, startTransition] = useTransition()
 
-  // Resolve variant locally only for variantless products (purely synchronous)
   const resolvedVariant = useMemo(() => {
     if (selectedVariant) return selectedVariant
     if (product.variants.length === 0) return getBaseProductVariant(product)
@@ -78,7 +77,7 @@ export function AddToCartButton({
 
         if (resolvedVariant) {
           startTransition(async () => {
-            addItem(resolvedVariant, product)
+            addToCart(resolvedVariant, product)
           })
         }
       }}

@@ -178,11 +178,13 @@ export function CartPageClient() {
       try {
         setLoadingProducts(true)
 
-        const [productsRes] = await Promise.all([fetch("/api/products?first=50")])
+        const productsRes = await fetch("/api/products?first=50")
 
         if (!productsRes.ok) {
-          throw new Error(`Failed to fetch products: ${productsRes.status}`)
+          console.error("[v0] Cart - products API returned", productsRes.status)
+          return
         }
+
         const productsData = await productsRes.json()
         console.log("[v0] Cart - fetched products for upsells:", productsData)
 

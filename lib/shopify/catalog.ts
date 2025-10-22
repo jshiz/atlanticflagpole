@@ -123,6 +123,77 @@ export async function getCollectionWithProducts(handle: string, first = 6) {
   }
 }
 
+export async function getProducts(params: { first?: number; query?: string; after?: string } = {}) {
+  const { first = 50, query = "", after } = params
+
+  const graphqlQuery = /* GraphQL */ `
+    query GetProducts($first: Int!, $query: String, $after: String) {
+      products(first: $first, query: $query, after: $after) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        edges {
+          node {
+            id
+            handle
+            title
+            vendor
+            productType
+            tags
+            availableForSale
+            featuredImage {
+              url(transform: { maxWidth: 800, maxHeight: 800 })
+              altText
+              width
+              height
+            }
+            priceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+              maxVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            compareAtPriceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+              maxVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            variants(first: 1) {
+              edges {
+                node {
+                  id
+                  availableForSale
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `
+
+  const data = await shopifyFetch<{ products: any }>(
+    graphqlQuery,
+    { first, query, after },
+    { next: { revalidate: 300, tags: ["products"] } },
+  )
+
+  // Transform edges to nodes for easier consumption
+  const products = data.products.edges.map((edge: any) => edge.node)
+
+  return products
+}
+
 export async function searchProducts(searchParams: {
   q?: string
   type?: string

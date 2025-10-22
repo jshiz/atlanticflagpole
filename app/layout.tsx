@@ -10,7 +10,6 @@ import { LiveChatButton } from "@/components/live-chat-button"
 import { CartProvider } from "@/components/cart/cart-context"
 import { JudgeMePlatformScript } from "@/components/judgeme/judgeme-platform-script"
 import { StickyCartBar } from "@/components/cart/sticky-cart-bar"
-import { PhoenixHomeTrialBar } from "@/components/phoenix-home-trial-bar"
 import { GeoProvider } from "@/lib/geo/context"
 import { LocationBanner } from "@/components/geo/location-banner"
 import { Toaster } from "@/components/ui/toaster"
@@ -53,11 +52,10 @@ export default function RootLayout({
       <body className={`font-sans ${inter.variable} ${jetbrainsMono.variable} ${cinzel.variable}`}>
         <CartProvider>
           <GeoProvider>
-            <PhoenixHomeTrialBar />
             <Suspense fallback={<HeaderSkeleton />}>
               <Header />
             </Suspense>
-            <Suspense fallback={null}>{children}</Suspense>
+            <main className="min-h-screen">{children}</main>
             <Footer />
             <LiveChatButton />
             <StickyCartBar />
