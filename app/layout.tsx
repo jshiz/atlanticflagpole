@@ -4,9 +4,7 @@ import { Inter, JetBrains_Mono, Cinzel } from "next/font/google"
 import "./globals.css"
 import { Suspense } from "react"
 import { Header } from "@/components/header"
-import { HeaderSkeleton } from "@/components/header-skeleton"
 import { Footer } from "@/components/footer"
-import { LiveChatButton } from "@/components/live-chat-button"
 import { CartProvider } from "@/components/cart/cart-context"
 import { JudgeMePlatformScript } from "@/components/judgeme/judgeme-platform-script"
 import { StickyCartBar } from "@/components/cart/sticky-cart-bar"
@@ -117,12 +115,11 @@ export default function RootLayout({
       <body className={`font-sans ${inter.variable} ${jetbrainsMono.variable} ${cinzel.variable}`}>
         <CartProvider>
           <GeoProvider>
-            <Suspense fallback={<HeaderSkeleton />}>
+            <Suspense fallback={null}>
               <Header />
             </Suspense>
             <main className="min-h-screen">{children}</main>
             <Footer />
-            <LiveChatButton />
             <StickyCartBar />
             <LocationBanner />
             <CookieConsentBanner />

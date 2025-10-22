@@ -35,7 +35,6 @@ export function HeaderClient({
 }: HeaderClientProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
-  const [hoveredSubmenuId, setHoveredSubmenuId] = useState<string | null>(null)
   const [quizModalOpen, setQuizModalOpen] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const { cart } = useCart()
@@ -52,13 +51,18 @@ export function HeaderClient({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (stickyContainerRef.current && !stickyContainerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node
+      if (stickyContainerRef.current && !stickyContainerRef.current.contains(target)) {
+        console.log("[v0] 🖱️ Clicked outside megamenu, closing")
         setActiveDropdown(null)
       }
     }
 
     if (activeDropdown) {
-      document.addEventListener("mousedown", handleClickOutside)
+      // Small delay to prevent immediate closing when opening
+      setTimeout(() => {
+        document.addEventListener("mousedown", handleClickOutside)
+      }, 100)
     }
 
     return () => {
@@ -67,30 +71,45 @@ export function HeaderClient({
   }, [activeDropdown])
 
   if (!menuData || !menuData.items || menuData.items.length === 0) {
+    console.warn("[v0] ⚠️ No menu data available")
     return null
   }
 
   const menuItems = menuData.items
 
+  const handleDropdownToggle = (itemTitle: string) => {
+    console.log("[v0] 🖱️ Toggling dropdown:", itemTitle, "Current:", activeDropdown)
+    setActiveDropdown((prev) => (prev === itemTitle ? null : itemTitle))
+  }
+
+  const handleLinkClick = () => {
+    console.log("[v0] 🔗 Link clicked, closing megamenu")
+    setActiveDropdown(null)
+  }
+
   return (
     <>
-      <div ref={stickyContainerRef} className="sticky top-0 z-[10000] bg-white">
+      <div ref={stickyContainerRef} className="sticky top-0 z-[10000] bg-white shadow-sm">
         <PhoenixHomeTrialBar />
-        <header ref={headerRef} className="bg-white border-b border-gray-200 shadow-sm">
+        <header ref={headerRef} className="bg-white border-b border-gray-200">
           <div className="container mx-auto px-4">
             {/* Main Header Row */}
             <div className="flex items-center justify-between h-16 gap-4 lg:gap-6">
               {/* Left - Hamburger + Logo */}
               <div className="flex items-center gap-2 lg:gap-3 flex-shrink-0">
                 <button
+                  type="button"
                   className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors p-1"
-                  onClick={() => setDrawerOpen(true)}
+                  onClick={() => {
+                    console.log("[v0] 🍔 Opening drawer")
+                    setDrawerOpen(true)
+                  }}
                   aria-label="Open menu"
                 >
                   <MenuIcon className="w-5 h-5 lg:w-6 lg:h-6" />
                 </button>
 
-                <Link href="/" className="flex items-center gap-2 group">
+                <Link href="/" className="flex items-center gap-2 group" onClick={handleLinkClick}>
                   <Image
                     src="/images/favicon.png"
                     alt="Atlantic Flagpole Logo"
@@ -129,6 +148,7 @@ export function HeaderClient({
                     href="/cart"
                     className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors group p-1"
                     aria-label="Shopping cart"
+                    onClick={handleLinkClick}
                   >
                     <ShoppingCart className="w-5 h-5 lg:w-6 lg:h-6 group-hover:scale-110 transition-transform duration-300" />
                     {cartItemCount > 0 && (
@@ -153,7 +173,7 @@ export function HeaderClient({
 
             {/* Desktop Menu Bar */}
             <div className="hidden lg:block border-t border-gray-100">
-              <div className="flex items-center justify-center gap-1 py-2">
+              <div className="flex items-center justify-center gap-1 py-2.5">
                 {menuItems.slice(0, 6).map((item) => {
                   const hasSubmenu = item.items && item.items.length > 0
                   const isActive = activeDropdown === item.title
@@ -162,20 +182,19 @@ export function HeaderClient({
                     <div key={item.title} className="relative">
                       {hasSubmenu ? (
                         <button
-                          onClick={() => {
-                            console.log("[v0] 🖱️ Clicked menu:", item.title)
-                            setActiveDropdown(isActive ? null : item.title)
-                          }}
+                          type="button"
+                          onClick={() => handleDropdownToggle(item.title)}
                           className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-[#0B1C2C] hover:text-[#C8A55C] transition-colors rounded-md hover:bg-gray-50"
                         >
                           {item.title}
                           <span
-                            className={`w-1 h-1 rounded-full bg-current transition-all duration-300 ${isActive ? "scale-150 opacity-100" : "scale-100 opacity-40"}`}
+                            className={`w-1.5 h-1.5 rounded-full bg-current transition-all duration-300 ${isActive ? "scale-150 opacity-100" : "scale-100 opacity-40"}`}
                           />
                         </button>
                       ) : (
                         <Link
                           href={item.url}
+                          onClick={handleLinkClick}
                           className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-[#0B1C2C] hover:text-[#C8A55C] transition-colors rounded-md hover:bg-gray-50"
                         >
                           {item.title}
@@ -190,11 +209,11 @@ export function HeaderClient({
         </header>
       </div>
 
-      {activeDropdown && (
+      {activeDropdown && stickyContainerRef.current && (
         <div
           className="fixed left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-[9999] animate-megamenu-slide-down"
           style={{
-            top: stickyContainerRef.current ? `${stickyContainerRef.current.offsetHeight}px` : "180px",
+            top: `${stickyContainerRef.current.offsetHeight}px`,
           }}
         >
           <div className="container mx-auto px-4 py-4 overflow-hidden max-h-[70vh]">
@@ -214,7 +233,7 @@ export function HeaderClient({
                   <InfoAffiliateMenu
                     title={activeDropdown}
                     menuItems={activeItem?.items || []}
-                    onLinkClick={() => setActiveDropdown(null)}
+                    onLinkClick={handleLinkClick}
                   />
                 )
               }
@@ -225,7 +244,7 @@ export function HeaderClient({
                   menuItems={activeItem?.items || []}
                   featuredProducts={submenuProductsData?.[activeDropdown] || []}
                   submenuProductsData={submenuProductsData}
-                  onLinkClick={() => setActiveDropdown(null)}
+                  onLinkClick={handleLinkClick}
                 />
               )
             })()}

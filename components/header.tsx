@@ -1,9 +1,9 @@
 import { getMenu } from "@/lib/menus"
 import { getCollectionWithProducts, searchProducts } from "@/lib/shopify/catalog"
-import { HeaderClient } from "@/components/header-client"
 import { getProducts } from "@/lib/shopify"
 import { getCached, setCache } from "@/lib/cache"
 import { JudgemeBadge } from "@/components/judgeme/judgeme-badge"
+import { StickyHeaderNew } from "@/components/header/sticky-header-new"
 
 function extractCollectionHandle(url: string): string | null {
   const match = url.match(/\/collections\/([^/?]+)/)
@@ -18,16 +18,11 @@ export async function Header() {
     if (cached) {
       console.log("[v0] ✅ Using cached header data")
       return (
-        <>
-          <HeaderClient
-            menuData={cached.menuData}
-            megaMenuData={cached.megaMenuData}
-            submenuProductsData={cached.submenuProductsData}
-            nflFlagProducts={cached.nflFlagProducts}
-            christmasTreeProducts={cached.christmasTreeProducts}
-            judgemeBadge={<JudgemeBadge />}
-          />
-        </>
+        <StickyHeaderNew
+          menuData={cached.menuData}
+          submenuProductsData={cached.submenuProductsData}
+          judgemeBadge={<JudgemeBadge />}
+        />
       )
     }
 
@@ -118,7 +113,7 @@ export async function Header() {
               const results = await Promise.all(
                 collectionConfig.map(async (config) => {
                   try {
-                    const collection = await getCollectionWithProducts(config.handle, 30)
+                    const collection = await getCollectionWithProducts(config.handle, 24)
                     if (collection?.products?.nodes && collection.products.nodes.length > 0) {
                       console.log(
                         `[v0] ✅ Found ${collection.products.nodes.length} products from collection "${config.handle}"`,
@@ -204,28 +199,14 @@ export async function Header() {
     setCache(cacheKey, headerData, 3600000)
 
     return (
-      <>
-        <HeaderClient
-          menuData={headerData.menuData}
-          megaMenuData={headerData.megaMenuData}
-          submenuProductsData={headerData.submenuProductsData}
-          nflFlagProducts={headerData.nflFlagProducts}
-          christmasTreeProducts={headerData.christmasTreeProducts}
-          judgemeBadge={<JudgemeBadge />}
-        />
-      </>
-    )
-  } catch (error) {
-    console.error("[v0] ❌ Error in Header component:", error)
-    return (
-      <HeaderClient
-        menuData={null}
-        megaMenuData={{}}
-        submenuProductsData={{}}
-        nflFlagProducts={[]}
-        christmasTreeProducts={[]}
+      <StickyHeaderNew
+        menuData={headerData.menuData}
+        submenuProductsData={headerData.submenuProductsData}
         judgemeBadge={<JudgemeBadge />}
       />
     )
+  } catch (error) {
+    console.error("[v0] ❌ Error in Header component:", error)
+    return <StickyHeaderNew menuData={null} submenuProductsData={{}} judgemeBadge={<JudgemeBadge />} />
   }
 }

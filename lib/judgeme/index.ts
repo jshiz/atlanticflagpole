@@ -355,13 +355,24 @@ export async function getJudgemeFeaturedReviews(limit = 10): Promise<JudgemeRevi
   }
 }
 
+let statsPromise: Promise<{ averageRating: number; totalReviews: number; fiveStarCount: number }> | null = null
+let statsTimestamp = 0
+const STATS_SINGLETON_DURATION = 5000 // 5 seconds
+
 export async function getJudgemeStats(): Promise<{
   averageRating: number
   totalReviews: number
   fiveStarCount: number
 }> {
+  const now = Date.now()
+  if (statsPromise && now - statsTimestamp < STATS_SINGLETON_DURATION) {
+    return statsPromise
+  }
+
   if (!isJudgemeConfigured()) {
-    console.log("[v0] Judge.me not configured - using fallback stats")
+    if (typeof window === "undefined" && !statsPromise) {
+      console.log("[v0] Judge.me not configured - using fallback stats")
+    }
     return { averageRating: 4.8, totalReviews: 1250, fiveStarCount: 980 }
   }
 
@@ -369,35 +380,42 @@ export async function getJudgemeStats(): Promise<{
     const cacheKey = "judgeme-stats"
     const cached = getCached<{ averageRating: number; totalReviews: number; fiveStarCount: number }>(cacheKey)
     if (cached) {
-      console.log("[v0] ✅ Returning cached Judge.me stats")
       return cached
     }
 
-    const { reviews } = await getJudgemeReviews({ perPage: 100 })
+    statsTimestamp = now
+    statsPromise = (async () => {
+      const { reviews } = await getJudgemeReviews({ perPage: 100 })
 
-    if (reviews.length === 0) {
-      console.log("[v0] No Judge.me reviews found - using fallback stats")
-      return { averageRating: 4.8, totalReviews: 1250, fiveStarCount: 980 }
-    }
+      if (reviews.length === 0) {
+        return { averageRating: 4.8, totalReviews: 1250, fiveStarCount: 980 }
+      }
 
-    const totalReviews = await getJudgemeReviewsCount()
+      const totalReviews = await getJudgemeReviewsCount()
 
-    const fiveStarCount = reviews.filter((r) => r.rating === 5).length
-    const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0)
-    const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0
+      const fiveStarCount = reviews.filter((r) => r.rating === 5).length
+      const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0)
+      const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0
 
-    const stats = {
-      averageRating,
-      totalReviews,
-      fiveStarCount,
-    }
+      const stats = {
+        averageRating,
+        totalReviews,
+        fiveStarCount,
+      }
 
-    setCache(cacheKey, stats, JUDGEME_CACHE_DURATION)
-    console.log("[v0] 💾 Cached Judge.me stats:", stats)
+      setCache(cacheKey, stats, JUDGEME_CACHE_DURATION)
+      return stats
+    })()
 
-    return stats
+    const result = await statsPromise
+    setTimeout(() => {
+      statsPromise = null
+    }, STATS_SINGLETON_DURATION)
+
+    return result
   } catch (error) {
     console.error("[v0] Error fetching Judge.me stats:", error)
+    statsPromise = null
     return { averageRating: 4.8, totalReviews: 1250, fiveStarCount: 980 }
   }
 }

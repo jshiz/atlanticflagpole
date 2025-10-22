@@ -153,6 +153,24 @@ export function MegaMenuWithCart({
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
   const [displayProducts, setDisplayProducts] = useState<Product[]>([])
   const [hoveredProduct, setHoveredProduct] = useState<Product | null>(null)
+  const [productsToShow, setProductsToShow] = useState(8)
+
+  useEffect(() => {
+    const updateProductCount = () => {
+      const width = window.innerWidth
+      if (width < 1024) {
+        setProductsToShow(4) // Mobile: 2x2 grid
+      } else if (width < 1280) {
+        setProductsToShow(6) // Tablet: 3x2 grid
+      } else {
+        setProductsToShow(8) // Desktop: 4x2 grid
+      }
+    }
+
+    updateProductCount()
+    window.addEventListener("resize", updateProductCount)
+    return () => window.removeEventListener("resize", updateProductCount)
+  }, [])
 
   useEffect(() => {
     const activeProducts = featuredProducts.filter((p) => {
@@ -160,32 +178,29 @@ export function MegaMenuWithCart({
       if (!hasVariants) return false
 
       const firstVariant = p.variants.edges[0]?.node
-      // Only exclude if explicitly marked as unavailable
       if (firstVariant && firstVariant.availableForSale === false) return false
 
       return true
     })
 
-    // Sort by price descending (high-priced items first)
     const sortedByPrice = [...activeProducts].sort((a, b) => {
       const priceA = Number.parseFloat(a.priceRange.minVariantPrice.amount)
       const priceB = Number.parseFloat(b.priceRange.minVariantPrice.amount)
       return priceB - priceA
     })
 
-    const highPriced = sortedByPrice.slice(0, 4)
-    const remaining = sortedByPrice.slice(4)
+    const highPriced = sortedByPrice.slice(0, Math.ceil(productsToShow / 2))
+    const remaining = sortedByPrice.slice(Math.ceil(productsToShow / 2))
     const shuffledRemaining = shuffleArray(remaining)
-    const mixed = [...highPriced, ...shuffledRemaining].slice(0, 8)
+    const mixed = [...highPriced, ...shuffledRemaining].slice(0, productsToShow)
 
     setDisplayProducts(mixed)
-  }, [featuredProducts, title])
+  }, [featuredProducts, title, productsToShow])
 
   useEffect(() => {
     if (hoveredItem && submenuProductsData[hoveredItem]) {
       const products = submenuProductsData[hoveredItem]
       if (products && products.length > 0) {
-        // Get the highest-priced available product for this submenu
         const availableProducts = products.filter((p) => p.variants?.edges?.[0]?.node?.availableForSale)
         if (availableProducts.length > 0) {
           const sortedByPrice = [...availableProducts].sort((a, b) => {
@@ -209,7 +224,7 @@ export function MegaMenuWithCart({
   return (
     <div className="grid grid-cols-12 gap-6 max-w-7xl mx-auto">
       {/* Left Sidebar - Categories */}
-      <div className="col-span-3 border-r border-gray-100 pr-6">
+      <div className="col-span-12 lg:col-span-3 border-r border-gray-100 pr-6">
         <div className="sticky top-2">
           <h3 className="text-base font-serif font-bold text-[#0B1C2C] mb-3 pb-2 border-b border-[#C8A55C]">{title}</h3>
           <ul className="space-y-1">
@@ -227,9 +242,16 @@ export function MegaMenuWithCart({
                       : "text-[#0B1C2C] hover:text-[#C8A55C] hover:bg-[#F5F3EF]",
                   )}
                 >
-                  <span className="group-hover:translate-x-1 transition-transform font-medium">{item.title}</span>
+                  <span className="group-hover:translate-x-1 transition-transform font-medium break-words line-clamp-2">
+                    {item.title}
+                  </span>
                   {item.items && item.items.length > 0 && (
-                    <span className={cn("text-xs", hoveredItem === item.title ? "text-white" : "text-gray-400")}>
+                    <span
+                      className={cn(
+                        "text-xs ml-2 flex-shrink-0",
+                        hoveredItem === item.title ? "text-white" : "text-gray-400",
+                      )}
+                    >
                       →
                     </span>
                   )}
@@ -242,7 +264,7 @@ export function MegaMenuWithCart({
                         <Link
                           href={subItem.url}
                           onClick={onLinkClick}
-                          className="text-xs text-gray-600 hover:text-[#C8A55C] transition-colors block py-1 px-3 rounded hover:bg-[#F5F3EF]"
+                          className="text-xs text-gray-600 hover:text-[#C8A55C] transition-colors block py-1 px-3 rounded hover:bg-[#F5F3EF] break-words line-clamp-2"
                         >
                           {subItem.title}
                         </Link>
@@ -264,9 +286,8 @@ export function MegaMenuWithCart({
         </div>
       </div>
 
-      <div className="col-span-9">
+      <div className="col-span-12 lg:col-span-9">
         {hoveredProduct ? (
-          // Single Product View (when hovering over a submenu item with products)
           <div className="animate-product-fade-in">
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Featured Product</h4>
@@ -322,8 +343,8 @@ export function MegaMenuWithCart({
             </div>
 
             {displayProducts && displayProducts.length > 0 ? (
-              <div className="grid grid-cols-4 gap-4 grid-rows-2">
-                {displayProducts.slice(0, 8).map((product, index) => {
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-fr">
+                {displayProducts.slice(0, productsToShow).map((product, index) => {
                   const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
                   const rating = getProductRating(product.id)
 
@@ -341,7 +362,7 @@ export function MegaMenuWithCart({
                             src={product.featuredImage.url || "/placeholder.svg"}
                             alt={product.featuredImage.altText || product.title}
                             fill
-                            sizes="(max-width: 768px) 50vw, 25vw"
+                            sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                             className="object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         ) : (
@@ -351,7 +372,7 @@ export function MegaMenuWithCart({
                         )}
                       </div>
 
-                      <h5 className="text-xs font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-1.5 leading-tight min-h-[2.25rem]">
+                      <h5 className="text-xs font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-1.5 leading-tight min-h-[2.25rem] break-words">
                         {product.title}
                       </h5>
 
