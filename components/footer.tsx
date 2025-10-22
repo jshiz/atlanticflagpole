@@ -23,14 +23,14 @@ const XIcon = () => (
 export function Footer() {
   return (
     <>
-      <footer className="bg-gradient-to-b from-[#0B1C2C] to-[#0A2740] text-white pb-32">
+      <footer className="bg-gradient-to-b from-[#0B1C2C] via-[#1a2f42] to-[#0B1C2C] text-white pb-32">
         <div className="border-b border-white/10">
           <div className="container mx-auto px-4 py-8">
             <div className="max-w-5xl mx-auto">
               <div className="grid md:grid-cols-2 gap-8">
                 {/* Newsletter Block */}
                 <div className="text-center space-y-3">
-                  <div className="w-12 h-12 rounded-full bg-[#1F6FFF] flex items-center justify-center mx-auto mb-2">
+                  <div className="w-12 h-12 rounded-full bg-[#C8A55C] flex items-center justify-center mx-auto mb-2">
                     <Sparkles className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-white font-bold text-xl">Stay In The Loop</h3>
@@ -41,12 +41,12 @@ export function Footer() {
                     <input
                       type="email"
                       placeholder="Enter your email"
-                      className="flex-1 px-4 py-2.5 rounded-lg bg-white/10 text-white text-sm border border-white/20 focus:border-[#1F6FFF] focus:outline-none focus:ring-2 focus:ring-[#1F6FFF]/50 placeholder:text-white/60"
+                      className="flex-1 px-4 py-2.5 rounded-lg bg-white/10 text-white text-sm border border-white/20 focus:border-[#C8A55C] focus:outline-none focus:ring-2 focus:ring-[#C8A55C]/50 placeholder:text-white/60"
                       aria-label="Email address for newsletter"
                     />
                     <button
                       type="submit"
-                      className="px-5 py-2.5 bg-[#1F6FFF] hover:bg-[#1557CC] text-white text-sm font-semibold rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                      className="px-5 py-2.5 bg-[#E63946] hover:bg-[#d32f3c] text-white text-sm font-semibold rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-105"
                     >
                       Subscribe
                     </button>
@@ -76,7 +76,7 @@ export function Footer() {
                     <input
                       type="search"
                       placeholder="What can we help you find today?"
-                      className="w-full px-4 py-2.5 rounded-lg bg-white/10 text-white text-sm border border-white/20 focus:border-[#1F6FFF] focus:outline-none focus:ring-2 focus:ring-[#1F6FFF]/50 placeholder:text-white/60"
+                      className="w-full px-4 py-2.5 rounded-lg bg-white/10 text-white text-sm border border-white/20 focus:border-[#C8A55C] focus:outline-none focus:ring-2 focus:ring-[#C8A55C]/50 placeholder:text-white/60"
                       aria-label="Search"
                     />
                   </div>
@@ -86,12 +86,23 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-b from-[#C8A55C] to-[#b8954c] border-b border-white/10">
-          <div className="container mx-auto px-4 py-8">
-            <div className="max-w-4xl mx-auto text-center">
-              <h3 className="text-white font-bold text-xl mb-6">Trusted & Secure</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-[#1F6FFF]/90 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
+        <div className="border-b border-white/10">
+          <div className="container mx-auto px-4 py-12">
+            <div className="max-w-5xl mx-auto text-center">
+              <h3 className="text-white font-bold text-2xl mb-8 flex items-center justify-center gap-2">
+                <svg className="w-6 h-6 text-[#C8A55C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
+                </svg>
+                Trusted & Secure
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 border-2 border-[#C8A55C]/50 hover:border-[#C8A55C] transition-all hover:shadow-2xl hover:shadow-[#C8A55C]/30 hover:scale-105 flex items-center justify-center relative h-40 group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#C8A55C]/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                   <Image
                     src="https://cdn.shopify.com/s/files/1/2133/9559/files/phoenix-flagpole-sticker-logo-final-2020-securi-lok-opt.png?v=1760562626"
                     alt="Phoenix Flagpole Securi-Lok Technology"
@@ -101,7 +112,8 @@ export function Footer() {
                     loading="lazy"
                   />
                 </div>
-                <div className="bg-[#1F6FFF]/90 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
+                <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 border-2 border-[#C8A55C]/50 hover:border-[#C8A55C] transition-all hover:shadow-2xl hover:shadow-[#C8A55C]/30 hover:scale-105 flex items-center justify-center relative h-40 group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#C8A55C]/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                   <Image
                     src="https://cdn.shopify.com/s/files/1/2133/9559/files/flagpole-made-in-the-usa.png?v=1687894210"
                     alt="Made in the USA - American Made Flagpoles"
@@ -111,7 +123,8 @@ export function Footer() {
                     loading="lazy"
                   />
                 </div>
-                <div className="bg-[#1F6FFF]/90 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
+                <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 border-2 border-[#C8A55C]/50 hover:border-[#C8A55C] transition-all hover:shadow-2xl hover:shadow-[#C8A55C]/30 hover:scale-105 flex items-center justify-center relative h-40 group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#C8A55C]/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                   <Image
                     src="https://cdn.shopify.com/s/files/1/2133/9559/files/365-day-satisfaction-guarantee-phoenix-flagpole-200px.png?v=1687894210"
                     alt="365-Day Satisfaction Guarantee"
@@ -121,7 +134,8 @@ export function Footer() {
                     loading="lazy"
                   />
                 </div>
-                <div className="bg-[#1F6FFF]/90 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
+                <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 border-2 border-[#C8A55C]/50 hover:border-[#C8A55C] transition-all hover:shadow-2xl hover:shadow-[#C8A55C]/30 hover:scale-105 flex items-center justify-center relative h-40 group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#C8A55C]/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                   <Image
                     src="https://cdn.shopify.com/s/files/1/2133/9559/files/911-limited-edition-phoenix-flagpole-flagpole-bundle-200px.png?v=1687894210"
                     alt="911 Limited Edition Phoenix Flagpole Bundle"
@@ -306,21 +320,21 @@ export function Footer() {
             </div>
 
             <div className="text-center space-y-3">
-              <div className="bg-[#E63946] -mx-4 px-4 py-4 rounded-lg">
+              <div className="bg-white/5 -mx-4 px-4 py-4 rounded-lg border border-white/10">
                 <div className="flex flex-wrap justify-center gap-4 text-xs text-white/90 mb-2">
-                  <Link href="/privacy" className="hover:text-white transition-colors font-medium">
+                  <Link href="/privacy" className="hover:text-[#C8A55C] transition-colors font-medium">
                     Privacy Policy
                   </Link>
-                  <Link href="/terms" className="hover:text-white transition-colors font-medium">
+                  <Link href="/terms" className="hover:text-[#C8A55C] transition-colors font-medium">
                     Terms of Service
                   </Link>
-                  <Link href="/cookie-policy" className="hover:text-white transition-colors font-medium">
+                  <Link href="/cookie-policy" className="hover:text-[#C8A55C] transition-colors font-medium">
                     Cookie Policy
                   </Link>
-                  <Link href="/cookie-settings" className="hover:text-white transition-colors font-medium">
+                  <Link href="/cookie-settings" className="hover:text-[#C8A55C] transition-colors font-medium">
                     Cookie Settings
                   </Link>
-                  <Link href="/sitemap" className="hover:text-white transition-colors font-medium">
+                  <Link href="/sitemap" className="hover:text-[#C8A55C] transition-colors font-medium">
                     Sitemap
                   </Link>
                 </div>

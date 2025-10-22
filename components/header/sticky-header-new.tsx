@@ -9,6 +9,7 @@ import { Menu, X, Search, ShoppingCart, ChevronDown } from "lucide-react"
 import { useCart } from "@/components/cart/cart-context"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { InfoAffiliateMenu } from "@/components/header/info-affiliate-menu"
 
 interface MenuItem {
   id: string
@@ -203,6 +204,27 @@ export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }:
               {menuItems
                 .filter((item) => item.id === activeDropdown)
                 .map((item) => {
+                  const isInfoOrAffiliate =
+                    item.title.toLowerCase().includes("info") ||
+                    item.title.toLowerCase().includes("help") ||
+                    item.title.toLowerCase().includes("affiliate") ||
+                    item.title.toLowerCase().includes("partner")
+
+                  if (isInfoOrAffiliate && item.items && item.items.length > 0) {
+                    return (
+                      <InfoAffiliateMenu
+                        key={item.id}
+                        title={item.title}
+                        menuItems={item.items.map((subItem) => ({
+                          id: subItem.title,
+                          title: subItem.title,
+                          url: subItem.url,
+                        }))}
+                        onLinkClick={() => setActiveDropdown(null)}
+                      />
+                    )
+                  }
+
                   const products = submenuProductsData[item.title] || []
                   const displayProducts = products.slice(0, 8)
 
@@ -210,30 +232,34 @@ export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }:
 
                   return (
                     <div key={item.id}>
-                      {/* Submenu Links */}
                       {item.items && item.items.length > 0 && (
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                          {item.items.map((subItem) => (
-                            <Link
-                              key={subItem.title}
-                              href={subItem.url}
-                              onClick={() => setActiveDropdown(null)}
-                              className="p-4 bg-white/20 hover:bg-[#FFD700]/30 rounded-lg transition-all border-2 border-[#FFD700]/50 hover:border-[#FFD700] backdrop-blur-sm hover:scale-105 shadow-lg"
-                            >
-                              <p className="text-sm font-bold text-white drop-shadow-md">{subItem.title}</p>
-                            </Link>
-                          ))}
+                        <div className="mb-8">
+                          <h3 className="text-xl font-bold text-[#FFD700] mb-4 text-center drop-shadow-lg">
+                            Browse {item.title}
+                          </h3>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-5xl mx-auto">
+                            {item.items.map((subItem) => (
+                              <Link
+                                key={subItem.title}
+                                href={subItem.url}
+                                onClick={() => setActiveDropdown(null)}
+                                className="p-4 bg-white/20 hover:bg-[#FFD700]/30 rounded-lg transition-all border-2 border-[#FFD700]/50 hover:border-[#FFD700] backdrop-blur-sm hover:scale-105 shadow-lg text-center"
+                              >
+                                <p className="text-sm font-bold text-white drop-shadow-md">{subItem.title}</p>
+                              </Link>
+                            ))}
+                          </div>
                         </div>
                       )}
 
-                      {/* Featured Products */}
                       {displayProducts.length > 0 && (
                         <div>
-                          <h3 className="text-lg font-bold text-[#FFD700] mb-4 drop-shadow-lg flex items-center gap-2">
+                          <h3 className="text-xl font-bold text-[#FFD700] mb-6 text-center drop-shadow-lg flex items-center justify-center gap-2">
                             <span className="text-2xl">⭐</span>
                             Featured Products
+                            <span className="text-2xl">⭐</span>
                           </h3>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-6xl mx-auto">
                             {displayProducts.map((product: any) => {
                               const image = product.images?.edges?.[0]?.node || product.featuredImage
                               const variant = product.variants?.edges?.[0]?.node || product.variants?.nodes?.[0]
@@ -257,15 +283,25 @@ export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }:
                                       />
                                     </div>
                                   )}
-                                  <p className="text-xs font-bold text-white line-clamp-2 mb-2 drop-shadow-md">
+                                  <p className="text-xs font-bold text-white line-clamp-2 mb-2 drop-shadow-md text-center">
                                     {product.title}
                                   </p>
-                                  <p className="text-sm font-bold text-[#FFD700] drop-shadow-md">
+                                  <p className="text-sm font-bold text-[#FFD700] drop-shadow-md text-center">
                                     ${Number.parseFloat(price).toFixed(2)}
                                   </p>
                                 </Link>
                               )
                             })}
+                          </div>
+                          <div className="mt-6 text-center">
+                            <Link
+                              href={`/collections/${item.title.toLowerCase().replace(/\s+/g, "-")}`}
+                              onClick={() => setActiveDropdown(null)}
+                              className="inline-flex items-center gap-2 bg-[#E63946] hover:bg-[#d32f3c] text-white font-bold px-6 py-3 rounded-lg shadow-lg hover:scale-105 transition-all"
+                            >
+                              View All {item.title}
+                              <span className="text-lg">→</span>
+                            </Link>
                           </div>
                         </div>
                       )}
