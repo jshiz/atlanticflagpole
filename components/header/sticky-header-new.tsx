@@ -28,6 +28,7 @@ interface HeaderProps {
 
 export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }: HeaderProps) {
   const { cart } = useCart()
+  const [mounted, setMounted] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -37,12 +38,17 @@ export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }:
   const itemCount = cart?.lines?.edges?.reduce((total, edge) => total + edge.node.quantity, 0) || 0
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)
     }
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+  }, [mounted])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -60,11 +66,11 @@ export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }:
     <div ref={headerRef} className="relative z-50">
       <div
         className={cn(
-          "bg-gradient-to-r from-[#E63946] via-[#d32f3c] to-[#E63946] text-white text-center py-2 px-4 transition-all duration-300",
-          isScrolled ? "-translate-y-full opacity-0 h-0" : "translate-y-0 opacity-100",
+          "bg-gradient-to-r from-[#E63946] via-[#d32f3c] to-[#E63946] text-white text-center py-2 px-4 transition-all duration-300 overflow-hidden",
+          mounted && isScrolled ? "h-0 opacity-0" : "h-auto opacity-100",
         )}
       >
-        <p className="text-sm font-semibold">
+        <p className="text-sm font-semibold whitespace-nowrap">
           🎉 Fall Into Savings: Up To 60% Off Flagpoles + $599 Of Accessories Included! 🎉
         </p>
       </div>
@@ -74,24 +80,47 @@ export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }:
           <div className="flex items-center justify-between h-16">
             {/* Left: Logo */}
             <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="text-2xl font-bold text-[#C8A55C]">Atlantic Flagpole</div>
+              <Image
+                src="https://cdn.shopify.com/s/files/1/2133/9559/files/atlantic-flagpole-telescoping-flagpole-logo-2017-sm.png?v=1681855466"
+                alt="Atlantic Flagpole"
+                width={180}
+                height={50}
+                className="h-10 w-auto"
+                style={{
+                  filter: `
+                    drop-shadow(1px 0 0 white)
+                    drop-shadow(-1px 0 0 white)
+                    drop-shadow(0 1px 0 white)
+                    drop-shadow(0 -1px 0 white)
+                    drop-shadow(1px 1px 0 white)
+                    drop-shadow(-1px -1px 0 white)
+                    drop-shadow(1px -1px 0 white)
+                    drop-shadow(-1px 1px 0 white)
+                  `,
+                }}
+                priority
+              />
             </Link>
 
             {/* Center: Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-1">
               {menuItems.map((item) => {
                 const hasSubmenu = item.items && item.items.length > 0
-                const products = submenuProductsData[item.title] || []
                 const isActive = activeDropdown === item.id
 
                 return (
                   <div key={item.id} className="relative">
                     {hasSubmenu ? (
                       <button
-                        onClick={() => setActiveDropdown(isActive ? null : item.id)}
+                        onClick={() => {
+                          console.log("[v0] 🖱️ Clicked menu:", item.title)
+                          setActiveDropdown(isActive ? null : item.id)
+                        }}
                         className={cn(
-                          "px-4 py-2 text-sm font-semibold rounded-lg transition-all flex items-center gap-1",
-                          isActive ? "bg-[#C8A55C] text-[#0B1C2C]" : "hover:bg-white/10 text-white",
+                          "px-4 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-1 shadow-md",
+                          isActive
+                            ? "bg-[#FFD700] text-[#0B1C2C] scale-105"
+                            : "hover:bg-white/20 text-white hover:scale-105",
                         )}
                       >
                         {item.title}
@@ -100,7 +129,7 @@ export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }:
                     ) : (
                       <Link
                         href={item.url}
-                        className="px-4 py-2 text-sm font-semibold rounded-lg hover:bg-white/10 transition-all text-white"
+                        className="px-4 py-2 text-sm font-bold rounded-lg hover:bg-white/20 transition-all text-white hover:scale-105 shadow-md"
                       >
                         {item.title}
                       </Link>
@@ -113,22 +142,25 @@ export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }:
             {/* Right: Actions */}
             <div className="flex items-center gap-3">
               {/* Judge.me Badge */}
-              {judgemeBadge && <div className="hidden md:block">{judgemeBadge}</div>}
+              {judgemeBadge && (
+                <div className="hidden md:block [&_*]:!text-white [&_.jdgm-star]:!text-[#FFD700]">{judgemeBadge}</div>
+              )}
 
               {/* Search Button */}
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                className="p-2 hover:bg-white/20 rounded-lg transition-all hover:scale-110 shadow-md"
+                aria-label="Search"
               >
-                <Search className="w-5 h-5 text-[#C8A55C]" />
+                <Search className="w-5 h-5 text-[#FFD700]" />
               </button>
 
               {/* Cart Button */}
               <Link href="/cart">
-                <Button className="bg-[#E63946] hover:bg-[#d32f3c] text-white font-bold px-4 py-2 rounded-lg shadow-lg relative">
+                <Button className="bg-[#E63946] hover:bg-[#d32f3c] text-white font-bold px-4 py-2 rounded-lg shadow-lg relative hover:scale-105 transition-transform">
                   <ShoppingCart className="w-5 h-5" />
                   {itemCount > 0 && (
-                    <div className="absolute -top-2 -right-2 w-5 h-5 bg-[#C8A55C] rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-[#FFD700] rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-pulse">
                       <span className="text-xs font-bold text-[#0B1C2C]">{itemCount}</span>
                     </div>
                   )}
@@ -138,22 +170,43 @@ export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }:
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+                className="lg:hidden p-2 hover:bg-white/20 rounded-lg transition-all hover:scale-110 shadow-md"
+                aria-label="Menu"
               >
-                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                {isMobileMenuOpen ? (
+                  <X className="w-6 h-6 text-[#FFD700]" />
+                ) : (
+                  <Menu className="w-6 h-6 text-[#FFD700]" />
+                )}
               </button>
             </div>
           </div>
         </div>
 
         {activeDropdown && (
-          <div className="absolute left-0 right-0 bg-gradient-to-br from-[#0B1C2C] via-[#1a2f42] to-[#0B1C2C] border-t border-white/10 shadow-2xl">
-            <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="absolute left-0 right-0 bg-gradient-to-br from-[#0B1C2C] via-[#1a2f42] to-[#0B1C2C] border-t-2 border-[#FFD700] shadow-2xl z-50 animate-megamenu-slide-down">
+            {/* Darker semi-transparent overlay for better contrast */}
+            <div className="absolute inset-0 bg-[#0B1C2C]/80 pointer-events-none" />
+
+            {/* Subtle gold star pattern */}
+            <div className="absolute inset-0 pointer-events-none opacity-20">
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: `radial-gradient(circle, #FFD700 1px, transparent 1px)`,
+                  backgroundSize: "50px 50px",
+                }}
+              />
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 py-8 relative z-10">
               {menuItems
                 .filter((item) => item.id === activeDropdown)
                 .map((item) => {
                   const products = submenuProductsData[item.title] || []
                   const displayProducts = products.slice(0, 8)
+
+                  console.log("[v0] 📋 Rendering megamenu for:", item.title, "with", displayProducts.length, "products")
 
                   return (
                     <div key={item.id}>
@@ -165,9 +218,9 @@ export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }:
                               key={subItem.title}
                               href={subItem.url}
                               onClick={() => setActiveDropdown(null)}
-                              className="p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors border border-white/10"
+                              className="p-4 bg-white/20 hover:bg-[#FFD700]/30 rounded-lg transition-all border-2 border-[#FFD700]/50 hover:border-[#FFD700] backdrop-blur-sm hover:scale-105 shadow-lg"
                             >
-                              <p className="text-sm font-semibold text-white">{subItem.title}</p>
+                              <p className="text-sm font-bold text-white drop-shadow-md">{subItem.title}</p>
                             </Link>
                           ))}
                         </div>
@@ -176,7 +229,10 @@ export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }:
                       {/* Featured Products */}
                       {displayProducts.length > 0 && (
                         <div>
-                          <h3 className="text-sm font-bold text-[#C8A55C] mb-3">Featured Products</h3>
+                          <h3 className="text-lg font-bold text-[#FFD700] mb-4 drop-shadow-lg flex items-center gap-2">
+                            <span className="text-2xl">⭐</span>
+                            Featured Products
+                          </h3>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {displayProducts.map((product: any) => {
                               const image = product.images?.edges?.[0]?.node || product.featuredImage
@@ -188,21 +244,23 @@ export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }:
                                   key={product.id}
                                   href={`/products/${product.handle}`}
                                   onClick={() => setActiveDropdown(null)}
-                                  className="group bg-white/5 hover:bg-white/10 rounded-lg p-3 transition-all border border-white/10"
+                                  className="group bg-white/20 hover:bg-white/30 rounded-lg p-4 transition-all border-2 border-[#FFD700]/50 hover:border-[#FFD700] backdrop-blur-sm hover:scale-105 shadow-lg"
                                 >
                                   {image?.url && (
-                                    <div className="aspect-square bg-white/10 rounded-lg overflow-hidden mb-2">
+                                    <div className="aspect-square bg-white rounded-lg overflow-hidden mb-3 shadow-md">
                                       <Image
                                         src={image.url || "/placeholder.svg"}
                                         alt={product.title}
                                         width={200}
                                         height={200}
-                                        className="object-cover w-full h-full group-hover:scale-105 transition-transform"
+                                        className="object-cover w-full h-full group-hover:scale-110 transition-transform"
                                       />
                                     </div>
                                   )}
-                                  <p className="text-xs font-semibold text-white line-clamp-2 mb-1">{product.title}</p>
-                                  <p className="text-sm font-bold text-[#C8A55C]">
+                                  <p className="text-xs font-bold text-white line-clamp-2 mb-2 drop-shadow-md">
+                                    {product.title}
+                                  </p>
+                                  <p className="text-sm font-bold text-[#FFD700] drop-shadow-md">
                                     ${Number.parseFloat(price).toFixed(2)}
                                   </p>
                                 </Link>
