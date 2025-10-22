@@ -3,7 +3,7 @@
 import type React from "react"
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
-import { ShoppingCart, MenuIcon, User, ChevronDown } from "lucide-react"
+import { ShoppingCart, MenuIcon, User } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
 import { useCart } from "@/components/cart/cart-context"
@@ -40,6 +40,7 @@ export function HeaderClient({
   const [drawerOpen, setDrawerOpen] = useState(false)
   const { cart } = useCart()
   const cartItemCount = cart?.lines?.edges ? cart.lines.edges.length : 0
+  const stickyContainerRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -51,7 +52,7 @@ export function HeaderClient({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
+      if (stickyContainerRef.current && !stickyContainerRef.current.contains(event.target as Node)) {
         setActiveDropdown(null)
       }
     }
@@ -73,9 +74,9 @@ export function HeaderClient({
 
   return (
     <>
-      <div className="animate-slide-down-header">
+      <div ref={stickyContainerRef} className="sticky top-0 z-[10000] bg-white">
         <PhoenixHomeTrialBar />
-        <header ref={headerRef} className="sticky top-0 z-[100] bg-white border-b border-gray-200 shadow-sm">
+        <header ref={headerRef} className="bg-white border-b border-gray-200 shadow-sm">
           <div className="container mx-auto px-4">
             {/* Main Header Row */}
             <div className="flex items-center justify-between h-16 gap-4 lg:gap-6">
@@ -151,7 +152,7 @@ export function HeaderClient({
             </div>
 
             {/* Desktop Menu Bar */}
-            <div className="hidden lg:block border-t border-gray-100 relative">
+            <div className="hidden lg:block border-t border-gray-100">
               <div className="flex items-center justify-center gap-1 py-2">
                 {menuItems.slice(0, 6).map((item) => {
                   const hasSubmenu = item.items && item.items.length > 0
@@ -162,17 +163,20 @@ export function HeaderClient({
                       {hasSubmenu ? (
                         <button
                           onClick={() => {
+                            console.log("[v0] 🖱️ Clicked menu:", item.title)
                             setActiveDropdown(isActive ? null : item.title)
                           }}
-                          className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-[#0B1C2C] hover:text-[#C8A55C] transition-colors rounded-md hover:bg-gray-50"
+                          className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-[#0B1C2C] hover:text-[#C8A55C] transition-colors rounded-md hover:bg-gray-50"
                         >
                           {item.title}
-                          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isActive ? "rotate-180" : ""}`} />
+                          <span
+                            className={`w-1 h-1 rounded-full bg-current transition-all duration-300 ${isActive ? "scale-150 opacity-100" : "scale-100 opacity-40"}`}
+                          />
                         </button>
                       ) : (
                         <Link
                           href={item.url}
-                          className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-[#0B1C2C] hover:text-[#C8A55C] transition-colors rounded-md hover:bg-gray-50"
+                          className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-[#0B1C2C] hover:text-[#C8A55C] transition-colors rounded-md hover:bg-gray-50"
                         >
                           {item.title}
                         </Link>
@@ -181,45 +185,53 @@ export function HeaderClient({
                   )
                 })}
               </div>
-
-              {activeDropdown && (
-                <div className="absolute left-0 right-0 top-full bg-white border-t border-gray-200 shadow-2xl z-[200] animate-in slide-in-from-top-4 duration-300">
-                  <div className="container mx-auto px-4 py-6">
-                    {(() => {
-                      const activeItem = menuItems.find((item) => item.title === activeDropdown)
-                      const isInfoOrAffiliate =
-                        activeDropdown.toLowerCase().includes("info") ||
-                        activeDropdown.toLowerCase().includes("help") ||
-                        activeDropdown.toLowerCase().includes("affiliate") ||
-                        activeDropdown.toLowerCase().includes("partner")
-
-                      if (isInfoOrAffiliate) {
-                        return (
-                          <InfoAffiliateMenu
-                            title={activeDropdown}
-                            menuItems={activeItem?.items || []}
-                            onLinkClick={() => setActiveDropdown(null)}
-                          />
-                        )
-                      }
-
-                      return (
-                        <MegaMenuWithCart
-                          title={activeDropdown}
-                          menuItems={activeItem?.items || []}
-                          featuredProducts={submenuProductsData?.[activeDropdown] || []}
-                          submenuProductsData={submenuProductsData}
-                          onLinkClick={() => setActiveDropdown(null)}
-                        />
-                      )
-                    })()}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </header>
       </div>
+
+      {activeDropdown && (
+        <div
+          className="fixed left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-[9999] animate-megamenu-slide-down"
+          style={{
+            top: stickyContainerRef.current ? `${stickyContainerRef.current.offsetHeight}px` : "180px",
+          }}
+        >
+          <div className="container mx-auto px-4 py-4 overflow-hidden max-h-[70vh]">
+            {(() => {
+              const activeItem = menuItems.find((item) => item.title === activeDropdown)
+              const isInfoOrAffiliate =
+                activeDropdown.toLowerCase().includes("info") ||
+                activeDropdown.toLowerCase().includes("help") ||
+                activeDropdown.toLowerCase().includes("affiliate") ||
+                activeDropdown.toLowerCase().includes("partner")
+
+              console.log("[v0] 📋 Rendering megamenu for:", activeDropdown)
+              console.log("[v0] 📦 Available products:", submenuProductsData?.[activeDropdown]?.length || 0)
+
+              if (isInfoOrAffiliate) {
+                return (
+                  <InfoAffiliateMenu
+                    title={activeDropdown}
+                    menuItems={activeItem?.items || []}
+                    onLinkClick={() => setActiveDropdown(null)}
+                  />
+                )
+              }
+
+              return (
+                <MegaMenuWithCart
+                  title={activeDropdown}
+                  menuItems={activeItem?.items || []}
+                  featuredProducts={submenuProductsData?.[activeDropdown] || []}
+                  submenuProductsData={submenuProductsData}
+                  onLinkClick={() => setActiveDropdown(null)}
+                />
+              )
+            })()}
+          </div>
+        </div>
+      )}
 
       <NavigationDrawer
         open={drawerOpen}

@@ -104,8 +104,7 @@ export function CartPageClient() {
       if (response.ok) {
         setAppliedDiscount(discountCode.trim().toUpperCase())
         setDiscountCode("")
-        // Refresh cart to show discount
-        window.location.reload()
+        window.location.href = window.location.href
       } else {
         setDiscountError(data.error || "Invalid discount code")
       }
@@ -131,7 +130,7 @@ export function CartPageClient() {
 
       if (response.ok) {
         setAppliedDiscount(null)
-        window.location.reload()
+        window.location.href = window.location.href
       }
     } catch (error) {
       console.error("[v0] Error removing discount:", error)

@@ -86,12 +86,12 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="bg-[#E63946] border-b border-white/10">
+        <div className="bg-gradient-to-b from-[#C8A55C] to-[#b8954c] border-b border-white/10">
           <div className="container mx-auto px-4 py-8">
             <div className="max-w-4xl mx-auto text-center">
               <h3 className="text-white font-bold text-xl mb-6">Trusted & Secure</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
+                <div className="bg-[#1F6FFF]/90 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
                   <Image
                     src="https://cdn.shopify.com/s/files/1/2133/9559/files/phoenix-flagpole-sticker-logo-final-2020-securi-lok-opt.png?v=1760562626"
                     alt="Phoenix Flagpole Securi-Lok Technology"
@@ -101,7 +101,7 @@ export function Footer() {
                     loading="lazy"
                   />
                 </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
+                <div className="bg-[#1F6FFF]/90 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
                   <Image
                     src="https://cdn.shopify.com/s/files/1/2133/9559/files/flagpole-made-in-the-usa.png?v=1687894210"
                     alt="Made in the USA - American Made Flagpoles"
@@ -111,7 +111,7 @@ export function Footer() {
                     loading="lazy"
                   />
                 </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
+                <div className="bg-[#1F6FFF]/90 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
                   <Image
                     src="https://cdn.shopify.com/s/files/1/2133/9559/files/365-day-satisfaction-guarantee-phoenix-flagpole-200px.png?v=1687894210"
                     alt="365-Day Satisfaction Guarantee"
@@ -121,7 +121,7 @@ export function Footer() {
                     loading="lazy"
                   />
                 </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
+                <div className="bg-[#1F6FFF]/90 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
                   <Image
                     src="https://cdn.shopify.com/s/files/1/2133/9559/files/911-limited-edition-phoenix-flagpole-flagpole-bundle-200px.png?v=1687894210"
                     alt="911 Limited Edition Phoenix Flagpole Bundle"
@@ -306,26 +306,28 @@ export function Footer() {
             </div>
 
             <div className="text-center space-y-3">
-              <div className="flex flex-wrap justify-center gap-4 text-xs text-white/80 mb-2">
-                <Link href="/privacy" className="hover:text-white transition-colors">
-                  Privacy Policy
-                </Link>
-                <Link href="/terms" className="hover:text-white transition-colors">
-                  Terms of Service
-                </Link>
-                <Link href="/cookie-policy" className="hover:text-white transition-colors">
-                  Cookie Policy
-                </Link>
-                <Link href="/cookie-settings" className="hover:text-white transition-colors">
-                  Cookie Settings
-                </Link>
-                <Link href="/sitemap" className="hover:text-white transition-colors">
-                  Sitemap
-                </Link>
+              <div className="bg-[#E63946] -mx-4 px-4 py-4 rounded-lg">
+                <div className="flex flex-wrap justify-center gap-4 text-xs text-white/90 mb-2">
+                  <Link href="/privacy" className="hover:text-white transition-colors font-medium">
+                    Privacy Policy
+                  </Link>
+                  <Link href="/terms" className="hover:text-white transition-colors font-medium">
+                    Terms of Service
+                  </Link>
+                  <Link href="/cookie-policy" className="hover:text-white transition-colors font-medium">
+                    Cookie Policy
+                  </Link>
+                  <Link href="/cookie-settings" className="hover:text-white transition-colors font-medium">
+                    Cookie Settings
+                  </Link>
+                  <Link href="/sitemap" className="hover:text-white transition-colors font-medium">
+                    Sitemap
+                  </Link>
+                </div>
+                <p className="text-xs text-white/90 font-medium">
+                  &copy; {new Date().getFullYear()} Atlantic Flagpole. All rights reserved.
+                </p>
               </div>
-              <p className="text-xs text-white/80">
-                &copy; {new Date().getFullYear()} Atlantic Flagpole. All rights reserved.
-              </p>
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { getJudgemeStats, getJudgemeReviews } from "@/lib/judgeme"
-import { generateOrganizationSchema } from "@/lib/seo/structured-data"
+import { generateOrganizationSchema, generateWebSiteSchema } from "@/lib/seo/structured-data"
 import { generateHomeMetadata } from "@/lib/seo/metadata"
 import type { Metadata } from "next"
 import { HomePageClient } from "./home-page-client"
@@ -24,6 +24,14 @@ export default async function Home() {
   }
 
   const organizationSchema = generateOrganizationSchema()
+  const websiteSchema = generateWebSiteSchema()
 
-  return <HomePageClient judgemeStats={judgemeStats} reviews={reviews} organizationSchema={organizationSchema} />
+  return (
+    <HomePageClient
+      judgemeStats={judgemeStats}
+      reviews={reviews}
+      organizationSchema={organizationSchema}
+      websiteSchema={websiteSchema}
+    />
+  )
 }

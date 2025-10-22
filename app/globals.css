@@ -298,8 +298,8 @@
     }
   }
 
-  /* Enhanced fade-in animations for smoother page loading */
-  @keyframes fade-in-page {
+  /* Replacing complex slide animations with simple fade-in */
+  @keyframes simple-fade-in {
     0% {
       opacity: 0;
     }
@@ -308,41 +308,12 @@
     }
   }
 
-  .animate-fade-in-page {
-    animation: fade-in-page 0.5s ease-out;
+  .animate-simple-fade-in {
+    animation: simple-fade-in 0.6s ease-out both;
   }
 
-  /* Adding coordinated slide-down animation for header */
-  @keyframes slide-down-header {
-    0% {
-      opacity: 0;
-      transform: translateY(-100%);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-slide-down-header {
-    animation: slide-down-header 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  /* Adding coordinated slide-up animation for hero */
-  @keyframes slide-up-hero {
-    0% {
-      opacity: 0;
-      transform: translateY(40px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-slide-up-hero {
-    animation: slide-up-hero 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
-  }
+  /* Removing slide-down-header and slide-up-hero animations */
+  /* Keeping only the simple fade-in for header and hero */
 
   @keyframes fade-in {
     0% {
@@ -372,6 +343,38 @@
 
   .animate-fade-in-up {
     animation: fade-in-up 1s ease-out 0.4s both;
+  }
+
+  /* Adding smooth megamenu slide-down animation */
+  @keyframes megamenu-slide-down {
+    0% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-megamenu-slide-down {
+    animation: megamenu-slide-down 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Adding staggered fade-in for megamenu products */
+  @keyframes product-fade-in {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-product-fade-in {
+    animation: product-fade-in 0.5s ease-out both;
   }
 
   /* Adding slide-up animation for location banner */

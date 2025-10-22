@@ -43,7 +43,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
 
   return (
     <>
-      <section className="relative w-full min-h-[500px] md:min-h-[550px] lg:min-h-[650px] overflow-hidden animate-slide-up-hero">
+      <section className="relative w-full min-h-[500px] md:min-h-[550px] lg:min-h-[650px] overflow-hidden animate-simple-fade-in">
         <Image
           src="/images/design-mode/AtlanticFlagPoleHero.jpg"
           alt="Beautiful home with American flag on premium flagpole"
@@ -62,7 +62,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           }}
         />
 
-        <div className="relative z-10 flex items-center min-h-[500px] md:min-h-[550px] lg:min-h-[650px] px-4 md:px-12 lg:px-16 py-8 md:py-10">
+        <div className="relative flex items-center min-h-[500px] md:min-h-[550px] lg:min-h-[650px] px-4 md:px-12 lg:px-16 py-8 md:py-10">
           <div className="max-w-[480px] w-full">
             <div className="inline-block bg-white text-[#0B1C2C] px-3 py-1.5 mb-3 font-bold text-[10px] md:text-xs tracking-widest uppercase shadow-md">
               FALL INTO SAVINGS
@@ -153,7 +153,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           </div>
         </div>
 
-        <div className="hidden md:block absolute top-8 left-1/2 -translate-x-1/2 text-center z-20">
+        <div className="hidden md:block absolute top-8 left-1/2 -translate-x-1/2 text-center">
           <div className="inline-block bg-[#0B1C2C]/85 backdrop-blur-sm px-5 py-1.5 rounded-full mb-3 border-2 border-[#C8A55C]/40">
             <p className="text-white text-base font-bold tracking-wide">America's #1 Hybrid Luxury Flagpole</p>
           </div>
@@ -197,7 +197,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           </div>
         </div>
 
-        <div className="absolute bottom-3 left-4 md:bottom-4 md:left-6 z-20">
+        <div className="absolute bottom-3 left-4 md:bottom-4 md:left-6">
           <p className="text-white text-sm md:text-base font-serif drop-shadow-lg">Prices Starting From $299</p>
         </div>
       </section>
@@ -250,16 +250,16 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           animation: marquee 30s linear infinite;
         }
 
-        @keyframes slideUpHero {
+        @keyframes simpleFadeIn {
           from {
-            transform: translateY(100%);
+            opacity: 0;
           }
           to {
-            transform: translateY(0);
+            opacity: 1;
           }
         }
-        .animate-slide-up-hero {
-          animation: slideUpHero 1s ease-in-out;
+        .animate-simple-fade-in {
+          animation: simpleFadeIn 1s ease-in-out;
         }
       `}</style>
     </>

@@ -267,7 +267,7 @@ export function MegaMenuWithCart({
       <div className="col-span-9">
         {hoveredProduct ? (
           // Single Product View (when hovering over a submenu item with products)
-          <div className="animate-in fade-in duration-300">
+          <div className="animate-product-fade-in">
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Featured Product</h4>
             </div>
@@ -322,8 +322,8 @@ export function MegaMenuWithCart({
             </div>
 
             {displayProducts && displayProducts.length > 0 ? (
-              <div className="grid grid-cols-4 gap-4">
-                {displayProducts.slice(0, 8).map((product) => {
+              <div className="grid grid-cols-4 gap-4 grid-rows-2">
+                {displayProducts.slice(0, 8).map((product, index) => {
                   const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
                   const rating = getProductRating(product.id)
 
@@ -332,9 +332,10 @@ export function MegaMenuWithCart({
                       key={product.id}
                       href={`/products/${product.handle}`}
                       onClick={onLinkClick}
-                      className="group block"
+                      className="group block animate-product-fade-in"
+                      style={{ animationDelay: `${index * 0.05}s` }}
                     >
-                      <div className="relative aspect-square bg-gray-50 rounded-lg overflow-hidden mb-3 shadow-sm group-hover:shadow-md transition-shadow">
+                      <div className="relative aspect-square bg-gray-50 rounded-lg overflow-hidden mb-2 shadow-sm group-hover:shadow-md transition-shadow">
                         {product.featuredImage ? (
                           <Image
                             src={product.featuredImage.url || "/placeholder.svg"}
@@ -350,17 +351,17 @@ export function MegaMenuWithCart({
                         )}
                       </div>
 
-                      <h5 className="text-sm font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-2 leading-snug min-h-[3rem]">
+                      <h5 className="text-xs font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-1.5 leading-tight min-h-[2.25rem]">
                         {product.title}
                       </h5>
 
-                      <div className="mb-2">
+                      <div className="mb-1.5">
                         <StarRating rating={rating} size="sm" />
                       </div>
 
-                      <p className="text-base font-bold text-[#C8A55C] mb-3">${price.toFixed(2)}</p>
+                      <p className="text-sm font-bold text-[#C8A55C] mb-2">${price.toFixed(2)}</p>
 
-                      <div className="h-9">
+                      <div className="h-8">
                         <QuickAddButton product={product} />
                       </div>
                     </Link>
