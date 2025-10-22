@@ -29,27 +29,22 @@ interface HeaderProps {
 
 export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }: HeaderProps) {
   const { cart } = useCart()
-  const [mounted, setMounted] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const headerRef = useRef<HTMLDivElement>(null)
+  const promoBarRef = useRef<HTMLDivElement>(null)
 
   const itemCount = cart?.lines?.edges?.reduce((total, edge) => total + edge.node.quantity, 0) || 0
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  useEffect(() => {
-    if (!mounted) return
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)
     }
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [mounted])
+  }, [])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -63,16 +58,24 @@ export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }:
 
   const menuItems = menuData?.items || []
 
+  const getMegamenuTopPosition = () => {
+    if (typeof window === "undefined") return "64px"
+    const promoBarHeight = isScrolled ? 0 : promoBarRef.current?.offsetHeight || 0
+    const headerHeight = 64 // Fixed header height
+    return `${promoBarHeight + headerHeight}px`
+  }
+
   return (
     <>
       <div ref={headerRef} className="relative z-[100]">
         <div
+          ref={promoBarRef}
           className={cn(
-            "bg-gradient-to-r from-[#E63946] via-[#d32f3c] to-[#E63946] text-white text-center py-2 px-4 transition-all duration-300",
-            mounted && isScrolled ? "h-0 opacity-0 overflow-hidden" : "h-auto opacity-100",
+            "bg-gradient-to-r from-[#E63946] via-[#d32f3c] to-[#E63946] text-white text-center py-2 px-2 transition-all duration-300",
+            isScrolled ? "h-0 opacity-0 overflow-hidden" : "h-auto opacity-100",
           )}
         >
-          <p className="text-sm font-semibold whitespace-nowrap">
+          <p className="text-xs sm:text-sm font-semibold">
             🎉 Fall Into Savings: Up To 60% Off Flagpoles + $599 Of Accessories Included! 🎉
           </p>
         </div>
@@ -90,14 +93,14 @@ export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }:
                   className="h-10 w-auto"
                   style={{
                     filter: `
-                      drop-shadow(1px 0 0 white)
-                      drop-shadow(-1px 0 0 white)
-                      drop-shadow(0 1px 0 white)
-                      drop-shadow(0 -1px 0 white)
-                      drop-shadow(1px 1px 0 white)
-                      drop-shadow(-1px -1px 0 white)
-                      drop-shadow(1px -1px 0 white)
-                      drop-shadow(-1px 1px 0 white)
+                      drop-shadow(0.5px 0 0 white)
+                      drop-shadow(-0.5px 0 0 white)
+                      drop-shadow(0 0.5px 0 white)
+                      drop-shadow(0 -0.5px 0 white)
+                      drop-shadow(0.5px 0.5px 0 white)
+                      drop-shadow(-0.5px -0.5px 0 white)
+                      drop-shadow(0.5px -0.5px 0 white)
+                      drop-shadow(-0.5px 0.5px 0 white)
                     `,
                   }}
                   priority
@@ -118,19 +121,19 @@ export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }:
                             setActiveDropdown(isActive ? null : item.id)
                           }}
                           className={cn(
-                            "px-3 py-1.5 text-sm font-bold rounded-lg transition-all flex items-center gap-1 shadow-md",
+                            "px-2 py-1 text-sm font-bold rounded-lg transition-all flex items-center gap-0.5 shadow-md",
                             isActive
                               ? "bg-[#FFD700] text-[#0B1C2C] scale-105"
                               : "hover:bg-white/20 text-white hover:scale-105",
                           )}
                         >
                           {item.title}
-                          <ChevronDown className={cn("w-4 h-4 transition-transform", isActive && "rotate-180")} />
+                          <ChevronDown className={cn("w-3 h-3 transition-transform", isActive && "rotate-180")} />
                         </button>
                       ) : (
                         <Link
                           href={item.url}
-                          className="px-3 py-1.5 text-sm font-bold rounded-lg hover:bg-white/20 transition-all text-white hover:scale-105 shadow-md"
+                          className="px-2 py-1 text-sm font-bold rounded-lg hover:bg-white/20 transition-all text-white hover:scale-105 shadow-md"
                         >
                           {item.title}
                         </Link>
@@ -234,7 +237,10 @@ export function StickyHeaderNew({ menuData, submenuProductsData, judgemeBadge }:
       </div>
 
       {activeDropdown && (
-        <div className="fixed left-0 right-0 top-[64px] bg-gradient-to-br from-[#0B1C2C] via-[#1a2f42] to-[#0B1C2C] border-t-2 border-[#FFD700] shadow-2xl z-[99] animate-megamenu-slide-down">
+        <div
+          className="fixed left-0 right-0 bg-gradient-to-br from-[#0B1C2C] via-[#1a2f42] to-[#0B1C2C] border-t-2 border-[#FFD700] shadow-2xl z-[9999] animate-megamenu-slide-down"
+          style={{ top: getMegamenuTopPosition() }}
+        >
           <div className="absolute inset-0 bg-[#0B1C2C]/80 pointer-events-none" />
 
           <div className="absolute inset-0 pointer-events-none opacity-20">
