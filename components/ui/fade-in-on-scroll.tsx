@@ -19,8 +19,22 @@ export function FadeInOnScroll({ children, className = "", delay = 0, threshold 
   }, [])
 
   useEffect(() => {
-    if (!mounted) return
+    if (!mounted || !ref.current) return
 
+    const checkIfInView = () => {
+      if (!ref.current) return false
+      const rect = ref.current.getBoundingClientRect()
+      const windowHeight = window.innerHeight || document.documentElement.clientHeight
+      return rect.top <= windowHeight * (1 - threshold)
+    }
+
+    // If already in viewport, show immediately
+    if (checkIfInView()) {
+      setTimeout(() => setIsVisible(true), delay)
+      return
+    }
+
+    // Otherwise, set up intersection observer
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -31,9 +45,7 @@ export function FadeInOnScroll({ children, className = "", delay = 0, threshold 
       { threshold },
     )
 
-    if (ref.current) {
-      observer.observe(ref.current)
-    }
+    observer.observe(ref.current)
 
     return () => observer.disconnect()
   }, [delay, threshold, mounted])
