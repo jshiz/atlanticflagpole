@@ -97,29 +97,29 @@ export function HeaderClient({
     <>
       <header className="sticky top-0 z-[100] bg-white border-b border-gray-200 shadow-sm">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-11 gap-2">
-            <div className="flex items-center gap-1.5 flex-shrink-0">
+          <div className="flex items-center justify-between h-14 gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <button
                 className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors p-1"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label="Toggle menu"
               >
-                {mobileMenuOpen ? <X className="w-4 h-4" /> : <MenuIcon className="w-4 h-4" />}
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <MenuIcon className="w-5 h-5" />}
               </button>
 
-              <Link href="/" className="flex items-center gap-1.5 group">
+              <Link href="/" className="flex items-center gap-2 group">
                 <Image
                   src="/images/favicon.png"
                   alt="Atlantic Flagpole Logo"
-                  width={24}
-                  height={24}
-                  className="w-6 h-6 group-hover:scale-105 transition-transform duration-300"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="hidden lg:block">
-                  <span className="text-sm font-serif font-bold text-[#0B1C2C] tracking-tight block leading-none whitespace-nowrap">
+                  <span className="text-base font-serif font-bold text-[#0B1C2C] tracking-tight block leading-none whitespace-nowrap">
                     ATLANTIC
                   </span>
-                  <span className="text-[9px] font-serif font-medium text-[#C8A55C] tracking-widest block leading-none whitespace-nowrap">
+                  <span className="text-[10px] font-serif font-medium text-[#C8A55C] tracking-widest block leading-none whitespace-nowrap">
                     FLAGPOLE
                   </span>
                 </div>
@@ -138,7 +138,7 @@ export function HeaderClient({
                 className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors group p-1"
                 aria-label="Shopping cart"
               >
-                <ShoppingCart className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
+                <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
                 {cartItemCount > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 bg-[#C8A55C] text-white text-xs font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center text-[9px]">
                     {cartItemCount}
@@ -153,7 +153,7 @@ export function HeaderClient({
           {!mobileMenuOpen && (
             <div className="hidden lg:block border-t border-gray-100" ref={menuRef}>
               <div className="relative">
-                <nav className="flex items-center justify-center gap-4 py-1">
+                <nav className="flex items-center justify-center gap-4 py-1.5">
                   {menuItems.map((item) => {
                     const hasSubmenu = item.items && item.items.length > 0
                     const isChristmas = isChristmasTreeMenuItem(item.title)
@@ -163,7 +163,7 @@ export function HeaderClient({
                         <Link
                           key={item.id}
                           href={item.url}
-                          className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors duration-300 font-semibold text-xs tracking-wide group"
+                          className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors duration-300 font-semibold text-sm tracking-wide group"
                         >
                           {item.title}
                           <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#C8A55C] group-hover:w-full transition-all duration-300" />
@@ -175,7 +175,7 @@ export function HeaderClient({
                       <div key={item.id} className="relative">
                         <button
                           onClick={() => setActiveDropdown(activeDropdown === item.id ? null : item.id)}
-                          className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors duration-300 font-semibold text-xs tracking-wide group py-1 relative"
+                          className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors duration-300 font-semibold text-sm tracking-wide group py-1 relative"
                         >
                           {isChristmas && (
                             <span className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
