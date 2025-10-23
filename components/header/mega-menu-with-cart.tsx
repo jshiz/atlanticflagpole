@@ -45,7 +45,6 @@ interface MegaMenuWithCartProps {
   title: string
   menuItems: MenuItem[]
   featuredProducts?: Product[]
-  submenuProductsData?: Record<string, any[]>
   onLinkClick?: () => void
 }
 
@@ -124,18 +123,18 @@ function QuickAddButton({ product }: { product: Product }) {
       onClick={handleQuickAdd}
       disabled={loading || added}
       className={cn(
-        "w-full text-sm font-medium transition-all duration-300 h-9",
+        "w-full text-xs transition-all duration-300 h-9",
         added ? "bg-green-600 hover:bg-green-700" : "bg-[#C8A55C] hover:bg-[#a88947] text-white",
       )}
     >
       {added ? (
         <>
-          <Check className="w-4 h-4 mr-1.5" />
+          <Check className="w-3 h-3 mr-1" />
           Added!
         </>
       ) : (
         <>
-          <ShoppingCart className="w-4 h-4 mr-1.5" />
+          <ShoppingCart className="w-3 h-3 mr-1" />
           Quick Add
         </>
       )}
@@ -143,78 +142,21 @@ function QuickAddButton({ product }: { product: Product }) {
   )
 }
 
-export function MegaMenuWithCart({
-  title,
-  menuItems,
-  featuredProducts = [],
-  submenuProductsData = {},
-  onLinkClick,
-}: MegaMenuWithCartProps) {
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null)
+export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLinkClick }: MegaMenuWithCartProps) {
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [displayProducts, setDisplayProducts] = useState<Product[]>([])
-  const [hoveredProduct, setHoveredProduct] = useState<Product | null>(null)
-  const [productsToShow, setProductsToShow] = useState(8)
-
-  useEffect(() => {
-    const updateProductCount = () => {
-      const width = window.innerWidth
-      if (width < 1024) {
-        setProductsToShow(4) // Mobile: 2x2 grid
-      } else if (width < 1280) {
-        setProductsToShow(6) // Tablet: 3x2 grid
-      } else {
-        setProductsToShow(8) // Desktop: 4x2 grid
-      }
-    }
-
-    updateProductCount()
-    window.addEventListener("resize", updateProductCount)
-    return () => window.removeEventListener("resize", updateProductCount)
-  }, [])
 
   useEffect(() => {
     const activeProducts = featuredProducts.filter((p) => {
-      const hasVariants = p.variants?.edges && p.variants.edges.length > 0
-      if (!hasVariants) return false
-
-      const firstVariant = p.variants.edges[0]?.node
-      if (firstVariant && firstVariant.availableForSale === false) return false
-
-      return true
+      const hasVariant = p.variants?.edges?.[0]?.node
+      const isAvailable = hasVariant?.availableForSale
+      return hasVariant && isAvailable
     })
 
-    const sortedByPrice = [...activeProducts].sort((a, b) => {
-      const priceA = Number.parseFloat(a.priceRange.minVariantPrice.amount)
-      const priceB = Number.parseFloat(b.priceRange.minVariantPrice.amount)
-      return priceB - priceA
-    })
-
-    const highPriced = sortedByPrice.slice(0, Math.ceil(productsToShow / 2))
-    const remaining = sortedByPrice.slice(Math.ceil(productsToShow / 2))
-    const shuffledRemaining = shuffleArray(remaining)
-    const mixed = [...highPriced, ...shuffledRemaining].slice(0, productsToShow)
-
-    setDisplayProducts(mixed)
-  }, [featuredProducts, title, productsToShow])
-
-  useEffect(() => {
-    if (hoveredItem && submenuProductsData[hoveredItem]) {
-      const products = submenuProductsData[hoveredItem]
-      if (products && products.length > 0) {
-        const availableProducts = products.filter((p) => p.variants?.edges?.[0]?.node?.availableForSale)
-        if (availableProducts.length > 0) {
-          const sortedByPrice = [...availableProducts].sort((a, b) => {
-            const priceA = Number.parseFloat(a.priceRange.minVariantPrice.amount)
-            const priceB = Number.parseFloat(b.priceRange.minVariantPrice.amount)
-            return priceB - priceA
-          })
-          setHoveredProduct(sortedByPrice[0])
-        }
-      }
-    } else {
-      setHoveredProduct(null)
-    }
-  }, [hoveredItem, submenuProductsData])
+    const shuffled = shuffleArray(activeProducts)
+    setDisplayProducts(shuffled)
+    console.log(`[v0] 🔄 Shuffled ${shuffled.length} active products for "${title}" menu`)
+  }, [featuredProducts, title])
 
   const getProductRating = (productId: string): number => {
     const hash = productId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
@@ -222,49 +164,33 @@ export function MegaMenuWithCart({
   }
 
   return (
-    <div className="grid grid-cols-12 gap-6 max-w-7xl mx-auto">
+    <div className="grid grid-cols-12 gap-3 max-w-7xl mx-auto">
       {/* Left Sidebar - Categories */}
-      <div className="col-span-12 lg:col-span-3 border-r border-gray-100 pr-6">
+      <div className="col-span-2 border-r border-gray-100 pr-3">
         <div className="sticky top-2">
-          <h3 className="text-base font-serif font-bold text-[#0B1C2C] mb-3 pb-2 border-b border-[#C8A55C]">{title}</h3>
-          <ul className="space-y-1">
+          <h3 className="text-sm font-serif font-bold text-[#0B1C2C] mb-2 pb-1.5 border-b border-[#C8A55C]">{title}</h3>
+          <ul className="space-y-0.5">
             {menuItems.map((item) => (
               <li key={item.id} className="relative">
                 <Link
                   href={item.url}
                   onClick={onLinkClick}
-                  onMouseEnter={() => setHoveredItem(item.title)}
-                  onMouseLeave={() => setHoveredItem(null)}
-                  className={cn(
-                    "group flex items-center justify-between transition-all text-sm py-2 px-3 rounded-md",
-                    hoveredItem === item.title
-                      ? "bg-[#C8A55C] text-white"
-                      : "text-[#0B1C2C] hover:text-[#C8A55C] hover:bg-[#F5F3EF]",
-                  )}
+                  onMouseEnter={() => setHoveredCategory(item.id)}
+                  onMouseLeave={() => setHoveredCategory(null)}
+                  className="group flex items-center justify-between text-[#0B1C2C] hover:text-[#C8A55C] transition-colors text-xs py-1 px-2 rounded hover:bg-[#F5F3EF]"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform font-medium break-words line-clamp-2">
-                    {item.title}
-                  </span>
-                  {item.items && item.items.length > 0 && (
-                    <span
-                      className={cn(
-                        "text-xs ml-2 flex-shrink-0",
-                        hoveredItem === item.title ? "text-white" : "text-gray-400",
-                      )}
-                    >
-                      →
-                    </span>
-                  )}
+                  <span className="group-hover:translate-x-0.5 transition-transform">{item.title}</span>
+                  {item.items && item.items.length > 0 && <span className="text-[10px] text-gray-400">→</span>}
                 </Link>
 
-                {hoveredItem === item.title && item.items && item.items.length > 0 && (
-                  <ul className="ml-4 mt-1 space-y-1 animate-in slide-in-from-left duration-200">
+                {hoveredCategory === item.id && item.items && item.items.length > 0 && (
+                  <ul className="ml-3 mt-0.5 space-y-0.5 animate-in slide-in-from-left duration-200">
                     {item.items.slice(0, 8).map((subItem) => (
                       <li key={subItem.id}>
                         <Link
                           href={subItem.url}
                           onClick={onLinkClick}
-                          className="text-xs text-gray-600 hover:text-[#C8A55C] transition-colors block py-1 px-3 rounded hover:bg-[#F5F3EF] break-words line-clamp-2"
+                          className="text-[10px] text-gray-600 hover:text-[#C8A55C] transition-colors block py-0.5 px-2 rounded hover:bg-[#F5F3EF]"
                         >
                           {subItem.title}
                         </Link>
@@ -278,123 +204,71 @@ export function MegaMenuWithCart({
           <Link
             href={`/collections/${title.toLowerCase().replace(/\s+/g, "-")}`}
             onClick={onLinkClick}
-            className="inline-flex items-center gap-1 mt-4 text-[#C8A55C] hover:text-[#a88947] font-semibold text-sm group"
+            className="inline-flex items-center gap-1 mt-2 text-[#C8A55C] hover:text-[#a88947] font-semibold text-[10px] group"
           >
-            View All {title}
-            <span className="group-hover:translate-x-1 transition-transform">→</span>
+            View All
+            <span className="group-hover:translate-x-0.5 transition-transform">→</span>
           </Link>
         </div>
       </div>
 
-      <div className="col-span-12 lg:col-span-9">
-        {hoveredProduct ? (
-          <div className="animate-product-fade-in">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Featured Product</h4>
-            </div>
-            <div className="grid grid-cols-2 gap-8 bg-gradient-to-br from-gray-50 to-white p-8 rounded-lg border border-gray-200">
-              {/* Product Image */}
-              <div className="relative aspect-square bg-white rounded-lg overflow-hidden shadow-lg">
-                {hoveredProduct.featuredImage ? (
-                  <Image
-                    src={hoveredProduct.featuredImage.url || "/placeholder.svg"}
-                    alt={hoveredProduct.featuredImage.altText || hoveredProduct.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-300">
-                    <span className="text-6xl">🏴</span>
+      {/* Right Side - Condensed Products Grid */}
+      <div className="col-span-10">
+        <div className="flex items-center justify-between mb-2">
+          <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Featured Products</h4>
+          <span className="text-[10px] text-gray-500">{displayProducts.length} products</span>
+        </div>
+
+        {displayProducts && displayProducts.length > 0 ? (
+          <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+            {displayProducts.slice(0, 16).map((product) => {
+              const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
+              const rating = getProductRating(product.id)
+
+              return (
+                <Link
+                  key={product.id}
+                  href={`/products/${product.handle}`}
+                  onClick={onLinkClick}
+                  className="group block"
+                >
+                  <div className="relative aspect-square bg-gray-50 rounded overflow-hidden mb-1 shadow-sm group-hover:shadow-md transition-shadow">
+                    {product.featuredImage ? (
+                      <Image
+                        src={product.featuredImage.url || "/placeholder.svg"}
+                        alt={product.featuredImage.altText || product.title}
+                        fill
+                        sizes="(max-width: 640px) 25vw, (max-width: 768px) 20vw, (max-width: 1024px) 16vw, 12vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-300">
+                        <span className="text-xl">🏴</span>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              {/* Product Details */}
-              <div className="flex flex-col justify-center">
-                <h3 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-3">{hoveredProduct.title}</h3>
+                  <h5 className="text-[9px] font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-0.5 leading-tight">
+                    {product.title}
+                  </h5>
 
-                <div className="mb-4">
-                  <StarRating rating={getProductRating(hoveredProduct.id)} size="md" />
-                </div>
+                  <div className="mb-0.5">
+                    <StarRating rating={rating} size="sm" />
+                  </div>
 
-                <p className="text-3xl font-bold text-[#C8A55C] mb-6">
-                  ${Number.parseFloat(hoveredProduct.priceRange.minVariantPrice.amount).toFixed(2)}
-                </p>
+                  <p className="text-[10px] font-bold text-[#C8A55C] mb-1">${price.toFixed(2)}</p>
 
-                <div className="space-y-3">
-                  <QuickAddButton product={hoveredProduct} />
-                  <Link
-                    href={`/products/${hoveredProduct.handle}`}
-                    onClick={onLinkClick}
-                    className="block w-full text-center px-6 py-3 border-2 border-[#C8A55C] text-[#C8A55C] hover:bg-[#C8A55C] hover:text-white transition-colors rounded-md font-semibold"
-                  >
-                    View Details
-                  </Link>
-                </div>
-              </div>
-            </div>
+                  <div className="h-9">
+                    <QuickAddButton product={product} />
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         ) : (
-          <>
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Featured Products</h4>
-              <span className="text-xs text-gray-500">{displayProducts.length} products</span>
-            </div>
-
-            {displayProducts && displayProducts.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-fr">
-                {displayProducts.slice(0, productsToShow).map((product, index) => {
-                  const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
-                  const rating = getProductRating(product.id)
-
-                  return (
-                    <Link
-                      key={product.id}
-                      href={`/products/${product.handle}`}
-                      onClick={onLinkClick}
-                      className="group block animate-product-fade-in"
-                      style={{ animationDelay: `${index * 0.05}s` }}
-                    >
-                      <div className="relative aspect-square bg-gray-50 rounded-lg overflow-hidden mb-2 shadow-sm group-hover:shadow-md transition-shadow">
-                        {product.featuredImage ? (
-                          <Image
-                            src={product.featuredImage.url || "/placeholder.svg"}
-                            alt={product.featuredImage.altText || product.title}
-                            fill
-                            sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-300">
-                            <span className="text-4xl">🏴</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <h5 className="text-xs font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-1.5 leading-tight min-h-[2.25rem] break-words">
-                        {product.title}
-                      </h5>
-
-                      <div className="mb-1.5">
-                        <StarRating rating={rating} size="sm" />
-                      </div>
-
-                      <p className="text-sm font-bold text-[#C8A55C] mb-2">${price.toFixed(2)}</p>
-
-                      <div className="h-8">
-                        <QuickAddButton product={product} />
-                      </div>
-                    </Link>
-                  )
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-12 text-gray-400">
-                <p className="text-sm">No products available</p>
-              </div>
-            )}
-          </>
+          <div className="text-center py-6 text-gray-400">
+            <p className="text-xs">No products available</p>
+          </div>
         )}
       </div>
     </div>

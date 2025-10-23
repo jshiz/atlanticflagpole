@@ -1,14 +1,14 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
-import type { ShopifyCart, ProductVariant, Product } from "@/lib/shopify/types"
+import type { ShopifyCart } from "@/lib/shopify/types"
 import { createCart, addCartLines, updateCartLines, removeCartLines, getCart } from "@/lib/shopify"
 import { toast } from "@/hooks/use-toast"
 
 interface CartContextType {
   cart: ShopifyCart | null
   loading: boolean
-  addToCart: (variant: ProductVariant, product: Product) => Promise<void>
+  addToCart: (variantId: string, quantity?: number) => Promise<void>
   updateCartLine: (lineId: string, quantity: number) => Promise<void>
   removeFromCart: (lineId: string) => Promise<void>
   clearCart: () => void
@@ -43,7 +43,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const addToCart = useCallback(
-    async (variant: ProductVariant, product: Product) => {
+    async (variantId: string, quantity = 1) => {
       if (loading) {
         console.log("[v0] Add to cart already in progress")
         return
@@ -60,8 +60,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         const updatedCart = await addCartLines(currentCart.id, [
           {
-            merchandiseId: variant.id,
-            quantity: 1,
+            merchandiseId: variantId,
+            quantity,
           },
         ])
 
@@ -70,7 +70,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         toast({
           title: "Added to cart!",
-          description: `${product.title} added to your cart`,
+          description: `${quantity} item${quantity > 1 ? "s" : ""} added to your cart`,
         })
       } catch (error) {
         console.error("[v0] Error adding to cart:", error)

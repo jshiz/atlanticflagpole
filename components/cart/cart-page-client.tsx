@@ -104,7 +104,8 @@ export function CartPageClient() {
       if (response.ok) {
         setAppliedDiscount(discountCode.trim().toUpperCase())
         setDiscountCode("")
-        window.location.href = window.location.href
+        // Refresh cart to show discount
+        window.location.reload()
       } else {
         setDiscountError(data.error || "Invalid discount code")
       }
@@ -130,7 +131,7 @@ export function CartPageClient() {
 
       if (response.ok) {
         setAppliedDiscount(null)
-        window.location.href = window.location.href
+        window.location.reload()
       }
     } catch (error) {
       console.error("[v0] Error removing discount:", error)
@@ -177,13 +178,11 @@ export function CartPageClient() {
       try {
         setLoadingProducts(true)
 
-        const productsRes = await fetch("/api/products?first=50")
+        const [productsRes] = await Promise.all([fetch("/api/products?first=50")])
 
         if (!productsRes.ok) {
-          console.error("[v0] Cart - products API returned", productsRes.status)
-          return
+          throw new Error(`Failed to fetch products: ${productsRes.status}`)
         }
-
         const productsData = await productsRes.json()
         console.log("[v0] Cart - fetched products for upsells:", productsData)
 

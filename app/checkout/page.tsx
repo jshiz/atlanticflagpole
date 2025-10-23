@@ -38,32 +38,10 @@ export default function CheckoutPage() {
   const [zip, setZip] = useState("")
   const [phone, setPhone] = useState("")
 
-  const [saveAddress, setSaveAddress] = useState(false)
-
   const lines = cart?.lines?.edges ? cart.lines.edges.map((edge) => edge.node) : []
   const isEmpty = lines.length === 0
   const subtotal = cart?.cost?.subtotalAmount ? Number.parseFloat(cart.cost.subtotalAmount.amount) : 0
   const total = cart?.cost?.totalAmount ? Number.parseFloat(cart.cost.totalAmount.amount) : 0
-
-  useEffect(() => {
-    const savedAddress = localStorage.getItem("atlanticFlagpole_savedAddress")
-    if (savedAddress) {
-      try {
-        const parsed = JSON.parse(savedAddress)
-        setFirstName(parsed.firstName || "")
-        setLastName(parsed.lastName || "")
-        setAddress1(parsed.address1 || "")
-        setAddress2(parsed.address2 || "")
-        setCity(parsed.city || "")
-        setState(parsed.state || "")
-        setZip(parsed.zip || "")
-        setPhone(parsed.phone || "")
-        setSaveAddress(true)
-      } catch (error) {
-        console.error("Failed to load saved address:", error)
-      }
-    }
-  }, [])
 
   useEffect(() => {
     if (isEmpty && !loading) {
@@ -85,24 +63,6 @@ export default function CheckoutPage() {
 
   const handleShippingSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    if (saveAddress) {
-      const addressData = {
-        firstName,
-        lastName,
-        address1,
-        address2,
-        city,
-        state,
-        zip,
-        phone,
-      }
-      localStorage.setItem("atlanticFlagpole_savedAddress", JSON.stringify(addressData))
-    } else {
-      // Remove saved address if checkbox is unchecked
-      localStorage.removeItem("atlanticFlagpole_savedAddress")
-    }
-
     setCurrentStep("payment")
   }
 
@@ -374,19 +334,6 @@ export default function CheckoutPage() {
                       placeholder="(555) 123-4567"
                       className="mt-1"
                     />
-                  </div>
-
-                  <div className="flex items-center space-x-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <input
-                      type="checkbox"
-                      id="saveAddress"
-                      checked={saveAddress}
-                      onChange={(e) => setSaveAddress(e.target.checked)}
-                      className="w-4 h-4 text-[#C8A55C] border-gray-300 rounded focus:ring-[#C8A55C]"
-                    />
-                    <Label htmlFor="saveAddress" className="cursor-pointer text-sm">
-                      Save this address for future orders
-                    </Label>
                   </div>
 
                   <div className="flex gap-4">

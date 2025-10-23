@@ -210,44 +210,18 @@
     color: var(--afp-navy);
   }
 
-  /* Improved marquee animations for smooth continuous scrolling without glitches */
+  /* Adding marquee animation keyframes */
   @keyframes marquee {
     0% {
       transform: translateX(0);
     }
     100% {
-      transform: translateX(-33.333%);
-    }
-  }
-
-  @keyframes marquee-reviews {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-33.333%);
-    }
-  }
-
-  @keyframes marquee-trust {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-33.333%);
+      transform: translateX(-50%);
     }
   }
 
   .animate-marquee {
-    animation: marquee 40s linear infinite;
-  }
-
-  .animate-marquee-reviews {
-    animation: marquee-reviews 60s linear infinite;
-  }
-
-  .animate-marquee-trust {
-    animation: marquee-trust 30s linear infinite;
+    animation: marquee 30s linear infinite;
   }
 
   /* Adding wiggle animation for ticket */
@@ -277,9 +251,6 @@
     50% {
       transform: translateY(-8px);
     }
-    100% {
-      transform: translateY(0);
-    }
   }
 
   .animate-wave {
@@ -298,8 +269,8 @@
     }
   }
 
-  /* Replacing complex slide animations with simple fade-in */
-  @keyframes simple-fade-in {
+  /* Updated fade-in animation for smoother page loading */
+  @keyframes fade-in-page {
     0% {
       opacity: 0;
     }
@@ -308,106 +279,11 @@
     }
   }
 
-  .animate-simple-fade-in {
-    animation: simple-fade-in 0.6s ease-out both;
+  .animate-fade-in-page {
+    animation: fade-in-page 0.4s ease-out;
   }
-
-  /* Removing slide-down-header and slide-up-hero animations */
-  /* Keeping only the simple fade-in for header and hero */
 
   @keyframes fade-in {
-    0% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-fade-in {
-    animation: fade-in 0.8s ease-out 0.2s both;
-  }
-
-  @keyframes fade-in-up {
-    0% {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-fade-in-up {
-    animation: fade-in-up 1s ease-out 0.4s both;
-  }
-
-  /* Adding smooth megamenu slide-down animation */
-  @keyframes megamenu-slide-down {
-    0% {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-megamenu-slide-down {
-    animation: megamenu-slide-down 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  /* Adding dock drawer animations for left-side navigation */
-  @keyframes dock-glow {
-    0%,
-    100% {
-      box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-    }
-    50% {
-      box-shadow: 0 0 30px rgba(59, 130, 246, 0.8);
-    }
-  }
-
-  .animate-dock-glow {
-    animation: dock-glow 3s ease-in-out infinite;
-  }
-
-  @keyframes drawer-slide-in {
-    0% {
-      transform: translateX(-100%);
-      opacity: 0;
-    }
-    100% {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-
-  .animate-drawer-slide-in {
-    animation: drawer-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  @keyframes drawer-slide-out {
-    0% {
-      transform: translateX(0);
-      opacity: 1;
-    }
-    100% {
-      transform: translateX(-100%);
-      opacity: 0;
-    }
-  }
-
-  .animate-drawer-slide-out {
-    animation: drawer-slide-out 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  /* Adding staggered fade-in for megamenu products */
-  @keyframes product-fade-in {
     0% {
       opacity: 0;
       transform: translateY(10px);
@@ -418,8 +294,8 @@
     }
   }
 
-  .animate-product-fade-in {
-    animation: product-fade-in 0.5s ease-out both;
+  .animate-fade-in {
+    animation: fade-in 0.8s ease-out 0.3s both;
   }
 
   /* Adding slide-up animation for location banner */
