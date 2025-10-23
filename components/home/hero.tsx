@@ -43,7 +43,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
 
   return (
     <>
-      <section className="relative w-full min-h-[500px] md:min-h-[550px] lg:min-h-[650px] overflow-hidden animate-simple-fade-in">
+      <section className="relative w-full min-h-[500px] md:min-h-[650px] lg:min-h-[750px] xl:min-h-[850px] overflow-hidden animate-simple-fade-in">
         <Image
           src="/images/design-mode/AtlanticFlagPoleHero.jpg"
           alt="Beautiful home with American flag on premium flagpole"
@@ -62,7 +62,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           }}
         />
 
-        <div className="relative flex items-center min-h-[500px] md:min-h-[550px] lg:min-h-[650px] px-4 md:px-12 lg:px-16 py-8 md:py-10">
+        <div className="relative flex items-center min-h-[500px] md:min-h-[650px] lg:min-h-[750px] xl:min-h-[850px] px-4 md:px-12 lg:px-16 py-8 md:py-10">
           <div className="max-w-[480px] w-full">
             <div className="inline-block bg-white text-[#0B1C2C] px-3 py-1.5 mb-3 font-bold text-[10px] md:text-xs tracking-widest uppercase shadow-md">
               FALL INTO SAVINGS

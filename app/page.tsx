@@ -19,9 +19,7 @@ export default async function Home() {
     ])
     judgemeStats = stats
     reviews = reviewsData.reviews
-  } catch (error) {
-    console.error("[v0] Failed to fetch Judge.me data during build:", error)
-  }
+  } catch (error) {}
 
   const organizationSchema = generateOrganizationSchema()
   const websiteSchema = generateWebSiteSchema()
