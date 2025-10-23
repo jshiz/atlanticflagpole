@@ -24,11 +24,6 @@ interface HeaderClientProps {
   christmasTreeProducts: ShopifyProduct[]
   judgemeBadge?: React.ReactNode
   judgemeMedals?: React.ReactNode
-  session?: {
-    firstName?: string
-    lastName?: string
-    email: string
-  } | null
 }
 
 export function HeaderClient({
@@ -39,7 +34,6 @@ export function HeaderClient({
   christmasTreeProducts,
   judgemeBadge,
   judgemeMedals,
-  session,
 }: HeaderClientProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
@@ -152,7 +146,7 @@ export function HeaderClient({
                 )}
               </Link>
 
-              <AccountMenu session={session} />
+              <AccountMenu />
             </div>
           </div>
 

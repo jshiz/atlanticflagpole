@@ -98,9 +98,6 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: latest
         version: 1.2.8(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@react-email/render':
-        specifier: latest
-        version: 1.4.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@types/canvas-confetti':
         specifier: ^1.6.4
         version: 1.6.4
@@ -141,10 +138,10 @@ importers:
         specifier: 1.4.1
         version: 1.4.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       jose:
-        specifier: latest
+        specifier: 6.1.0
         version: 6.1.0
       jwt-decode:
-        specifier: latest
+        specifier: 4.0.0
         version: 4.0.0
       lucide-react:
         specifier: ^0.454.0
@@ -180,8 +177,8 @@ importers:
         specifier: 2.15.4
         version: 2.15.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       resend:
-        specifier: latest
-        version: 6.2.2(@react-email/render@1.4.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
+        specifier: 6.2.1
+        version: 6.2.1(@react-email/render@1.4.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       sonner:
         specifier: ^1.7.4
         version: 1.7.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -2117,8 +2114,8 @@ packages:
   requires-port@1.0.0:
     resolution: {integrity: sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==}
 
-  resend@6.2.2:
-    resolution: {integrity: sha512-EF/wUj0y/CHBDqLV9iKrNHxGV/wdJfzfEzhPbd3tXD4wtMssabgVwys7N3dv+s1EsqnXjC0uN6ylpfvWTzF4Aw==}
+  resend@6.2.1:
+    resolution: {integrity: sha512-tcyzU0MwDSc1r9VhUt1uCLYw6MKf7/0yUvulY+VOKZ43DfIQTJNCCg2I9ogp4cR8fBGQ1/s6zGHazCbAWXnqBQ==}
     engines: {node: '>=18'}
     peerDependencies:
       '@react-email/render': '*'
@@ -3245,11 +3242,13 @@ snapshots:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
       react-promise-suspense: 0.3.4
+    optional: true
 
   '@selderee/plugin-htmlparser2@0.11.0':
     dependencies:
       domhandler: 5.0.3
       selderee: 0.11.0
+    optional: true
 
   '@stablelib/base64@1.0.1': {}
 
@@ -3555,7 +3554,8 @@ snapshots:
     dependencies:
       character-entities: 2.0.2
 
-  deepmerge@4.3.1: {}
+  deepmerge@4.3.1:
+    optional: true
 
   dequal@2.0.3: {}
 
@@ -3577,18 +3577,22 @@ snapshots:
       domelementtype: 2.3.0
       domhandler: 5.0.3
       entities: 4.5.0
+    optional: true
 
-  domelementtype@2.3.0: {}
+  domelementtype@2.3.0:
+    optional: true
 
   domhandler@5.0.3:
     dependencies:
       domelementtype: 2.3.0
+    optional: true
 
   domutils@3.2.2:
     dependencies:
       dom-serializer: 2.0.0
       domelementtype: 2.3.0
       domhandler: 5.0.3
+    optional: true
 
   electron-to-chromium@1.5.227: {}
 
@@ -3609,7 +3613,8 @@ snapshots:
       graceful-fs: 4.2.11
       tapable: 2.2.3
 
-  entities@4.5.0: {}
+  entities@4.5.0:
+    optional: true
 
   es6-promise@4.2.8: {}
 
@@ -3623,7 +3628,8 @@ snapshots:
 
   extend@3.0.2: {}
 
-  fast-deep-equal@2.0.1: {}
+  fast-deep-equal@2.0.1:
+    optional: true
 
   fast-equals@5.3.2: {}
 
@@ -3680,6 +3686,7 @@ snapshots:
       dom-serializer: 2.0.0
       htmlparser2: 8.0.2
       selderee: 0.11.0
+    optional: true
 
   html-url-attributes@3.0.1: {}
 
@@ -3689,6 +3696,7 @@ snapshots:
       domhandler: 5.0.3
       domutils: 3.2.2
       entities: 4.5.0
+    optional: true
 
   inline-style-parser@0.2.4: {}
 
@@ -3722,7 +3730,8 @@ snapshots:
 
   jwt-decode@4.0.0: {}
 
-  leac@0.6.0: {}
+  leac@0.6.0:
+    optional: true
 
   lightningcss-darwin-arm64@1.30.1:
     optional: true
@@ -4083,8 +4092,10 @@ snapshots:
     dependencies:
       leac: 0.6.0
       peberminta: 0.9.0
+    optional: true
 
-  peberminta@0.9.0: {}
+  peberminta@0.9.0:
+    optional: true
 
   pg-int8@1.0.1: {}
 
@@ -4124,7 +4135,8 @@ snapshots:
     dependencies:
       xtend: 4.0.2
 
-  prettier@3.6.2: {}
+  prettier@3.6.2:
+    optional: true
 
   prop-types@15.8.1:
     dependencies:
@@ -4177,6 +4189,7 @@ snapshots:
   react-promise-suspense@0.3.4:
     dependencies:
       fast-deep-equal: 2.0.1
+    optional: true
 
   react-remove-scroll-bar@2.3.8(@types/react@18.0.0)(react@19.0.0):
     dependencies:
@@ -4265,7 +4278,7 @@ snapshots:
 
   requires-port@1.0.0: {}
 
-  resend@6.2.2(@react-email/render@1.4.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)):
+  resend@6.2.1(@react-email/render@1.4.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)):
     dependencies:
       svix: 1.76.1
     optionalDependencies:
@@ -4276,6 +4289,7 @@ snapshots:
   selderee@0.11.0:
     dependencies:
       parseley: 0.12.1
+    optional: true
 
   server-only@0.0.1: {}
 

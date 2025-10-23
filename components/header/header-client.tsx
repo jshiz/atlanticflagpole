@@ -30,6 +30,8 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
   const { cart } = useCart()
   const cartItemCount = cart?.lines?.edges?.length || 0
 
+  const shopifyAccountUrl = `https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN}/account`
+
   useEffect(() => {
     console.log("[v0] 🎯 Header mounted with menu data:", menuData)
     if (menuData) {
@@ -70,13 +72,13 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
               </Link>
             </div>
             <div className="flex gap-4 items-center">
-              <Link
-                href="/account"
+              <a
+                href={shopifyAccountUrl}
                 className="flex items-center gap-1 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-medium"
               >
                 <User className="w-3.5 h-3.5" />
                 My Account
-              </Link>
+              </a>
             </div>
           </div>
         </div>

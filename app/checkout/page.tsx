@@ -22,7 +22,7 @@ export default function CheckoutPage() {
   const { cart, loading } = useCart()
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState<CheckoutStep>("customer")
-  const [customerType, setCustomerType] = useState<"guest" | "login" | "signup">("guest")
+  const [customerType, setCustomerType] = useState<"guest" | "login">("guest")
   const [processing, setProcessing] = useState(false)
 
   // Customer info
@@ -43,6 +43,8 @@ export default function CheckoutPage() {
   const subtotal = cart?.cost?.subtotalAmount ? Number.parseFloat(cart.cost.subtotalAmount.amount) : 0
   const total = cart?.cost?.totalAmount ? Number.parseFloat(cart.cost.totalAmount.amount) : 0
 
+  const shopifyAccountUrl = `https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN}/account/login`
+
   useEffect(() => {
     if (isEmpty && !loading) {
       router.push("/cart")
@@ -53,10 +55,10 @@ export default function CheckoutPage() {
     e.preventDefault()
 
     if (customerType === "login") {
-      window.location.href = "/api/auth/login"
+      window.location.href = shopifyAccountUrl
       return
     } else {
-      // Guest or signup - proceed to shipping
+      // Guest - proceed to shipping
       setCurrentStep("shipping")
     }
   }
@@ -371,20 +373,65 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <div className="space-y-4 mb-6">
+                <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
+                  {lines.map((line) => {
+                    const product = line.merchandise.product
+                    const variant = line.merchandise
+                    const image = product.images?.edges?.[0]?.node
+                    const price = Number.parseFloat(line.cost.totalAmount.amount)
+
+                    return (
+                      <div key={line.id} className="flex gap-3">
+                        <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                          {image ? (
+                            <Image
+                              src={image.url || "/placeholder.svg"}
+                              alt={image.altText || product.title}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <Package className="w-8 h-8 text-gray-400 m-auto" />
+                          )}
+                          <div className="absolute -top-2 -right-2 w-6 h-6 bg-[#C8A55C] rounded-full flex items-center justify-center text-white text-xs font-bold">
+                            {line.quantity}
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-[#0B1C2C] line-clamp-2">{product.title}</p>
+                          {variant.title !== "Default Title" && (
+                            <p className="text-xs text-gray-600">{variant.title}</p>
+                          )}
+                          <p className="text-sm font-bold text-[#C8A55C] mt-1">${price.toFixed(2)}</p>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                <div className="border-t-2 border-gray-200 pt-4 space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Email:</span>
-                    <span className="font-semibold">{email}</span>
+                    <span className="text-gray-600">Subtotal</span>
+                    <span className="font-semibold">${subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Ship to:</span>
-                    <span className="font-semibold text-right">
-                      {firstName} {lastName}
-                      <br />
-                      {address1}
-                      <br />
-                      {city}, {state} {zip}
-                    </span>
+                  <div className="flex justify-between text-sm text-green-600 font-semibold">
+                    <span>Shipping</span>
+                    <span>FREE</span>
+                  </div>
+                  <div className="border-t-2 border-gray-200 pt-3 flex justify-between text-lg font-bold">
+                    <span className="text-[#0B1C2C]">Total</span>
+                    <span className="text-[#C8A55C]">${total.toFixed(2)}</span>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-gray-200 space-y-2">
+                  <div className="flex items-center gap-2 text-xs text-gray-600">
+                    <Shield className="w-4 h-4 text-green-600" />
+                    <span>Secure SSL Encryption</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-gray-600">
+                    <Truck className="w-4 h-4 text-blue-600" />
+                    <span>Free Shipping & Returns</span>
                   </div>
                 </div>
 

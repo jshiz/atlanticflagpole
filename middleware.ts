@@ -42,9 +42,6 @@ function rewriteToProducts(req: NextRequest, type: "Flagpole" | "Flag" | "Access
 
 export function middleware(req: NextRequest) {
   try {
-    // Middleware disabled - let Next.js handle routing naturally
-    // Collections will be handled by app/collections/[handle]/page.tsx
-
     const response = NextResponse.next()
     response.headers.set("x-pathname", req.nextUrl.pathname)
     return response
@@ -55,5 +52,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/account/:path*"],
+  matcher: [],
 }

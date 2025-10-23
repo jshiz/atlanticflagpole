@@ -319,6 +319,9 @@ export async function Footer() {
                 <Link href="/cookie-settings" className="hover:text-white transition-colors">
                   Cookie Settings
                 </Link>
+                <Link href="/accessibility" className="hover:text-white transition-colors">
+                  Accessibility
+                </Link>
                 <Link href="/sitemap" className="hover:text-white transition-colors">
                   Sitemap
                 </Link>
