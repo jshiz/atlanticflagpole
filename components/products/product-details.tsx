@@ -44,11 +44,12 @@ export function ProductDetails({
   useEffect(() => {
     if (!selectedVariant?.image) return
 
-    const variantImage = images.find((img) => img.url === selectedVariant.image?.url)
-    if (variantImage && variantImage.url !== selectedImage?.url) {
+    const productImages = toNodes(product.images)
+    const variantImage = productImages.find((img) => img.url === selectedVariant.image?.url)
+    if (variantImage) {
       setSelectedImage(variantImage)
     }
-  }, [selectedVariant?.id, images, selectedImage?.url])
+  }, [selectedVariant?.id, product.id, product.images])
 
   const handleVariantChange = (variant: (typeof variants)[0]) => {
     setSelectedVariant(variant)
