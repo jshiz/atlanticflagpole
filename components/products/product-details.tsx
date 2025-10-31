@@ -37,23 +37,36 @@ export function ProductDetails({
   const [selectedVariant, setSelectedVariant] = useState(variants[0])
 
   useEffect(() => {
-    console.log("[v0] Product changed, resetting selected image to first image")
+    console.log("[v0] Product changed, resetting to first image and variant")
     setSelectedImage(images[0])
-  }, [product.id, images])
-
-  useEffect(() => {
-    console.log("[v0] Product changed, resetting selected variant to first variant")
     setSelectedVariant(variants[0])
-  }, [product.id, variants])
+  }, [product.id])
 
   useEffect(() => {
-    if (selectedVariant?.image) {
+    if (!selectedVariant) return
+
+    console.log("[v0] Variant changed:", selectedVariant.title)
+    console.log("[v0] Variant has image:", !!selectedVariant.image)
+
+    if (selectedVariant.image) {
+      console.log("[v0] Looking for variant image URL:", selectedVariant.image.url)
       const variantImage = images.find((img) => img.url === selectedVariant.image?.url)
+
       if (variantImage) {
+        console.log("[v0] Found matching image, updating display")
         setSelectedImage(variantImage)
+      } else {
+        console.log("[v0] No matching image found in product images")
       }
+    } else {
+      console.log("[v0] Variant has no associated image, keeping current image")
     }
-  }, [selectedVariant, images])
+  }, [selectedVariant])
+
+  const handleVariantChange = (variant: (typeof variants)[0]) => {
+    console.log("[v0] User selected variant:", variant.title)
+    setSelectedVariant(variant)
+  }
 
   const price = selectedVariant ? Number.parseFloat(selectedVariant.price.amount) : 0
   const compareAtPrice = selectedVariant?.compareAtPrice
@@ -237,7 +250,10 @@ export function ProductDetails({
               {images.map((image, index) => (
                 <button
                   key={index}
-                  onClick={() => setSelectedImage(image)}
+                  onClick={() => {
+                    console.log("[v0] User clicked thumbnail:", index)
+                    setSelectedImage(image)
+                  }}
                   className={`relative aspect-square overflow-hidden rounded-lg border-2 transition-all ${
                     selectedImage?.url === image.url ? "border-[#C8A55C]" : "border-transparent hover:border-gray-300"
                   }`}
@@ -291,18 +307,25 @@ export function ProductDetails({
             <div className="space-y-3">
               <label className="text-sm font-semibold text-[#0B1C2C]">Select Option:</label>
               <div className="flex flex-wrap gap-3">
-                {variants.map((variant) => (
-                  <Button
-                    key={variant.id}
-                    variant={selectedVariant?.id === variant.id ? "default" : "outline"}
-                    onClick={() => setSelectedVariant(variant)}
-                    className={`h-auto py-3 px-4 text-sm leading-tight whitespace-normal text-left ${
-                      selectedVariant?.id === variant.id ? "bg-[#C8A55C] hover:bg-[#a88947]" : ""
-                    }`}
-                  >
-                    {variant.title}
-                  </Button>
-                ))}
+                {variants.map((variant) => {
+                  const isSelected = selectedVariant?.id === variant.id
+                  return (
+                    <Button
+                      key={variant.id}
+                      variant={isSelected ? "default" : "outline"}
+                      onClick={() => handleVariantChange(variant)}
+                      disabled={!variant.availableForSale}
+                      className={`h-auto min-h-[48px] py-3 px-4 text-sm leading-tight whitespace-normal text-left transition-all ${
+                        isSelected
+                          ? "bg-[#C8A55C] hover:bg-[#a88947] text-white border-[#C8A55C] ring-2 ring-[#C8A55C] ring-offset-2"
+                          : "hover:border-[#C8A55C] hover:bg-[#C8A55C]/5"
+                      } ${!variant.availableForSale ? "opacity-50 cursor-not-allowed" : ""}`}
+                    >
+                      <span className="block">{variant.title}</span>
+                      {!variant.availableForSale && <span className="block text-xs mt-1 opacity-70">Out of Stock</span>}
+                    </Button>
+                  )
+                })}
               </div>
             </div>
           )}
@@ -357,29 +380,32 @@ export function ProductDetails({
         </div>
       </div>
 
+      {/* Accordion Section */}
       <section className="mb-8">
         <ProductAccordion items={accordionItems} />
       </section>
 
+      {/* Customer Reviews Section */}
       <section id="reviews" className="mb-8">
         <h2 className="text-2xl md:text-3xl font-bold text-[#0B1C2C] mb-6">Customer Reviews</h2>
         <JudgeMeReviewWidget productHandle={product.handle} productId={product.id} />
       </section>
 
-      {/* Frequently Bought Together */}
+      {/* Frequently Bought Together Section */}
       {bundleProducts.length > 0 && (
         <section className="mb-8">
           <FrequentlyBoughtTogether mainProduct={product} bundleProducts={bundleProducts} />
         </section>
       )}
 
-      {/* Recommended for you */}
+      {/* Recommended for You Section */}
       {relatedProducts.length > 0 && (
         <section className="mb-8">
           <RelatedProducts products={relatedProducts} />
         </section>
       )}
 
+      {/* Sticky CTA for Premier Bundles */}
       {isPremierBundle && selectedVariant && bundleData && (
         <StickyCta
           productTitle={product.title}
