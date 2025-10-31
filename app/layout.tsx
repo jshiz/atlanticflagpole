@@ -42,10 +42,7 @@ export const metadata: Metadata = {
   description: "The last flagpole you will ever need. Handcrafted in the USA with a lifetime guarantee.",
   generator: "v0.app",
   icons: {
-    icon: [
-      { url: "/icon.png", type: "image/png" },
-      { url: "/favicon.ico", sizes: "any" },
-    ],
+    icon: [{ url: "/icon.png", type: "image/png" }],
   },
 }
 

@@ -37,22 +37,18 @@ export function ProductDetails({
   const [selectedVariant, setSelectedVariant] = useState(variants[0])
 
   useEffect(() => {
-    const productImages = toNodes(product.images)
-    const productVariants = toNodes(product.variants)
-
-    if (productImages[0]) setSelectedImage(productImages[0])
-    if (productVariants[0]) setSelectedVariant(productVariants[0])
+    if (images[0]) setSelectedImage(images[0])
+    if (variants[0]) setSelectedVariant(variants[0])
   }, [product.id])
 
   useEffect(() => {
     if (!selectedVariant?.image) return
 
-    const productImages = toNodes(product.images)
-    const variantImage = productImages.find((img) => img.url === selectedVariant.image?.url)
+    const variantImage = images.find((img) => img.url === selectedVariant.image?.url)
     if (variantImage && variantImage.url !== selectedImage?.url) {
       setSelectedImage(variantImage)
     }
-  }, [selectedVariant?.id])
+  }, [selectedVariant?.id, images, selectedImage?.url])
 
   const handleVariantChange = (variant: (typeof variants)[0]) => {
     setSelectedVariant(variant)
