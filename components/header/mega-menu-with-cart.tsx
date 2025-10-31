@@ -164,7 +164,7 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
   }
 
   return (
-    <div className="grid grid-cols-12 gap-3 max-w-7xl mx-auto">
+    <div className="grid grid-cols-12 gap-3 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-300">
       {/* Left Sidebar - Categories */}
       <div className="col-span-2 border-r border-gray-100 pr-3">
         <div className="sticky top-2">
@@ -184,7 +184,7 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
                 </Link>
 
                 {hoveredCategory === item.id && item.items && item.items.length > 0 && (
-                  <ul className="ml-3 mt-0.5 space-y-0.5 animate-in slide-in-from-left duration-200">
+                  <ul className="ml-3 mt-0.5 space-y-0.5 animate-in fade-in slide-in-from-left-2 duration-200">
                     {item.items.slice(0, 8).map((subItem) => (
                       <li key={subItem.id}>
                         <Link
@@ -221,7 +221,7 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
 
         {displayProducts && displayProducts.length > 0 ? (
           <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
-            {displayProducts.slice(0, 16).map((product) => {
+            {displayProducts.slice(0, 16).map((product, index) => {
               const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
               const rating = getProductRating(product.id)
 
@@ -230,7 +230,8 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
                   key={product.id}
                   href={`/products/${product.handle}`}
                   onClick={onLinkClick}
-                  className="group block"
+                  className="group block animate-in fade-in slide-in-from-bottom-2 duration-300"
+                  style={{ animationDelay: `${index * 30}ms` }}
                 >
                   <div className="relative aspect-square bg-gray-50 rounded overflow-hidden mb-1 shadow-sm group-hover:shadow-md transition-shadow">
                     {product.featuredImage ? (

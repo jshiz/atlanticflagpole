@@ -64,7 +64,15 @@ export async function HeaderWrapper() {
       collectionsData["accessories"] = { products: { nodes: accessoryProducts.slice(0, 8) } }
     }
 
-    const holidayProducts = filterByTag(allProducts, ["holiday", "christmas", "halloween", "seasonal", "19th-hole"])
+    const holidayProducts = filterByTag(allProducts, [
+      "holiday",
+      "christmas",
+      "christmas tree",
+      "led",
+      "halloween",
+      "seasonal",
+      "19th-hole",
+    ])
     if (holidayProducts.length > 0) {
       collectionsData["holiday"] = { products: { nodes: holidayProducts.slice(0, 8) } }
     }
@@ -85,7 +93,7 @@ export async function HeaderWrapper() {
       toppers: ["topper", "eagle", "ball"],
       hardware: ["hardware", "replacement"],
       maintenance: ["maintenance"],
-      christmas: ["christmas"],
+      christmas: ["christmas", "christmas tree", "led tree"],
       halloween: ["halloween"],
       patriotic: ["patriotic", "independence", "memorial", "veterans"],
       seasonal: ["seasonal"],

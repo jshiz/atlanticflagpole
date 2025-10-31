@@ -14,7 +14,7 @@ interface InfiniteProductGridProps {
 export function InfiniteProductGrid({ initialProducts, searchParams }: InfiniteProductGridProps) {
   const [products, setProducts] = useState(initialProducts)
   const [isLoading, setIsLoading] = useState(false)
-  const [hasMore, setHasMore] = useState(initialProducts.length >= 24)
+  const [hasMore, setHasMore] = useState(initialProducts.length >= 12)
   const [page, setPage] = useState(1)
   const observerRef = useRef<HTMLDivElement>(null)
 
@@ -43,7 +43,7 @@ export function InfiniteProductGrid({ initialProducts, searchParams }: InfiniteP
         if (value) params.set(key, value)
       })
       params.set("page", String(page + 1))
-      params.set("limit", "24")
+      params.set("limit", "12")
 
       const response = await fetch(`/api/products/paginated?${params.toString()}`)
       const data = await response.json()
@@ -67,7 +67,7 @@ export function InfiniteProductGrid({ initialProducts, searchParams }: InfiniteP
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {products.map((product, index) => (
-          <FadeInOnScroll key={product.id} delay={(index % 24) * 30}>
+          <FadeInOnScroll key={product.id} delay={(index % 12) * 30}>
             <ProductCard product={product} />
           </FadeInOnScroll>
         ))}

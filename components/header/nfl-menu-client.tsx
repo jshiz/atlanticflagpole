@@ -35,17 +35,17 @@ export function NFLMenuClient({ nflFlagProducts, onLinkClick }: NFLMenuClientPro
   }, [])
 
   return (
-    <div className="w-full max-w-5xl mx-auto">
-      <div className="grid grid-cols-2 gap-4 mb-4">
+    <div className="w-full max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-300">
+      <div className="grid grid-cols-2 gap-6 mb-4">
         {/* NFC Conference */}
         <div>
-          <h3 className="text-sm font-bold mb-1.5 text-center text-[#0B1C2C]">NFC</h3>
-          <div className="grid grid-cols-8 gap-0.5">
+          <h3 className="text-sm font-bold mb-2 text-center text-[#0B1C2C] pb-1 border-b border-[#C8A55C]">NFC</h3>
+          <div className="grid grid-cols-8 gap-1">
             {NFC_TEAMS.map((team) => (
               <Link
                 key={team.name}
                 href={`/collections/nfl-${team.name.toLowerCase().replace(/\s+/g, "-")}`}
-                className="aspect-square relative group"
+                className="aspect-square relative group rounded overflow-hidden"
                 onClick={onLinkClick}
               >
                 <Image
@@ -55,7 +55,7 @@ export function NFLMenuClient({ nflFlagProducts, onLinkClick }: NFLMenuClientPro
                   className="object-cover"
                   sizes="(max-width: 768px) 12.5vw, 5vw"
                 />
-                <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-0.5">
+                <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-1">
                   <span className="text-white text-[8px] font-semibold text-center leading-tight">{team.name}</span>
                 </div>
               </Link>
@@ -65,13 +65,13 @@ export function NFLMenuClient({ nflFlagProducts, onLinkClick }: NFLMenuClientPro
 
         {/* AFC Conference */}
         <div>
-          <h3 className="text-sm font-bold mb-1.5 text-center text-[#0B1C2C]">AFC</h3>
-          <div className="grid grid-cols-8 gap-0.5">
+          <h3 className="text-sm font-bold mb-2 text-center text-[#0B1C2C] pb-1 border-b border-[#C8A55C]">AFC</h3>
+          <div className="grid grid-cols-8 gap-1">
             {AFC_TEAMS.map((team) => (
               <Link
                 key={team.name}
                 href={`/collections/nfl-${team.name.toLowerCase().replace(/\s+/g, "-")}`}
-                className="aspect-square relative group"
+                className="aspect-square relative group rounded overflow-hidden"
                 onClick={onLinkClick}
               >
                 <Image
@@ -81,7 +81,7 @@ export function NFLMenuClient({ nflFlagProducts, onLinkClick }: NFLMenuClientPro
                   className="object-cover"
                   sizes="(max-width: 768px) 12.5vw, 5vw"
                 />
-                <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-0.5">
+                <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-1">
                   <span className="text-white text-[8px] font-semibold text-center leading-tight">{team.name}</span>
                 </div>
               </Link>
@@ -93,10 +93,10 @@ export function NFLMenuClient({ nflFlagProducts, onLinkClick }: NFLMenuClientPro
       {randomProducts.length > 0 && (
         <div className="border-t border-gray-200 pt-3">
           <h3 className="text-xs font-bold mb-2 text-center text-[#0B1C2C] uppercase tracking-wide">NFL Flags</h3>
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-4 gap-4">
             {randomProducts.map((product) => (
               <Link key={product.id} href={`/products/${product.handle}`} className="group" onClick={onLinkClick}>
-                <div className="aspect-square relative mb-2 overflow-hidden rounded-lg bg-gray-100">
+                <div className="aspect-square relative mb-2 overflow-hidden rounded-lg bg-gray-100 shadow-sm group-hover:shadow-md transition-shadow">
                   {product.images[0] && (
                     <Image
                       src={product.images[0].url || "/placeholder.svg"}

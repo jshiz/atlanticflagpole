@@ -5,7 +5,7 @@ import "./globals.css"
 import { Suspense } from "react"
 import { Header } from "@/components/header"
 import { HeaderSkeleton } from "@/components/header-skeleton"
-import { Footer } from "@/components/footer"
+import { FooterLazy } from "@/components/footer-lazy"
 import { LiveChatButton } from "@/components/live-chat-button"
 import { CartProvider } from "@/components/cart/cart-context"
 import { JudgeMePlatformScript } from "@/components/judgeme/judgeme-platform-script"
@@ -15,6 +15,7 @@ import { GeoProvider } from "@/lib/geo/context"
 import { LocationBanner } from "@/components/geo/location-banner"
 import { Toaster } from "@/components/ui/toaster"
 import { CookieConsentBanner } from "@/components/cookie-consent/cookie-consent-banner"
+import { PageLoadingSkeleton } from "@/components/page-loading-skeleton"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -56,8 +57,10 @@ export default function RootLayout({
             <Suspense fallback={<HeaderSkeleton />}>
               <Header />
             </Suspense>
-            <Suspense fallback={null}>{children}</Suspense>
-            <Footer />
+            <div className="min-h-screen">
+              <Suspense fallback={<PageLoadingSkeleton />}>{children}</Suspense>
+            </div>
+            <FooterLazy />
             <LiveChatButton />
             <StickyCartBar />
             <LocationBanner />

@@ -1,4 +1,25 @@
 import { NextResponse } from "next/server"
+import { getProducts } from "@/lib/shopify"
+
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url)
+    const first = Number.parseInt(searchParams.get("first") || "10", 10)
+
+    const products = await getProducts({ first })
+
+    return NextResponse.json({ products })
+  } catch (error) {
+    console.error("[v0] Error fetching products:", error)
+    return NextResponse.json(
+      {
+        error: "Failed to fetch products",
+        message: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 },
+    )
+  }
+}
 
 export async function POST(req: Request) {
   try {

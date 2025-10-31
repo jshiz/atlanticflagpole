@@ -3,6 +3,8 @@
 import { useState, useMemo } from "react"
 import { CollectionCardCompact } from "./collection-card-compact"
 import { CollectionsSidebar } from "./collections-sidebar"
+import { FadeInOnScroll } from "@/components/ui/fade-in-on-scroll"
+import { Button } from "@/components/ui/button"
 import type { ShopifyCollection } from "@/lib/shopify"
 
 interface CollectionsClientProps {
@@ -12,6 +14,7 @@ interface CollectionsClientProps {
 export function CollectionsClient({ collections }: CollectionsClientProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
+  const [visibleCount, setVisibleCount] = useState(12)
 
   // Filter collections based on category and search
   const filteredCollections = useMemo(() => {
@@ -43,6 +46,10 @@ export function CollectionsClient({ collections }: CollectionsClientProps) {
     return sortedGroups
   }, [filteredCollections])
 
+  const handleLoadMore = () => {
+    setVisibleCount((prev) => prev + 12)
+  }
+
   return (
     <div className="flex gap-8">
       {/* Sidebar */}
@@ -63,37 +70,50 @@ export function CollectionsClient({ collections }: CollectionsClientProps) {
             <p className="text-lg text-[#0B1C2C]/70">No collections found matching your criteria.</p>
           </div>
         ) : selectedCategory ? (
-          // Show filtered collections in a grid
+          // Show filtered collections in a grid with pagination
           <div>
             <h2 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-6">
               {selectedCategory} ({filteredCollections.length})
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {filteredCollections.map((collection) => (
-                <CollectionCardCompact key={collection.id} collection={collection} />
+              {filteredCollections.slice(0, visibleCount).map((collection, index) => (
+                <FadeInOnScroll key={collection.id} delay={(index % 12) * 20}>
+                  <CollectionCardCompact collection={collection} />
+                </FadeInOnScroll>
               ))}
             </div>
+            {visibleCount < filteredCollections.length && (
+              <div className="flex justify-center mt-8">
+                <Button onClick={handleLoadMore} variant="outline" size="lg">
+                  Load More Collections ({filteredCollections.length - visibleCount} remaining)
+                </Button>
+              </div>
+            )}
           </div>
         ) : (
           // Show all collections grouped by category
           <div className="space-y-12">
             {groupedCollections.map(([category, categoryCollections]) => (
-              <section key={category}>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-serif font-bold text-[#0B1C2C]">{category}</h2>
-                  <button
-                    onClick={() => setSelectedCategory(category)}
-                    className="text-sm text-[#C8A55C] hover:underline"
-                  >
-                    View all {categoryCollections.length}
-                  </button>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                  {categoryCollections.slice(0, 10).map((collection) => (
-                    <CollectionCardCompact key={collection.id} collection={collection} />
-                  ))}
-                </div>
-              </section>
+              <FadeInOnScroll key={category}>
+                <section>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-serif font-bold text-[#0B1C2C]">{category}</h2>
+                    <button
+                      onClick={() => setSelectedCategory(category)}
+                      className="text-sm text-[#C8A55C] hover:underline"
+                    >
+                      View all {categoryCollections.length}
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    {categoryCollections.slice(0, 10).map((collection, index) => (
+                      <FadeInOnScroll key={collection.id} delay={index * 20}>
+                        <CollectionCardCompact collection={collection} />
+                      </FadeInOnScroll>
+                    ))}
+                  </div>
+                </section>
+              </FadeInOnScroll>
             ))}
           </div>
         )}
