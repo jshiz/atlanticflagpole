@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -30,25 +30,29 @@ export function ProductDetails({
   bundleProducts = [],
   bundleData,
 }: ProductDetailsProps) {
-  const images = useMemo(() => toNodes(product.images), [product.images])
-  const variants = useMemo(() => toNodes(product.variants), [product.variants])
+  const images = toNodes(product.images)
+  const variants = toNodes(product.variants)
 
   const [selectedImage, setSelectedImage] = useState(images[0])
   const [selectedVariant, setSelectedVariant] = useState(variants[0])
 
   useEffect(() => {
-    if (images[0]) setSelectedImage(images[0])
-    if (variants[0]) setSelectedVariant(variants[0])
-  }, [product.id, images, variants])
+    const productImages = toNodes(product.images)
+    const productVariants = toNodes(product.variants)
+
+    if (productImages[0]) setSelectedImage(productImages[0])
+    if (productVariants[0]) setSelectedVariant(productVariants[0])
+  }, [product.id])
 
   useEffect(() => {
     if (!selectedVariant?.image) return
 
-    const variantImage = images.find((img) => img.url === selectedVariant.image?.url)
+    const productImages = toNodes(product.images)
+    const variantImage = productImages.find((img) => img.url === selectedVariant.image?.url)
     if (variantImage && variantImage.url !== selectedImage?.url) {
       setSelectedImage(variantImage)
     }
-  }, [selectedVariant?.id, images, selectedImage?.url])
+  }, [selectedVariant?.id])
 
   const handleVariantChange = (variant: (typeof variants)[0]) => {
     setSelectedVariant(variant)
