@@ -33,12 +33,16 @@ export function ProductDetails({
   const images = toNodes(product.images)
   const variants = toNodes(product.variants)
 
-  const [selectedImage, setSelectedImage] = useState(images[0])
-  const [selectedVariant, setSelectedVariant] = useState(variants[0])
+  const [selectedImage, setSelectedImage] = useState(images[0] || null)
+  const [selectedVariant, setSelectedVariant] = useState(variants[0] || null)
 
+  // Reset to first image and variant when product changes
   useEffect(() => {
-    if (images[0]) setSelectedImage(images[0])
-    if (variants[0]) setSelectedVariant(variants[0])
+    const productImages = toNodes(product.images)
+    const productVariants = toNodes(product.variants)
+
+    if (productImages[0]) setSelectedImage(productImages[0])
+    if (productVariants[0]) setSelectedVariant(productVariants[0])
   }, [product.id])
 
   const handleVariantChange = (variant: (typeof variants)[0]) => {

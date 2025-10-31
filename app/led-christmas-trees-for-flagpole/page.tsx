@@ -14,18 +14,11 @@ export default async function LEDChristmasTreesPage() {
 
   const christmasProducts = allProducts.filter((product) => {
     const productTags = product.tags || []
-    // Use the same tags as the header's christmas subcategory
     const searchTags = ["christmas", "christmas tree", "led tree"]
     return searchTags.some((searchTag) =>
       productTags.some((tag: string) => tag.toLowerCase().includes(searchTag.toLowerCase())),
     )
   })
-
-  console.log("[v0] Christmas tree products found:", christmasProducts.length)
-  console.log(
-    "[v0] Product handles:",
-    christmasProducts.map((p) => p.handle),
-  )
 
   return <ChristmasTreeSalesPageClient products={christmasProducts} />
 }
