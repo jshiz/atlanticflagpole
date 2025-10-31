@@ -37,34 +37,20 @@ export function ProductDetails({
   const [selectedVariant, setSelectedVariant] = useState(variants[0])
 
   useEffect(() => {
-    console.log("[v0] Product changed, resetting to first image and variant")
     setSelectedImage(images[0])
     setSelectedVariant(variants[0])
   }, [product.id])
 
   useEffect(() => {
-    if (!selectedVariant) return
+    if (!selectedVariant?.image) return
 
-    console.log("[v0] Variant changed:", selectedVariant.title)
-    console.log("[v0] Variant has image:", !!selectedVariant.image)
-
-    if (selectedVariant.image) {
-      console.log("[v0] Looking for variant image URL:", selectedVariant.image.url)
-      const variantImage = images.find((img) => img.url === selectedVariant.image?.url)
-
-      if (variantImage) {
-        console.log("[v0] Found matching image, updating display")
-        setSelectedImage(variantImage)
-      } else {
-        console.log("[v0] No matching image found in product images")
-      }
-    } else {
-      console.log("[v0] Variant has no associated image, keeping current image")
+    const variantImage = images.find((img) => img.url === selectedVariant.image?.url)
+    if (variantImage) {
+      setSelectedImage(variantImage)
     }
-  }, [selectedVariant])
+  }, [selectedVariant?.id, images])
 
   const handleVariantChange = (variant: (typeof variants)[0]) => {
-    console.log("[v0] User selected variant:", variant.title)
     setSelectedVariant(variant)
   }
 
