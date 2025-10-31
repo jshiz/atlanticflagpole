@@ -41,16 +41,6 @@ export function ProductDetails({
     if (variants[0]) setSelectedVariant(variants[0])
   }, [product.id])
 
-  useEffect(() => {
-    if (!selectedVariant?.image) return
-
-    const productImages = toNodes(product.images)
-    const variantImage = productImages.find((img) => img.url === selectedVariant.image?.url)
-    if (variantImage) {
-      setSelectedImage(variantImage)
-    }
-  }, [selectedVariant?.id, product.id, product.images])
-
   const handleVariantChange = (variant: (typeof variants)[0]) => {
     setSelectedVariant(variant)
   }
