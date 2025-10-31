@@ -67,17 +67,8 @@ export function ChristmasTreeSalesPageClient({ products }: ChristmasTreeSalesPag
     products[1]?.featuredImage?.url || products[0]?.featuredImage?.url || "/placeholder.svg?height=800&width=800"
 
   useEffect(() => {
-    console.log("[v0] ChristmasTreeSalesPage - products received:", products.length)
-    console.log(
-      "[v0] ChristmasTreeSalesPage - product handles:",
-      products.map((p) => p.handle),
-    )
-  }, [products])
-
-  useEffect(() => {
     if (products.length > 0 && !selectedProduct) {
       setSelectedProduct(products[0])
-      console.log("[v0] ChristmasTreeSalesPage - selected product:", products[0].title)
     }
   }, [products, selectedProduct])
 

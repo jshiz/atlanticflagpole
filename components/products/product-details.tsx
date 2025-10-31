@@ -250,10 +250,7 @@ export function ProductDetails({
               {images.map((image, index) => (
                 <button
                   key={index}
-                  onClick={() => {
-                    console.log("[v0] User clicked thumbnail:", index)
-                    setSelectedImage(image)
-                  }}
+                  onClick={() => setSelectedImage(image)}
                   className={`relative aspect-square overflow-hidden rounded-lg border-2 transition-all ${
                     selectedImage?.url === image.url ? "border-[#C8A55C]" : "border-transparent hover:border-gray-300"
                   }`}
