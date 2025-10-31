@@ -46,6 +46,15 @@ export function ProductDetails({
     setSelectedVariant(variants[0])
   }, [product.id, variants])
 
+  useEffect(() => {
+    if (selectedVariant?.image) {
+      const variantImage = images.find((img) => img.url === selectedVariant.image?.url)
+      if (variantImage) {
+        setSelectedImage(variantImage)
+      }
+    }
+  }, [selectedVariant, images])
+
   const price = selectedVariant ? Number.parseFloat(selectedVariant.price.amount) : 0
   const compareAtPrice = selectedVariant?.compareAtPrice
     ? Number.parseFloat(selectedVariant.compareAtPrice.amount)
@@ -287,11 +296,11 @@ export function ProductDetails({
                     key={variant.id}
                     variant={selectedVariant?.id === variant.id ? "default" : "outline"}
                     onClick={() => setSelectedVariant(variant)}
-                    className={`max-w-[150px] h-auto py-3 px-4 text-sm leading-tight ${
+                    className={`h-auto py-3 px-4 text-sm leading-tight whitespace-normal text-left ${
                       selectedVariant?.id === variant.id ? "bg-[#C8A55C] hover:bg-[#a88947]" : ""
                     }`}
                   >
-                    <span className="line-clamp-2 text-balance">{variant.title}</span>
+                    {variant.title}
                   </Button>
                 ))}
               </div>
