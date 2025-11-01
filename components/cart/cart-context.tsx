@@ -21,8 +21,15 @@ const CART_ID_KEY = "shopify_cart_id"
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<ShopifyCart | null>(null)
   const [loading, setLoading] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+
     const loadCart = async () => {
       const cartId = localStorage.getItem(CART_ID_KEY)
       if (cartId) {
@@ -40,7 +47,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
     }
     loadCart()
-  }, [])
+  }, [mounted])
 
   const addToCart = useCallback(
     async (variantId: string, quantity = 1) => {

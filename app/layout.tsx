@@ -41,9 +41,6 @@ export const metadata: Metadata = {
   title: "Atlantic Flagpole - Premium American-Made Flagpoles",
   description: "The last flagpole you will ever need. Handcrafted in the USA with a lifetime guarantee.",
   generator: "v0.app",
-  icons: {
-    icon: [{ url: "/icon.png", type: "image/png" }],
-  },
 }
 
 export default function RootLayout({
@@ -52,7 +49,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`font-sans ${inter.variable} ${jetbrainsMono.variable} ${cinzel.variable}`}>
         <CartProvider>
           <GeoProvider>
