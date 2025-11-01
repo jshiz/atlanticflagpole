@@ -22,7 +22,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       const result = await searchProducts({
         q: query,
         sort: sortKey,
-        first: 12,
+        first: 24,
       })
       initialProducts = result.nodes
     } catch (error) {

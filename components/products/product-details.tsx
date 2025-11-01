@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -35,16 +35,6 @@ export function ProductDetails({
 
   const variants = toNodes(product.variants)
   const [selectedVariant, setSelectedVariant] = useState(variants[0])
-
-  useEffect(() => {
-    console.log("[v0] Product changed, resetting selected image to first image")
-    setSelectedImage(images[0])
-  }, [product.id, images])
-
-  useEffect(() => {
-    console.log("[v0] Product changed, resetting selected variant to first variant")
-    setSelectedVariant(variants[0])
-  }, [product.id, variants])
 
   const price = selectedVariant ? Number.parseFloat(selectedVariant.price.amount) : 0
   const compareAtPrice = selectedVariant?.compareAtPrice

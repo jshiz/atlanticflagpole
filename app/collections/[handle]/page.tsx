@@ -324,7 +324,7 @@ export default async function CollectionPage({ params, searchParams }: Collectio
 
           <div className="lg:col-span-3">
             <InfiniteProductGrid
-              initialProducts={products.slice(0, 12)}
+              initialProducts={products.slice(0, 24)}
               searchParams={{ ...searchParams, collection: params.handle }}
             />
           </div>

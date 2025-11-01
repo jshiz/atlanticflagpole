@@ -31,7 +31,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   try {
     const result = await searchProducts({
       ...searchParams,
-      first: 12,
+      first: 24,
     })
 
     initialProducts = result.nodes
