@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { searchProducts } from "@/lib/shopify/catalog"
+import { getProducts } from "@/lib/shopify"
 import { ChristmasTreeSalesPageClient } from "@/components/christmas-tree-sales-page-client"
 
 export const metadata: Metadata = {
@@ -9,16 +9,15 @@ export const metadata: Metadata = {
 }
 
 export default async function LEDChristmasTreesPage() {
-  const allProductsResult = await searchProducts({ first: 250 })
-  const allProducts = allProductsResult?.nodes || []
-
-  const christmasProducts = allProducts.filter((product) => {
-    const productTags = product.tags || []
-    const searchTags = ["christmas", "christmas tree", "led tree"]
-    return searchTags.some((searchTag) =>
-      productTags.some((tag: string) => tag.toLowerCase().includes(searchTag.toLowerCase())),
-    )
+  const christmasProducts = await getProducts({
+    query: "tag:christmas tree OR tag:led tree OR tag:holiday lighting",
+    first: 10,
   })
 
-  return <ChristmasTreeSalesPageClient products={christmasProducts} />
+  // Filter to get the main Christmas tree products
+  const mainProducts = christmasProducts.filter(
+    (p) => p.handle.includes("patriot-glo") || (p.handle.includes("phoenix") && p.handle.includes("christmas")),
+  )
+
+  return <ChristmasTreeSalesPageClient products={mainProducts.length > 0 ? mainProducts : christmasProducts} />
 }

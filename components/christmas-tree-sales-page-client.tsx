@@ -62,31 +62,18 @@ export function ChristmasTreeSalesPageClient({ products }: ChristmasTreeSalesPag
   const [selectedProduct, setSelectedProduct] = useState<ShopifyProduct | null>(null)
   const [videoLoaded, setVideoLoaded] = useState(false)
 
-  const benefitsImage = products[0]?.featuredImage?.url || "/placeholder.svg?height=800&width=800"
-  const storageImage =
-    products[1]?.featuredImage?.url || products[0]?.featuredImage?.url || "/placeholder.svg?height=800&width=800"
-
   useEffect(() => {
+    // Set first product as selected
     if (products.length > 0 && !selectedProduct) {
       setSelectedProduct(products[0])
     }
   }, [products, selectedProduct])
 
   useEffect(() => {
+    // Preload video
     const timer = setTimeout(() => setVideoLoaded(true), 500)
     return () => clearTimeout(timer)
   }, [])
-
-  if (products.length === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Loading Christmas Tree Products...</h2>
-          <p className="text-muted-foreground">Please wait while we fetch our holiday lighting kits.</p>
-        </div>
-      </div>
-    )
-  }
 
   if (!selectedProduct) {
     return <div>Loading...</div>
@@ -302,185 +289,19 @@ export function ChristmasTreeSalesPageClient({ products }: ChristmasTreeSalesPag
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 bg-muted">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge className="bg-green-600 hover:bg-green-700 text-white text-lg px-6 py-2 mb-4">
-              Why Choose Our LED Christmas Trees?
-            </Badge>
-            <h2 className="text-4xl md:text-6xl font-serif font-bold mb-6 text-balance">
-              Features That Make the Difference
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="p-8 hover:shadow-xl transition-shadow duration-300">
-                <feature.icon className="w-12 h-12 text-green-600 mb-4" />
-                <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+      <section id="features" className="py-24 bg-muted"></section>
 
       {/* Benefits Section */}
-      <section className="py-24 bg-gradient-to-b from-background to-muted">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <Badge className="bg-red-600 hover:bg-red-700 text-white text-lg px-6 py-2 mb-4">
-                The Atlantic Flagpole Advantage
-              </Badge>
-              <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 text-balance">
-                More Than Just a Christmas Tree
-              </h2>
-              <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-                When you choose Atlantic Flagpole, you're choosing quality, reliability, and peace of mind. Here's what
-                sets us apart:
-              </p>
-
-              <ul className="space-y-4">
-                {benefits.map((benefit, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                    <span className="text-lg">{benefit}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <Button size="lg" className="mt-8 bg-red-600 hover:bg-red-700 text-white text-xl px-12 py-6">
-                Shop Now
-                <ChevronRight className="ml-2 w-5 h-5" />
-              </Button>
-            </div>
-
-            <div className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl">
-              <Image
-                src={benefitsImage || "/placeholder.svg"}
-                alt="Christmas Tree on Flagpole"
-                fill
-                className="object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+      <section className="py-24 bg-gradient-to-b from-background to-muted"></section>
 
       {/* Weather Resistant Section */}
-      <section className="py-24 bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-[url('/placeholder.svg?height=1200&width=1200')] bg-repeat" />
-        </div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <Snowflake className="w-16 h-16 mx-auto mb-6" />
-            <h2 className="text-4xl md:text-6xl font-serif font-bold mb-6 text-balance">
-              Built to Withstand Mother Nature
-            </h2>
-            <p className="text-2xl mb-8 opacity-90 leading-relaxed">
-              Rain, snow, sleet, or shine - your Christmas tree will keep shining bright. Our weather-resistant design
-              ensures your holiday display looks perfect all season long.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-              <div className="text-center">
-                <div className="text-5xl font-bold mb-2">-40°F</div>
-                <div className="text-xl opacity-80">Cold Resistant</div>
-              </div>
-              <div className="text-center">
-                <div className="text-5xl font-bold mb-2">IP65</div>
-                <div className="text-xl opacity-80">Waterproof Rating</div>
-              </div>
-              <div className="text-center">
-                <div className="text-5xl font-bold mb-2">100%</div>
-                <div className="text-xl opacity-80">Outdoor Safe</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <section className="py-24 bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 text-white relative overflow-hidden"></section>
 
       {/* Storage Section */}
-      <section className="py-24 bg-muted">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl order-2 lg:order-1">
-              <Image src={storageImage || "/placeholder.svg"} alt="Compact Storage" fill className="object-cover" />
-            </div>
-
-            <div className="order-1 lg:order-2">
-              <Package className="w-16 h-16 text-green-600 mb-6" />
-              <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 text-balance">
-                Easy Storage, Year After Year
-              </h2>
-              <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-                No more tangled messes or bulky storage containers. Our LED Christmas tree kits pack away neatly into
-                compact storage, making it easy to keep your decorations safe and organized for next season.
-              </p>
-
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-start gap-3">
-                  <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="text-lg">Compact design saves valuable storage space</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="text-lg">Durable materials protect lights during off-season</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="text-lg">Quick setup next year - no untangling required</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
+      <section className="py-24 bg-muted"></section>
 
       {/* Final CTA */}
-      <section className="py-24 bg-gradient-to-r from-red-600 via-green-600 to-red-600 text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-0 bg-[url('/placeholder.svg?height=1200&width=1200')] bg-repeat" />
-        </div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl md:text-6xl font-serif font-bold mb-6 text-balance">
-              Ready to Transform Your Holiday Display?
-            </h2>
-            <p className="text-2xl mb-8 opacity-90 leading-relaxed">
-              Join thousands of happy customers who have made their holidays brighter with Atlantic Flagpole's LED
-              Christmas trees. Order now and get free shipping plus our 42-month warranty!
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              <Link href={`/products/${selectedProduct.handle}`}>
-                <Button size="lg" className="bg-white text-red-600 hover:bg-gray-100 text-xl px-12 py-8 font-bold">
-                  🎄 Shop Now - Free Shipping
-                  <ChevronRight className="ml-2 w-6 h-6" />
-                </Button>
-              </Link>
-            </div>
-
-            <div className="flex flex-wrap justify-center gap-8">
-              <div className="flex items-center gap-2">
-                <Truck className="w-6 h-6" />
-                <span className="font-semibold">Free Shipping</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Shield className="w-6 h-6" />
-                <span className="font-semibold">42-Month Warranty</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Award className="w-6 h-6" />
-                <span className="font-semibold">30-Day Returns</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <section className="py-24 bg-gradient-to-r from-red-600 via-green-600 to-red-600 text-white relative overflow-hidden"></section>
     </div>
   )
 }

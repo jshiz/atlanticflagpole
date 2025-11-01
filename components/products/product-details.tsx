@@ -31,29 +31,20 @@ export function ProductDetails({
   bundleData,
 }: ProductDetailsProps) {
   const images = toNodes(product.images)
+  const [selectedImage, setSelectedImage] = useState(images[0])
+
   const variants = toNodes(product.variants)
-
-  const [selectedImage, setSelectedImage] = useState(images[0] || null)
-  const [selectedVariant, setSelectedVariant] = useState(variants[0] || null)
-  const [mounted, setMounted] = useState(false)
+  const [selectedVariant, setSelectedVariant] = useState(variants[0])
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    console.log("[v0] Product changed, resetting selected image to first image")
+    setSelectedImage(images[0])
+  }, [product.id, images])
 
   useEffect(() => {
-    if (!mounted) return
-
-    const productImages = toNodes(product.images)
-    const productVariants = toNodes(product.variants)
-
-    if (productImages[0]) setSelectedImage(productImages[0])
-    if (productVariants[0]) setSelectedVariant(productVariants[0])
-  }, [product.id, mounted])
-
-  const handleVariantChange = (variant: (typeof variants)[0]) => {
-    setSelectedVariant(variant)
-  }
+    console.log("[v0] Product changed, resetting selected variant to first variant")
+    setSelectedVariant(variants[0])
+  }, [product.id, variants])
 
   const price = selectedVariant ? Number.parseFloat(selectedVariant.price.amount) : 0
   const compareAtPrice = selectedVariant?.compareAtPrice
@@ -291,25 +282,18 @@ export function ProductDetails({
             <div className="space-y-3">
               <label className="text-sm font-semibold text-[#0B1C2C]">Select Option:</label>
               <div className="flex flex-wrap gap-3">
-                {variants.map((variant) => {
-                  const isSelected = selectedVariant?.id === variant.id
-                  return (
-                    <Button
-                      key={variant.id}
-                      variant={isSelected ? "default" : "outline"}
-                      onClick={() => handleVariantChange(variant)}
-                      disabled={!variant.availableForSale}
-                      className={`h-auto min-h-[48px] py-3 px-4 text-sm leading-tight whitespace-normal text-left transition-all ${
-                        isSelected
-                          ? "bg-[#C8A55C] hover:bg-[#a88947] text-white border-[#C8A55C] ring-2 ring-[#C8A55C] ring-offset-2"
-                          : "hover:border-[#C8A55C] hover:bg-[#C8A55C]/5"
-                      } ${!variant.availableForSale ? "opacity-50 cursor-not-allowed" : ""}`}
-                    >
-                      <span className="block">{variant.title}</span>
-                      {!variant.availableForSale && <span className="block text-xs mt-1 opacity-70">Out of Stock</span>}
-                    </Button>
-                  )
-                })}
+                {variants.map((variant) => (
+                  <Button
+                    key={variant.id}
+                    variant={selectedVariant?.id === variant.id ? "default" : "outline"}
+                    onClick={() => setSelectedVariant(variant)}
+                    className={`max-w-[150px] h-auto py-3 px-4 text-sm leading-tight ${
+                      selectedVariant?.id === variant.id ? "bg-[#C8A55C] hover:bg-[#a88947]" : ""
+                    }`}
+                  >
+                    <span className="line-clamp-2 text-balance">{variant.title}</span>
+                  </Button>
+                ))}
               </div>
             </div>
           )}
@@ -364,32 +348,29 @@ export function ProductDetails({
         </div>
       </div>
 
-      {/* Accordion Section */}
       <section className="mb-8">
         <ProductAccordion items={accordionItems} />
       </section>
 
-      {/* Customer Reviews Section */}
       <section id="reviews" className="mb-8">
         <h2 className="text-2xl md:text-3xl font-bold text-[#0B1C2C] mb-6">Customer Reviews</h2>
         <JudgeMeReviewWidget productHandle={product.handle} productId={product.id} />
       </section>
 
-      {/* Frequently Bought Together Section */}
+      {/* Frequently Bought Together */}
       {bundleProducts.length > 0 && (
         <section className="mb-8">
           <FrequentlyBoughtTogether mainProduct={product} bundleProducts={bundleProducts} />
         </section>
       )}
 
-      {/* Recommended for You Section */}
+      {/* Recommended for you */}
       {relatedProducts.length > 0 && (
         <section className="mb-8">
           <RelatedProducts products={relatedProducts} />
         </section>
       )}
 
-      {/* Sticky CTA for Premier Bundles */}
       {isPremierBundle && selectedVariant && bundleData && (
         <StickyCta
           productTitle={product.title}

@@ -18,15 +18,9 @@ export function useCookieConsent() {
     marketing: false,
   })
   const [hasResponded, setHasResponded] = useState(false)
-  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  useEffect(() => {
-    if (!mounted) return
-
+    // Load consent from localStorage
     const stored = localStorage.getItem(CONSENT_KEY)
     if (stored) {
       try {
@@ -37,7 +31,7 @@ export function useCookieConsent() {
         console.error("Failed to parse cookie consent:", e)
       }
     }
-  }, [mounted])
+  }, [])
 
   const updateConsent = (newConsent: CookieConsent) => {
     const consentWithEssential = {
