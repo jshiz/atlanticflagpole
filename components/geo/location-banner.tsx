@@ -8,34 +8,34 @@ export function LocationBanner() {
   const { location, loading } = useGeo()
   const [dismissed, setDismissed] = useState(false)
   const [showBanner, setShowBanner] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    console.log("[v0] LocationBanner - loading:", loading, "location:", location)
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
 
     const isDismissed = localStorage.getItem("location-banner-dismissed")
     if (isDismissed) {
-      console.log("[v0] LocationBanner - previously dismissed")
       setDismissed(true)
       return
     }
 
     // Show banner after location is detected
     if (!loading && location) {
-      console.log("[v0] LocationBanner - showing banner for:", location.region)
       setShowBanner(true)
-    } else if (!loading && !location) {
-      console.log("[v0] LocationBanner - no location detected")
     }
-  }, [loading, location])
+  }, [loading, location, mounted])
 
   const handleDismiss = () => {
-    console.log("[v0] LocationBanner - dismissed")
     setDismissed(true)
     setShowBanner(false)
     localStorage.setItem("location-banner-dismissed", "true")
   }
 
-  if (dismissed || !showBanner || !location) {
+  if (!mounted || dismissed || !showBanner || !location) {
     return null
   }
 

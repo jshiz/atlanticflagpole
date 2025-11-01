@@ -35,15 +35,21 @@ export function ProductDetails({
 
   const [selectedImage, setSelectedImage] = useState(images[0] || null)
   const [selectedVariant, setSelectedVariant] = useState(variants[0] || null)
+  const [mounted, setMounted] = useState(false)
 
-  // Reset to first image and variant when product changes
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+
     const productImages = toNodes(product.images)
     const productVariants = toNodes(product.variants)
 
     if (productImages[0]) setSelectedImage(productImages[0])
     if (productVariants[0]) setSelectedVariant(productVariants[0])
-  }, [product.id])
+  }, [product.id, mounted])
 
   const handleVariantChange = (variant: (typeof variants)[0]) => {
     setSelectedVariant(variant)

@@ -9,26 +9,28 @@ export function TicketPopup() {
   const [showButton, setShowButton] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    console.log("[v0] TicketPopup - initializing")
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
 
     const hasClaimedTicket = localStorage.getItem("vip-ticket-claimed")
     if (hasClaimedTicket) {
-      console.log("[v0] TicketPopup - already claimed")
       return
     }
 
     const timer = setTimeout(() => {
-      console.log("[v0] TicketPopup - showing button")
       setShowButton(true)
     }, 3000)
 
     return () => clearTimeout(timer)
-  }, [])
+  }, [mounted])
 
   const handleTicketClick = () => {
-    console.log("[v0] TicketPopup - ticket clicked")
     localStorage.setItem("vip-ticket-claimed", "true")
     setIsOpen(true)
     triggerConfetti()
@@ -136,7 +138,6 @@ export function TicketPopup() {
   }
 
   const handleClose = () => {
-    console.log("[v0] TicketPopup - closed")
     setIsOpen(false)
   }
 
@@ -150,12 +151,15 @@ export function TicketPopup() {
     window.location.href = "/account/signup?discount=WELCOME5"
   }
 
+  if (!mounted) {
+    return null
+  }
+
   return (
     <>
       {showButton && !isOpen && (
         <button
           onClick={() => {
-            console.log("[v0] TicketPopup - expanding")
             setIsExpanded(!isExpanded)
           }}
           className={`fixed bottom-6 z-50 w-32 h-auto transition-all duration-500 ease-out hover:scale-110 animate-sway cursor-pointer shadow-2xl ${
