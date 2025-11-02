@@ -2,11 +2,13 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { ShoppingCart, Menu, X, ChevronDown, User, Sparkles } from "lucide-react"
+import { ShoppingCart, Menu, X, ChevronDown, User, Sparkles, MapPin } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
 import { useCart } from "@/components/cart/cart-context"
 import { SearchBarWrapper } from "@/components/search/search-bar-wrapper"
+import { useGeo } from "@/lib/geo/context"
+import { getStateCodeFromRegion } from "@/lib/geo/state-mapping"
 
 interface MenuItem {
   id: string
@@ -29,6 +31,8 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const { cart } = useCart()
   const cartItemCount = cart?.lines?.edges?.length || 0
+  const { location } = useGeo()
+  const stateCode = location ? getStateCodeFromRegion(location.region) : null
 
   const shopifyAccountUrl = `https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN}/account`
 
@@ -167,6 +171,18 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
                   )
                 })}
 
+                {location && stateCode && (
+                  <Link
+                    href={`/capitals/${stateCode.toLowerCase()}`}
+                    className="relative bg-gradient-to-r from-[#0B1C2C] to-[#1a2f42] hover:from-[#0B1C2C]/90 hover:to-[#1a2f42]/90 px-6 py-2.5 rounded-md text-white font-semibold transition-all text-sm shadow-lg hover:shadow-xl group overflow-hidden"
+                  >
+                    <span className="relative z-10 flex items-center gap-2">
+                      <MapPin className="w-4 h-4" />
+                      Shop {location.region}
+                    </span>
+                  </Link>
+                )}
+
                 <Link
                   href="/flagpole-finder"
                   className="relative bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] hover:from-[#a88947] hover:to-[#C8A55C] px-6 py-2.5 rounded-md text-white font-semibold transition-all text-sm shadow-lg hover:shadow-xl group overflow-hidden"
@@ -238,6 +254,17 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
                       )}
                     </div>
                   ))}
+
+                  {location && stateCode && (
+                    <Link
+                      href={`/capitals/${stateCode.toLowerCase()}`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="relative bg-gradient-to-r from-[#0B1C2C] to-[#1a2f42] px-4 py-3 rounded-md text-white font-semibold transition-all shadow-lg flex items-center justify-center gap-2"
+                    >
+                      <MapPin className="w-4 h-4" />
+                      Shop Products in {location.region}
+                    </Link>
+                  )}
 
                   <Link
                     href="/flagpole-finder"

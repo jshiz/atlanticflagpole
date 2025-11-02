@@ -8,15 +8,12 @@ export async function GET(request: NextRequest) {
     const location = await detectLocationServer(request.headers)
 
     if (!location) {
-      return NextResponse.json(
-        {},
-        {
-          status: 200,
-          headers: {
-            "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
-          },
+      return NextResponse.json(null, {
+        status: 200,
+        headers: {
+          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
         },
-      )
+      })
     }
 
     return NextResponse.json(location, {
@@ -27,6 +24,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error("[v0] Geo detection API error:", error)
-    return NextResponse.json({}, { status: 200 })
+    return NextResponse.json(null, { status: 200 })
   }
 }

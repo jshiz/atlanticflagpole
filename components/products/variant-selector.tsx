@@ -1,8 +1,9 @@
 "use client"
 
-import type { ShopifyProduct, ProductVariant } from "@/lib/shopify/types"
-import { useSearchParams } from "next/navigation"
+import type { ShopifyProduct, ProductVariant, ProductOption } from "@/lib/shopify/types"
+import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { useMemo } from "react"
+import { Button } from "@/components/ui/button"
 
 export function useSelectedVariant(product: ShopifyProduct): ProductVariant | undefined {
   const searchParams = useSearchParams()
@@ -29,4 +30,52 @@ export function useSelectedVariant(product: ShopifyProduct): ProductVariant | un
 
     return matchingVariant
   }, [product, searchParams])
+}
+
+interface VariantSelectorProps {
+  options: ProductOption[]
+  variants: ProductVariant[]
+}
+
+export function VariantSelector({ options, variants }: VariantSelectorProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  const handleOptionChange = (optionName: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set(optionName.toLowerCase(), value)
+    router.push(`${pathname}?${params.toString()}`)
+  }
+
+  return (
+    <div className="space-y-4">
+      {options.map((option) => {
+        const currentValue = searchParams.get(option.name.toLowerCase()) || option.values[0]
+
+        return (
+          <div key={option.id}>
+            <label className="block text-sm font-semibold text-[#0B1C2C] mb-2">{option.name}:</label>
+            <div className="flex flex-wrap gap-2">
+              {option.values.map((value) => (
+                <Button
+                  key={value}
+                  variant={currentValue === value ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handleOptionChange(option.name, value)}
+                  className={
+                    currentValue === value
+                      ? "bg-[#C8A55C] hover:bg-[#B8954C] text-white"
+                      : "border-gray-300 hover:border-[#C8A55C]"
+                  }
+                >
+                  {value}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
 }

@@ -314,6 +314,28 @@
     animation: slide-up 0.5s ease-out;
   }
 
+  /* Adding slide-in-right animation for location tab */
+  @keyframes slide-in-right {
+    0% {
+      opacity: 0;
+      transform: translateX(100%) translateY(-50%);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0) translateY(-50%);
+    }
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.3s ease-out;
+  }
+
+  /* Adding vertical writing mode for tab text */
+  .writing-mode-vertical {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+
   .perspective-1000 {
     perspective: 1000px;
   }

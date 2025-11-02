@@ -87,3 +87,43 @@ export function generateCollectionSchema(collection: ShopifyCollection) {
     url: `${SITE_URL}/collections/${collection.handle}`,
   }
 }
+
+export function generateStateCapitalSchema(stateData: any, product: any) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: `Best Telescoping Flagpole in ${stateData.capital}, ${stateData.state}`,
+    description: `Get the American-made Phoenix Telescoping Flagpole delivered to ${stateData.capital}, ${stateData.state}. 100 MPH wind guarantee, lifetime warranty, and 365-day home trial.`,
+    url: `${SITE_URL}/capitals/${stateData.stateCode.toLowerCase()}`,
+    about: {
+      "@type": "Place",
+      name: stateData.capital,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: stateData.capital,
+        addressRegion: stateData.stateCode,
+        addressCountry: "US",
+      },
+    },
+    mainEntity: product
+      ? {
+          "@type": "Product",
+          name: product.title,
+          description: product.description,
+          image: product.images?.nodes?.[0]?.url || "",
+          url: `${SITE_URL}/products/${product.handle}`,
+          brand: {
+            "@type": "Brand",
+            name: product.vendor || SITE_NAME,
+          },
+          offers: {
+            "@type": "Offer",
+            price: product.priceRange?.minVariantPrice?.amount || "0",
+            priceCurrency: product.priceRange?.minVariantPrice?.currencyCode || "USD",
+            availability: product.availableForSale ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+            url: `${SITE_URL}/products/${product.handle}`,
+          },
+        }
+      : undefined,
+  }
+}

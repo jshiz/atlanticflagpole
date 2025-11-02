@@ -12,7 +12,7 @@ import { JudgeMePlatformScript } from "@/components/judgeme/judgeme-platform-scr
 import { StickyCartBar } from "@/components/cart/sticky-cart-bar"
 import { PhoenixHomeTrialBar } from "@/components/phoenix-home-trial-bar"
 import { GeoProvider } from "@/lib/geo/context"
-import { LocationBanner } from "@/components/geo/location-banner"
+import { LocationTab } from "@/components/geo/location-tab"
 import { Toaster } from "@/components/ui/toaster"
 import { CookieConsentBanner } from "@/components/cookie-consent/cookie-consent-banner"
 
@@ -60,7 +60,7 @@ export default function RootLayout({
             <Footer />
             <LiveChatButton />
             <StickyCartBar />
-            <LocationBanner />
+            <LocationTab />
             <CookieConsentBanner />
           </GeoProvider>
         </CartProvider>
