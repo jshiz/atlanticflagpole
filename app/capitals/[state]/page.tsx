@@ -38,30 +38,20 @@ export async function generateMetadata({ params }: StateCapitalPageProps): Promi
 }
 
 export default async function StateCapitalPage({ params }: StateCapitalPageProps) {
-  console.log("[v0] 🏛️ State Capital Page - Loading for state:", params.state)
-
   const stateData = getStateCapitalData(params.state.toUpperCase())
-  console.log("[v0] State data found:", stateData ? `${stateData.state} - ${stateData.capital}` : "NOT FOUND")
 
   if (!stateData) {
-    console.log("[v0] ❌ State not found, returning 404")
     notFound()
   }
 
   // Fetch Phoenix Premier Kit (main product)
-  console.log("[v0] 🔍 Fetching Phoenix product...")
   const phoenixProduct = await getProduct("phoenix-flagpole-patriot-kit")
-  console.log("[v0] Phoenix product:", phoenixProduct ? "✅ Found" : "❌ Not found")
 
   // Search for state-specific products
-  console.log("[v0] 🔍 Searching for state products...")
   const stateProducts = await searchStateProducts(stateData.stateCode, stateData.state)
-  console.log("[v0] Found", stateProducts.length, "state products")
 
   // Get state-specific add-ons
-  console.log("[v0] 🔍 Getting state add-ons...")
   const addOns = await getStateAddOns(stateData.stateCode, stateData.state)
-  console.log("[v0] Found", addOns.length, "add-ons")
 
   // Generate structured data
   const stateSchema = generateStateCapitalSchema(stateData, phoenixProduct)
@@ -76,8 +66,6 @@ export default async function StateCapitalPage({ params }: StateCapitalPageProps
       url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://atlanticflagpole.vercel.app"}/capitals/${params.state}`,
     },
   ])
-
-  console.log("[v0] ✅ State Capital Page - Rendering components")
 
   return (
     <main className="min-h-screen bg-[#F5F3EF]">

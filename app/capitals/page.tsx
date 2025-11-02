@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { USStateMap } from "@/components/capitals/us-state-map"
+import { StateSelector } from "@/components/capitals/state-selector"
 import { stateCapitals } from "@/lib/capitals/data"
 import Link from "next/link"
 
@@ -16,23 +16,21 @@ export const metadata: Metadata = {
 
 export default function CapitalsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-screen bg-gradient-to-b from-[#F5F3EF] to-white">
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 text-center">
-        <h1 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+        <h1 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl text-[#0B1C2C]">
           Find Your State's Perfect Flagpole
         </h1>
-        <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground md:text-xl">
-          Click on your state to discover premium flagpoles, state flags, and local sports team flags designed for your
-          area's unique climate and conditions.
+        <p className="mx-auto mb-8 max-w-2xl text-lg text-[#0B1C2C]/70 md:text-xl">
+          Discover premium flagpoles, state flags, and local sports team flags designed for your area's unique climate
+          and conditions.
         </p>
       </section>
 
       {/* Interactive Map Section */}
       <section className="container mx-auto px-4 pb-16">
-        <div className="mx-auto max-w-5xl rounded-lg border bg-card p-8 shadow-lg">
-          <USStateMap />
-        </div>
+        <StateSelector />
       </section>
 
       {/* State List Section */}
@@ -67,14 +65,14 @@ export default function CapitalsPage() {
       </section>
 
       {/* Benefits Section */}
-      <section className="border-t bg-muted/30 py-16">
+      <section className="border-t bg-gradient-to-b from-white to-[#F5F3EF] py-16">
         <div className="container mx-auto px-4">
-          <h2 className="mb-12 text-center text-3xl font-bold">Why Shop by State?</h2>
+          <h2 className="mb-12 text-center text-3xl font-bold text-[#0B1C2C]">Why Shop by State?</h2>
           <div className="grid gap-8 md:grid-cols-3">
             <div className="text-center">
               <div className="mb-4 flex justify-center">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                  <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#C8A55C]/10">
+                  <svg className="h-8 w-8 text-[#C8A55C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -84,15 +82,13 @@ export default function CapitalsPage() {
                   </svg>
                 </div>
               </div>
-              <h3 className="mb-2 text-xl font-semibold">State-Specific Flags</h3>
-              <p className="text-muted-foreground">
-                Find your state flag and local sports team flags all in one place.
-              </p>
+              <h3 className="mb-2 text-xl font-semibold text-[#0B1C2C]">State-Specific Flags</h3>
+              <p className="text-[#0B1C2C]/70">Find your state flag and local sports team flags all in one place.</p>
             </div>
             <div className="text-center">
               <div className="mb-4 flex justify-center">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                  <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#C8A55C]/10">
+                  <svg className="h-8 w-8 text-[#C8A55C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -102,15 +98,13 @@ export default function CapitalsPage() {
                   </svg>
                 </div>
               </div>
-              <h3 className="mb-2 text-xl font-semibold">Climate-Optimized</h3>
-              <p className="text-muted-foreground">
-                Get recommendations based on your state's unique weather conditions.
-              </p>
+              <h3 className="mb-2 text-xl font-semibold text-[#0B1C2C]">Climate-Optimized</h3>
+              <p className="text-[#0B1C2C]/70">Get recommendations based on your state's unique weather conditions.</p>
             </div>
             <div className="text-center">
               <div className="mb-4 flex justify-center">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                  <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#C8A55C]/10">
+                  <svg className="h-8 w-8 text-[#C8A55C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -120,8 +114,8 @@ export default function CapitalsPage() {
                   </svg>
                 </div>
               </div>
-              <h3 className="mb-2 text-xl font-semibold">Local Expertise</h3>
-              <p className="text-muted-foreground">
+              <h3 className="mb-2 text-xl font-semibold text-[#0B1C2C]">Local Expertise</h3>
+              <p className="text-[#0B1C2C]/70">
                 Benefit from recommendations tailored to your state's regulations and preferences.
               </p>
             </div>
