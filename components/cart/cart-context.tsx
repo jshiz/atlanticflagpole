@@ -9,7 +9,7 @@ interface CartContextType {
   cart: ShopifyCart | null
   loading: boolean
   addToCart: (variantId: string, quantity?: number) => Promise<void>
-  updateCartLine: (lineId: string, quantity: number) => Promise<void>
+  updateQuantity: (lineId: string, quantity: number) => Promise<void>
   removeFromCart: (lineId: string) => Promise<void>
   clearCart: () => void
 }
@@ -86,7 +86,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [cart, loading],
   )
 
-  const updateCartLine = useCallback(
+  const updateQuantity = useCallback(
     async (lineId: string, quantity: number) => {
       if (!cart) return
 
@@ -159,7 +159,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         cart,
         loading,
         addToCart,
-        updateCartLine,
+        updateQuantity,
         removeFromCart,
         clearCart,
       }}

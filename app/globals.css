@@ -242,6 +242,25 @@
     animation: wiggle 2s ease-in-out infinite;
   }
 
+  /* Replaced shake animation with subtle cart-ring animation for icon only */
+  @keyframes cart-ring {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    10%,
+    30% {
+      transform: rotate(-3deg);
+    }
+    20%,
+    40% {
+      transform: rotate(3deg);
+    }
+    50% {
+      transform: rotate(0deg);
+    }
+  }
+
   /* Adding wave animation for flag loading screen */
   @keyframes wave {
     0%,
@@ -251,10 +270,6 @@
     50% {
       transform: translateY(-8px);
     }
-  }
-
-  .animate-wave {
-    animation: wave 2s ease-in-out infinite;
   }
 
   @keyframes perspective-wave {

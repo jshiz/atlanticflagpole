@@ -90,7 +90,7 @@ export function LocationTab() {
       {!isExpanded && (
         <button
           onClick={() => setIsExpanded(true)}
-          className="fixed bottom-[260px] right-0 z-50 bg-[#0B1C2C] hover:bg-[#1a2d3f] text-white px-2 py-6 rounded-l-lg shadow-lg transition-all duration-300 hover:px-3 group"
+          className="fixed bottom-[260px] right-0 z-[110] bg-[#0B1C2C] hover:bg-[#1a2d3f] text-white px-2 py-6 rounded-l-lg shadow-lg transition-all duration-300 hover:px-3 group"
           aria-label="Open location menu"
         >
           <div className="flex flex-col items-center">
@@ -100,7 +100,7 @@ export function LocationTab() {
       )}
 
       {isExpanded && (
-        <div className="fixed bottom-24 right-0 z-50 w-[90vw] max-w-sm bg-gradient-to-br from-[#0B1C2C] via-[#1a2f42] to-[#0B1C2C] rounded-l-lg shadow-2xl border-2 border-[#C8A55C]/30 flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
+        <div className="fixed bottom-24 right-0 z-[120] w-[90vw] max-w-sm bg-gradient-to-br from-[#0B1C2C] via-[#1a2f42] to-[#0B1C2C] rounded-l-lg shadow-2xl border-2 border-[#C8A55C]/30 flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
           {/* Header */}
           <div className="bg-gradient-to-r from-[#0B1C2C] to-[#1a2f42] text-white p-4 flex items-center justify-between border-b border-white/10">
             <div className="flex-1">

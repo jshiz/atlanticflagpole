@@ -19,7 +19,7 @@ export function LiveChatButton() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-32 right-0 z-50 bg-[#0B1C2C] hover:bg-[#1a2d3f] text-white px-2 py-6 rounded-l-lg shadow-lg transition-all duration-300 hover:px-3 group"
+          className="fixed bottom-32 right-0 z-[110] bg-[#0B1C2C] hover:bg-[#1a2d3f] text-white px-2 py-6 rounded-l-lg shadow-lg transition-all duration-300 hover:px-3 group"
           aria-label="Open live chat"
         >
           <div className="flex flex-col items-center gap-3">
@@ -41,7 +41,7 @@ export function LiveChatButton() {
       )}
 
       {isOpen && (
-        <div className="fixed bottom-24 right-0 z-50 w-[90vw] max-w-sm h-[500px] bg-white rounded-l-lg shadow-2xl border border-gray-200 flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
+        <div className="fixed bottom-24 right-0 z-[120] w-[90vw] max-w-sm h-[500px] bg-white rounded-l-lg shadow-2xl border border-gray-200 flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
           {/* Header */}
           <div className="bg-[#0B1C2C] text-white p-4 flex items-center justify-between">
             <div className="flex-1">

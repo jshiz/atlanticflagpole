@@ -28,22 +28,31 @@ export function StateAddOns({ addOns, stateData }: StateAddOnsProps) {
               const images = toNodes(product.images)
               const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
 
+              const firstImage = images.length > 0 ? images[0] : null
+
               return (
                 <div
                   key={product.id}
                   className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                 >
                   <Link href={`/products/${product.handle}`}>
-                    {images[0] && (
-                      <div className="relative aspect-square">
+                    <div className="relative aspect-square">
+                      {firstImage ? (
                         <Image
-                          src={images[0].url || "/placeholder.svg"}
-                          alt={images[0].altText || product.title}
+                          src={firstImage.url || "/placeholder.svg"}
+                          alt={firstImage.altText || product.title}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
-                      </div>
-                    )}
+                      ) : (
+                        <Image
+                          src="/placeholder.svg?height=400&width=400"
+                          alt={product.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      )}
+                    </div>
                   </Link>
                   <div className="p-4">
                     <Link href={`/products/${product.handle}`}>

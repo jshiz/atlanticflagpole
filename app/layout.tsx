@@ -9,12 +9,12 @@ import { Footer } from "@/components/footer"
 import { LiveChatButton } from "@/components/live-chat-button"
 import { CartProvider } from "@/components/cart/cart-context"
 import { JudgeMePlatformScript } from "@/components/judgeme/judgeme-platform-script"
-import { StickyCartBar } from "@/components/cart/sticky-cart-bar"
 import { PhoenixHomeTrialBar } from "@/components/phoenix-home-trial-bar"
 import { GeoProvider } from "@/lib/geo/context"
 import { LocationTab } from "@/components/geo/location-tab"
 import { Toaster } from "@/components/ui/toaster"
 import { CookieConsentBanner } from "@/components/cookie-consent/cookie-consent-banner"
+import { CartSidebarButton } from "@/components/cart/cart-sidebar-button"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -59,7 +59,7 @@ export default function RootLayout({
             <Suspense fallback={null}>{children}</Suspense>
             <Footer />
             <LiveChatButton />
-            <StickyCartBar />
+            <CartSidebarButton />
             <LocationTab />
             <CookieConsentBanner />
           </GeoProvider>

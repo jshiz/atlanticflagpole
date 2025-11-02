@@ -14,9 +14,19 @@ interface PhoenixProductShowcaseProps {
 }
 
 export function PhoenixProductShowcase({ product, stateData }: PhoenixProductShowcaseProps) {
-  const [selectedVariant, setSelectedVariant] = useState(toNodes(product.variants)[0])
-  const images = toNodes(product.images)
   const variants = toNodes(product.variants)
+  const images = toNodes(product.images)
+
+  // Ensure we have at least one variant, fallback to creating one from product data
+  const defaultVariant = variants[0] || {
+    id: product.id,
+    title: "Default",
+    price: product.priceRange.minVariantPrice,
+    compareAtPrice: null,
+    availableForSale: product.availableForSale,
+  }
+
+  const [selectedVariant, setSelectedVariant] = useState(defaultVariant)
 
   const price = Number.parseFloat(selectedVariant?.price.amount || product.priceRange.minVariantPrice.amount)
   const compareAtPrice = selectedVariant?.compareAtPrice?.amount
@@ -34,11 +44,20 @@ export function PhoenixProductShowcase({ product, stateData }: PhoenixProductSho
           <div className="grid md:grid-cols-2 gap-12">
             {/* Product Images */}
             <div className="space-y-4">
-              {images[0] && (
+              {images.length > 0 && images[0] ? (
                 <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-50">
                   <Image
                     src={images[0].url || "/placeholder.svg"}
                     alt={images[0].altText || product.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
+                  <Image
+                    src="/placeholder.svg?height=600&width=600"
+                    alt={product.title}
                     fill
                     className="object-cover"
                   />
