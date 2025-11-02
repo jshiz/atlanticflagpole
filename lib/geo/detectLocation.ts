@@ -38,18 +38,22 @@ export async function detectLocationServer(headers: Headers): Promise<GeoLocatio
 
 export async function detectLocationClient(): Promise<GeoLocation | null> {
   try {
-    // Check localStorage cache first (7 day expiration)
     const cached = localStorage.getItem("geo_location")
     if (cached) {
       const { data, timestamp } = JSON.parse(cached)
       const age = Date.now() - timestamp
       const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000
 
-      if (age < SEVEN_DAYS) {
+      if (age < SEVEN_DAYS && data && data.region) {
+        console.log("[v0] Using cached location:", data)
         return data
+      } else {
+        console.log("[v0] Cached location invalid or expired, clearing cache")
+        localStorage.removeItem("geo_location")
       }
     }
 
+    console.log("[v0] Fetching location from API...")
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 5000)
 
@@ -60,10 +64,17 @@ export async function detectLocationClient(): Promise<GeoLocation | null> {
     clearTimeout(timeoutId)
 
     if (!response.ok) {
+      console.log("[v0] API response not OK:", response.status)
       return null
     }
 
     const location = await response.json()
+    console.log("[v0] API returned location:", location)
+
+    if (!location || !location.region) {
+      console.log("[v0] Location missing required fields, not caching")
+      return null
+    }
 
     // Cache in localStorage for 7 days
     localStorage.setItem(
@@ -74,8 +85,10 @@ export async function detectLocationClient(): Promise<GeoLocation | null> {
       }),
     )
 
+    console.log("[v0] Location cached successfully")
     return location
   } catch (error) {
+    console.log("[v0] detectLocationClient error:", error)
     // Silently fail - geo features are optional
     return null
   }
@@ -84,10 +97,24 @@ export async function detectLocationClient(): Promise<GeoLocation | null> {
 export function detectLocationFallback(): Partial<GeoLocation> | null {
   try {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-    // This is a very rough estimate, but better than nothing
+    // Extract region from timezone (e.g., "America/New_York" -> "New York")
+    const parts = timezone.split("/")
+    const region = parts[1]?.replace(/_/g, " ") || ""
+    const country = parts[0] || ""
+
+    if (!region) {
+      return null
+    }
+
     return {
-      region_code: timezone.split("/")[1] || "",
-      country: timezone.split("/")[0] || "",
+      region: region,
+      region_code: region,
+      country: country,
+      country_code: country,
+      city: "",
+      postal: "",
+      latitude: 0,
+      longitude: 0,
     }
   } catch {
     return null

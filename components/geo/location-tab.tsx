@@ -28,7 +28,6 @@ export function LocationTab() {
     localStorage.setItem("location-banner-dismissed", "true")
 
     if (action === "ok") {
-      // User acknowledged, collapse to tab
       setIsExpanded(false)
     }
   }
@@ -39,7 +38,7 @@ export function LocationTab() {
   if (showInitialBanner && location?.region) {
     return (
       <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md z-[200] animate-slide-up">
-        <div className="bg-gradient-to-r from-[#002868] to-[#003d82] text-white rounded-lg shadow-2xl p-4 border border-[#C8A55C]/20">
+        <div className="bg-gradient-to-r from-[#0B1C2C] via-[#1a2f42] to-[#0B1C2C] text-white rounded-lg shadow-2xl p-4 border-2 border-[#C8A55C]/30">
           <button
             onClick={() => handleInitialDismiss("dismiss")}
             className="absolute top-2 right-2 text-white/60 hover:text-white transition-colors"
@@ -63,7 +62,7 @@ export function LocationTab() {
               <div className="flex gap-2">
                 <button
                   onClick={() => handleInitialDismiss("ok")}
-                  className="text-xs px-3 py-1.5 bg-[#C8A55C] hover:bg-[#B8954C] text-[#002868] font-medium rounded transition-colors"
+                  className="text-xs px-3 py-1.5 bg-[#C8A55C] hover:bg-[#B8954C] text-[#0B1C2C] font-semibold rounded transition-colors"
                 >
                   Got it!
                 </button>
@@ -88,46 +87,49 @@ export function LocationTab() {
 
   return (
     <>
-      {/* Collapsed Tab - positioned below chat button */}
       {!isExpanded && (
         <button
           onClick={() => setIsExpanded(true)}
-          className="fixed right-0 bottom-56 z-[100] bg-gradient-to-l from-[#002868] to-[#003d82] text-white px-3 py-6 rounded-l-lg shadow-lg hover:px-4 transition-all group"
+          className="fixed bottom-[260px] right-0 z-50 bg-[#0B1C2C] hover:bg-[#1a2d3f] text-white px-2 py-6 rounded-l-lg shadow-lg transition-all duration-300 hover:px-3 group"
           aria-label="Open location menu"
         >
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center">
             <MapPin className="w-5 h-5 text-[#C8A55C]" />
-            <span className="text-xs font-medium writing-mode-vertical transform rotate-180">{location.region}</span>
           </div>
         </button>
       )}
 
-      {/* Expanded Panel */}
       {isExpanded && (
-        <div className="fixed right-4 top-1/2 -translate-y-1/2 z-[200] w-80 bg-white rounded-lg shadow-2xl border-2 border-[#C8A55C]/30 animate-slide-in-right">
-          <div className="bg-gradient-to-r from-[#002868] to-[#003d82] text-white p-4 rounded-t-lg">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
+        <div className="fixed bottom-24 right-0 z-50 w-[90vw] max-w-sm bg-gradient-to-br from-[#0B1C2C] via-[#1a2f42] to-[#0B1C2C] rounded-l-lg shadow-2xl border-2 border-[#C8A55C]/30 flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-[#0B1C2C] to-[#1a2f42] text-white p-4 flex items-center justify-between border-b border-white/10">
+            <div className="flex-1">
+              <h3 className="font-bold text-base md:text-lg flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-[#C8A55C]" />
-                <h3 className="font-semibold">Your Location</h3>
-              </div>
-              <button
-                onClick={() => setIsExpanded(false)}
-                className="text-white/60 hover:text-white transition-colors"
-                aria-label="Close"
-              >
-                <X className="w-5 h-5" />
-              </button>
+                Your Location
+              </h3>
+              <p className="text-xs text-white/80 mt-1">Shopping from {location.region}</p>
             </div>
-            <p className="text-sm text-white/80">Shopping from {location.region}</p>
+            <button
+              onClick={() => setIsExpanded(false)}
+              className="ml-2 text-white/60 hover:text-white transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
-          <div className="p-4 space-y-3">
+          {/* Content */}
+          <div className="flex-1 p-4 space-y-3 bg-gradient-to-b from-transparent to-black/20">
+            <p className="text-sm text-white/80 mb-4">
+              Discover products popular in your area, including state flags and local sports team merchandise.
+            </p>
+
             {stateCode && (
               <Link
                 href={`/capitals/${stateCode.toLowerCase()}`}
                 onClick={() => setIsExpanded(false)}
-                className="block w-full bg-[#C8A55C] hover:bg-[#B8954C] text-white px-4 py-3 rounded-lg font-semibold text-center transition-colors"
+                className="block w-full bg-[#C8A55C] hover:bg-[#B8954C] text-[#0B1C2C] px-4 py-3 rounded-lg font-bold text-center transition-all shadow-lg hover:shadow-xl"
               >
                 Shop {location.region} Products
               </Link>
@@ -136,7 +138,7 @@ export function LocationTab() {
             <Link
               href="/capitals"
               onClick={() => setIsExpanded(false)}
-              className="flex items-center justify-center gap-2 w-full bg-[#0B1C2C] hover:bg-[#0B1C2C]/90 text-white px-4 py-3 rounded-lg font-semibold transition-colors"
+              className="flex items-center justify-center gap-2 w-full bg-white/10 hover:bg-white/20 text-white px-4 py-3 rounded-lg font-semibold transition-all border border-white/20"
             >
               <Map className="w-4 h-4" />
               Browse All States
@@ -144,7 +146,7 @@ export function LocationTab() {
 
             <button
               onClick={() => setIsExpanded(false)}
-              className="w-full text-[#0B1C2C]/60 hover:text-[#0B1C2C] text-sm font-medium py-2 transition-colors"
+              className="w-full text-white/60 hover:text-white text-sm font-medium py-2 transition-colors"
             >
               Close
             </button>

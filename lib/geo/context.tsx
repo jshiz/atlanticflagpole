@@ -40,15 +40,19 @@ export function GeoProvider({ children }: { children: ReactNode }) {
 
     detectLocationClient()
       .then((geo) => {
-        if (geo) {
+        console.log("[v0] GeoProvider - detectLocationClient returned:", geo)
+        if (geo && geo.region) {
           console.log("[v0] GeoProvider - location detected:", geo)
           setLocation(geo)
         } else {
-          console.log("[v0] GeoProvider - no location, trying fallback")
+          console.log("[v0] GeoProvider - no valid location, trying fallback")
           const fallback = detectLocationFallback()
-          if (fallback) {
+          console.log("[v0] GeoProvider - fallback returned:", fallback)
+          if (fallback && fallback.region) {
             console.log("[v0] GeoProvider - fallback location:", fallback)
             setLocation(fallback as GeoLocation)
+          } else {
+            console.log("[v0] GeoProvider - no valid fallback location")
           }
         }
       })
@@ -56,13 +60,13 @@ export function GeoProvider({ children }: { children: ReactNode }) {
         console.error("[v0] GeoProvider - detection error:", error)
         // Try fallback on error
         const fallback = detectLocationFallback()
-        if (fallback) {
+        if (fallback && fallback.region) {
           console.log("[v0] GeoProvider - fallback location after error:", fallback)
           setLocation(fallback as GeoLocation)
         }
       })
       .finally(() => {
-        console.log("[v0] GeoProvider - detection complete")
+        console.log("[v0] GeoProvider - detection complete, location:", location)
         setLoading(false)
       })
   }, [])
