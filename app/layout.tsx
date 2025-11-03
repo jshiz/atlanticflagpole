@@ -5,7 +5,7 @@ import "./globals.css"
 import { Suspense } from "react"
 import { Header } from "@/components/header"
 import { HeaderSkeleton } from "@/components/header-skeleton"
-import { Footer } from "@/components/footer"
+import { LazyFooter } from "@/components/ui/lazy-footer"
 import { LiveChatButton } from "@/components/live-chat-button"
 import { CartProvider } from "@/components/cart/cart-context"
 import { JudgeMePlatformScript } from "@/components/judgeme/judgeme-platform-script"
@@ -59,7 +59,7 @@ export default function RootLayout({
                 <Header />
               </Suspense>
               <Suspense fallback={null}>{children}</Suspense>
-              <Footer />
+              <LazyFooter />
               <LiveChatButton />
               <CartSidebarButton />
               <LocationTab />

@@ -17,14 +17,25 @@ interface MenuItem {
   items?: MenuItem[]
 }
 
-interface HeaderProps {
+interface HeaderClientProps {
   menuData: {
     items: MenuItem[]
   } | null
-  collectionsData: Record<string, { products: { nodes: any[] } }>
+  megaMenuData: any
+  submenuProductsData: any
+  nflFlagProducts: any
+  christmasTreeProducts: any
+  judgemeBadge: any
 }
 
-export function Header({ menuData, collectionsData }: HeaderProps) {
+export function HeaderClient({
+  menuData,
+  megaMenuData,
+  submenuProductsData,
+  nflFlagProducts,
+  christmasTreeProducts,
+  judgemeBadge,
+}: HeaderClientProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [quizModalOpen, setQuizModalOpen] = useState(false)
@@ -60,7 +71,7 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
 
   return (
     <>
-      <header className="relative bg-white z-50 border-b-2 border-gray-200">
+      <header className="relative bg-white z-[100] border-b-2 border-gray-200">
         {/* Top Bar */}
         <div className="border-b border-gray-200 bg-[#F5F3EF] hidden md:block">
           <div className="container mx-auto px-4 py-2 flex justify-between items-center text-xs">
@@ -75,12 +86,12 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
                 Contact Us
               </Link>
             </div>
-            <div className="flex gap-4 items-center">
+            <div className="flex gap-6 items-center">
               <a
                 href={shopifyAccountUrl}
-                className="flex items-center gap-1 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-medium"
+                className="flex items-center gap-2 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-medium"
               >
-                <User className="w-3.5 h-3.5" />
+                <User className="w-4 h-4" />
                 My Account
               </a>
             </div>
@@ -90,22 +101,21 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
         {/* Main Header */}
         <div className="bg-white">
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between h-20">
+            <div className="flex items-center justify-between h-24">
               {/* Mobile Menu Button */}
               <button className="lg:hidden text-[#0B1C2C]" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
 
-              {/* Logo */}
-              <Link href="/" className="flex items-center gap-3">
+              <Link href="/" className="flex items-center gap-4">
                 <Image
                   src="/images/favicon.png"
                   alt="Atlantic Flagpoles Logo"
-                  width={40}
-                  height={40}
-                  className="w-10 h-10"
+                  width={64}
+                  height={64}
+                  className="w-16 h-16"
                 />
-                <span className="text-2xl font-serif font-bold text-[#0B1C2C] tracking-wide hidden sm:block">
+                <span className="text-4xl font-serif font-bold text-[#0B1C2C] tracking-wide hidden sm:block">
                   ATLANTIC FLAGPOLES
                 </span>
               </Link>
@@ -148,7 +158,7 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
 
                       {/* Dropdown Menu */}
                       {activeDropdown === item.id && (
-                        <div className="absolute top-full left-0 pt-2 z-50">
+                        <div className="absolute top-full left-0 pt-2 z-[90]">
                           <div className="bg-white border-2 border-[#C8A55C]/30 rounded-lg shadow-xl min-w-[240px] py-2">
                             <div className="px-4 py-2 border-b border-gray-200">
                               <Link href={item.url} className="text-[#C8A55C] hover:text-[#0B1C2C] font-bold text-sm">
@@ -205,77 +215,47 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
                 </button>
               </nav>
 
-              {/* Cart Icon */}
-              <Link href="/cart" className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors">
-                <ShoppingCart className="w-6 h-6" />
-                {cartItemCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-[#C8A55C] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {cartItemCount}
-                  </span>
-                )}
-              </Link>
+              <div className="flex items-center gap-6">
+                <a
+                  href={shopifyAccountUrl}
+                  className="hidden lg:flex items-center gap-2 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors"
+                >
+                  <User className="w-6 h-6" />
+                </a>
+
+                <Link href="/cart" className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors">
+                  <ShoppingCart className="w-7 h-7" />
+                  {cartItemCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-[#C8A55C] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {cartItemCount}
+                    </span>
+                  )}
+                </Link>
+              </div>
             </div>
 
-            {/* Mobile Menu */}
             {mobileMenuOpen && (
-              <div className="lg:hidden py-4 border-t border-gray-200">
-                <div className="mb-4">
-                  <SearchBarWrapper />
-                </div>
-                <nav className="flex flex-col gap-3">
-                  {menuItems.length === 0 && (
-                    <div className="text-red-600 font-bold text-sm p-4 bg-red-50 rounded">
-                      NO MENU ITEMS - Check console for details
-                    </div>
-                  )}
-
-                  {menuItems.map((item) => (
-                    <div key={item.id}>
-                      <Link
-                        href={item.url}
-                        className="block text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-semibold py-2"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        {item.title}
-                      </Link>
-                      {item.items && item.items.length > 0 && (
-                        <div className="ml-4 mt-2 space-y-2">
-                          {item.items.map((subItem) => (
-                            <Link
-                              key={subItem.id}
-                              href={subItem.url}
-                              className="block text-[#0B1C2C]/70 hover:text-[#C8A55C] transition-colors text-sm py-1"
-                              onClick={() => setMobileMenuOpen(false)}
-                            >
-                              {subItem.title}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-
+              <div className="lg:hidden py-3 border-t border-gray-200 z-[90] bg-white">
+                {/* Buttons on top in one row */}
+                <div className="grid grid-cols-2 gap-2 mb-3">
                   {location && stateCode && (
                     <Link
                       href={`/capitals/${stateCode.toLowerCase()}`}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="relative bg-gradient-to-r from-[#0B1C2C] to-[#1a2f42] px-4 py-3 rounded-md text-white font-semibold transition-all shadow-lg flex items-center justify-center gap-2"
+                      className="bg-gradient-to-r from-[#0B1C2C] to-[#1a2f42] px-3 py-2 rounded-md text-white font-semibold text-xs flex items-center justify-center gap-1.5"
                     >
-                      <MapPin className="w-4 h-4" />
-                      Shop Products in {location.region}
+                      <MapPin className="w-3.5 h-3.5" />
+                      Shop {location.region}
                     </Link>
                   )}
 
                   <Link
                     href="/flagpole-finder"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="relative bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] px-4 py-3 rounded-md text-white font-semibold transition-all mt-4 shadow-lg flex items-center justify-center gap-2 overflow-hidden group"
+                    className="bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] px-3 py-2 rounded-md text-white font-semibold text-xs flex items-center justify-center gap-1.5"
                   >
-                    <span className="relative z-10 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4" />
-                      Find Your Perfect Flagpole
-                    </span>
-                    <span className="absolute inset-0 bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] opacity-0 group-active:opacity-100 blur-xl transition-opacity duration-300" />
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Finder
                   </Link>
 
                   <button
@@ -283,10 +263,53 @@ export function Header({ menuData, collectionsData }: HeaderProps) {
                       setQuizModalOpen(true)
                       setMobileMenuOpen(false)
                     }}
-                    className="text-left bg-[#0B1C2C] hover:bg-[#0B1C2C]/90 px-4 py-3 rounded-md text-white font-semibold transition-colors"
+                    className="bg-[#0B1C2C] px-3 py-2 rounded-md text-white font-semibold text-xs col-span-2"
                   >
                     Flagpole Quiz
                   </button>
+                </div>
+
+                {/* Search bar */}
+                <div className="mb-2">
+                  <SearchBarWrapper />
+                </div>
+
+                {/* Menu items condensed */}
+                <nav className="flex flex-col gap-1">
+                  {menuItems.map((item) => (
+                    <div key={item.id}>
+                      <Link
+                        href={item.url}
+                        className="block text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-semibold py-1.5 text-sm"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        {item.title}
+                      </Link>
+                      {item.items && item.items.length > 0 && (
+                        <div className="ml-2 mt-0.5 space-y-0.5">
+                          {item.items.slice(0, 3).map((subItem) => (
+                            <Link
+                              key={subItem.id}
+                              href={subItem.url}
+                              className="block text-[#0B1C2C]/70 hover:text-[#C8A55C] transition-colors text-xs py-0.5"
+                              onClick={() => setMobileMenuOpen(false)}
+                            >
+                              {subItem.title}
+                            </Link>
+                          ))}
+                          {item.items.length > 3 && (
+                            <Link
+                              href={item.url}
+                              className="block text-[#C8A55C] hover:text-[#0B1C2C] text-xs py-0.5 font-medium"
+                              onClick={() => setMobileMenuOpen(false)}
+                            >
+                              View All →
+                            </Link>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </nav>
               </div>
             )}
