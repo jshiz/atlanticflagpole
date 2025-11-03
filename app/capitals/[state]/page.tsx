@@ -44,17 +44,30 @@ export default async function StateCapitalPage({ params }: StateCapitalPageProps
     notFound()
   }
 
-  // Fetch Phoenix Premier Kit (main product)
-  const phoenixProduct = await getProduct("phoenix-flagpole-patriot-kit")
+  let phoenixProduct = await getProduct("phoenix-telescoping-flagpole-premier-kit-starter-bundle")
+
+  if (!phoenixProduct) {
+    console.log("[v0] Premier kit not found, trying patriot kit...")
+    phoenixProduct = await getProduct("phoenix-flagpole-patriot-kit")
+  }
+
+  if (!phoenixProduct) {
+    console.log("[v0] Patriot kit not found, trying presidential kit...")
+    phoenixProduct = await getProduct("phoenix-presidential-flagpole-kit")
+  }
+
+  console.log("[v0] Phoenix product found:", phoenixProduct ? phoenixProduct.handle : "none")
 
   // Search for state-specific products
   const stateProducts = await searchStateProducts(stateData.stateCode, stateData.state)
+  console.log("[v0] Found", stateProducts.length, "state products")
 
   // Get state-specific add-ons
   const addOns = await getStateAddOns(stateData.stateCode, stateData.state)
+  console.log("[v0] Found", addOns.length, "add-ons")
 
-  // Generate structured data
-  const stateSchema = generateStateCapitalSchema(stateData, phoenixProduct)
+  // Generate structured data only if we have a product
+  const stateSchema = phoenixProduct ? generateStateCapitalSchema(stateData, phoenixProduct) : null
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Home", url: process.env.NEXT_PUBLIC_SITE_URL || "https://atlanticflagpole.vercel.app" },
     {
@@ -69,7 +82,7 @@ export default async function StateCapitalPage({ params }: StateCapitalPageProps
 
   return (
     <main className="min-h-screen bg-[#F5F3EF]">
-      <StructuredData data={stateSchema} />
+      {stateSchema && <StructuredData data={stateSchema} />}
       <StructuredData data={breadcrumbSchema} />
 
       {/* Hero Section */}
@@ -81,11 +94,11 @@ export default async function StateCapitalPage({ params }: StateCapitalPageProps
       {/* Localized Hook: "The [City]-Proof Flagpole" */}
       <LocalizedHook stateData={stateData} />
 
-      {/* Phoenix Product Showcase */}
+      {/* Phoenix Product Showcase - only render if product exists */}
       {phoenixProduct && <PhoenixProductShowcase product={phoenixProduct} stateData={stateData} />}
 
-      {/* State-Specific Add-Ons */}
-      {addOns.length > 0 && <StateAddOns addOns={addOns} stateData={stateData} />}
+      {/* State-Specific Add-Ons - only render if we have add-ons */}
+      {addOns && addOns.length > 0 && <StateAddOns addOns={addOns} stateData={stateData} />}
 
       {/* Why Choose the Phoenix? */}
       <WhyPhoenix />
