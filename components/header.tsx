@@ -94,7 +94,6 @@ export async function Header() {
           ]
         } else if (title.includes("part") || title.includes("accessor")) {
           collectionConfig = [
-            { handle: "phoenix-parts-and-accessories", tags: ["accessory", "accessories"] },
             { handle: "flagpole-lighting", tags: ["light", "lighting", "solar light"] },
             { handle: "flagpole-toppers", tags: ["topper", "finial", "eagle", "ball"] },
             { handle: "flagpole-mounts", tags: ["mount", "bracket", "wall mount"] },
