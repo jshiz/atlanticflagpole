@@ -26,9 +26,11 @@ export function ExpandableReviews({ reviews }: ExpandableReviewsProps) {
   return (
     <section className="py-16 bg-[#0A2740]">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">Trusted by Thousands</h2>
+        <div className="max-w-4xl mx-auto text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-white">Trusted by Thousands</h2>
+        </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {highRatedReviews.map((review, index) => {
             const isExpanded = expandedIndex === index
             const hasMedia = review.pictures && review.pictures.length > 0

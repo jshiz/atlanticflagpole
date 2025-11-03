@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { ShoppingCart, Menu, X, ChevronDown, User, Sparkles, MapPin } from "lucide-react"
+import { ShoppingCart, Menu, X, ChevronDown, User, Sparkles, MapPin, ChevronRight } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
 import { useCart } from "@/components/cart/cart-context"
@@ -102,9 +102,8 @@ export function HeaderClient({
         <div className="bg-white">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between h-24">
-              {/* Mobile Menu Button */}
               <button className="lg:hidden text-[#0B1C2C]" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                <Menu className="w-8 h-8" />
               </button>
 
               <Link href="/" className="flex items-center gap-4">
@@ -235,83 +234,161 @@ export function HeaderClient({
             </div>
 
             {mobileMenuOpen && (
-              <div className="lg:hidden py-3 border-t border-gray-200 z-[90] bg-white">
-                {/* Buttons on top in one row */}
-                <div className="grid grid-cols-2 gap-2 mb-3">
-                  {location && stateCode && (
-                    <Link
-                      href={`/capitals/${stateCode.toLowerCase()}`}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="bg-gradient-to-r from-[#0B1C2C] to-[#1a2f42] px-3 py-2 rounded-md text-white font-semibold text-xs flex items-center justify-center gap-1.5"
-                    >
-                      <MapPin className="w-3.5 h-3.5" />
-                      Shop {location.region}
-                    </Link>
-                  )}
+              <>
+                {/* Overlay */}
+                <div className="fixed inset-0 bg-black/50 z-[200] lg:hidden" onClick={() => setMobileMenuOpen(false)} />
 
-                  <Link
-                    href="/flagpole-finder"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] px-3 py-2 rounded-md text-white font-semibold text-xs flex items-center justify-center gap-1.5"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    Finder
-                  </Link>
-
-                  <button
-                    onClick={() => {
-                      setQuizModalOpen(true)
-                      setMobileMenuOpen(false)
-                    }}
-                    className="bg-[#0B1C2C] px-3 py-2 rounded-md text-white font-semibold text-xs col-span-2"
-                  >
-                    Flagpole Quiz
-                  </button>
-                </div>
-
-                {/* Search bar */}
-                <div className="mb-2">
-                  <SearchBarWrapper />
-                </div>
-
-                {/* Menu items condensed */}
-                <nav className="flex flex-col gap-1">
-                  {menuItems.map((item) => (
-                    <div key={item.id}>
-                      <Link
-                        href={item.url}
-                        className="block text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-semibold py-1.5 text-sm"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        {item.title}
-                      </Link>
-                      {item.items && item.items.length > 0 && (
-                        <div className="ml-2 mt-0.5 space-y-0.5">
-                          {item.items.slice(0, 3).map((subItem) => (
-                            <Link
-                              key={subItem.id}
-                              href={subItem.url}
-                              className="block text-[#0B1C2C]/70 hover:text-[#C8A55C] transition-colors text-xs py-0.5"
-                              onClick={() => setMobileMenuOpen(false)}
-                            >
-                              {subItem.title}
-                            </Link>
-                          ))}
-                          {item.items.length > 3 && (
-                            <Link
-                              href={item.url}
-                              className="block text-[#C8A55C] hover:text-[#0B1C2C] text-xs py-0.5 font-medium"
-                              onClick={() => setMobileMenuOpen(false)}
-                            >
-                              View All →
-                            </Link>
-                          )}
-                        </div>
-                      )}
+                {/* Drawer */}
+                <div className="fixed top-0 left-0 bottom-0 w-[85%] max-w-sm bg-white z-[201] lg:hidden overflow-y-auto shadow-2xl">
+                  {/* Header with Close Button */}
+                  <div className="flex items-center justify-between p-6 border-b-2 border-gray-200 bg-[#F5F3EF]">
+                    <div className="flex items-center gap-3">
+                      <Image
+                        src="/images/favicon.png"
+                        alt="Atlantic Flagpoles"
+                        width={40}
+                        height={40}
+                        className="w-10 h-10"
+                      />
+                      <span className="text-lg font-serif font-bold text-[#0B1C2C]">ATLANTIC</span>
                     </div>
-                  ))}
-                </nav>
-              </div>
+                    <button onClick={() => setMobileMenuOpen(false)} className="text-[#0B1C2C] p-2">
+                      <X className="w-7 h-7" />
+                    </button>
+                  </div>
+
+                  {/* Hello, Sign In Section */}
+                  <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-[#0B1C2C] to-[#1a2f42]">
+                    <a
+                      href={shopifyAccountUrl}
+                      className="flex items-center gap-3 text-white hover:text-[#C8A55C] transition-colors"
+                    >
+                      <div className="bg-white/10 p-3 rounded-full">
+                        <User className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <div className="text-sm text-white/80">Hello, Sign In</div>
+                        <div className="text-lg font-semibold">My Account</div>
+                      </div>
+                      <ChevronRight className="w-5 h-5 ml-auto" />
+                    </a>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div className="p-6 space-y-3 border-b border-gray-200">
+                    <div className="text-xs font-semibold text-[#0B1C2C]/60 uppercase tracking-wider mb-3">
+                      Quick Actions
+                    </div>
+
+                    {location && stateCode && (
+                      <Link
+                        href={`/capitals/${stateCode.toLowerCase()}`}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-4 bg-gradient-to-r from-[#0B1C2C] to-[#1a2f42] p-4 rounded-lg text-white hover:shadow-lg transition-all"
+                      >
+                        <div className="bg-white/10 p-2 rounded-lg">
+                          <MapPin className="w-6 h-6" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-base font-semibold">Shop by State</div>
+                          <div className="text-sm text-white/80">{location.region} Flagpoles</div>
+                        </div>
+                        <ChevronRight className="w-5 h-5" />
+                      </Link>
+                    )}
+
+                    <Link
+                      href="/flagpole-finder"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-4 bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] p-4 rounded-lg text-white hover:shadow-lg transition-all"
+                    >
+                      <div className="bg-white/10 p-2 rounded-lg">
+                        <Sparkles className="w-6 h-6" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-base font-semibold">Flagpole Finder</div>
+                        <div className="text-sm text-white/80">Find Your Perfect Pole</div>
+                      </div>
+                      <ChevronRight className="w-5 h-5" />
+                    </Link>
+
+                    <button
+                      onClick={() => {
+                        setQuizModalOpen(true)
+                        setMobileMenuOpen(false)
+                      }}
+                      className="flex items-center gap-4 bg-[#0B1C2C] p-4 rounded-lg text-white hover:bg-[#0B1C2C]/90 transition-all w-full"
+                    >
+                      <div className="bg-white/10 p-2 rounded-lg">
+                        <Sparkles className="w-6 h-6" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <div className="text-base font-semibold">Flagpole Quiz</div>
+                        <div className="text-sm text-white/80">Get Personalized Recommendations</div>
+                      </div>
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {/* Navigation Menu */}
+                  <nav className="p-6 space-y-1">
+                    <div className="text-xs font-semibold text-[#0B1C2C]/60 uppercase tracking-wider mb-3">
+                      Shop Categories
+                    </div>
+                    {menuItems.map((item) => (
+                      <div key={item.id}>
+                        <Link
+                          href={item.url}
+                          className="flex items-center justify-between text-[#0B1C2C] hover:text-[#C8A55C] hover:bg-[#F5F3EF] transition-colors font-semibold py-3 px-3 rounded-lg text-base"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          <span>{item.title}</span>
+                          <ChevronRight className="w-5 h-5" />
+                        </Link>
+                        {item.items && item.items.length > 0 && (
+                          <div className="ml-4 mt-1 space-y-1">
+                            {item.items.map((subItem) => (
+                              <Link
+                                key={subItem.id}
+                                href={subItem.url}
+                                className="block text-[#0B1C2C]/70 hover:text-[#C8A55C] hover:bg-[#F5F3EF] transition-colors py-2 px-3 rounded-lg text-sm"
+                                onClick={() => setMobileMenuOpen(false)}
+                              >
+                                {subItem.title}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </nav>
+
+                  {/* Bottom Links */}
+                  <div className="p-6 border-t border-gray-200 space-y-2 bg-[#F5F3EF]">
+                    <Link
+                      href="/guarantee"
+                      className="block text-[#0B1C2C] hover:text-[#C8A55C] transition-colors py-2 text-base font-medium"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Our Guarantee
+                    </Link>
+                    <Link
+                      href="/about"
+                      className="block text-[#0B1C2C] hover:text-[#C8A55C] transition-colors py-2 text-base font-medium"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      About Us
+                    </Link>
+                    <Link
+                      href="/contact"
+                      className="block text-[#0B1C2C] hover:text-[#C8A55C] transition-colors py-2 text-base font-medium"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Contact Us
+                    </Link>
+                  </div>
+                </div>
+              </>
             )}
           </div>
         </div>

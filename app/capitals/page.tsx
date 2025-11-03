@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import { StateSelector } from "@/components/capitals/state-selector"
 import { stateCapitals } from "@/lib/capitals/data"
 import Link from "next/link"
 
@@ -28,30 +27,50 @@ export default function CapitalsPage() {
         </p>
       </section>
 
-      {/* Interactive Map Section */}
-      <section className="container mx-auto px-4 pb-16">
-        <StateSelector />
-      </section>
-
       {/* State List Section */}
       <section className="container mx-auto px-4 pb-16">
-        <h2 className="mb-8 text-center text-3xl font-bold">Browse All States</h2>
-        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <h2 className="mb-8 text-center text-3xl font-bold text-[#0B1C2C]">Browse All States</h2>
+        <div className="max-w-5xl mx-auto grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {Object.entries(stateCapitals)
             .sort(([, a], [, b]) => a.name.localeCompare(b.name))
             .map(([code, state]) => (
               <Link
                 key={code}
                 href={`/capitals/${code.toLowerCase()}`}
-                className="group rounded-lg border bg-card p-4 transition-all hover:border-primary hover:shadow-md"
+                className="group rounded-lg border-2 border-gray-200 bg-white hover:bg-gradient-to-br hover:from-[#0B1C2C] hover:to-[#1a2f42] hover:border-[#C8A55C] p-4 transition-all duration-300 hover:shadow-lg"
               >
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold group-hover:text-primary">{state.name}</h3>
-                    <p className="text-sm text-muted-foreground">{state.capital}</p>
+                  <div className="flex items-center gap-3">
+                    <svg
+                      className="h-5 w-5 text-[#C8A55C] group-hover:text-[#C8A55C] flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                    <div>
+                      <h3 className="font-semibold text-[#0B1C2C] group-hover:text-white transition-colors">
+                        {state.name}
+                      </h3>
+                      <p className="text-sm text-[#0B1C2C]/60 group-hover:text-white/80 transition-colors">
+                        {state.capital}
+                      </p>
+                    </div>
                   </div>
                   <svg
-                    className="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary"
+                    className="h-5 w-5 text-[#0B1C2C]/40 group-hover:text-[#C8A55C] transition-all group-hover:translate-x-1"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"

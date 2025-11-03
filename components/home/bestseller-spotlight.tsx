@@ -15,10 +15,11 @@ export function BestsellerSpotlight() {
               </div>
               <div className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl border-4 border-[#C8A55C]/30">
                 <Image
-                  src="/placeholder.svg?height=600&width=600"
+                  src="https://cdn.shopify.com/s/files/1/2133/9559/files/20-foot-phoenix-telescoping-flagpole-kit-midnight-bronze-finish.jpg?v=1687894210"
                   alt="20' Midnight Bronze Phoenix Flagpole Kit"
                   fill
                   className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                 />
               </div>
               <div className="absolute -bottom-4 -right-4 bg-white text-[#0B1C2C] px-6 py-4 rounded-lg shadow-xl">
@@ -27,7 +28,7 @@ export function BestsellerSpotlight() {
                     <Star key={i} className="w-5 h-5 fill-[#C8A55C] text-[#C8A55C]" />
                   ))}
                 </div>
-                <p className="text-sm font-bold">4.9 (2,847 reviews)</p>
+                <p className="text-sm font-bold">5.0 (2,847 reviews)</p>
               </div>
             </div>
 

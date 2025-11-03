@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import { Facebook, Instagram, Youtube, Sparkles } from "lucide-react"
+import { Facebook, Instagram, Youtube } from "lucide-react"
 
 const PinterestIcon = () => (
   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -31,7 +31,14 @@ export function Footer() {
                 {/* Newsletter Block */}
                 <div className="text-center space-y-3">
                   <div className="w-12 h-12 rounded-full bg-[#1F6FFF] flex items-center justify-center mx-auto mb-2">
-                    <Sparkles className="w-6 h-6 text-white" />
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
                   </div>
                   <h3 className="text-white font-bold text-xl">Stay In The Loop</h3>
                   <p className="text-white/90 text-sm max-w-md mx-auto">
@@ -86,7 +93,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="bg-[#E63946] border-b border-white/10">
+        <div className="bg-gradient-to-br from-[#C8A55C] to-[#B8954C] border-b border-white/10">
           <div className="container mx-auto px-4 py-8">
             <div className="max-w-4xl mx-auto text-center">
               <h3 className="text-white font-bold text-xl mb-6">Trusted & Secure</h3>
@@ -148,10 +155,7 @@ export function Footer() {
                   href="/flagpole-finder"
                   className="relative bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] hover:from-[#a88947] hover:to-[#C8A55C] px-5 py-2.5 rounded-lg text-white text-sm font-semibold transition-all shadow-lg hover:shadow-xl group overflow-hidden text-center"
                 >
-                  <span className="relative z-10 flex items-center justify-center gap-2">
-                    <Sparkles className="w-4 h-4" />
-                    Flagpole Finder
-                  </span>
+                  <span className="relative z-10 flex items-center justify-center gap-2">Flagpole Finder</span>
                 </Link>
                 <Link
                   href="/?quiz=open"
@@ -305,30 +309,32 @@ export function Footer() {
               </div>
             </div>
 
-            <div className="text-center space-y-3">
-              <div className="flex flex-wrap justify-center gap-4 text-xs text-white/80 mb-2">
-                <Link href="/privacy" className="hover:text-white transition-colors">
-                  Privacy Policy
-                </Link>
-                <Link href="/terms" className="hover:text-white transition-colors">
-                  Terms of Service
-                </Link>
-                <Link href="/cookie-policy" className="hover:text-white transition-colors">
-                  Cookie Policy
-                </Link>
-                <Link href="/cookie-settings" className="hover:text-white transition-colors">
-                  Cookie Settings
-                </Link>
-                <Link href="/accessibility" className="hover:text-white transition-colors">
-                  Accessibility
-                </Link>
-                <Link href="/sitemap" className="hover:text-white transition-colors">
-                  Sitemap
-                </Link>
+            <div className="bg-[#8B1E2B] -mx-4 px-4 py-6 mt-6 rounded-t-2xl">
+              <div className="text-center space-y-3">
+                <div className="flex flex-wrap justify-center gap-4 text-xs text-white/80 mb-2">
+                  <Link href="/privacy" className="hover:text-white transition-colors">
+                    Privacy Policy
+                  </Link>
+                  <Link href="/terms" className="hover:text-white transition-colors">
+                    Terms of Service
+                  </Link>
+                  <Link href="/cookie-policy" className="hover:text-white transition-colors">
+                    Cookie Policy
+                  </Link>
+                  <Link href="/cookie-settings" className="hover:text-white transition-colors">
+                    Cookie Settings
+                  </Link>
+                  <Link href="/accessibility" className="hover:text-white transition-colors">
+                    Accessibility
+                  </Link>
+                  <Link href="/sitemap" className="hover:text-white transition-colors">
+                    Sitemap
+                  </Link>
+                </div>
+                <p className="text-xs text-white/80">
+                  &copy; {new Date().getFullYear()} Atlantic Flagpole. All rights reserved.
+                </p>
               </div>
-              <p className="text-xs text-white/80">
-                &copy; {new Date().getFullYear()} Atlantic Flagpole. All rights reserved.
-              </p>
             </div>
           </div>
         </div>

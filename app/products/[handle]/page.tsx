@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import { getProduct, getProducts } from "@/lib/shopify"
-import { ProductDetails } from "@/components/products/product-details"
+import { ProductDetailsDreamCloud } from "@/components/products/product-details-dreamcloud"
 import ProductSeo from "@/components/product-seo"
 import { getProductReviews } from "@/lib/shopify/reviews"
 import { getBundleData, getComplementaryProducts } from "@/lib/shopify/bundles"
@@ -81,11 +81,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
   ])
 
   return (
-    <main className="min-h-screen bg-[#F5F3EF]">
+    <main className="min-h-screen bg-white">
       <StructuredData data={productSchema} />
       <StructuredData data={breadcrumbSchema} />
       <ProductSeo product={product} />
-      <ProductDetails
+      <ProductDetailsDreamCloud
         product={product}
         relatedProducts={relatedProducts}
         bundleProducts={bundleProducts}
