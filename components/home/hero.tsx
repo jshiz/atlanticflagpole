@@ -18,6 +18,12 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
     minutes: 31,
     seconds: 15,
   })
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 200)
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -44,15 +50,17 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
   return (
     <>
       <section className="relative w-full min-h-[500px] md:min-h-[550px] lg:min-h-[650px] overflow-hidden">
-        <Image
-          src="/images/design-mode/AtlanticFlagPoleHero.jpg"
-          alt="Beautiful home with American flag on premium flagpole"
-          fill
-          priority
-          quality={90}
-          sizes="100vw"
-          className="object-cover object-[75%_center]"
-        />
+        <div className={`transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"}`}>
+          <Image
+            src="/images/design-mode/AtlanticFlagPoleHero.jpg"
+            alt="Beautiful home with American flag on premium flagpole"
+            fill
+            priority
+            quality={90}
+            sizes="100vw"
+            className="object-cover object-[75%_center]"
+          />
+        </div>
 
         <div
           className="absolute inset-0 pointer-events-none"
@@ -63,46 +71,66 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
         />
 
         <div className="relative z-10 flex items-center min-h-[500px] md:min-h-[550px] lg:min-h-[650px] px-4 md:px-12 lg:px-16 py-8 md:py-10">
-          <div className="max-w-[480px] w-full">
-            <div className="inline-block bg-white text-[#0B1C2C] px-3 py-1.5 mb-3 font-bold text-[10px] md:text-xs tracking-widest uppercase shadow-md">
+          <div
+            className={`max-w-[480px] w-full transition-all duration-1000 ${
+              isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
+            }`}
+          >
+            <div
+              className={`inline-block bg-white text-[#0B1C2C] px-3 py-1.5 mb-3 font-bold text-[10px] md:text-xs tracking-widest uppercase shadow-md transition-all duration-700 delay-100 ${
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+              }`}
+            >
               FALL INTO SAVINGS
             </div>
 
-            <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl text-white mb-2 md:mb-3 leading-tight">
+            <h1
+              className={`font-serif text-3xl md:text-4xl lg:text-5xl text-white mb-2 md:mb-3 leading-tight transition-all duration-700 delay-200 ${
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+              }`}
+            >
               Our Biggest
               <br />
               Offer Ever!
             </h1>
 
-            <p className="text-xl md:text-3xl lg:text-4xl text-white font-light leading-tight mb-3 md:mb-4">
+            <p
+              className={`text-xl md:text-3xl lg:text-4xl text-white font-light leading-tight mb-3 md:mb-4 transition-all duration-700 delay-300 ${
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+              }`}
+            >
               Up To 60% Off Flagpoles{" "}
               <span className="text-base md:text-xl lg:text-2xl">
                 +$599 Of Accessories Included!<span className="text-red-400">*</span>
               </span>
             </p>
 
-            <div className="flex flex-col items-start gap-2 max-w-[360px]">
-              <div className="bg-white rounded-md p-2.5 w-full shadow-lg">
+            <div
+              className={`flex flex-col items-start gap-2 max-w-[360px] transition-all duration-700 delay-400 ${
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+              }`}
+            >
+              <div className="bg-white rounded-md p-2.5 w-full shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <p className="text-[#0B1C2C] text-xs md:text-sm font-semibold mb-1.5 text-center">
                   Order Today For Fastest Shipping
                 </p>
                 <div className="flex items-center justify-center gap-1.5">
-                  <div className="bg-[#0B1C2C] px-2 py-1.5 rounded min-w-[44px] text-center">
+                  <div className="bg-[#0B1C2C] px-2 py-1.5 rounded min-w-[44px] text-center hover:scale-105 transition-transform duration-200">
                     <div className="text-lg font-bold text-white tabular-nums">{timeLeft.days}</div>
                     <div className="text-[7px] text-white/80 uppercase tracking-widest font-bold">DAYS</div>
                   </div>
                   <div className="text-base text-[#0B1C2C]">:</div>
-                  <div className="bg-[#0B1C2C] px-2 py-1.5 rounded min-w-[44px] text-center">
+                  <div className="bg-[#0B1C2C] px-2 py-1.5 rounded min-w-[44px] text-center hover:scale-105 transition-transform duration-200">
                     <div className="text-lg font-bold text-white tabular-nums">{timeLeft.hours}</div>
                     <div className="text-[7px] text-white/80 uppercase tracking-widest font-bold">HRS</div>
                   </div>
                   <div className="text-base text-[#0B1C2C]">:</div>
-                  <div className="bg-[#0B1C2C] px-2 py-1.5 rounded min-w-[44px] text-center">
+                  <div className="bg-[#0B1C2C] px-2 py-1.5 rounded min-w-[44px] text-center hover:scale-105 transition-transform duration-200">
                     <div className="text-lg font-bold text-white tabular-nums">{timeLeft.minutes}</div>
                     <div className="text-[7px] text-white/80 uppercase tracking-widest font-bold">MIN</div>
                   </div>
                   <div className="text-base text-[#0B1C2C]">:</div>
-                  <div className="bg-[#0B1C2C] px-2 py-1.5 rounded min-w-[44px] text-center">
+                  <div className="bg-[#0B1C2C] px-2 py-1.5 rounded min-w-[44px] text-center hover:scale-105 transition-transform duration-200">
                     <div className="text-lg font-bold text-white tabular-nums">{timeLeft.seconds}</div>
                     <div className="text-[7px] text-white/80 uppercase tracking-widest font-bold">SEC</div>
                   </div>
@@ -112,12 +140,12 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
               <div className="relative w-full">
                 <Link
                   href="/products"
-                  className="block w-full bg-[#C8A55C] hover:bg-[#B8954C] text-[#0B1C2C] text-center font-bold text-sm py-3 px-6 rounded-md transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] duration-300"
+                  className="block w-full bg-[#C8A55C] hover:bg-[#B8954C] text-[#0B1C2C] text-center font-bold text-sm py-3 px-6 rounded-md transition-all shadow-lg hover:shadow-2xl hover:scale-[1.03] duration-300"
                 >
                   Shop Flagpoles
                 </Link>
 
-                <div className="absolute -top-2 -right-2 flex items-center gap-1 bg-white px-2 py-1 rounded-full shadow-lg border-2 border-[#C8A55C] rotate-12 hover:rotate-6 transition-transform duration-300">
+                <div className="absolute -top-2 -right-2 flex items-center gap-1 bg-white px-2 py-1 rounded-full shadow-lg border-2 border-[#C8A55C] rotate-12 hover:rotate-6 hover:scale-110 transition-all duration-300">
                   <img
                     src="/images/design-mode/award.png"
                     alt="Award"
@@ -153,47 +181,42 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           </div>
         </div>
 
-        <div className="hidden md:block absolute top-8 left-1/2 -translate-x-1/2 text-center z-20">
+        <div
+          className={`hidden md:block absolute top-8 left-1/2 -translate-x-1/2 text-center z-20 transition-all duration-1000 delay-500 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-8"
+          }`}
+        >
           <div className="inline-block bg-[#0B1C2C]/85 backdrop-blur-sm px-5 py-1.5 rounded-full mb-3 border-2 border-[#C8A55C]/40">
             <p className="text-white text-base font-bold tracking-wide">America's #1 Hybrid Luxury Flagpole</p>
           </div>
           <div className="flex items-center justify-center gap-3">
-            <Link
-              href="https://judge.me/reviews/stores/atlanticflagpole.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-16 h-16 bg-white rounded-full overflow-hidden shadow-lg border-[3px] border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center p-1.5 relative"
-            >
-              <Image
-                src="/images/ten-percent-badge.svg"
-                alt="10% Pledge"
-                fill
-                className="object-contain p-1.5"
-                sizes="64px"
-              />
-            </Link>
-            <Link
-              href="https://www.bbb.org/us/ny/albany/profile/flag-poles/atlantic-flag-and-pole-0041-235985313/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-16 h-16 rounded-full overflow-hidden shadow-lg border-[3px] border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 relative"
-            >
-              <Image src="/images/bbb-logo.webp" alt="BBB Accredited" fill className="object-cover" sizes="64px" />
-            </Link>
-            <Link
-              href="https://judge.me/reviews/stores/atlanticflagpole.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-16 h-16 bg-white rounded-full overflow-hidden shadow-lg border-[3px] border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center p-1.5 relative"
-            >
-              <Image
-                src="/images/one-percent-planet.svg"
-                alt="1% for Planet"
-                fill
-                className="object-contain p-1.5"
-                sizes="64px"
-              />
-            </Link>
+            {[
+              { src: "/images/ten-percent-badge.svg", alt: "10% Pledge", delay: "delay-[600ms]" },
+              { src: "/images/bbb-logo.webp", alt: "BBB Accredited", delay: "delay-[700ms]" },
+              { src: "/images/one-percent-planet.svg", alt: "1% for Planet", delay: "delay-[800ms]" },
+            ].map((badge, index) => (
+              <Link
+                key={index}
+                href={
+                  index === 1
+                    ? "https://www.bbb.org/us/ny/albany/profile/flag-poles/atlantic-flag-and-pole-0041-235985313/"
+                    : "https://judge.me/reviews/stores/atlanticflagpole.com"
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`w-16 h-16 ${index === 1 ? "" : "bg-white"} rounded-full overflow-hidden shadow-lg border-[3px] border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center p-1.5 relative ${badge.delay} ${
+                  isVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
+                }`}
+              >
+                <Image
+                  src={badge.src || "/placeholder.svg"}
+                  alt={badge.alt}
+                  fill
+                  className={`object-${index === 1 ? "cover" : "contain"} ${index === 1 ? "" : "p-1.5"}`}
+                  sizes="64px"
+                />
+              </Link>
+            ))}
           </div>
         </div>
 

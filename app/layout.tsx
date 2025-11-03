@@ -15,6 +15,7 @@ import { LocationTab } from "@/components/geo/location-tab"
 import { Toaster } from "@/components/ui/toaster"
 import { CookieConsentBanner } from "@/components/cookie-consent/cookie-consent-banner"
 import { CartSidebarButton } from "@/components/cart/cart-sidebar-button"
+import { PageTransition } from "@/components/ui/page-transition"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -52,16 +53,18 @@ export default function RootLayout({
       <body className={`font-sans ${inter.variable} ${jetbrainsMono.variable} ${cinzel.variable}`}>
         <CartProvider>
           <GeoProvider>
-            <PhoenixHomeTrialBar />
-            <Suspense fallback={<HeaderSkeleton />}>
-              <Header />
-            </Suspense>
-            <Suspense fallback={null}>{children}</Suspense>
-            <Footer />
-            <LiveChatButton />
-            <CartSidebarButton />
-            <LocationTab />
-            <CookieConsentBanner />
+            <PageTransition>
+              <PhoenixHomeTrialBar />
+              <Suspense fallback={<HeaderSkeleton />}>
+                <Header />
+              </Suspense>
+              <Suspense fallback={null}>{children}</Suspense>
+              <Footer />
+              <LiveChatButton />
+              <CartSidebarButton />
+              <LocationTab />
+              <CookieConsentBanner />
+            </PageTransition>
           </GeoProvider>
         </CartProvider>
         <JudgeMePlatformScript />
