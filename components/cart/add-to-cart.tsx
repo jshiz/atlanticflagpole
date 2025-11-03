@@ -11,6 +11,7 @@ import type { ReactNode } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { Loader } from "../ui/loader"
 import { getShopifyProductId } from "@/lib/shopify/utils"
+import { toNodes } from "@/lib/connection"
 
 interface AddToCartProps extends ButtonProps {
   product: Product
@@ -135,7 +136,7 @@ export function AddToCart({
   icon = <PlusCircleIcon />,
   ...buttonProps
 }: AddToCartProps) {
-  const { variants } = product
+  const variants = toNodes(product.variants)
   const selectedVariant = useSelectedVariant(product)
   const pathname = useParams<{ handle?: string }>()
   const searchParams = useSearchParams()

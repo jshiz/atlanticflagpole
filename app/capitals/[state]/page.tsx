@@ -8,6 +8,7 @@ import { LocalizedHook } from "@/components/capitals/localized-hook"
 import { PhoenixProductShowcase } from "@/components/capitals/phoenix-product-showcase"
 import { StateAddOns } from "@/components/capitals/state-add-ons"
 import { WhyPhoenix } from "@/components/capitals/why-phoenix"
+import { LocalContentHub } from "@/components/capitals/local-content-hub"
 import { StateCapitalFAQ } from "@/components/capitals/state-capital-faq"
 import { FinalCTA } from "@/components/capitals/final-cta"
 import { generateStateCapitalMetadata } from "@/lib/seo/state-capital-metadata"
@@ -44,26 +45,43 @@ export default async function StateCapitalPage({ params }: StateCapitalPageProps
     notFound()
   }
 
-  let phoenixProduct = await getProduct("phoenix-telescoping-flagpole-premier-kit-starter-bundle")
+  let phoenixProduct = null
+  try {
+    phoenixProduct = await getProduct("phoenix-telescoping-flagpole-premier-kit-starter-bundle")
 
-  if (!phoenixProduct) {
-    console.log("[v0] Premier kit not found, trying patriot kit...")
-    phoenixProduct = await getProduct("phoenix-flagpole-patriot-kit")
-  }
+    if (!phoenixProduct) {
+      phoenixProduct = await getProduct("phoenix-patriot-flagpole-kit-complete-bundle-with-solar-light-eagle")
+    }
 
-  if (!phoenixProduct) {
-    console.log("[v0] Patriot kit not found, trying presidential kit...")
-    phoenixProduct = await getProduct("phoenix-presidential-flagpole-kit")
+    if (!phoenixProduct) {
+      phoenixProduct = await getProduct("phoenix-presidential-flagpole-kit-heavy-duty-residential-flagpole")
+    }
+
+    if (!phoenixProduct) {
+      phoenixProduct = await getProduct("phoenix-flagpole-patriot-kit")
+    }
+  } catch (error) {
+    console.error("[v0] Error fetching Phoenix product:", error)
   }
 
   console.log("[v0] Phoenix product found:", phoenixProduct ? phoenixProduct.handle : "none")
 
-  // Search for state-specific products
-  const stateProducts = await searchStateProducts(stateData.stateCode, stateData.state)
+  let stateProducts = []
+  try {
+    stateProducts = await searchStateProducts(stateData.stateCode, stateData.state)
+  } catch (error) {
+    console.error("[v0] Error searching state products:", error)
+  }
+
   console.log("[v0] Found", stateProducts.length, "state products")
 
-  // Get state-specific add-ons
-  const addOns = await getStateAddOns(stateData.stateCode, stateData.state)
+  let addOns = []
+  try {
+    addOns = await getStateAddOns(stateData.stateCode, stateData.state)
+  } catch (error) {
+    console.error("[v0] Error fetching add-ons:", error)
+  }
+
   console.log("[v0] Found", addOns.length, "add-ons")
 
   // Generate structured data only if we have a product
@@ -102,6 +120,9 @@ export default async function StateCapitalPage({ params }: StateCapitalPageProps
 
       {/* Why Choose the Phoenix? */}
       <WhyPhoenix />
+
+      {/* Local SEO "Content Hub" - Added new section */}
+      <LocalContentHub stateData={stateData} />
 
       {/* FAQ Section */}
       <StateCapitalFAQ stateData={stateData} />
