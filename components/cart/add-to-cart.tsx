@@ -48,11 +48,13 @@ export function AddToCartButton({
   const { addItem } = useCart()
   const [isLoading, startTransition] = useTransition()
 
-  // Resolve variant locally only for variantless products (purely synchronous)
   const resolvedVariant = useMemo(() => {
     if (selectedVariant) return selectedVariant
-    if (product.variants.length === 0) return getBaseProductVariant(product)
-    if (product.variants.length === 1) return product.variants[0]
+
+    const variants = toNodes(product.variants)
+
+    if (variants.length === 0) return getBaseProductVariant(product)
+    if (variants.length === 1) return variants[0]
     return undefined
   }, [selectedVariant, product])
 
