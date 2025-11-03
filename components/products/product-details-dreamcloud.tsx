@@ -12,6 +12,7 @@ import type { BundleData } from "@/lib/shopify/bundles"
 import { toNodes } from "@/lib/connection"
 import { Check, Shield, Truck, Award, Package, Wrench, Wind, Medal, ChevronDown, Star, Clock } from "lucide-react"
 import { JudgeMeBadge, JudgeMeReviewWidget } from "./judgeme-widgets"
+import { useSearchParams } from "next/navigation"
 
 interface ProductDetailsDreamCloudProps {
   product: ShopifyProduct
@@ -28,12 +29,33 @@ export function ProductDetailsDreamCloud({
   bundleData,
   reviewsData,
 }: ProductDetailsDreamCloudProps) {
+  const searchParams = useSearchParams()
+  const variantParam = searchParams.get("variant")
+
   const images = toNodes(product.images)
   const [selectedImage, setSelectedImage] = useState(images[0])
   const [isSticky, setIsSticky] = useState(false)
 
   const variants = toNodes(product.variants)
-  const [selectedVariant, setSelectedVariant] = useState(variants[0])
+
+  const getInitialVariant = () => {
+    if (variantParam) {
+      const matchingVariant = variants.find((v) => v.title.includes(`${variantParam}'`))
+      if (matchingVariant) return matchingVariant
+    }
+    return variants[0]
+  }
+
+  const [selectedVariant, setSelectedVariant] = useState(getInitialVariant())
+
+  useEffect(() => {
+    if (variantParam) {
+      const matchingVariant = variants.find((v) => v.title.includes(`${variantParam}'`))
+      if (matchingVariant) {
+        setSelectedVariant(matchingVariant)
+      }
+    }
+  }, [variantParam, variants])
 
   const price = selectedVariant ? Number.parseFloat(selectedVariant.price.amount) : 0
   const compareAtPrice = selectedVariant?.compareAtPrice

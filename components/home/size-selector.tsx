@@ -17,7 +17,7 @@ const sizes = [
       "Great for smaller lots, condos, and properties where a subtle yet patriotic display is desired. The 15' height is tall enough to be seen from the street while remaining proportional to most single-story homes.",
     price: "$779.71",
     variant: "15' Flagpole",
-    href: "/product/phoenix-telescoping-flagpole-premier-kit-starter-bundle",
+    href: "/product/phoenix-telescoping-flagpole-premier-kit-starter-bundle?variant=15",
   },
   {
     size: "20'",
@@ -31,7 +31,7 @@ const sizes = [
     price: "$979.71",
     badge: "BEST SELLER",
     variant: "20' Flagpole",
-    href: "/product/phoenix-telescoping-flagpole-premier-kit-starter-bundle",
+    href: "/product/phoenix-telescoping-flagpole-premier-kit-starter-bundle?variant=20",
   },
   {
     size: "25'",
@@ -44,7 +44,7 @@ const sizes = [
       "For those who want maximum visibility and impact. The 25' flagpole towers over most residential properties and can be seen from blocks away. Ideal for corner lots, farms, estates, and commercial properties where you want to make a bold patriotic statement.",
     price: "$1,079.71",
     variant: "25' Flagpole",
-    href: "/product/phoenix-telescoping-flagpole-premier-kit-starter-bundle",
+    href: "/product/phoenix-telescoping-flagpole-premier-kit-starter-bundle?variant=25",
   },
 ]
 
@@ -313,13 +313,13 @@ export function SizeSelector() {
             {showFireworks && <Fireworks />}
 
             <div className="relative h-[280px] md:h-[350px] flex items-end justify-center p-4 md:p-6">
-              <div className="absolute bottom-0 left-0 right-0 w-full h-16 bg-gradient-to-b from-gray-400 to-gray-500 opacity-50 -mx-4 md:-mx-6">
+              <div className="absolute bottom-0 -left-4 -right-4 md:-left-6 md:-right-6 w-auto h-16 bg-gradient-to-b from-gray-400 to-gray-500 opacity-50">
                 <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent" />
                 {/* Road markings */}
                 <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-yellow-400/40" />
               </div>
 
-              <div className="absolute bottom-16 left-0 right-0 w-full h-24 bg-gradient-to-b from-green-600 to-green-700 opacity-70 -mx-4 md:-mx-6">
+              <div className="absolute bottom-16 -left-4 -right-4 md:-left-6 md:-right-6 w-auto h-24 bg-gradient-to-b from-green-600 to-green-700 opacity-70">
                 <div className="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent,transparent_2px,rgba(0,0,0,0.05)_2px,rgba(0,0,0,0.05)_4px)]" />
                 <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_3px,rgba(0,0,0,0.03)_3px,rgba(0,0,0,0.03)_6px)]" />
               </div>
