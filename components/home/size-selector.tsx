@@ -48,9 +48,17 @@ const sizes = [
   },
 ]
 
+type Newspaper = {
+  x: number
+  y: number
+  active: boolean
+  falling: boolean
+  rotation: number
+}
+
 function PaperboyGame({ onWin }: { onWin: () => void }) {
   const [paperboyX, setPaperboyX] = useState(0)
-  const [newspaper, setNewspaper] = useState<{ x: number; y: number; active: boolean; falling: boolean } | null>(null)
+  const [newspaper, setNewspaper] = useState<Newspaper | null>(null)
   const [gameMessage, setGameMessage] = useState("Click the button to throw!")
   const animationRef = useRef<number>()
   const newspaperRef = useRef<number>()
@@ -78,19 +86,20 @@ function PaperboyGame({ onWin }: { onWin: () => void }) {
       setNewspaper((prev) => {
         if (!prev) return null
 
-        // If falling, just drop straight down
         if (prev.falling) {
-          const newY = prev.y + 1.5
+          const newY = prev.y + 0.8 // Slowed from 1.5 to 0.8
+          const newRotation = prev.rotation + 2 // Continue spinning slowly
           // Stop at ground level
           if (newY >= 95) {
-            return { ...prev, y: 95, active: false, falling: false }
+            return { ...prev, y: 95, active: false, falling: false, rotation: newRotation }
           }
-          return { ...prev, y: newY }
+          return { ...prev, y: newY, rotation: newRotation }
         }
 
-        // Normal throw physics - much slower
-        const newX = prev.x + 0.4 // Slowed from 1.5 to 0.4
-        const newY = prev.y - 1 + (newX - prev.x) * 0.2 // Adjusted arc
+        const newX = prev.x + 0.06 // Slowed down horizontal speed from 0.15 to 0.06 for more challenging gameplay
+        const progress = (newX - prev.x) / 50 // Progress from 0 to 1
+        const newY = prev.y - 3 + progress * 4 // Goes up first (-3), then down (+4)
+        const newRotation = prev.rotation + 3
 
         // Check collision with door (center of house)
         const doorX = 50
@@ -105,7 +114,7 @@ function PaperboyGame({ onWin }: { onWin: () => void }) {
           setGameMessage("🎉 Perfect throw! You won $20 off!")
           setTimeout(() => onWin(), 500)
           // Start falling to ground
-          return { x: newX, y: newY, active: false, falling: true }
+          return { x: newX, y: newY, active: false, falling: true, rotation: newRotation }
         }
 
         // Newspaper went off screen
@@ -114,7 +123,7 @@ function PaperboyGame({ onWin }: { onWin: () => void }) {
           return { ...prev, active: false, falling: false }
         }
 
-        return { x: newX, y: newY, active: true, falling: false }
+        return { x: newX, y: newY, active: true, falling: false, rotation: newRotation }
       })
       newspaperRef.current = requestAnimationFrame(throwNewspaper)
     }
@@ -127,7 +136,7 @@ function PaperboyGame({ onWin }: { onWin: () => void }) {
 
   const handleThrow = () => {
     if (newspaper?.active) return
-    setNewspaper({ x: paperboyX, y: 75, active: true, falling: false })
+    setNewspaper({ x: paperboyX, y: 75, active: true, falling: false, rotation: 0 })
     setGameMessage("Nice throw! Aim for the door or mailbox!")
   }
 
@@ -150,14 +159,23 @@ function PaperboyGame({ onWin }: { onWin: () => void }) {
         </div>
       </div>
 
-      {/* Newspaper */}
       {(newspaper?.active || newspaper?.falling) && (
         <div
-          className="absolute w-4 h-6 md:w-6 md:h-8 bg-white border-2 border-gray-400 shadow-lg transform rotate-45 transition-transform pointer-events-none"
-          style={{ left: `${newspaper.x}%`, top: `${newspaper.y}%` }}
+          className="absolute pointer-events-none z-50"
+          style={{
+            left: `${newspaper.x}%`,
+            top: `${newspaper.y}%`,
+            transform: `rotate(${newspaper.rotation}deg)`,
+            transition: "transform 0.05s linear",
+          }}
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-300" />
-          <div className="absolute inset-1 border border-gray-400 opacity-50" />
+          <Image
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/paper-byadLr90xwRDYoZdZGM7O5WsuTmHbU.png"
+            alt="Newspaper"
+            width={32}
+            height={32}
+            className="w-6 h-6 md:w-8 md:h-8 drop-shadow-lg"
+          />
         </div>
       )}
 
