@@ -100,7 +100,7 @@ export function Footer() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
                   <Image
-                    src="https://cdn.shopify.com/s/files/1/2133/9559/files/phoenix-flagpole-sticker-logo-final-2020-securi-lok-opt.png?v=1760562626"
+                    src="/images/design-mode/phoenix-flagpole-sticker-logo-final-2020-securi-lok-opt.png"
                     alt="Phoenix Flagpole Securi-Lok Technology"
                     fill
                     className="object-contain p-4"
@@ -110,7 +110,7 @@ export function Footer() {
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
                   <Image
-                    src="https://cdn.shopify.com/s/files/1/2133/9559/files/flagpole-made-in-the-usa.png?v=1687894210"
+                    src="/images/design-mode/flagpole-made-in-the-usa.png"
                     alt="Made in the USA - American Made Flagpoles"
                     fill
                     className="object-contain p-4"
@@ -120,7 +120,7 @@ export function Footer() {
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
                   <Image
-                    src="https://cdn.shopify.com/s/files/1/2133/9559/files/365-day-satisfaction-guarantee-phoenix-flagpole-200px.png?v=1687894210"
+                    src="/images/design-mode/365-day-satisfaction-guarantee-phoenix-flagpole-200px.png"
                     alt="365-Day Satisfaction Guarantee"
                     fill
                     className="object-contain p-4"
@@ -130,7 +130,7 @@ export function Footer() {
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20 hover:border-white transition-all hover:shadow-lg hover:shadow-white/20 flex items-center justify-center relative h-32">
                   <Image
-                    src="https://cdn.shopify.com/s/files/1/2133/9559/files/911-limited-edition-phoenix-flagpole-flagpole-bundle-200px.png?v=1687894210"
+                    src="/images/design-mode/911-limited-edition-phoenix-flagpole-flagpole-bundle-200px.png"
                     alt="911 Limited Edition Phoenix Flagpole Bundle"
                     fill
                     className="object-contain p-4"
