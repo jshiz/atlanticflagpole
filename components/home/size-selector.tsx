@@ -62,99 +62,137 @@ export function SizeSelector() {
           </p>
         </div>
 
-        {/* Compact Visual Representation */}
         <div className="max-w-5xl mx-auto mb-8">
-          <div className="bg-gradient-to-b from-sky-50 to-green-50 rounded-xl p-4 md:p-6 shadow-lg border border-[#C8A55C]/20">
-            <div className="relative h-[200px] md:h-[280px] flex items-end justify-center">
-              {/* Ground line */}
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-green-700/50 to-transparent" />
+          <div className="bg-gradient-to-b from-sky-100 via-sky-50 to-green-100 rounded-xl p-4 md:p-6 shadow-lg border border-[#C8A55C]/20">
+            <div className="relative h-[320px] md:h-[400px] flex items-end justify-center">
+              {/* Road with perspective */}
+              <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-b from-gray-400 to-gray-500 opacity-40">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-600/20 to-transparent" />
+              </div>
 
-              <div className="absolute bottom-0 left-[15%] md:left-[20%] transform -translate-x-1/2">
+              {/* Fresh cut grass */}
+              <div className="absolute bottom-16 left-0 right-0 h-24 bg-gradient-to-b from-green-600 to-green-700 opacity-60">
+                <div className="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent,transparent_2px,rgba(0,0,0,0.05)_2px,rgba(0,0,0,0.05)_4px)]" />
+              </div>
+
+              {/* Ground line */}
+              <div className="absolute bottom-16 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-green-800/50 to-transparent" />
+
+              <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 -translate-x-12">
                 <svg
-                  width="220"
-                  height="160"
-                  viewBox="0 0 220 160"
-                  className="drop-shadow-2xl w-[160px] h-[120px] md:w-[220px] md:h-[160px]"
+                  width="320"
+                  height="260"
+                  viewBox="0 0 320 260"
+                  className="drop-shadow-2xl w-[220px] h-[180px] md:w-[320px] md:h-[260px]"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  {/* Garage - left side */}
-                  <rect x="10" y="80" width="50" height="80" fill="#D8D4CC" stroke="#8B8B8B" strokeWidth="1.5" />
-                  {/* Garage roof */}
-                  <path d="M 5 80 L 35 60 L 65 80 Z" fill="#5A5A5A" stroke="#333" strokeWidth="1.5" />
-                  {/* Garage door */}
-                  <rect x="17" y="100" width="36" height="60" fill="#9B9B9B" stroke="#666" strokeWidth="1.5" />
-                  <line x1="17" y1="115" x2="53" y2="115" stroke="#666" strokeWidth="1" />
-                  <line x1="17" y1="130" x2="53" y2="130" stroke="#666" strokeWidth="1" />
-                  <line x1="17" y1="145" x2="53" y2="145" stroke="#666" strokeWidth="1" />
+                  {/* Garage - square shape */}
+                  <rect x="10" y="160" width="70" height="70" fill="#E8E4DC" stroke="#8B8B8B" strokeWidth="2" />
+                  <path d="M 80 160 L 95 152 L 95 222 L 80 230 Z" fill="#D0CCC4" stroke="#8B8B8B" strokeWidth="1.5" />
+                  <path d="M 5 160 L 45 130 L 85 160 Z" fill="#5A5A5A" stroke="#333" strokeWidth="2" />
+                  <path d="M 85 160 L 100 152 L 60 122 L 45 130 Z" fill="#4A4A4A" stroke="#333" strokeWidth="1.5" />
+                  <rect x="20" y="178" width="50" height="52" fill="#9B9B9B" stroke="#666" strokeWidth="2" />
+                  <line x1="20" y1="195" x2="70" y2="195" stroke="#666" strokeWidth="1.5" />
+                  <line x1="20" y1="212" x2="70" y2="212" stroke="#666" strokeWidth="1.5" />
 
-                  {/* Main house body - taller for two stories */}
-                  <rect x="60" y="40" width="150" height="120" fill="#E8E4DC" stroke="#8B8B8B" strokeWidth="1.5" />
+                  <rect x="80" y="60" width="200" height="170" fill="#E8E4DC" stroke="#8B8B8B" strokeWidth="2" />
+                  <path d="M 280 60 L 300 50 L 300 220 L 280 230 Z" fill="#D0CCC4" stroke="#8B8B8B" strokeWidth="1.5" />
 
-                  {/* Main roof */}
-                  <path d="M 55 40 L 135 5 L 215 40 Z" fill="#4A4A4A" stroke="#333" strokeWidth="1.5" />
+                  {/* Main roof with 3D depth */}
+                  <path d="M 75 60 L 180 5 L 285 60 Z" fill="#5A5A5A" stroke="#333" strokeWidth="2" />
+                  <path d="M 285 60 L 305 50 L 200 -5 L 180 5 Z" fill="#4A4A4A" stroke="#333" strokeWidth="1.5" />
 
-                  {/* SECOND FLOOR WINDOWS - clearly separated from first floor */}
-                  {/* Left window - second floor */}
-                  <rect x="75" y="55" width="24" height="28" fill="#87CEEB" stroke="#2A2A2A" strokeWidth="1.5" />
-                  <line x1="87" y1="55" x2="87" y2="83" stroke="#2A2A2A" strokeWidth="1.5" />
-                  <line x1="75" y1="69" x2="99" y2="69" stroke="#2A2A2A" strokeWidth="1.5" />
-                  {/* Shutters */}
-                  <rect x="70" y="55" width="4" height="28" fill="#1a1a1a" />
-                  <rect x="100" y="55" width="4" height="28" fill="#1a1a1a" />
+                  {/* Windows - second floor */}
+                  <rect x="100" y="80" width="35" height="40" fill="#B8D8E8" stroke="#2A2A2A" strokeWidth="2" />
+                  <rect x="100" y="80" width="35" height="40" fill="url(#windowGradient)" />
+                  <line x1="117.5" y1="80" x2="117.5" y2="120" stroke="#2A2A2A" strokeWidth="2" />
+                  <line x1="100" y1="100" x2="135" y2="100" stroke="#2A2A2A" strokeWidth="2" />
+                  <rect x="92" y="80" width="6" height="40" fill="#1a1a1a" />
+                  <rect x="136" y="80" width="6" height="40" fill="#1a1a1a" />
 
-                  {/* Center window - second floor */}
-                  <rect x="123" y="55" width="24" height="28" fill="#87CEEB" stroke="#2A2A2A" strokeWidth="1.5" />
-                  <line x1="135" y1="55" x2="135" y2="83" stroke="#2A2A2A" strokeWidth="1.5" />
-                  <line x1="123" y1="69" x2="147" y2="69" stroke="#2A2A2A" strokeWidth="1.5" />
-                  {/* Shutters */}
-                  <rect x="118" y="55" width="4" height="28" fill="#1a1a1a" />
-                  <rect x="148" y="55" width="4" height="28" fill="#1a1a1a" />
+                  <rect x="162.5" y="80" width="35" height="40" fill="#B8D8E8" stroke="#2A2A2A" strokeWidth="2" />
+                  <rect x="162.5" y="80" width="35" height="40" fill="url(#windowGradient)" />
+                  <line x1="180" y1="80" x2="180" y2="120" stroke="#2A2A2A" strokeWidth="2" />
+                  <line x1="162.5" y1="100" x2="197.5" y2="100" stroke="#2A2A2A" strokeWidth="2" />
+                  <rect x="154.5" y="80" width="6" height="40" fill="#1a1a1a" />
+                  <rect x="198.5" y="80" width="6" height="40" fill="#1a1a1a" />
 
-                  {/* Right window - second floor */}
-                  <rect x="171" y="55" width="24" height="28" fill="#87CEEB" stroke="#2A2A2A" strokeWidth="1.5" />
-                  <line x1="183" y1="55" x2="183" y2="83" stroke="#2A2A2A" strokeWidth="1.5" />
-                  <line x1="171" y1="69" x2="195" y2="69" stroke="#2A2A2A" strokeWidth="1.5" />
-                  {/* Shutters */}
-                  <rect x="166" y="55" width="4" height="28" fill="#1a1a1a" />
-                  <rect x="196" y="55" width="4" height="28" fill="#1a1a1a" />
+                  <rect x="225" y="80" width="35" height="40" fill="#B8D8E8" stroke="#2A2A2A" strokeWidth="2" />
+                  <rect x="225" y="80" width="35" height="40" fill="url(#windowGradient)" />
+                  <line x1="242.5" y1="80" x2="242.5" y2="120" stroke="#2A2A2A" strokeWidth="2" />
+                  <line x1="225" y1="100" x2="260" y2="100" stroke="#2A2A2A" strokeWidth="2" />
+                  <rect x="217" y="80" width="6" height="40" fill="#1a1a1a" />
+                  <rect x="261" y="80" width="6" height="40" fill="#1a1a1a" />
 
-                  {/* FIRST FLOOR WINDOWS - clearly below second floor */}
-                  {/* Left window - first floor */}
-                  <rect x="75" y="105" width="24" height="32" fill="#87CEEB" stroke="#2A2A2A" strokeWidth="1.5" />
-                  <line x1="87" y1="105" x2="87" y2="137" stroke="#2A2A2A" strokeWidth="1.5" />
-                  <line x1="75" y1="121" x2="99" y2="121" stroke="#2A2A2A" strokeWidth="1.5" />
-                  {/* Shutters */}
-                  <rect x="70" y="105" width="4" height="32" fill="#1a1a1a" />
-                  <rect x="100" y="105" width="4" height="32" fill="#1a1a1a" />
+                  {/* Windows - first floor */}
+                  <rect x="100" y="155" width="35" height="48" fill="#B8D8E8" stroke="#2A2A2A" strokeWidth="2" />
+                  <rect x="100" y="155" width="35" height="48" fill="url(#windowGradient)" />
+                  <line x1="117.5" y1="155" x2="117.5" y2="203" stroke="#2A2A2A" strokeWidth="2" />
+                  <line x1="100" y1="179" x2="135" y2="179" stroke="#2A2A2A" strokeWidth="2" />
+                  <rect x="92" y="155" width="6" height="48" fill="#1a1a1a" />
+                  <rect x="136" y="155" width="6" height="48" fill="#1a1a1a" />
 
-                  {/* Right window - first floor */}
-                  <rect x="171" y="105" width="24" height="32" fill="#87CEEB" stroke="#2A2A2A" strokeWidth="1.5" />
-                  <line x1="183" y1="105" x2="183" y2="137" stroke="#2A2A2A" strokeWidth="1.5" />
-                  <line x1="171" y1="121" x2="195" y2="121" stroke="#2A2A2A" strokeWidth="1.5" />
-                  {/* Shutters */}
-                  <rect x="166" y="105" width="4" height="32" fill="#1a1a1a" />
-                  <rect x="196" y="105" width="4" height="32" fill="#1a1a1a" />
+                  <rect x="225" y="155" width="35" height="48" fill="#B8D8E8" stroke="#2A2A2A" strokeWidth="2" />
+                  <rect x="225" y="155" width="35" height="48" fill="url(#windowGradient)" />
+                  <line x1="242.5" y1="155" x2="242.5" y2="203" stroke="#2A2A2A" strokeWidth="2" />
+                  <line x1="225" y1="179" x2="260" y2="179" stroke="#2A2A2A" strokeWidth="2" />
+                  <rect x="217" y="155" width="6" height="48" fill="#1a1a1a" />
+                  <rect x="261" y="155" width="6" height="48" fill="#1a1a1a" />
 
                   {/* Front door - centered */}
-                  <rect x="125" y="110" width="20" height="50" fill="#5A4535" stroke="#3A2515" strokeWidth="1.5" />
-                  <circle cx="140" cy="135" r="2" fill="#C8A55C" />
+                  <rect x="165" y="165" width="30" height="65" fill="#5A4535" stroke="#3A2515" strokeWidth="2" />
+                  <rect x="169" y="172" width="22" height="28" fill="#4A3525" stroke="#3A2515" strokeWidth="1" />
+                  <rect x="169" y="202" width="22" height="25" fill="#4A3525" stroke="#3A2515" strokeWidth="1" />
+                  <circle cx="185" cy="200" r="2.5" fill="#C8A55C" />
+
+                  <ellipse cx="90" cy="230" rx="15" ry="12" fill="#2d5016" opacity="0.8" />
+                  <ellipse cx="90" cy="225" rx="12" ry="10" fill="#3d6b1f" />
+                  <ellipse cx="270" cy="230" rx="15" ry="12" fill="#2d5016" opacity="0.8" />
+                  <ellipse cx="270" cy="225" rx="12" ry="10" fill="#3d6b1f" />
+                  <ellipse cx="150" cy="232" rx="12" ry="10" fill="#2d5016" opacity="0.8" />
+                  <ellipse cx="150" cy="228" rx="10" ry="8" fill="#3d6b1f" />
+                  <ellipse cx="210" cy="232" rx="12" ry="10" fill="#2d5016" opacity="0.8" />
+                  <ellipse cx="210" cy="228" rx="10" ry="8" fill="#3d6b1f" />
+
+                  <defs>
+                    <linearGradient id="windowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#E8F4F8" stopOpacity="0.6" />
+                      <stop offset="100%" stopColor="#87CEEB" stopOpacity="0.3" />
+                    </linearGradient>
+                  </defs>
                 </svg>
               </div>
 
-              {/* Flagpole - scales based on selected size with smooth animation */}
+              <div className="absolute bottom-16 left-[15%] md:left-[20%]">
+                <svg width="40" height="80" viewBox="0 0 40 80" className="w-[30px] h-[60px] md:w-[40px] md:h-[80px]">
+                  {/* Post */}
+                  <rect x="17" y="30" width="6" height="50" fill="#6B4423" />
+                  <rect x="20" y="30" width="3" height="50" fill="#8B5A3C" />
+                  {/* Mailbox */}
+                  <rect x="8" y="20" width="24" height="16" rx="2" fill="#2A2A2A" stroke="#1A1A1A" strokeWidth="1" />
+                  <rect x="10" y="22" width="20" height="12" rx="1" fill="#3A3A3A" />
+                  <rect x="28" y="24" width="4" height="8" fill="#C8A55C" />
+                </svg>
+              </div>
+
               <div
-                className="absolute bottom-0 right-[20%] md:right-[25%] transform translate-x-1/2 transition-all duration-700 ease-out"
+                className="absolute bottom-16 left-1/2 transform translate-x-16 md:translate-x-24 transition-all duration-700 ease-out"
                 style={{
                   height: `${(selectedSize.height / 25) * 85}%`,
                 }}
               >
-                {/* Pole with gradient */}
-                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1.5 md:w-2 h-full bg-gradient-to-t from-[#7A7A7A] via-[#B0B0B0] to-[#D0D0D0] rounded-t-full shadow-lg" />
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 md:w-3 h-full rounded-t-full shadow-2xl overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#6A6A6A] via-[#C0C0C0] to-[#7A7A7A]" />
+                  <div className="absolute inset-y-0 left-0 w-[30%] bg-gradient-to-r from-black/20 to-transparent" />
+                  <div className="absolute inset-y-0 right-0 w-[30%] bg-gradient-to-l from-black/30 to-transparent" />
+                  <div className="absolute inset-y-0 left-[35%] w-[30%] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+                </div>
 
-                <div className="absolute top-2 left-1/2 w-14 h-9 md:w-20 md:h-13 shadow-xl animate-[wave_3s_ease-in-out_infinite] origin-left overflow-hidden rounded-sm">
+                {/* Flag */}
+                <div className="absolute top-2 left-1/2 w-16 h-11 md:w-22 md:h-15 shadow-xl animate-[wave_3s_ease-in-out_infinite] origin-left overflow-hidden rounded-sm">
                   <svg width="100%" height="100%" viewBox="0 0 190 100" xmlns="http://www.w3.org/2000/svg">
-                    {/* 13 stripes (7 red, 6 white) */}
+                    {/* 13 stripes */}
                     <rect x="0" y="0" width="190" height="7.69" fill="#B22234" />
                     <rect x="0" y="7.69" width="190" height="7.69" fill="white" />
                     <rect x="0" y="15.38" width="190" height="7.69" fill="#B22234" />
@@ -168,19 +206,15 @@ export function SizeSelector() {
                     <rect x="0" y="76.92" width="190" height="7.69" fill="#B22234" />
                     <rect x="0" y="84.62" width="190" height="7.69" fill="white" />
                     <rect x="0" y="92.31" width="190" height="7.69" fill="#B22234" />
-
                     {/* Blue canton */}
                     <rect x="0" y="0" width="76" height="53.85" fill="#3C3B6E" />
-
-                    {/* 9 white stars in 3x3 grid - larger and more visible */}
+                    {/* Stars */}
                     <circle cx="12.67" cy="8.97" r="3" fill="white" />
                     <circle cx="38" cy="8.97" r="3" fill="white" />
                     <circle cx="63.33" cy="8.97" r="3" fill="white" />
-
                     <circle cx="12.67" cy="26.92" r="3" fill="white" />
                     <circle cx="38" cy="26.92" r="3" fill="white" />
                     <circle cx="63.33" cy="26.92" r="3" fill="white" />
-
                     <circle cx="12.67" cy="44.88" r="3" fill="white" />
                     <circle cx="38" cy="44.88" r="3" fill="white" />
                     <circle cx="63.33" cy="44.88" r="3" fill="white" />
@@ -188,10 +222,10 @@ export function SizeSelector() {
                 </div>
 
                 {/* Gold ball topper */}
-                <div className="absolute -top-1.5 md:-top-2 left-1/2 transform -translate-x-1/2 w-3 h-3 md:w-4 md:h-4 bg-gradient-to-br from-[#FFD700] to-[#C8A55C] rounded-full shadow-md border border-[#a88947]" />
+                <div className="absolute -top-2 md:-top-3 left-1/2 transform -translate-x-1/2 w-4 h-4 md:w-5 md:h-5 bg-gradient-to-br from-[#FFD700] via-[#FFC700] to-[#C8A55C] rounded-full shadow-lg border-2 border-[#a88947]" />
               </div>
 
-              {/* Height indicator - more compact */}
+              {/* Height indicator */}
               <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 md:px-4 md:py-2 rounded-lg shadow-lg border border-[#C8A55C]">
                 <div className="text-xl md:text-2xl font-bold text-[#0B1C2C]">{selectedSize.size}</div>
                 <div className="text-[10px] md:text-xs text-[#666666] font-semibold">Height</div>
