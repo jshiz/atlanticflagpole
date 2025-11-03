@@ -8,6 +8,7 @@ export function LazyFooter() {
 
   useEffect(() => {
     let mounted = true
+    let timeoutId: NodeJS.Timeout
 
     const handleScroll = () => {
       if (!mounted) return
@@ -15,11 +16,19 @@ export function LazyFooter() {
       const scrollPosition = window.scrollY
       const viewportHeight = window.innerHeight
 
-      // Render footer when user scrolls past 50% of viewport
-      if (scrollPosition > viewportHeight * 0.5) {
-        setShouldRender(true)
-        window.removeEventListener("scroll", handleScroll)
+      if (timeoutId) {
+        clearTimeout(timeoutId)
       }
+
+      timeoutId = setTimeout(() => {
+        if (!mounted) return
+
+        // Render footer when user scrolls past 50% of viewport
+        if (scrollPosition > viewportHeight * 0.5) {
+          setShouldRender(true)
+          window.removeEventListener("scroll", handleScroll)
+        }
+      }, 100)
     }
 
     // Check initial scroll position
@@ -29,6 +38,9 @@ export function LazyFooter() {
 
     return () => {
       mounted = false
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
       window.removeEventListener("scroll", handleScroll)
     }
   }, [])

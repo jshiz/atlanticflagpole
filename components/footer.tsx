@@ -20,7 +20,7 @@ const XIcon = () => (
   </svg>
 )
 
-export async function Footer() {
+export function Footer() {
   return (
     <>
       <footer className="bg-gradient-to-b from-[#0B1C2C] to-[#0A2740] text-white pb-32">
