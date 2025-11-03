@@ -1,6 +1,10 @@
 import { Hero } from "@/components/home/hero"
-import { FeaturedProductsShowcase } from "@/components/home/featured-products-showcase"
-import { QuickDeals } from "@/components/home/quick-deals"
+import { SizeSelector } from "@/components/home/size-selector"
+import { FeaturesSection } from "@/components/home/features-section"
+import { BestsellerSpotlight } from "@/components/home/bestseller-spotlight"
+import { AccessoriesSection } from "@/components/home/accessories-section"
+import { GuaranteeSection } from "@/components/home/guarantee-section"
+import { FinalCTABanner } from "@/components/home/final-cta-banner"
 import { getJudgemeStats, getJudgemeReviews } from "@/lib/judgeme"
 import { generateOrganizationSchema } from "@/lib/seo/structured-data"
 import { StructuredData } from "@/components/seo/structured-data"
@@ -10,13 +14,6 @@ import dynamic from "next/dynamic"
 import { Suspense } from "react"
 import { FadeInOnScroll } from "@/components/ui/fade-in-on-scroll"
 import { HomeClientComponents } from "./home-client"
-
-const WhyPhoenixTrust = dynamic(
-  () => import("@/components/home/why-phoenix-trust").then((mod) => ({ default: mod.WhyPhoenixTrust })),
-  {
-    loading: () => <div className="h-96 bg-[#0B1C2C] animate-pulse" />,
-  },
-)
 
 const PhoenixVsCompetition = dynamic(
   () => import("@/components/home/phoenix-vs-competition").then((mod) => ({ default: mod.PhoenixVsCompetition })),
@@ -31,10 +28,6 @@ const ExpandableReviews = dynamic(
     loading: () => <div className="h-96 bg-[#0A2740] animate-pulse" />,
   },
 )
-
-const CTAComponent = dynamic(() => import("@/components/home/cta").then((mod) => ({ default: mod.CTA })), {
-  loading: () => <div className="h-64 bg-[#F5F3EF] animate-pulse" />,
-})
 
 export const metadata: Metadata = generateHomeMetadata()
 
@@ -53,7 +46,6 @@ export default async function Home() {
     reviews = reviewsData.reviews
   } catch (error) {
     console.error("[v0] Failed to fetch Judge.me data during build:", error)
-    // Use fallback data if fetch fails during build
   }
 
   const organizationSchema = generateOrganizationSchema()
@@ -65,17 +57,15 @@ export default async function Home() {
       <Hero judgemeStats={judgemeStats} />
 
       <FadeInOnScroll>
-        <FeaturedProductsShowcase />
+        <SizeSelector />
       </FadeInOnScroll>
 
       <FadeInOnScroll delay={100}>
-        <QuickDeals />
+        <FeaturesSection />
       </FadeInOnScroll>
 
       <FadeInOnScroll delay={150}>
-        <Suspense fallback={<div className="h-96 bg-[#0B1C2C] animate-pulse" />}>
-          <WhyPhoenixTrust />
-        </Suspense>
+        <BestsellerSpotlight />
       </FadeInOnScroll>
 
       <FadeInOnScroll delay={200}>
@@ -85,15 +75,21 @@ export default async function Home() {
       </FadeInOnScroll>
 
       <FadeInOnScroll delay={250}>
+        <AccessoriesSection />
+      </FadeInOnScroll>
+
+      <FadeInOnScroll delay={300}>
+        <GuaranteeSection />
+      </FadeInOnScroll>
+
+      <FadeInOnScroll delay={350}>
         <Suspense fallback={<div className="h-96 bg-[#0A2740] animate-pulse" />}>
           <ExpandableReviews reviews={reviews} />
         </Suspense>
       </FadeInOnScroll>
 
-      <FadeInOnScroll delay={300}>
-        <Suspense fallback={<div className="h-64 bg-[#F5F3EF] animate-pulse" />}>
-          <CTAComponent />
-        </Suspense>
+      <FadeInOnScroll delay={400}>
+        <FinalCTABanner />
       </FadeInOnScroll>
 
       <HomeClientComponents />
