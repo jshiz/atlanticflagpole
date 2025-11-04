@@ -26,10 +26,9 @@ async function shopifyFetch<T>(query: string, variables?: Record<string, any>): 
 }
 
 function buildSearchQuery(q: string) {
-  const safe = q.replace(/[^a-zA-Z0-9\s-]/g, "").trim() // Better sanitization
+  const safe = q.replace(/[^a-zA-Z0-9\s-]/g, "").trim()
   if (!safe) return ""
 
-  // Search across multiple fields with proper weighting
   const terms = safe.split(/\s+/).filter(Boolean)
   const queries = terms.flatMap((term) => [
     `title:*${term}*`,
@@ -38,7 +37,8 @@ function buildSearchQuery(q: string) {
     `tag:${term}`,
   ])
 
-  return queries.join(" OR ")
+  // Combine search terms with OR, then AND with availability filter
+  return `(${queries.join(" OR ")}) AND available_for_sale:true`
 }
 
 export async function GET(req: NextRequest) {
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
 
     const data = await shopifyFetch<{ products: any }>(PRODUCT_SEARCH, {
       q: searchQuery,
-      first: 50, // Reduced from 100 for better performance
+      first: 50,
     })
 
     const items = data.products.nodes.map((p: any) => ({

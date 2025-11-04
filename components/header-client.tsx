@@ -3,7 +3,7 @@
 import type React from "react"
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
-import { ShoppingCart, MenuIcon, X } from "lucide-react"
+import { ShoppingCart, MenuIcon, X, ChevronDown, ChevronUp } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
 import { useCart } from "@/components/cart/cart-context"
@@ -37,6 +37,7 @@ export function HeaderClient({
 }: HeaderClientProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+  const [expandedMobileMenu, setExpandedMobileMenu] = useState<string | null>(null)
   const [hoveredSubmenuId, setHoveredSubmenuId] = useState<string | null>(null)
   const [quizModalOpen, setQuizModalOpen] = useState(false)
   const { cart } = useCart()
@@ -323,31 +324,48 @@ export function HeaderClient({
                 </button>
               </div>
 
-              <nav className="grid grid-cols-2 gap-x-4 gap-y-2">
+              <nav className="space-y-2">
                 {menuItems.map((item) => {
                   const isNFL = isNFLMenuItem(item.title)
                   const isChristmas = isChristmasTreeMenuItem(item.title)
+                  const hasSubmenu = item.items && item.items.length > 0
+                  const isExpanded = expandedMobileMenu === item.id
 
                   return (
-                    <div key={item.id} className="space-y-1">
-                      <Link
-                        href={item.url}
-                        className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-bold text-sm block border-b border-gray-200 pb-1"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        {isChristmas ? `🎄 ${item.title}` : item.title}
-                      </Link>
+                    <div key={item.id} className="border-b border-gray-200 pb-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <Link
+                          href={item.url}
+                          className="flex-1 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-bold text-base py-2"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          {isChristmas ? `🎄 ${item.title}` : item.title}
+                        </Link>
 
-                      {!isNFL && !isChristmas && item.items && item.items.length > 0 && (
-                        <div className="space-y-0.5">
-                          {item.items.slice(0, 3).map((subItem) => (
+                        {hasSubmenu && !isNFL && !isChristmas && (
+                          <button
+                            onClick={() => setExpandedMobileMenu(isExpanded ? null : item.id)}
+                            className="p-2 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors"
+                            aria-label={isExpanded ? "Collapse menu" : "Expand menu"}
+                          >
+                            {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                          </button>
+                        )}
+                      </div>
+
+                      {hasSubmenu && !isNFL && !isChristmas && isExpanded && (
+                        <div className="mt-2 space-y-1.5 pl-3 animate-in slide-in-from-top-2 duration-200">
+                          {item.items.map((subItem) => (
                             <Link
                               key={subItem.id}
                               href={subItem.url}
-                              className="flex items-start gap-1 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors text-xs leading-tight"
-                              onClick={() => setMobileMenuOpen(false)}
+                              className="flex items-start gap-2 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors text-sm leading-relaxed py-1.5 px-2 rounded hover:bg-gray-50"
+                              onClick={() => {
+                                setMobileMenuOpen(false)
+                                setExpandedMobileMenu(null)
+                              }}
                             >
-                              <span className="text-[#C8A55C]">•</span>
+                              <span className="text-[#C8A55C] mt-0.5">•</span>
                               <span>{subItem.title}</span>
                             </Link>
                           ))}

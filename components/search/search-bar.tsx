@@ -115,20 +115,20 @@ export function SearchBar({
               if (results.length > 0) setIsOpen(true)
               if (!query) setShowAIAssistant(true)
             }}
-            className="w-full pl-9 pr-20 text-xs md:text-sm h-8 md:h-9 text-center md:text-left bg-gray-50 border-gray-300 focus:bg-white focus:border-[#C8A55C] transition-all rounded-full shadow-sm"
+            className="w-full pl-10 pr-24 text-sm md:text-base h-10 md:h-11 text-left bg-gray-50 border-gray-300 focus:bg-white focus:border-[#C8A55C] transition-all rounded-full shadow-sm"
           />
-          <Search className="absolute left-2.5 md:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" />
+          <Search className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
 
-          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
             {query && (
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
                 onClick={handleClear}
-                className="h-6 w-6 hover:bg-gray-100 rounded-full"
+                className="h-7 w-7 hover:bg-gray-100 rounded-full"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-4 h-4" />
               </Button>
             )}
             <Button
@@ -136,17 +136,17 @@ export function SearchBar({
               variant="ghost"
               size="icon"
               onClick={() => setShowAIAssistant(!showAIAssistant)}
-              className="h-6 w-6 hover:bg-[#C8A55C]/10 rounded-full group"
+              className="h-7 w-7 hover:bg-[#C8A55C]/10 rounded-full group"
               title="AI Assistant"
             >
-              <Sparkles className="w-3.5 h-3.5 text-[#C8A55C] group-hover:scale-110 transition-transform" />
+              <Sparkles className="w-4 h-4 text-[#C8A55C] group-hover:scale-110 transition-transform" />
             </Button>
             <Link
               href="/help-center"
-              className="h-6 w-6 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
+              className="h-7 w-7 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
               title="Help Center"
             >
-              <HelpCircle className="w-3.5 h-3.5 text-gray-500 hover:text-[#0B1C2C]" />
+              <HelpCircle className="w-4 h-4 text-gray-500 hover:text-[#0B1C2C]" />
             </Link>
           </div>
         </div>
