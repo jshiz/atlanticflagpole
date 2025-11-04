@@ -7,17 +7,17 @@ import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Check, Zap, Shield, Sparkles, TreePine, Truck, Award, ChevronRight, Gift, Heart } from "lucide-react"
+import { getProduct } from "@/lib/shopify"
+import type { ShopifyProduct } from "@/lib/shopify"
 
-const productKits = [
+const productKitConfig = [
   {
     id: "20ft-warm",
     name: "20ft Flagpole Kit - Warm White",
     height: "20 feet",
     leds: "900 LEDs",
     color: "Warm White",
-    price: 567.0,
-    compareAt: 658.18,
-    shopifyHandle: "patriot-glo-20ft-warm-white-led-christmas-tree",
+    shopifyHandle: "20-patriot-glo-warm-white-led-christmas-tree-for-flagpole",
     features: ["Perfect for residential flagpoles", "Cozy warm glow", "Energy-efficient LEDs", "Weather-resistant"],
   },
   {
@@ -26,9 +26,7 @@ const productKits = [
     height: "20 feet",
     leds: "900 LEDs",
     color: "Multicolor",
-    price: 567.0,
-    compareAt: 658.18,
-    shopifyHandle: "patriot-glo-20ft-multicolor-led-christmas-tree",
+    shopifyHandle: "20-patriot-glo-multicolor-led-christmas-tree-for-flagpole",
     features: ["Vibrant festive colors", "Red, green, blue, yellow", "Energy-efficient LEDs", "Weather-resistant"],
   },
   {
@@ -37,9 +35,7 @@ const productKits = [
     height: "25 feet",
     leds: "1500 LEDs",
     color: "Warm White",
-    price: 687.0,
-    compareAt: 798.0,
-    shopifyHandle: "patriot-glo-25ft-warm-white-led-christmas-tree",
+    shopifyHandle: "25-patriot-glo-warm-white-led-christmas-tree-for-flagpole",
     features: ["Ideal for commercial displays", "Extra bright coverage", "Premium LED quality", "Professional grade"],
     popular: true,
   },
@@ -49,9 +45,7 @@ const productKits = [
     height: "25 feet",
     leds: "1500 LEDs",
     color: "Multicolor",
-    price: 687.0,
-    compareAt: 798.0,
-    shopifyHandle: "patriot-glo-25ft-multicolor-led-christmas-tree",
+    shopifyHandle: "25-patriot-glo-multicolor-led-christmas-tree-for-flagpole",
     features: ["Maximum visual impact", "Spectacular color display", "Premium LED quality", "Professional grade"],
   },
 ]
@@ -81,13 +75,109 @@ const addOns = [
 ]
 
 export function ChristmasTreeSalesPage() {
-  const [selectedKit, setSelectedKit] = useState(productKits[2]) // Default to popular 25ft warm
+  const [productKits, setProductKits] = useState<
+    Array<
+      (typeof productKitConfig)[0] & {
+        price: number
+        compareAt: number
+        shopifyProduct?: ShopifyProduct
+      }
+    >
+  >([])
+  const [loading, setLoading] = useState(true)
+  const [selectedKit, setSelectedKit] = useState<(typeof productKits)[0] | null>(null)
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([])
   const [videoLoaded, setVideoLoaded] = useState(false)
 
   useEffect(() => {
+    async function fetchProducts() {
+      console.log("[v0] 🎄 Fetching Christmas tree products from Shopify...")
+
+      try {
+        const fetchedKits = await Promise.all(
+          productKitConfig.map(async (config) => {
+            try {
+              console.log(`[v0] 🔍 Fetching product: ${config.shopifyHandle}`)
+              const product = await getProduct(config.shopifyHandle)
+
+              if (product) {
+                console.log(`[v0] ✅ Found product: ${config.shopifyHandle}`)
+                console.log(`[v0] 💰 Price: ${product.priceRange.minVariantPrice.amount}`)
+                console.log(`[v0] 🖼️ Image: ${product.featuredImage?.url || "No image"}`)
+
+                const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
+                const compareAt = product.compareAtPriceRange?.minVariantPrice?.amount
+                  ? Number.parseFloat(product.compareAtPriceRange.minVariantPrice.amount)
+                  : price * 1.2
+
+                return {
+                  ...config,
+                  price,
+                  compareAt,
+                  shopifyProduct: product,
+                }
+              } else {
+                console.error(`[v0] ❌ Product not found: ${config.shopifyHandle}`)
+              }
+            } catch (error) {
+              console.error(`[v0] ❌ Failed to fetch product ${config.shopifyHandle}:`, error)
+            }
+
+            return null
+          }),
+        )
+
+        const validKits = fetchedKits.filter((kit): kit is NonNullable<typeof kit> => kit !== null)
+
+        console.log(`[v0] 📊 Successfully fetched ${validKits.length} out of ${productKitConfig.length} products`)
+
+        if (validKits.length === 0) {
+          console.error("[v0] ❌ No products could be fetched from Shopify!")
+        }
+
+        setProductKits(validKits)
+
+        const popularKit = validKits.find((k) => k.popular) || validKits[0]
+        setSelectedKit(popularKit)
+        setLoading(false)
+      } catch (error) {
+        console.error("[v0] ❌ Error fetching Christmas tree products:", error)
+        setLoading(false)
+      }
+    }
+
+    fetchProducts()
     setVideoLoaded(true)
   }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <TreePine className="w-16 h-16 text-green-600 animate-pulse mx-auto mb-4" />
+          <p className="text-xl text-[#0B1C2C]">Loading Christmas Tree Kits...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!selectedKit || productKits.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-8">
+          <TreePine className="w-16 h-16 text-red-600 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-[#0B1C2C] mb-4">Products Not Available</h2>
+          <p className="text-[#0B1C2C]/70 mb-6">
+            We're having trouble loading the Christmas tree products. Please check the console for details or contact
+            support.
+          </p>
+          <Button onClick={() => window.location.reload()} className="bg-green-600 hover:bg-green-700">
+            Try Again
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   const discountPercentage = Math.round(((selectedKit.compareAt - selectedKit.price) / selectedKit.compareAt) * 100)
   const savings = selectedKit.compareAt - selectedKit.price
@@ -101,6 +191,15 @@ export function ChristmasTreeSalesPage() {
 
   const toggleAddOn = (id: string) => {
     setSelectedAddOns((prev) => (prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]))
+  }
+
+  const getProductImage = (kit: typeof selectedKit) => {
+    if (kit.shopifyProduct?.featuredImage?.url) {
+      console.log(`[v0] 🖼️ Using Shopify image for ${kit.name}: ${kit.shopifyProduct.featuredImage.url}`)
+      return kit.shopifyProduct.featuredImage.url
+    }
+    console.log(`[v0] ⚠️ No Shopify image found for ${kit.name}, using placeholder`)
+    return `/placeholder.svg?height=800&width=800&query=${encodeURIComponent(kit.name)}`
   }
 
   return (
@@ -123,7 +222,7 @@ export function ChristmasTreeSalesPage() {
 
         {/* Hero Content */}
         <div className="relative z-10 container mx-auto px-4 h-full flex flex-col justify-center items-center text-center">
-          <Badge className="bg-red-600 hover:bg-red-700 text-white text-lg px-6 py-2 mb-6 shadow-2xl">
+          <Badge className="bg-red-600 hover:bg-red-700 text-white text-lg px-6 py-2 mb-6 shadow-2xl font-bold">
             🎄 Limited Time Holiday Offer - Save Up To {discountPercentage}%
           </Badge>
 
@@ -222,7 +321,7 @@ export function ChristmasTreeSalesPage() {
 
                   <div className="relative aspect-square overflow-hidden bg-gray-50">
                     <Image
-                      src={`https://cdn.shopify.com/s/files/1/0000/0000/products/${kit.shopifyHandle}.jpg?v=1672531200`}
+                      src={getProductImage(kit) || "/placeholder.svg"}
                       alt={kit.name}
                       fill
                       className="object-cover"

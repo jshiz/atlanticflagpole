@@ -7,6 +7,7 @@ import Image from "next/image"
 import { useState, useEffect } from "react"
 import { Star, ShoppingCart, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/components/cart/cart-context"
 import { cn } from "@/lib/utils"
 
@@ -173,10 +174,15 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
     return 4.0 + (hash % 10) / 10
   }
 
+  const isMadeInUSA = (product: Product): boolean => {
+    const title = product.title.toLowerCase()
+    return title.includes("american") || title.includes("usa") || title.includes("u.s.") || title.includes("nylon")
+  }
+
   return (
-    <div className="grid grid-cols-12 gap-4 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <div className="grid grid-cols-12 gap-6 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-300">
       {/* Left Sidebar - Categories */}
-      <div className="col-span-3 border-r border-gray-100 pr-4">
+      <div className="col-span-3 border-r border-gray-100 pr-6">
         <div className="sticky top-2">
           <h3 className="text-base font-serif font-bold text-[#0B1C2C] mb-3 pb-2 border-b-2 border-[#C8A55C]">
             {title}
@@ -232,10 +238,11 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
         </div>
 
         {displayProducts && displayProducts.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
             {displayProducts.map((product, index) => {
               const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
               const rating = getProductRating(product.id)
+              const madeInUSA = isMadeInUSA(product)
 
               return (
                 <Link
@@ -245,31 +252,39 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
                   className="group block animate-in fade-in slide-in-from-bottom-2 duration-300"
                   style={{ animationDelay: `${index * 40}ms` }}
                 >
-                  <div className="relative aspect-square bg-gray-50 rounded-lg overflow-hidden mb-2 shadow-sm group-hover:shadow-lg transition-all">
+                  <div className="relative aspect-square bg-gray-50 rounded-lg overflow-hidden mb-3 shadow-sm group-hover:shadow-xl transition-all duration-300">
                     {product.featuredImage ? (
                       <Image
                         src={product.featuredImage.url || "/placeholder.svg"}
                         alt={product.featuredImage.altText || product.title}
                         fill
-                        sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, (max-width: 1024px) 20vw, 16vw"
-                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                        className="object-cover transition-all duration-300 group-hover:brightness-110"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-300">
                         <span className="text-2xl">🏴</span>
                       </div>
                     )}
+
+                    {madeInUSA && (
+                      <div className="absolute top-2 right-2 z-10">
+                        <Badge className="bg-[#0B1C2C] text-white text-[10px] px-2 py-0.5 font-bold shadow-lg border border-white/20">
+                          Made in USA
+                        </Badge>
+                      </div>
+                    )}
                   </div>
 
-                  <h5 className="text-xs font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-1.5 leading-tight min-h-[2.5rem]">
+                  <h5 className="text-xs font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-2 leading-snug min-h-[3rem] flex items-start">
                     {product.title}
                   </h5>
 
-                  <div className="mb-1.5">
+                  <div className="mb-2">
                     <StarRating rating={rating} size="sm" />
                   </div>
 
-                  <p className="text-sm font-bold text-[#C8A55C] mb-2">${price.toFixed(2)}</p>
+                  <p className="text-sm font-bold text-[#C8A55C] mb-2.5">${price.toFixed(2)}</p>
 
                   <div className="h-9">
                     <QuickAddButton product={product} />

@@ -3,7 +3,7 @@
 import type React from "react"
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
-import { ShoppingCart, MenuIcon, X, ChevronDown, ChevronUp } from "lucide-react"
+import { ShoppingCart, MenuIcon, X } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
 import { useCart } from "@/components/cart/cart-context"
@@ -15,6 +15,9 @@ import { isNFLMenuItem, isChristmasTreeMenuItem } from "@/lib/nfl-teams"
 import type { ShopifyProduct } from "@/lib/shopify/types"
 import { MegaMenuWithCart } from "@/components/header/mega-menu-with-cart"
 import { AccountMenu } from "@/components/header/account-menu"
+import { MobileMenuAmazon } from "@/components/header/mobile-menu-amazon"
+import { useGeo } from "@/lib/geo/context"
+import { getStateCodeFromRegion } from "@/lib/geo/state-mapping"
 
 interface HeaderClientProps {
   menuData: Menu | null
@@ -43,6 +46,9 @@ export function HeaderClient({
   const { cart } = useCart()
   const cartItemCount = cart?.lines?.edges ? cart.lines.edges.length : 0
   const menuRef = useRef<HTMLDivElement>(null)
+  const { location } = useGeo()
+  const stateCode = location ? getStateCodeFromRegion(location.region) : null
+  const shopifyAccountUrl = `https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN}/account`
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -73,7 +79,7 @@ export function HeaderClient({
 
   const isResourceMenu = (item: any) => {
     const title = item.title.toLowerCase()
-    return title.includes("resource") || title.includes("about") || title.includes("company")
+    return title.includes("resource") || title.includes("about") || title.includes("company") || title.includes("info")
   }
 
   const PinterestIcon = ({ className }: { className?: string }) => (
@@ -96,13 +102,25 @@ export function HeaderClient({
 
   return (
     <>
+      <MobileMenuAmazon
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        location={location}
+        stateCode={stateCode}
+        shopifyAccountUrl={shopifyAccountUrl}
+        onQuizOpen={() => setQuizModalOpen(true)}
+      />
+
       <header className="sticky top-0 z-[100] bg-white border-b border-gray-200 shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-20 gap-4">
             <div className="flex items-center gap-3 flex-shrink-0">
               <button
                 className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors p-1"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                onClick={() => {
+                  console.log("[v0] Hamburger clicked, current state:", mobileMenuOpen)
+                  setMobileMenuOpen(!mobileMenuOpen)
+                }}
                 aria-label="Toggle menu"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
@@ -250,6 +268,48 @@ export function HeaderClient({
                                 {item.title}
                               </h3>
                               <div className="grid grid-cols-3 gap-6">
+                                {item.title.toLowerCase().includes("info") && (
+                                  <>
+                                    <button
+                                      onClick={() => {
+                                        setQuizModalOpen(true)
+                                        setActiveDropdown(null)
+                                      }}
+                                      className="group p-6 bg-gradient-to-br from-[#C8A55C]/10 to-white rounded-xl border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all duration-300 flex flex-col h-full text-left"
+                                    >
+                                      <h4 className="text-lg font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors mb-2">
+                                        Flagpole Finder Quiz
+                                      </h4>
+                                      <p className="text-sm text-gray-600 flex-1">
+                                        Take our interactive quiz to find the perfect flagpole for your needs
+                                      </p>
+                                      <span className="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-[#C8A55C] group-hover:gap-2 transition-all">
+                                        Start Quiz
+                                        <span className="group-hover:translate-x-1 transition-transform duration-300">
+                                          →
+                                        </span>
+                                      </span>
+                                    </button>
+                                    <Link
+                                      href="/flagpole-finder"
+                                      className="group p-6 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all duration-300 flex flex-col h-full"
+                                      onClick={() => setActiveDropdown(null)}
+                                    >
+                                      <h4 className="text-lg font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors mb-2">
+                                        Flagpole Finder Tool
+                                      </h4>
+                                      <p className="text-sm text-gray-600 flex-1">
+                                        Browse and compare flagpoles by height, type, and features
+                                      </p>
+                                      <span className="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-[#C8A55C] group-hover:gap-2 transition-all">
+                                        Explore Options
+                                        <span className="group-hover:translate-x-1 transition-transform duration-300">
+                                          →
+                                        </span>
+                                      </span>
+                                    </Link>
+                                  </>
+                                )}
                                 {item.items?.map((subItem) => {
                                   return (
                                     <Link
@@ -300,81 +360,6 @@ export function HeaderClient({
                   </div>
                 )}
               </div>
-            </div>
-          )}
-
-          {mobileMenuOpen && (
-            <div className="py-4 border-t border-gray-200 animate-in slide-in-from-top duration-300 max-h-[calc(100vh-6rem)] overflow-y-auto">
-              <div className="flex gap-2 mb-4">
-                <Link
-                  href="/flagpole-finder"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 bg-[#C8A55C] hover:bg-[#a88947] px-3 py-2 rounded-lg text-white font-semibold text-center transition-colors text-sm"
-                >
-                  Finder
-                </Link>
-                <button
-                  onClick={() => {
-                    setQuizModalOpen(true)
-                    setMobileMenuOpen(false)
-                  }}
-                  className="flex-1 bg-[#0B1C2C] hover:bg-[#0B1C2C]/90 px-3 py-2 rounded-lg text-white font-semibold transition-colors text-sm"
-                >
-                  Quiz
-                </button>
-              </div>
-
-              <nav className="space-y-2">
-                {menuItems.map((item) => {
-                  const isNFL = isNFLMenuItem(item.title)
-                  const isChristmas = isChristmasTreeMenuItem(item.title)
-                  const hasSubmenu = item.items && item.items.length > 0
-                  const isExpanded = expandedMobileMenu === item.id
-
-                  return (
-                    <div key={item.id} className="border-b border-gray-200 pb-2">
-                      <div className="flex items-center justify-between gap-2">
-                        <Link
-                          href={item.url}
-                          className="flex-1 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-bold text-base py-2"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          {isChristmas ? `🎄 ${item.title}` : item.title}
-                        </Link>
-
-                        {hasSubmenu && !isNFL && !isChristmas && (
-                          <button
-                            onClick={() => setExpandedMobileMenu(isExpanded ? null : item.id)}
-                            className="p-2 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors"
-                            aria-label={isExpanded ? "Collapse menu" : "Expand menu"}
-                          >
-                            {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                          </button>
-                        )}
-                      </div>
-
-                      {hasSubmenu && !isNFL && !isChristmas && isExpanded && (
-                        <div className="mt-2 space-y-1.5 pl-3 animate-in slide-in-from-top-2 duration-200">
-                          {item.items.map((subItem) => (
-                            <Link
-                              key={subItem.id}
-                              href={subItem.url}
-                              className="flex items-start gap-2 text-[#0B1C2C] hover:text-[#C8A55C] transition-colors text-sm leading-relaxed py-1.5 px-2 rounded hover:bg-gray-50"
-                              onClick={() => {
-                                setMobileMenuOpen(false)
-                                setExpandedMobileMenu(null)
-                              }}
-                            >
-                              <span className="text-[#C8A55C] mt-0.5">•</span>
-                              <span>{subItem.title}</span>
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )
-                })}
-              </nav>
             </div>
           )}
         </div>

@@ -146,11 +146,11 @@ export function ChristmasTreeProduct() {
         <div className="space-y-8">
           <Card className="p-8 bg-white/95 backdrop-blur-sm">
             {/* Price */}
-            <div className="flex items-center gap-4 mb-6">
-              <span className="text-5xl font-bold text-[#0B1C2C]">${selectedHeight.price.toFixed(2)}</span>
+            <div className="flex items-baseline gap-3 flex-wrap mb-6">
+              <span className="text-4xl font-bold text-[#0B1C2C]">${selectedHeight.price.toFixed(2)}</span>
               <div className="flex flex-col">
                 <span className="text-xl text-gray-500 line-through">${selectedHeight.compareAt.toFixed(2)}</span>
-                <Badge variant="destructive" className="text-sm w-fit">
+                <Badge className="bg-red-600 hover:bg-red-700 text-white font-bold text-sm w-fit">
                   Save ${(selectedHeight.compareAt - selectedHeight.price).toFixed(2)}
                 </Badge>
               </div>
