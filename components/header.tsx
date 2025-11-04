@@ -65,19 +65,13 @@ export async function Header() {
                 getCollectionWithProducts(collectionHandle, 24)
                   .then((collection) => {
                     if (collection?.products?.nodes && collection.products.nodes.length > 0) {
-                      // Filter for available products only
-                      const availableProducts = collection.products.nodes.filter((p: any) => {
-                        const hasVariant = p.variants?.edges?.[0]?.node
-                        return hasVariant?.availableForSale
-                      })
-
-                      submenuProductsData[subItem.id] = availableProducts
+                      submenuProductsData[subItem.id] = collection.products.nodes
                       console.log(
-                        `[v0] ✅ Found ${availableProducts.length} available products for submenu "${subItem.title}" (collection: ${collectionHandle})`,
+                        `[v0] ✅ Found ${collection.products.nodes.length} products for submenu "${subItem.title}" (${collectionHandle})`,
                       )
                     } else {
                       console.log(
-                        `[v0] ⚠️ No products found in collection "${collectionHandle}" for submenu "${subItem.title}"`,
+                        `[v0] ⚠️ No products in collection "${collectionHandle}" for submenu "${subItem.title}"`,
                       )
                     }
                   })
@@ -97,22 +91,28 @@ export async function Header() {
           const collectionPromise = getCollectionWithProducts(collectionHandle, 30)
             .then((collection) => {
               if (collection?.products?.nodes && collection.products.nodes.length > 0) {
-                // Filter for available products only
-                const availableProducts = collection.products.nodes.filter((p: any) => {
-                  const hasVariant = p.variants?.edges?.[0]?.node
-                  return hasVariant?.availableForSale
-                })
-
-                const uniqueProducts = Array.from(new Map(availableProducts.map((p: any) => [p.id, p])).values())
+                const uniqueProducts = Array.from(
+                  new Map(collection.products.nodes.map((p: any) => [p.id, p])).values(),
+                )
 
                 megaMenuData[item.id] = {
                   products: { nodes: uniqueProducts.slice(0, 24) },
                 }
                 console.log(
-                  `[v0] ✅ Found ${uniqueProducts.length} available products for "${item.title}" (collection: ${collectionHandle})`,
+                  `[v0] ✅ Found ${uniqueProducts.length} products for "${item.title}" menu (${collectionHandle})`,
                 )
+                if (uniqueProducts.length > 0) {
+                  console.log(`[v0] 📦 Sample product structure:`, {
+                    id: uniqueProducts[0].id,
+                    title: uniqueProducts[0].title,
+                    hasAvailableForSale: "availableForSale" in uniqueProducts[0],
+                    availableForSale: (uniqueProducts[0] as any).availableForSale,
+                    hasVariants: !!uniqueProducts[0].variants,
+                    variantCount: uniqueProducts[0].variants?.edges?.length || 0,
+                  })
+                }
               } else {
-                console.log(`[v0] ⚠️ No products found in collection "${collectionHandle}" for "${item.title}"`)
+                console.log(`[v0] ⚠️ No products in collection "${collectionHandle}" for "${item.title}"`)
               }
             })
             .catch((error) => {
@@ -128,6 +128,13 @@ export async function Header() {
 
     const endTime = Date.now()
     console.log(`[v0] ⚡ Header data fetched in ${endTime - startTime}ms`)
+    console.log(`[v0] 📊 Mega menu data summary:`, {
+      menuItemsWithProducts: Object.keys(megaMenuData).length,
+      totalProducts: Object.values(megaMenuData).reduce(
+        (sum: number, item: any) => sum + (item.products?.nodes?.length || 0),
+        0,
+      ),
+    })
 
     const headerData = {
       menuData,

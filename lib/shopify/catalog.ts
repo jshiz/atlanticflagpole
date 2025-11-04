@@ -78,6 +78,7 @@ export async function getCollectionWithProducts(handle: string, first = 6) {
             id
             handle
             title
+            availableForSale
             featuredImage {
               url(transform: { maxWidth: 400, maxHeight: 400 })
               altText
@@ -90,7 +91,7 @@ export async function getCollectionWithProducts(handle: string, first = 6) {
                 currencyCode
               }
             }
-            variants(first: 1) {
+            variants(first: 10) {
               edges {
                 node {
                   id
@@ -114,6 +115,15 @@ export async function getCollectionWithProducts(handle: string, first = 6) {
     if (!data || !data.collection) {
       console.log(`[v0] Collection "${handle}" not found in Shopify`)
       return null
+    }
+
+    if (data.collection.products?.nodes) {
+      data.collection.products.nodes = data.collection.products.nodes.filter((product: any) => {
+        return product.availableForSale === true
+      })
+      console.log(
+        `[v0] Collection "${handle}" has ${data.collection.products.nodes.length} available products after filtering`,
+      )
     }
 
     return data.collection
