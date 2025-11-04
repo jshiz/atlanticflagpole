@@ -354,6 +354,7 @@ export async function getCollectionProducts({
             description
             descriptionHtml
             handle
+            availableForSale
             productType
             tags
             vendor
@@ -421,10 +422,103 @@ export async function getCollectionProducts({
   })
 
   if (!data.collection) {
+    console.log(`[v0] Collection "${collection}" not found in Shopify`)
     return []
   }
 
-  return toNodes(data.collection.products)
+  const products = toNodes(data.collection.products)
+  console.log(`[v0] ✅ Found ${products.length} products in collection "${collection}"`)
+  return products
+}
+
+export async function getAllProducts(): Promise<ShopifyProduct[]> {
+  const allProducts: ShopifyProduct[] = []
+  let hasNextPage = true
+  let cursor: string | null = null
+
+  while (hasNextPage) {
+    const query = /* gql */ `
+      query getAllProducts($first: Int!, $after: String) {
+        products(first: $first, after: $after, sortKey: TITLE) {
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+          nodes {
+            id
+            title
+            description
+            descriptionHtml
+            handle
+            availableForSale
+            productType
+            vendor
+            tags
+            options {
+              id
+              name
+              values
+            }
+            images(first: 5) {
+              nodes {
+                url
+                altText
+                thumbhash
+              }
+            }
+            priceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            compareAtPriceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            variants(first: 10) {
+              nodes {
+                id
+                title
+                price {
+                  amount
+                  currencyCode
+                }
+                compareAtPrice {
+                  amount
+                  currencyCode
+                }
+                availableForSale
+                selectedOptions {
+                  name
+                  value
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const { data } = await shopifyFetch<{
+      products: {
+        pageInfo: { hasNextPage: boolean; endCursor: string }
+      } & ConnectionLike<ShopifyProduct>
+    }>({
+      query,
+      variables: { first: 250, after: cursor },
+      tags: ["products"],
+    })
+
+    allProducts.push(...toNodes(data.products))
+    hasNextPage = data.products?.pageInfo?.hasNextPage || false
+    cursor = data.products?.pageInfo?.endCursor || null
+  }
+
+  console.log(`[v0] Fetched ${allProducts.length} total products from Shopify`)
+  return allProducts
 }
 
 export async function createCart(): Promise<ShopifyCart> {
@@ -841,96 +935,6 @@ export async function getCart(cartId: string): Promise<ShopifyCart | null> {
   })
 
   return data.cart
-}
-
-export async function getAllProducts(): Promise<ShopifyProduct[]> {
-  const allProducts: ShopifyProduct[] = []
-  let hasNextPage = true
-  let cursor: string | null = null
-
-  while (hasNextPage) {
-    const query = /* gql */ `
-      query getAllProducts($first: Int!, $after: String) {
-        products(first: $first, after: $after, sortKey: TITLE) {
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-          nodes {
-            id
-            title
-            description
-            descriptionHtml
-            handle
-            availableForSale
-            productType
-            vendor
-            tags
-            options {
-              id
-              name
-              values
-            }
-            images(first: 5) {
-              nodes {
-                url
-                altText
-                thumbhash
-              }
-            }
-            priceRange {
-              minVariantPrice {
-                amount
-                currencyCode
-              }
-            }
-            compareAtPriceRange {
-              minVariantPrice {
-                amount
-                currencyCode
-              }
-            }
-            variants(first: 10) {
-              nodes {
-                id
-                title
-                price {
-                  amount
-                  currencyCode
-                }
-                compareAtPrice {
-                  amount
-                  currencyCode
-                }
-                availableForSale
-                selectedOptions {
-                  name
-                  value
-                }
-              }
-            }
-          }
-        }
-      }
-    `
-
-    const { data } = await shopifyFetch<{
-      products: {
-        pageInfo: { hasNextPage: boolean; endCursor: string }
-      } & ConnectionLike<ShopifyProduct>
-    }>({
-      query,
-      variables: { first: 250, after: cursor },
-      tags: ["products"],
-    })
-
-    allProducts.push(...toNodes(data.products))
-    hasNextPage = data.products?.pageInfo?.hasNextPage || false
-    cursor = data.products?.pageInfo?.endCursor || null
-  }
-
-  console.log(`[v0] Fetched ${allProducts.length} total products from Shopify`)
-  return allProducts
 }
 
 /**

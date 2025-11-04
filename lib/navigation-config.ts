@@ -111,9 +111,9 @@ export const navigationConfig: MegaMenu[] = [
         items: [
           {
             label: "American Flags",
-            href: "/collections/american-flags",
-            collection: "american-flags",
-            tags: ["american flag", "usa flag", "us flag"],
+            href: "/collections/usa-flags",
+            collection: "usa-flags",
+            tags: ["american flag", "usa flag", "us flag", "usa-flag"],
             description: "Premium American flags",
           },
           {

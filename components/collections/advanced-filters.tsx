@@ -16,14 +16,17 @@ interface AdvancedFiltersProps {
     productTypes?: string[]
     vendors?: string[]
     tags?: string[]
+    collections?: any[]
   }
+  currentCollection?: string
 }
 
-export function AdvancedFilters({ availableFilters }: AdvancedFiltersProps) {
+export function AdvancedFilters({ availableFilters, currentCollection }: AdvancedFiltersProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
   const [expandedSections, setExpandedSections] = useState({
+    collections: true,
     availability: true,
     price: true,
     productType: true,
@@ -43,6 +46,7 @@ export function AdvancedFilters({ availableFilters }: AdvancedFiltersProps) {
     tag: searchParams.get("tag"),
     min: searchParams.get("min"),
     max: searchParams.get("max"),
+    collection: currentCollection || searchParams.get("collection"),
   }
 
   const hasActiveFilters = Object.values(currentFilters).some((v) => v !== null)
@@ -56,7 +60,12 @@ export function AdvancedFilters({ availableFilters }: AdvancedFiltersProps) {
     } else {
       params.delete(key)
     }
-    router.push(`?${params.toString()}`)
+
+    if (key === "collection") {
+      router.push(`/products?${params.toString()}`)
+    } else {
+      router.push(`?${params.toString()}`)
+    }
   }
 
   const clearAllFilters = () => {
@@ -116,6 +125,32 @@ export function AdvancedFilters({ availableFilters }: AdvancedFiltersProps) {
           </Button>
         )}
       </div>
+
+      {availableFilters?.collections && availableFilters.collections.length > 0 && (
+        <FilterSection title="Collections" sectionKey="collections">
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {availableFilters.collections
+              .sort((a, b) => a.title.localeCompare(b.title))
+              .map((collection) => (
+                <div key={collection.handle} className="flex items-center justify-between space-x-2">
+                  <div className="flex items-center space-x-2 flex-1">
+                    <Checkbox
+                      id={`collection-${collection.handle}`}
+                      checked={currentFilters.collection === collection.handle}
+                      onCheckedChange={(checked) => updateFilter("collection", checked ? collection.handle : null)}
+                    />
+                    <label
+                      htmlFor={`collection-${collection.handle}`}
+                      className="text-sm text-[#0B1C2C] cursor-pointer flex-1"
+                    >
+                      {collection.title}
+                    </label>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </FilterSection>
+      )}
 
       {/* Availability Filter */}
       <FilterSection title="Availability" sectionKey="availability">
@@ -311,6 +346,13 @@ export function AdvancedFilters({ availableFilters }: AdvancedFiltersProps) {
         <div className="pt-4 border-t border-[#0B1C2C]/10">
           <Label className="text-sm font-semibold text-[#0B1C2C] mb-2 block">Active Filters</Label>
           <div className="flex flex-wrap gap-2">
+            {currentFilters.collection && (
+              <Button variant="outline" size="sm" onClick={() => updateFilter("collection", null)} className="text-xs">
+                {availableFilters?.collections?.find((c) => c.handle === currentFilters.collection)?.title ||
+                  currentFilters.collection}
+                <X className="ml-1 h-3 w-3" />
+              </Button>
+            )}
             {currentFilters.available === "true" && (
               <Button variant="outline" size="sm" onClick={() => updateFilter("available", null)} className="text-xs">
                 In Stock

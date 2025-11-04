@@ -5,9 +5,11 @@ interface ProductFiltersWrapperProps {
     productTypes?: string[]
     vendors?: string[]
     tags?: string[]
+    collections?: any[]
   }
+  currentCollection?: string
 }
 
-export function ProductFiltersWrapper({ availableFilters }: ProductFiltersWrapperProps) {
-  return <AdvancedFilters availableFilters={availableFilters} />
+export function ProductFiltersWrapper({ availableFilters, currentCollection }: ProductFiltersWrapperProps) {
+  return <AdvancedFilters availableFilters={availableFilters} currentCollection={currentCollection} />
 }

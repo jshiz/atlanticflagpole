@@ -2,7 +2,7 @@ import { ProductFilters } from "@/components/products/product-filters"
 import { ProductFiltersWrapper } from "@/components/products/product-filters-wrapper"
 import { InfiniteProductGrid } from "@/components/products/infinite-product-grid"
 import { searchProducts } from "@/lib/shopify/catalog"
-import { getCollectionProducts } from "@/lib/shopify/index"
+import { getCollectionProducts, getAllCollections } from "@/lib/shopify/index"
 
 export const revalidate = 600
 
@@ -25,11 +25,16 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   let initialProducts: any[] = []
   let hasError = false
+  let errorMessage = ""
   let productTypes: string[] = []
   let vendors: string[] = []
   let tags: string[] = []
+  let allCollections: any[] = []
 
   try {
+    allCollections = await getAllCollections()
+    console.log(`[v0] ✅ Fetched ${allCollections.length} collections for filters`)
+
     if (searchParams.collection) {
       console.log(`[v0] Fetching products from collection: ${searchParams.collection}`)
 
@@ -58,10 +63,20 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         reverse,
       })
 
-      // Filter for available products only
-      initialProducts = initialProducts.filter((p) => p.availableForSale)
+      if (initialProducts.length === 0) {
+        console.log(`[v0] ⚠️ Collection "${searchParams.collection}" returned 0 products`)
+        errorMessage = `The collection "${searchParams.collection}" exists but has no products, or the collection doesn't exist in Shopify.`
+      } else {
+        const availableProducts = initialProducts.filter((p) => p.availableForSale)
+        console.log(
+          `[v0] ✅ Found ${initialProducts.length} total products, ${availableProducts.length} available in collection "${searchParams.collection}"`,
+        )
+        initialProducts = availableProducts
 
-      console.log(`[v0] ✅ Found ${initialProducts.length} active products in collection "${searchParams.collection}"`)
+        if (availableProducts.length === 0) {
+          errorMessage = `The collection "${searchParams.collection}" has ${initialProducts.length} products, but none are currently available for sale.`
+        }
+      }
     } else {
       // Use regular search for non-collection queries
       const result = await searchProducts({
@@ -85,8 +100,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   const getPageTitle = () => {
     if (searchParams.q) return `Search Results for "${searchParams.q}"`
-    if (searchParams.collection)
-      return searchParams.collection.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())
+    if (searchParams.collection) {
+      const collection = allCollections.find((c) => c.handle === searchParams.collection)
+      return collection?.title || searchParams.collection.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())
+    }
     if (searchParams.type) return searchParams.type
     if (searchParams.vendor) return searchParams.vendor
     if (searchParams.tag) return searchParams.tag
@@ -123,7 +140,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 productTypes,
                 vendors,
                 tags,
+                collections: allCollections,
               }}
+              currentCollection={searchParams.collection}
             />
           </aside>
 
@@ -136,7 +155,21 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             ) : initialProducts.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-lg border border-[#0B1C2C]/10">
                 <p className="text-lg text-[#0B1C2C]/70 mb-4">No products found matching your criteria.</p>
-                <p className="text-sm text-[#0B1C2C]/60">Try adjusting your filters or search terms.</p>
+                {errorMessage && <p className="text-sm text-[#0B1C2C]/60 mb-4">{errorMessage}</p>}
+                <p className="text-sm text-[#0B1C2C]/60 mb-6">Try adjusting your filters or search terms.</p>
+                {searchParams.collection && (
+                  <div className="space-y-4">
+                    <p className="text-sm text-[#0B1C2C]/60">
+                      Looking for a specific collection? View all available collections:
+                    </p>
+                    <a
+                      href="/collections"
+                      className="inline-block px-6 py-3 bg-[#0B1C2C] text-white rounded-lg hover:bg-[#0B1C2C]/90 transition-colors"
+                    >
+                      Browse All Collections
+                    </a>
+                  </div>
+                )}
               </div>
             ) : (
               <InfiniteProductGrid initialProducts={initialProducts} searchParams={searchParams} />
