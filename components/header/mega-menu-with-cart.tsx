@@ -165,7 +165,7 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
     console.log(`[v0] ✅ Filtered to ${activeProducts.length} available products for "${title}"`)
 
     const shuffled = shuffleArray(activeProducts)
-    setDisplayProducts(shuffled)
+    setDisplayProducts(shuffled.slice(0, 10))
   }, [featuredProducts, title])
 
   const getProductRating = (productId: string): number => {
@@ -232,8 +232,8 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
         </div>
 
         {displayProducts && displayProducts.length > 0 ? (
-          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {displayProducts.slice(0, 18).map((product, index) => {
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {displayProducts.map((product, index) => {
               const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
               const rating = getProductRating(product.id)
 

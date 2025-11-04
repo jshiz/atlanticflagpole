@@ -66,14 +66,19 @@ export async function getMenuWithNormalizedUrls(handle: string) {
   return normalizeMenu(menu)
 }
 
-export async function getCollectionWithProducts(handle: string, first = 6) {
+export async function getCollectionWithProducts(
+  handle: string,
+  first = 6,
+  sortKey: "BEST_SELLING" | "PRICE" = "BEST_SELLING",
+  reverse = false,
+) {
   const query = /* GraphQL */ `
-    query CollectionWithProducts($handle: String!, $first: Int!) {
+    query CollectionWithProducts($handle: String!, $first: Int!, $sortKey: ProductCollectionSortKeys!, $reverse: Boolean!) {
       collection(handle: $handle) {
         id
         title
         handle
-        products(first: $first, sortKey: BEST_SELLING) {
+        products(first: $first, sortKey: $sortKey, reverse: $reverse) {
           nodes {
             id
             handle
@@ -96,6 +101,10 @@ export async function getCollectionWithProducts(handle: string, first = 6) {
                 node {
                   id
                   availableForSale
+                  price {
+                    amount
+                    currencyCode
+                  }
                 }
               }
             }
@@ -108,7 +117,7 @@ export async function getCollectionWithProducts(handle: string, first = 6) {
   try {
     const data = await shopifyFetch<{ collection: any }>(
       query,
-      { handle, first },
+      { handle, first, sortKey, reverse },
       { next: { revalidate: 3600, tags: [`collection:${handle}`] } },
     )
 

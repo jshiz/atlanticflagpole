@@ -4,10 +4,31 @@ import { HeaderClient } from "@/components/header-client"
 import { getProducts } from "@/lib/shopify"
 import { getCached, setCache } from "@/lib/cache"
 import { JudgemeBadge } from "@/components/judgeme/judgeme-badge"
+import { navigationConfig } from "@/lib/navigation-config"
 
-function extractCollectionHandle(url: string): string | null {
-  const match = url.match(/\/collections\/([^/?]+)/)
-  return match ? match[1] : null
+function findCollectionHandle(menuTitle: string): string | null {
+  const normalizedTitle = menuTitle.toLowerCase().trim()
+
+  for (const menu of navigationConfig) {
+    if (menu.label.toLowerCase() === normalizedTitle) {
+      // For top-level menus, use the first category's first item's collection
+      if (menu.categories && menu.categories.length > 0) {
+        const firstItem = menu.categories[0].items[0]
+        return firstItem?.collection || null
+      }
+    }
+
+    // Check categories and items
+    for (const category of menu.categories) {
+      for (const item of category.items) {
+        if (item.label.toLowerCase() === normalizedTitle) {
+          return item.collection || null
+        }
+      }
+    }
+  }
+
+  return null
 }
 
 export async function Header() {
@@ -57,60 +78,18 @@ export async function Header() {
           continue
         }
 
-        if (item.items && item.items.length > 0) {
-          for (const subItem of item.items) {
-            const collectionHandle = extractCollectionHandle(subItem.url)
-            if (collectionHandle) {
-              fetchPromises.push(
-                getCollectionWithProducts(collectionHandle, 24)
-                  .then((collection) => {
-                    if (collection?.products?.nodes && collection.products.nodes.length > 0) {
-                      submenuProductsData[subItem.id] = collection.products.nodes
-                      console.log(
-                        `[v0] ✅ Found ${collection.products.nodes.length} products for submenu "${subItem.title}" (${collectionHandle})`,
-                      )
-                    } else {
-                      console.log(
-                        `[v0] ⚠️ No products in collection "${collectionHandle}" for submenu "${subItem.title}"`,
-                      )
-                    }
-                  })
-                  .catch((error) => {
-                    console.log(
-                      `[v0] ❌ Error fetching collection "${collectionHandle}" for submenu "${subItem.title}":`,
-                      error.message,
-                    )
-                  }),
-              )
-            }
-          }
-        }
+        const collectionHandle = findCollectionHandle(item.title)
 
-        const collectionHandle = extractCollectionHandle(item.url)
         if (collectionHandle) {
-          const collectionPromise = getCollectionWithProducts(collectionHandle, 30)
+          const collectionPromise = getCollectionWithProducts(collectionHandle, 10, "PRICE", true)
             .then((collection) => {
               if (collection?.products?.nodes && collection.products.nodes.length > 0) {
-                const uniqueProducts = Array.from(
-                  new Map(collection.products.nodes.map((p: any) => [p.id, p])).values(),
-                )
-
                 megaMenuData[item.id] = {
-                  products: { nodes: uniqueProducts.slice(0, 24) },
+                  products: { nodes: collection.products.nodes },
                 }
                 console.log(
-                  `[v0] ✅ Found ${uniqueProducts.length} products for "${item.title}" menu (${collectionHandle})`,
+                  `[v0] ✅ Found ${collection.products.nodes.length} products for "${item.title}" menu (${collectionHandle}, sorted by price)`,
                 )
-                if (uniqueProducts.length > 0) {
-                  console.log(`[v0] 📦 Sample product structure:`, {
-                    id: uniqueProducts[0].id,
-                    title: uniqueProducts[0].title,
-                    hasAvailableForSale: "availableForSale" in uniqueProducts[0],
-                    availableForSale: (uniqueProducts[0] as any).availableForSale,
-                    hasVariants: !!uniqueProducts[0].variants,
-                    variantCount: uniqueProducts[0].variants?.edges?.length || 0,
-                  })
-                }
               } else {
                 console.log(`[v0] ⚠️ No products in collection "${collectionHandle}" for "${item.title}"`)
               }
@@ -120,6 +99,33 @@ export async function Header() {
             })
 
           fetchPromises.push(collectionPromise)
+        } else {
+          console.log(`[v0] ⚠️ No collection handle found for menu item "${item.title}"`)
+        }
+
+        if (item.items && item.items.length > 0) {
+          for (const subItem of item.items) {
+            const subCollectionHandle = findCollectionHandle(subItem.title)
+            if (subCollectionHandle) {
+              fetchPromises.push(
+                getCollectionWithProducts(subCollectionHandle, 24)
+                  .then((collection) => {
+                    if (collection?.products?.nodes && collection.products.nodes.length > 0) {
+                      submenuProductsData[subItem.id] = collection.products.nodes
+                      console.log(
+                        `[v0] ✅ Found ${collection.products.nodes.length} products for submenu "${subItem.title}" (${subCollectionHandle})`,
+                      )
+                    }
+                  })
+                  .catch((error) => {
+                    console.log(
+                      `[v0] ❌ Error fetching collection "${subCollectionHandle}" for submenu "${subItem.title}":`,
+                      error.message,
+                    )
+                  }),
+              )
+            }
+          }
         }
       }
 
