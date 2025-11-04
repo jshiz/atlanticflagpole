@@ -33,38 +33,12 @@ async function shopifyFetch<T>(query: string, variables?: Record<string, any>): 
   return json.data
 }
 
-const PRODUCTS_BY_TAG_QUERY = `
-  query getProductsByTag($query: String!, $first: Int!, $sortKey: ProductSortKeys!, $reverse: Boolean!) {
-    products(first: $first, query: $query, sortKey: $sortKey, reverse: $reverse) {
-      nodes {
-        id
-        handle
-        title
-        productType
-        vendor
-        tags
-        availableForSale
-        priceRange {
-          minVariantPrice {
-            amount
-            currencyCode
-          }
-        }
-        featuredImage {
-          url
-          altText
-        }
-      }
-    }
-  }
-`
-
 function buildFilters(searchParams: Record<string, string | string[] | undefined>) {
   const filters: any[] = []
   if (searchParams.type) filters.push({ productType: String(searchParams.type) })
   if (searchParams.vendor) filters.push({ vendor: String(searchParams.vendor) })
   if (searchParams.tag) filters.push({ tag: String(searchParams.tag) })
-  if (searchParams.available === "true") filters.push({ available: true })
+  filters.push({ available: true })
 
   const min = searchParams.min ? Number.parseFloat(String(searchParams.min)) : undefined
   const max = searchParams.max ? Number.parseFloat(String(searchParams.max)) : undefined
@@ -148,7 +122,7 @@ export async function generateMetadata({ params }: CollectionPageProps): Promise
   try {
     const data = await shopifyFetch<{ collection: any }>(COLLECTION_WITH_FILTERS, {
       handle: params.handle,
-      filters: [],
+      filters: [{ available: true }],
       sortKey: "BEST_SELLING",
       reverse: false,
     })
@@ -179,21 +153,21 @@ export default async function CollectionPage({ params, searchParams }: Collectio
 
   let collection = null
   let products: any[] = []
-  let isFallback = false
 
   try {
     const data = await shopifyFetch<{ collection: any }>(COLLECTION_WITH_FILTERS, {
       handle: params.handle,
       filters,
       sortKey: sortKey as any,
-      reverse, // Pass reverse parameter
+      reverse,
     })
     collection = data.collection
 
     if (collection) {
       products = toNodes(collection.products)
+      products = products.filter((p) => p.availableForSale)
       console.log(
-        `[v0] ✅ Found ${products.length} products in collection "${params.handle}" (sort: ${sortKey}, reverse: ${reverse})`,
+        `[v0] ✅ Found ${products.length} active products in collection "${params.handle}" (sort: ${sortKey}, reverse: ${reverse})`,
       )
     }
   } catch (error) {
@@ -201,66 +175,7 @@ export default async function CollectionPage({ params, searchParams }: Collectio
   }
 
   if (!collection || products.length === 0) {
-    console.log(`[v0] Collection "${params.handle}" not found, falling back to tag search`)
-    isFallback = true
-
-    const tagsToTry = getTagsForCollection(params.handle)
-    console.log(`[v0] Trying tags for "${params.handle}":`, tagsToTry)
-
-    try {
-      const fallbackSortKey = sortKey === "BEST_SELLING" ? "BEST_SELLING" : sortKey
-
-      // Try each tag until we find products
-      for (const tag of tagsToTry) {
-        const data = await shopifyFetch<{ products: any }>(PRODUCTS_BY_TAG_QUERY, {
-          query: `tag:${tag}`,
-          first: 250,
-          sortKey: fallbackSortKey as any,
-          reverse,
-        })
-
-        const tagProducts = toNodes(data.products)
-
-        if (tagProducts.length > 0) {
-          products.push(...tagProducts)
-          console.log(`[v0] ✅ Found ${tagProducts.length} products with tag "${tag}"`)
-        }
-      }
-
-      // Remove duplicates based on product ID
-      const uniqueProducts = Array.from(new Map(products.map((p) => [p.id, p])).values())
-
-      const scoredProducts = uniqueProducts.map((p) => ({
-        ...p,
-        _relevancyScore: calculateRelevancyScore(p, params.handle, tagsToTry),
-      }))
-
-      if (sortKey === "BEST_SELLING" || sortKey === "RELEVANCE") {
-        scoredProducts.sort((a, b) => b._relevancyScore - a._relevancyScore)
-        console.log(`[v0] 🎯 Sorted ${scoredProducts.length} products by relevancy`)
-      }
-
-      products = scoredProducts
-
-      // Create a synthetic collection object
-      if (products.length > 0) {
-        collection = {
-          title: params.handle
-            .split("-")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" "),
-          description: `Showing ${products.length} products related to ${params.handle.replace(/-/g, " ")}`,
-          descriptionHtml: `<p>Showing ${products.length} products related to ${params.handle.replace(/-/g, " ")}</p>`,
-          products: { nodes: products },
-        }
-        console.log(`[v0] ✅ Created synthetic collection with ${products.length} products`)
-      }
-    } catch (error) {
-      console.error("[v0] Error fetching products by tag:", error)
-    }
-  }
-
-  if (!collection || products.length === 0) {
+    console.log(`[v0] Collection "${params.handle}" not found or has no active products`)
     notFound()
   }
 
@@ -291,14 +206,7 @@ export default async function CollectionPage({ params, searchParams }: Collectio
         )}
 
         <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#0B1C2C] mb-4">
-            {collection.title}
-            {isFallback && (
-              <span className="ml-3 text-sm font-normal text-[#C8A55C] bg-[#C8A55C]/10 px-3 py-1 rounded-full">
-                Smart Search
-              </span>
-            )}
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#0B1C2C] mb-4">{collection.title}</h1>
           {collection.description && (
             <div
               className="text-lg text-[#0B1C2C]/70 mb-4"
@@ -306,7 +214,7 @@ export default async function CollectionPage({ params, searchParams }: Collectio
             />
           )}
           <p className="text-lg text-[#0B1C2C]/70">
-            {products.length}+ {products.length === 1 ? "product" : "products"}
+            {products.length} {products.length === 1 ? "product" : "products"}
           </p>
         </div>
 

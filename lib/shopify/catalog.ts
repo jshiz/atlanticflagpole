@@ -128,6 +128,7 @@ export async function searchProducts(searchParams: {
   type?: string
   vendor?: string
   tag?: string
+  collection?: string
   available?: string
   min?: string
   max?: string
@@ -135,12 +136,14 @@ export async function searchProducts(searchParams: {
   first?: number
   after?: string
 }) {
+  // This function is for general product search, not collection-specific queries
+
   const queryString = buildProductQuery({
     tag: searchParams.tag,
     type: searchParams.type,
     vendor: searchParams.vendor,
     q: searchParams.q,
-    available: searchParams.available,
+    available: searchParams.available || "true", // Default to only available products
     min: searchParams.min,
     max: searchParams.max,
   })
@@ -229,7 +232,7 @@ export async function getAllProducts(searchParams: {
     type: searchParams.type,
     vendor: searchParams.vendor,
     q: searchParams.q,
-    available: searchParams.available,
+    available: searchParams.available || "true", // Default to only available products
     min: searchParams.min,
     max: searchParams.max,
   })

@@ -2,6 +2,7 @@ import { ProductFilters } from "@/components/products/product-filters"
 import { ProductFiltersWrapper } from "@/components/products/product-filters-wrapper"
 import { InfiniteProductGrid } from "@/components/products/infinite-product-grid"
 import { searchProducts } from "@/lib/shopify/catalog"
+import { getCollectionProducts } from "@/lib/shopify/index"
 
 export const revalidate = 600
 
@@ -29,19 +30,54 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   let tags: string[] = []
 
   try {
-    const result = await searchProducts({
-      ...searchParams,
-      first: 24,
-    })
+    if (searchParams.collection) {
+      console.log(`[v0] Fetching products from collection: ${searchParams.collection}`)
 
-    initialProducts = result.nodes
+      // Map sort parameter to Shopify collection sort keys
+      let sortKey: any = "BEST_SELLING"
+      let reverse = false
+
+      if (searchParams.sort === "price-asc") {
+        sortKey = "PRICE"
+        reverse = false
+      } else if (searchParams.sort === "price-desc") {
+        sortKey = "PRICE"
+        reverse = true
+      } else if (searchParams.sort === "title-asc") {
+        sortKey = "TITLE"
+        reverse = false
+      } else if (searchParams.sort === "title-desc") {
+        sortKey = "TITLE"
+        reverse = true
+      }
+
+      initialProducts = await getCollectionProducts({
+        collection: searchParams.collection,
+        limit: 250, // Get all products from collection
+        sortKey,
+        reverse,
+      })
+
+      // Filter for available products only
+      initialProducts = initialProducts.filter((p) => p.availableForSale)
+
+      console.log(`[v0] ✅ Found ${initialProducts.length} active products in collection "${searchParams.collection}"`)
+    } else {
+      // Use regular search for non-collection queries
+      const result = await searchProducts({
+        ...searchParams,
+        first: 24,
+        available: "true", // Only show available products
+      })
+
+      initialProducts = result.nodes
+      console.log("[v0] Successfully fetched", initialProducts.length, "initial products")
+    }
 
     // Get filter options from initial products
     productTypes = [...new Set(initialProducts.map((p) => p.productType).filter(Boolean))]
     vendors = [...new Set(initialProducts.map((p) => p.vendor).filter(Boolean))]
     tags = [...new Set(initialProducts.flatMap((p) => p.tags || []))]
-
-    console.log("[v0] Successfully fetched", initialProducts.length, "initial products")
   } catch (error) {
     console.error("[v0] Error searching products:", error)
     hasError = true
