@@ -7,46 +7,47 @@ import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Check, Zap, Shield, Sparkles, TreePine, Truck, Award, ChevronRight, Gift, Heart } from "lucide-react"
-import { getProduct } from "@/lib/shopify"
+import { getProducts } from "@/lib/shopify"
 import type { ShopifyProduct } from "@/lib/shopify"
 
 const productKitConfig = [
   {
-    id: "20ft-warm",
-    name: "20ft Flagpole Kit - Warm White",
-    height: "20 feet",
-    leds: "900 LEDs",
-    color: "Warm White",
-    shopifyHandle: "20-patriot-glo-warm-white-led-christmas-tree-for-flagpole",
-    features: ["Perfect for residential flagpoles", "Cozy warm glow", "Energy-efficient LEDs", "Weather-resistant"],
+    id: "phoenix-kit",
+    name: "Phoenix Flagpole Christmas Tree Light Kit",
+    height: "20' & 25'",
+    leds: "900-1500 LEDs",
+    color: "Multiple Options",
+    searchTerms: ["phoenix", "flagpole", "christmas tree"],
+    features: [
+      "Works with 20' and 25' flagpoles",
+      "Professional-grade quality",
+      "Energy-efficient LEDs",
+      "Weather-resistant construction",
+    ],
   },
   {
-    id: "20ft-multi",
-    name: "20ft Flagpole Kit - Multicolor",
-    height: "20 feet",
-    leds: "900 LEDs",
-    color: "Multicolor",
-    shopifyHandle: "20-patriot-glo-multicolor-led-christmas-tree-for-flagpole",
-    features: ["Vibrant festive colors", "Red, green, blue, yellow", "Energy-efficient LEDs", "Weather-resistant"],
-  },
-  {
-    id: "25ft-warm",
-    name: "25ft Flagpole Kit - Warm White",
-    height: "25 feet",
-    leds: "1500 LEDs",
-    color: "Warm White",
-    shopifyHandle: "25-patriot-glo-warm-white-led-christmas-tree-for-flagpole",
-    features: ["Ideal for commercial displays", "Extra bright coverage", "Premium LED quality", "Professional grade"],
+    id: "patriot-glo-4000",
+    name: "Patriot Glo 4000 Commercial-Grade",
+    height: "20' & 25'",
+    leds: "1500+ LEDs",
+    color: "Commercial Grade",
+    searchTerms: ["patriot glo 4000", "commercial"],
+    features: [
+      "Heavy-duty commercial display",
+      "Ultra-bright LED output",
+      "Premium durability",
+      "Professional installation",
+    ],
     popular: true,
   },
   {
-    id: "25ft-multi",
-    name: "25ft Flagpole Kit - Multicolor",
-    height: "25 feet",
-    leds: "1500 LEDs",
-    color: "Multicolor",
-    shopifyHandle: "25-patriot-glo-multicolor-led-christmas-tree-for-flagpole",
-    features: ["Maximum visual impact", "Spectacular color display", "Premium LED quality", "Professional grade"],
+    id: "patriot-glo-led",
+    name: "Patriot Glo LED Flagpole Christmas Tree Kit",
+    height: "20' & 25'",
+    leds: "900-1500 LEDs",
+    color: "LED Kit",
+    searchTerms: ["patriot glo led", "kit"],
+    features: ["Complete kit included", "Easy installation", "Bright LED illumination", "Great value option"],
   },
 ]
 
@@ -91,48 +92,53 @@ export function ChristmasTreeSalesPage() {
 
   useEffect(() => {
     async function fetchProducts() {
-      console.log("[v0] 🎄 Fetching Christmas tree products from Shopify...")
+      console.log("[v0] 🎄 Fetching Christmas tree products from Shopify by tag...")
 
       try {
-        const fetchedKits = await Promise.all(
-          productKitConfig.map(async (config) => {
-            try {
-              console.log(`[v0] 🔍 Fetching product: ${config.shopifyHandle}`)
-              const product = await getProduct(config.shopifyHandle)
+        const allChristmasProducts = await getProducts({ first: 20, query: "tag:Christmas Tree" })
 
-              if (product) {
-                console.log(`[v0] ✅ Found product: ${config.shopifyHandle}`)
-                console.log(`[v0] 💰 Price: ${product.priceRange.minVariantPrice.amount}`)
-                console.log(`[v0] 🖼️ Image: ${product.featuredImage?.url || "No image"}`)
+        console.log(`[v0] ✅ Found ${allChristmasProducts.length} Christmas tree products`)
 
-                const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
-                const compareAt = product.compareAtPriceRange?.minVariantPrice?.amount
-                  ? Number.parseFloat(product.compareAtPriceRange.minVariantPrice.amount)
-                  : price * 1.2
+        const fetchedKits = productKitConfig.map((config) => {
+          // Find matching product by searching for all search terms in the title
+          const matchingProduct = allChristmasProducts.find((product) => {
+            const titleLower = product.title.toLowerCase()
+            return config.searchTerms.every((term) => titleLower.includes(term.toLowerCase()))
+          })
 
-                return {
-                  ...config,
-                  price,
-                  compareAt,
-                  shopifyProduct: product,
-                }
-              } else {
-                console.error(`[v0] ❌ Product not found: ${config.shopifyHandle}`)
-              }
-            } catch (error) {
-              console.error(`[v0] ❌ Failed to fetch product ${config.shopifyHandle}:`, error)
+          if (matchingProduct) {
+            console.log(`[v0] ✅ Matched "${config.name}" to product: ${matchingProduct.title}`)
+            console.log(`[v0] 💰 Price: ${matchingProduct.priceRange.minVariantPrice.amount}`)
+            console.log(`[v0] 🖼️ Image: ${matchingProduct.featuredImage?.url || "No image"}`)
+
+            const price = Number.parseFloat(matchingProduct.priceRange.minVariantPrice.amount)
+            const compareAt = matchingProduct.compareAtPriceRange?.minVariantPrice?.amount
+              ? Number.parseFloat(matchingProduct.compareAtPriceRange.minVariantPrice.amount)
+              : price * 1.2
+
+            return {
+              ...config,
+              price,
+              compareAt,
+              shopifyProduct: matchingProduct,
             }
-
+          } else {
+            console.warn(`[v0] ⚠️ No matching product found for "${config.name}"`)
+            console.warn(`[v0] Search terms: ${config.searchTerms.join(", ")}`)
             return null
-          }),
-        )
+          }
+        })
 
         const validKits = fetchedKits.filter((kit): kit is NonNullable<typeof kit> => kit !== null)
 
-        console.log(`[v0] 📊 Successfully fetched ${validKits.length} out of ${productKitConfig.length} products`)
+        console.log(`[v0] 📊 Successfully matched ${validKits.length} out of ${productKitConfig.length} products`)
 
         if (validKits.length === 0) {
-          console.error("[v0] ❌ No products could be fetched from Shopify!")
+          console.error("[v0] ❌ No products could be matched from Shopify!")
+          console.error(
+            "[v0] Available products:",
+            allChristmasProducts.map((p) => p.title),
+          )
         }
 
         setProductKits(validKits)

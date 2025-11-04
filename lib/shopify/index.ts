@@ -105,8 +105,8 @@ export async function getProducts({
   query?: string
 }): Promise<ShopifyProduct[]> {
   const query = /* gql */ `
-    query getProducts($first: Int!, $sortKey: ProductSortKeys!, $reverse: Boolean) {
-      products(first: $first, sortKey: $sortKey, reverse: $reverse) {
+    query getProducts($first: Int!, $sortKey: ProductSortKeys!, $reverse: Boolean, $query: String) {
+      products(first: $first, sortKey: $sortKey, reverse: $reverse, query: $query) {
         nodes {
           id
           title
