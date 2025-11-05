@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { X, Send, HelpCircle } from "lucide-react"
+import { X, Send, HelpCircle, Star, ShoppingCart } from "lucide-react"
 import Image from "next/image"
 
 interface Message {
@@ -9,19 +9,21 @@ interface Message {
   text: string
   sender: "user" | "flaggy"
   timestamp: Date
+  product?: ProductRecommendation
 }
 
-interface SuggestionButton {
-  label: string
-  intent: string
+interface ProductRecommendation {
+  id: string
+  title: string
+  handle: string
+  image: string
+  price: string
+  rating: number
+  reviewCount: number
+  timesBought: string
+  variantId: string
+  url: string
 }
-
-const INITIAL_SUGGESTIONS: SuggestionButton[] = [
-  { label: "Product Recommendations", intent: "product_recommendation" },
-  { label: "Installation Help", intent: "installation_help" },
-  { label: "Order Tracking", intent: "order_tracking" },
-  { label: "Shipping Questions", intent: "shipping_questions" },
-]
 
 type FlaggyState = "hidden" | "sliding-in" | "minimized" | "expanded"
 
@@ -74,12 +76,13 @@ export function FlaggyChatWidget() {
     }
   }, [flaggyState])
 
-  const addFlaggyMessage = (text: string) => {
+  const addFlaggyMessage = (text: string, product?: ProductRecommendation) => {
     const newMessage: Message = {
       id: Date.now().toString(),
       text,
       sender: "flaggy",
       timestamp: new Date(),
+      product,
     }
     setMessages((prev) => [...prev, newMessage])
   }
@@ -133,7 +136,7 @@ export function FlaggyChatWidget() {
           "That's a great question that needs a human expert's touch. I can create a support ticket for you, and one of our team members will email you back shortly.",
         )
       } else {
-        addFlaggyMessage(data.response)
+        addFlaggyMessage(data.response, data.product)
       }
     } catch (error) {
       console.error("[v0] Error processing message:", error)
@@ -195,6 +198,39 @@ export function FlaggyChatWidget() {
     setFlaggyState("minimized")
   }
 
+  const handleAddToCart = async (variantId: string, productTitle: string) => {
+    try {
+      let cartId = localStorage.getItem("cartId")
+
+      if (!cartId) {
+        const createResponse = await fetch("/api/cart", {
+          method: "POST",
+        })
+        const createData = await createResponse.json()
+        cartId = createData.id
+        localStorage.setItem("cartId", cartId)
+      }
+
+      const addResponse = await fetch("/api/cart", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cartId,
+          lines: [{ merchandiseId: variantId, quantity: 1 }],
+        }),
+      })
+
+      if (addResponse.ok) {
+        addFlaggyMessage(`Great choice! I've added the ${productTitle} to your cart. Ready to checkout?`)
+      } else {
+        addFlaggyMessage("I had trouble adding that to your cart. Please try again or visit the product page directly.")
+      }
+    } catch (error) {
+      console.error("[v0] Error adding to cart:", error)
+      addFlaggyMessage("I had trouble adding that to your cart. Please try again or visit the product page directly.")
+    }
+  }
+
   console.log("[v0] Flaggy current state:", flaggyState)
 
   return (
@@ -241,12 +277,7 @@ export function FlaggyChatWidget() {
             <div className="flex items-center gap-3 relative z-10">
               <div className="relative w-12 h-12 bg-gradient-to-br from-[#C8A55C] to-[#B8954C] rounded-full p-1 shadow-lg">
                 <div className="relative w-full h-full bg-white rounded-full p-1 overflow-hidden">
-                  <Image
-                    src="/images/design-mode/Flaggy.png"
-                    alt="Flaggy"
-                    fill
-                    className="object-cover"
-                  />
+                  <Image src="/images/design-mode/Flaggy.png" alt="Flaggy" fill className="object-cover" />
                 </div>
               </div>
               <div className="flex-1">
@@ -279,12 +310,7 @@ export function FlaggyChatWidget() {
                   {msg.sender === "flaggy" && (
                     <div className="flex items-center gap-2 mb-1">
                       <div className="relative w-6 h-6">
-                        <Image
-                          src="/images/design-mode/Flaggy.png"
-                          alt="Flaggy"
-                          fill
-                          className="object-contain"
-                        />
+                        <Image src="/images/design-mode/Flaggy.png" alt="Flaggy" fill className="object-contain" />
                       </div>
                       <span className="text-xs font-semibold text-gray-600">Flaggy</span>
                     </div>
@@ -296,8 +322,58 @@ export function FlaggyChatWidget() {
                         : "bg-white border border-gray-200 rounded-tl-none"
                     }`}
                   >
-                    <p className={`text-sm ${msg.sender === "user" ? "text-white" : "text-gray-800"}`}>{msg.text}</p>
+                    <p
+                      className={`text-sm whitespace-pre-line ${msg.sender === "user" ? "text-white" : "text-gray-800"}`}
+                    >
+                      {msg.text}
+                    </p>
                   </div>
+
+                  {msg.sender === "flaggy" && msg.product && (
+                    <div className="mt-3 bg-white border-2 border-[#C8A55C] rounded-xl overflow-hidden shadow-md">
+                      <div className="relative h-40 bg-gray-100">
+                        <Image
+                          src={msg.product.image || "/placeholder.svg"}
+                          alt={msg.product.title}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                        <div className="absolute top-2 right-2 bg-[#0B1C2C] text-white text-xs px-2 py-1 rounded-full font-bold">
+                          {msg.product.timesBought} sold
+                        </div>
+                      </div>
+                      <div className="p-3">
+                        <h4 className="font-bold text-sm text-gray-900 mb-1 line-clamp-2">{msg.product.title}</h4>
+                        <div className="flex items-center gap-1 mb-2">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-3 h-3 ${
+                                i < Math.floor(msg.product!.rating)
+                                  ? "fill-[#C8A55C] text-[#C8A55C]"
+                                  : "fill-gray-200 text-gray-200"
+                              }`}
+                            />
+                          ))}
+                          <span className="text-xs text-gray-600 ml-1">
+                            {msg.product.rating} ({msg.product.reviewCount.toLocaleString()} reviews)
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-lg font-bold text-[#0B1C2C]">{msg.product.price}</span>
+                          <button
+                            onClick={() => handleAddToCart(msg.product!.variantId, msg.product!.title)}
+                            className="bg-[#C8A55C] hover:bg-[#B8954C] text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors"
+                          >
+                            <ShoppingCart className="w-3 h-3" />
+                            Add to Cart
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <p className="text-xs text-gray-400 mt-1 px-2">
                     {msg.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </p>
@@ -360,7 +436,12 @@ export function FlaggyChatWidget() {
             {showSuggestions && messages.length > 0 && (
               <div className="mt-4 space-y-2">
                 <p className="text-xs text-gray-500 font-semibold mb-2">Quick topics:</p>
-                {INITIAL_SUGGESTIONS.map((suggestion) => (
+                {[
+                  { label: "Product Recommendations", intent: "product_recommendation" },
+                  { label: "Installation Help", intent: "installation_help" },
+                  { label: "Order Tracking", intent: "order_tracking" },
+                  { label: "Shipping Questions", intent: "shipping_questions" },
+                ].map((suggestion) => (
                   <button
                     key={suggestion.intent}
                     onClick={() => handleSuggestionClick(suggestion.intent, suggestion.label)}

@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { matchIntent } from "@/lib/flaggy/knowledge-base"
+import { getProduct } from "@/lib/shopify"
 
 interface ConversationContext {
   attempts: number
@@ -8,6 +9,50 @@ interface ConversationContext {
 }
 
 const conversationContexts = new Map<string, ConversationContext>()
+
+const INTENT_PRODUCT_MAP: Record<string, string> = {
+  greeting: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
+  product_overview: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
+  height_selection: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
+  installation_help: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
+  operation_help: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
+  troubleshooting_stuck_joint: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
+  warranty_info: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
+  pricing_questions: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
+  flag_questions: "3x5-nylon-american-flag",
+  shipping_info: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
+  winter_guidelines: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
+  thank_you: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
+}
+
+async function getProductRecommendation(intentName: string) {
+  try {
+    const productHandle = INTENT_PRODUCT_MAP[intentName]
+    if (!productHandle) return null
+
+    const product = await getProduct(productHandle)
+    if (!product) return null
+
+    const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
+    const variantId = product.variants.nodes[0]?.id
+
+    return {
+      id: product.id,
+      title: product.title,
+      handle: product.handle,
+      image: product.images.nodes[0]?.url || "",
+      price: `$${price.toFixed(2)}`,
+      rating: 4.9,
+      reviewCount: 2847,
+      timesBought: "12,500+",
+      variantId,
+      url: `/products/${product.handle}`,
+    }
+  } catch (error) {
+    console.error("[v0] Error fetching product recommendation:", error)
+    return null
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -54,12 +99,12 @@ Would you like me to connect you with our support team?`,
         response: `I'm not quite sure I caught that. Let me help you out.
 
 I'm great at answering questions about:
-- Products (Phoenix flagpoles, bundles, specs)
-- Installation (step-by-step setup)
-- Troubleshooting (stuck joints, operation issues)
-- Warranty (claims, replacements, guarantees)
-- Flags (care, replacement, sizing)
-- Shipping (tracking, delivery times)
+• Products (Phoenix flagpoles, bundles, specs)
+• Installation (step-by-step setup)
+• Troubleshooting (stuck joints, operation issues)
+• Warranty (claims, replacements, guarantees)
+• Flags (care, replacement, sizing)
+• Shipping (tracking, delivery times)
 
 What can I help you with?`,
         followUp: [
@@ -74,6 +119,8 @@ What can I help you with?`,
     context.attempts = 0
     context.lastIntent = matchedIntent.intent.name
 
+    const productRecommendation = await getProductRecommendation(matchedIntent.intent.name)
+
     return NextResponse.json({
       shouldEscalate: false,
       response: matchedIntent.intent.response,
@@ -81,6 +128,7 @@ What can I help you with?`,
       links: matchedIntent.intent.links,
       matchedIntent: matchedIntent.intent.name,
       confidence: matchedIntent.score,
+      product: productRecommendation, // Include product recommendation in response
     })
   } catch (error) {
     console.error("[v0] Error in Flaggy chat API:", error)
