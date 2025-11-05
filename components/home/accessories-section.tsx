@@ -15,13 +15,19 @@ export async function AccessoriesSection() {
   // Map Shopify products to accessories format
   const accessories =
     products.length > 0
-      ? products.slice(0, 4).map((product) => ({
-          name: product.title,
-          price: `$${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}`,
-          description: product.description || "Premium flagpole accessory to enhance your display.",
-          image: product.images?.[0]?.url || "",
-          href: `/products/${product.handle}`,
-        }))
+      ? products.slice(0, 4).map((product, index) => {
+          const hasValidImage = !!product.images?.[0]?.url
+          return {
+            name: product.title,
+            price: `$${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}`,
+            description: product.description || "Premium flagpole accessory to enhance your display.",
+            image: hasValidImage
+              ? product.images[0].url
+              : `https://placehold.co/400x400/f5f3ef/0b1c2c?text=${encodeURIComponent(product.title.substring(0, 20))}`,
+            href: `/products/${product.handle}`,
+            hasValidImage,
+          }
+        })
       : [
           // Fallback data if no products found
           {
@@ -29,32 +35,36 @@ export async function AccessoriesSection() {
             price: "$39.99",
             description:
               "Illuminate your flag with pride day and night using our premium solar-powered light. Features automatic dusk-to-dawn operation with no wiring required. Provides bright, respectful illumination that meets US Flag Code requirements.",
-            image: "https://cdn.shopify.com/s/files/1/2133/9559/files/solar-light-placeholder.jpg",
+            image: "https://placehold.co/400x400/f5f3ef/0b1c2c?text=Solar+Light",
             href: "/products/solar-flagpole-light",
+            hasValidImage: false,
           },
           {
             name: "Gold Eagle Topper",
             price: "$29.99",
             description:
               "Add a patriotic finishing touch with our stunning gold eagle ornament. Crafted from durable materials with a brilliant gold finish that won't fade. The perfect symbol of American pride for your flagpole display.",
-            image: "https://cdn.shopify.com/s/files/1/2133/9559/files/eagle-topper-placeholder.jpg",
+            image: "https://placehold.co/400x400/f5f3ef/0b1c2c?text=Eagle+Topper",
             href: "/products/gold-eagle-topper",
+            hasValidImage: false,
           },
           {
             name: "Flash Collar",
             price: "$19.99",
             description:
               "Create a professional, finished appearance at ground level with our premium flash collar. Conceals the ground sleeve opening for a clean, polished look. Easy to install and built to withstand all weather conditions.",
-            image: "https://cdn.shopify.com/s/files/1/2133/9559/files/flash-collar-placeholder.jpg",
+            image: "https://placehold.co/400x400/f5f3ef/0b1c2c?text=Flash+Collar",
             href: "/products/flash-collar",
+            hasValidImage: false,
           },
           {
             name: "Engraved Nameplate",
             price: "$29.99",
             description:
               "Honor a veteran, hero, or loved one with a custom engraved nameplate. Precision laser engraving ensures lasting clarity and durability. A meaningful way to dedicate your flag display to someone special.",
-            image: "https://cdn.shopify.com/s/files/1/2133/9559/files/nameplate-placeholder.jpg",
+            image: "https://placehold.co/400x400/f5f3ef/0b1c2c?text=Nameplate",
             href: "/products/engraved-nameplate",
+            hasValidImage: false,
           },
         ]
 
@@ -86,6 +96,7 @@ export async function AccessoriesSection() {
                     fill
                     className="object-contain p-4 group-hover:scale-110 transition-transform duration-500"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    unoptimized={!accessory.hasValidImage}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">

@@ -219,7 +219,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
         >
           <div className="inline-block bg-[#0B1C2C]/70 backdrop-blur-sm border border-[#C8A55C]/50 rounded-lg px-6 py-2.5 mb-3 shadow-lg">
             <h2 className="text-white text-base lg:text-lg xl:text-xl font-semibold drop-shadow-lg whitespace-nowrap">
-              Built to Defy the Storm. Designed to Honor the Flag.
+              Your Flag Deserves Better Than Cheap Poles
             </h2>
           </div>
 
@@ -267,7 +267,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
       {/* First Marquee - Scrolling Left */}
       <div className="bg-[#0B1C2C] py-3 overflow-hidden border-b-2 border-[#C8A55C]/30">
         <div className="flex animate-marquee-seamless whitespace-nowrap">
-          {[...Array(3)].map((_, setIndex) => (
+          {[...Array(4)].map((_, setIndex) => (
             <div key={setIndex} className="flex items-center gap-12 px-6">
               <div className="flex items-center gap-3">
                 <Award className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
@@ -299,21 +299,21 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
       </div>
 
       {/* As Seen On and Trusted By Section */}
-      <div className="bg-white py-16 border-b border-gray-200">
+      <div className="bg-white py-6 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-20 items-center">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="flex items-center justify-center">
               <Image
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/as%20seen%20on-bB2aXokVrwbgjRpByiCMWod6CNDNks.png"
                 alt="As seen on The First, Fox News, Newsmax, ABC, NBC, CBS"
                 width={800}
                 height={160}
-                className="h-32 md:h-40 w-auto object-contain"
+                className="h-20 md:h-24 w-auto object-contain"
               />
             </div>
 
             <div className="flex items-center justify-center">
-              <div className="bg-gray-50 rounded-lg p-12 border-2 border-dashed border-gray-300">
+              <div className="bg-gray-50 rounded-lg p-6 border-2 border-dashed border-gray-300">
                 <p className="text-gray-500 text-lg font-semibold text-center">
                   Trusted By Section
                   <br />
@@ -332,7 +332,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
       {/* Second Marquee - Scrolling Right */}
       <div className="bg-[#0B1C2C] py-3 overflow-hidden border-b-2 border-[#C8A55C]/30">
         <div className="flex animate-marquee-reverse whitespace-nowrap">
-          {[...Array(3)].map((_, setIndex) => (
+          {[...Array(4)].map((_, setIndex) => (
             <div key={setIndex} className="flex items-center gap-12 px-6">
               <div className="flex items-center gap-3">
                 <CheckCircle className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />

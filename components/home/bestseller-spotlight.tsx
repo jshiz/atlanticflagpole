@@ -5,12 +5,18 @@ import Image from "next/image"
 
 export async function BestsellerSpotlight() {
   // Fetch the actual Phoenix flagpole product from Shopify
-  const product = await getProduct("20-phoenix-telescoping-flagpole-kit")
+  let product = null
+  try {
+    product = await getProduct("20-phoenix-telescoping-flagpole-kit")
+  } catch (error) {
+    console.error("[v0] BestsellerSpotlight: Failed to fetch product", error)
+  }
 
-  // Use real product data or fallback to defaults
-  const productImage =
-    product?.images?.[0]?.url ||
-    "https://cdn.shopify.com/s/files/1/2133/9559/files/20-foot-phoenix-telescoping-flagpole-kit-midnight-bronze-finish.jpg?v=1687894210"
+  const hasValidImage = !!product?.images?.[0]?.url
+  const productImage = hasValidImage
+    ? product.images[0].url
+    : "https://placehold.co/600x600/f5f3ef/0b1c2c?text=Phoenix+Flagpole+Kit"
+
   const productPrice = product?.priceRange?.minVariantPrice?.amount
     ? `$${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}`
     : "$999.71"
@@ -19,12 +25,6 @@ export async function BestsellerSpotlight() {
   const productDescription =
     product?.description ||
     "Our most popular flagpole kit combines premium quality with unbeatable value. Trusted by over 33,000 American homes, this complete kit includes everything you need for a professional installation. Built to last with our lifetime warranty and backed by a full year trial period."
-
-  console.log("[v0] BestsellerSpotlight - Product fetched:", {
-    title: productTitle,
-    hasImage: !!product?.images?.[0]?.url,
-    imageUrl: productImage,
-  })
 
   return (
     <section id="bestseller" className="py-16 md:py-24 bg-gradient-to-br from-[#0B1C2C] to-[#1A2F44]">
@@ -44,6 +44,7 @@ export async function BestsellerSpotlight() {
                   className="object-contain p-4"
                   priority
                   sizes="(max-width: 768px) 100vw, 50vw"
+                  unoptimized={!hasValidImage}
                 />
               </div>
               <div className="absolute -bottom-4 -right-4 bg-white text-[#0B1C2C] px-6 py-4 rounded-lg shadow-xl">
