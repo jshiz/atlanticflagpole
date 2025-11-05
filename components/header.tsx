@@ -68,8 +68,6 @@ export async function Header() {
     const submenuProductsData: Record<string, any[]> = {}
 
     if (menuData?.items) {
-      const fetchPromises: Promise<void>[] = []
-
       for (const item of menuData.items) {
         const title = item.title.toLowerCase()
 
@@ -81,55 +79,27 @@ export async function Header() {
         const collectionHandle = findCollectionHandle(item.title)
 
         if (collectionHandle) {
-          const collectionPromise = getCollectionWithProducts(collectionHandle, 10, "PRICE", true)
-            .then((collection) => {
-              if (collection?.products?.nodes && collection.products.nodes.length > 0) {
-                megaMenuData[item.id] = {
-                  products: { nodes: collection.products.nodes },
-                }
-                console.log(
-                  `[v0] ✅ Found ${collection.products.nodes.length} products for "${item.title}" menu (${collectionHandle}, sorted by price)`,
-                )
-              } else {
-                console.log(`[v0] ⚠️ No products in collection "${collectionHandle}" for "${item.title}"`)
+          try {
+            const collection = await getCollectionWithProducts(collectionHandle, 5, "PRICE", true)
+            if (collection?.products?.nodes && collection.products.nodes.length > 0) {
+              megaMenuData[item.id] = {
+                products: { nodes: collection.products.nodes },
               }
-            })
-            .catch((error) => {
-              console.log(`[v0] ❌ Error fetching collection "${collectionHandle}" for "${item.title}":`, error.message)
-            })
-
-          fetchPromises.push(collectionPromise)
+              console.log(
+                `[v0] ✅ Found ${collection.products.nodes.length} products for "${item.title}" menu (${collectionHandle}, sorted by price)`,
+              )
+            } else {
+              console.log(`[v0] ⚠️ No products in collection "${collectionHandle}" for "${item.title}"`)
+            }
+          } catch (error) {
+            console.log(`[v0] ❌ Error fetching collection "${collectionHandle}" for "${item.title}":`, error.message)
+          }
         } else {
           console.log(`[v0] ⚠️ No collection handle found for menu item "${item.title}"`)
         }
 
-        if (item.items && item.items.length > 0) {
-          for (const subItem of item.items) {
-            const subCollectionHandle = findCollectionHandle(subItem.title)
-            if (subCollectionHandle) {
-              fetchPromises.push(
-                getCollectionWithProducts(subCollectionHandle, 24)
-                  .then((collection) => {
-                    if (collection?.products?.nodes && collection.products.nodes.length > 0) {
-                      submenuProductsData[subItem.id] = collection.products.nodes
-                      console.log(
-                        `[v0] ✅ Found ${collection.products.nodes.length} products for submenu "${subItem.title}" (${subCollectionHandle})`,
-                      )
-                    }
-                  })
-                  .catch((error) => {
-                    console.log(
-                      `[v0] ❌ Error fetching collection "${subCollectionHandle}" for submenu "${subItem.title}":`,
-                      error.message,
-                    )
-                  }),
-              )
-            }
-          }
-        }
+        // Submenu products can be fetched on-demand when user hovers
       }
-
-      await Promise.all(fetchPromises)
     }
 
     const endTime = Date.now()
@@ -149,7 +119,7 @@ export async function Header() {
       nflFlagProducts: nflFlagProducts || [],
       christmasTreeProducts: christmasTreeProducts || [],
     }
-    setCache(cacheKey, headerData, 3600000)
+    setCache(cacheKey, headerData, 21600000)
 
     return (
       <>

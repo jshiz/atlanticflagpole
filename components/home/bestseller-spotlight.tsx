@@ -8,11 +8,16 @@ export async function BestsellerSpotlight() {
   let product = null
   try {
     product = await getProduct("20-phoenix-telescoping-flagpole-kit")
+    console.log("[v0] BestsellerSpotlight - Product fetched:", {
+      title: product?.title,
+      hasImage: !!product?.images?.[0]?.url,
+      imageUrl: product?.images?.[0]?.url,
+    })
   } catch (error) {
     console.error("[v0] BestsellerSpotlight: Failed to fetch product", error)
   }
 
-  const hasValidImage = !!product?.images?.[0]?.url
+  const hasValidImage = !!product?.images?.[0]?.url && product.images[0].url.startsWith("http")
   const productImage = hasValidImage
     ? product.images[0].url
     : "https://placehold.co/600x600/f5f3ef/0b1c2c?text=Phoenix+Flagpole+Kit"
@@ -37,15 +42,21 @@ export async function BestsellerSpotlight() {
                 BEST SELLER
               </div>
               <div className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl border-4 border-[#C8A55C]/30 bg-white">
-                <Image
-                  src={productImage || "/placeholder.svg"}
-                  alt={productTitle}
-                  fill
-                  className="object-contain p-4"
-                  priority
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  unoptimized={!hasValidImage}
-                />
+                {productImage ? (
+                  <Image
+                    src={productImage || "/placeholder.svg"}
+                    alt={productTitle}
+                    fill
+                    className="object-contain p-4"
+                    priority
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    unoptimized={!hasValidImage}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                    Product image unavailable
+                  </div>
+                )}
               </div>
               <div className="absolute -bottom-4 -right-4 bg-white text-[#0B1C2C] px-6 py-4 rounded-lg shadow-xl">
                 <div className="flex items-center gap-2 mb-1">

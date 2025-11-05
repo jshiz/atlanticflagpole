@@ -11,12 +11,19 @@ export async function AccessoriesSection() {
   })
 
   console.log("[v0] AccessoriesSection - Fetched products:", products.length)
+  if (products.length > 0) {
+    console.log("[v0] AccessoriesSection - First product image:", {
+      title: products[0]?.title,
+      hasImage: !!products[0]?.images?.[0]?.url,
+      imageUrl: products[0]?.images?.[0]?.url,
+    })
+  }
 
   // Map Shopify products to accessories format
   const accessories =
     products.length > 0
       ? products.slice(0, 4).map((product, index) => {
-          const hasValidImage = !!product.images?.[0]?.url
+          const hasValidImage = !!product.images?.[0]?.url && product.images[0].url.startsWith("http")
           return {
             name: product.title,
             price: `$${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}`,
@@ -99,8 +106,8 @@ export async function AccessoriesSection() {
                     unoptimized={!accessory.hasValidImage}
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
-                    No image
+                  <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400 text-sm">
+                    No image available
                   </div>
                 )}
               </div>

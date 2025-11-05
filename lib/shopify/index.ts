@@ -46,6 +46,10 @@ async function fetchWithRetry(url: string, options: RequestInit, retries = 3, ti
   throw new Error("Max retries exceeded")
 }
 
+async function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 async function shopifyFetch<T>({
   query,
   variables = {},
@@ -56,6 +60,8 @@ async function shopifyFetch<T>({
   tags?: string[]
 }): Promise<{ data: T; errors?: any[] }> {
   try {
+    await delay(100)
+
     const response = await fetchWithRetry(
       SHOPIFY_STOREFRONT_API_URL,
       {
@@ -76,28 +82,23 @@ async function shopifyFetch<T>({
 
     if (!response.ok) {
       const errorBody = await response.text()
-      console.error(`[v0] Shopify API HTTP error! Status: ${response.status}, Body: ${errorBody}`)
 
-      // Return empty data structure for rate limit errors instead of throwing
       if (response.status === 429) {
-        console.error("[v0] Shopify API rate limit exceeded (429) - returning empty data")
         return { data: {} as T }
       }
 
+      console.error(`[v0] Shopify API HTTP error! Status: ${response.status}, Body: ${errorBody}`)
       throw new Error(`Shopify API HTTP error! Status: ${response.status}, Body: ${errorBody}`)
     }
 
     const json = await response.json()
 
     if (json.error) {
-      console.error("[v0] Shopify API error in response body:", json.error)
-
-      // Handle rate limit errors gracefully
       if (json.error.code === "429" || json.error.message === "Too Many Requests") {
-        console.error("[v0] Shopify API rate limit exceeded - returning empty data")
         return { data: {} as T }
       }
 
+      console.error("[v0] Shopify API error in response body:", json.error)
       throw new Error(`Shopify API error: ${JSON.stringify(json.error)}`)
     }
 
@@ -194,9 +195,8 @@ export async function getProducts({
       tags: ["products"],
     })
 
-    // Check if data exists and has products
     if (!result || !result.data || !result.data.products) {
-      console.error("[v0] getProducts: Invalid response structure", result)
+      // Silently return empty array for rate limit or empty responses
       return []
     }
 
