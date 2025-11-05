@@ -240,12 +240,12 @@ export function FlaggyChatWidget() {
 
             <div className="flex items-center gap-3 relative z-10">
               <div className="relative w-12 h-12 bg-gradient-to-br from-[#C8A55C] to-[#B8954C] rounded-full p-1 shadow-lg">
-                <div className="relative w-full h-full bg-white rounded-full p-0.5">
+                <div className="relative w-full h-full bg-white rounded-full p-1 overflow-hidden">
                   <Image
                     src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Flaggy-k8cMXMGOUTeUqse9oPtGGq0HXYI4hy.png"
                     alt="Flaggy"
                     fill
-                    className="object-contain animate-float"
+                    className="object-cover"
                   />
                 </div>
               </div>
@@ -273,15 +273,6 @@ export function FlaggyChatWidget() {
             ref={chatContainerRef}
             className="flex-1 p-4 overflow-y-auto bg-gradient-to-b from-gray-50 to-white relative"
           >
-            <div className="absolute bottom-4 left-4 w-20 h-20 opacity-20 pointer-events-none">
-              <Image
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Flaggy-k8cMXMGOUTeUqse9oPtGGq0HXYI4hy.png"
-                alt="Flaggy watermark"
-                fill
-                className="object-contain animate-float"
-              />
-            </div>
-
             {messages.map((msg) => (
               <div key={msg.id} className={`mb-4 flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
                 <div className={`max-w-[80%] ${msg.sender === "user" ? "order-2" : "order-1"}`}>
@@ -318,14 +309,6 @@ export function FlaggyChatWidget() {
               <div className="mb-4 flex justify-start">
                 <div className="max-w-[80%]">
                   <div className="flex items-center gap-2 mb-1">
-                    <div className="relative w-6 h-6 animate-bounce">
-                      <Image
-                        src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Flaggy-k8cMXMGOUTeUqse9oPtGGq0HXYI4hy.png"
-                        alt="Flaggy thinking"
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
                     <span className="text-xs font-semibold text-gray-600">Flaggy is thinking...</span>
                   </div>
                   <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-none p-3 shadow-sm">
@@ -352,14 +335,6 @@ export function FlaggyChatWidget() {
               <div className="mb-4 flex justify-start">
                 <div className="max-w-[80%]">
                   <div className="flex items-center gap-2 mb-1">
-                    <div className="relative w-6 h-6">
-                      <Image
-                        src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Flaggy-k8cMXMGOUTeUqse9oPtGGq0HXYI4hy.png"
-                        alt="Flaggy typing"
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
                     <span className="text-xs font-semibold text-gray-600">Flaggy is typing...</span>
                   </div>
                   <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-none p-3 shadow-sm">

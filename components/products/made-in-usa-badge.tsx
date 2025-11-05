@@ -55,7 +55,7 @@ export function MadeInUSABadge({ product }: MadeInUSABadgeProps) {
 
   return (
     <div className="absolute top-2 right-2 z-10">
-      <div className="relative flex items-center gap-3.5 bg-white/95 backdrop-blur-sm px-6 py-4 rounded-lg shadow-lg border-2 border-[#C8A55C]/30">
+      <div className="relative flex items-center gap-3.5 bg-white/95 backdrop-blur-sm px-6 py-4 rounded-lg shadow-lg border-2 border-[#C8A55C]/30 transition-transform duration-200 ease-out hover:scale-105 origin-top-right cursor-pointer">
         {/* American Flag Icon */}
         <div className="relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0">
           <Image
