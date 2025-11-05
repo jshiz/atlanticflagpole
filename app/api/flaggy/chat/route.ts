@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { matchIntent } from "@/lib/flaggy/knowledge-base"
-import { getProduct } from "@/lib/shopify"
+import { getCollectionProducts } from "@/lib/shopify"
 
 interface ConversationContext {
   attempts: number
@@ -10,43 +10,92 @@ interface ConversationContext {
 
 const conversationContexts = new Map<string, ConversationContext>()
 
-const INTENT_PRODUCT_MAP: Record<string, string> = {
-  greeting: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
-  product_overview: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
-  height_selection: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
-  installation_help: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
-  operation_help: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
-  troubleshooting_stuck_joint: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
-  warranty_info: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
-  pricing_questions: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
-  flag_questions: "3x5-nylon-american-flag",
-  shipping_info: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
-  winter_guidelines: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
-  thank_you: "phoenix-telescoping-flagpole-premier-kit-starter-bundle",
+const INTENT_COLLECTION_MAP: Record<string, string | null> = {
+  greeting: null, // No product for greetings
+  product_overview: "telescoping-flagpoles",
+  height_selection: "telescoping-flagpoles",
+  installation_help: "telescoping-flagpoles",
+  operation_help: "telescoping-flagpoles",
+  troubleshooting_stuck_joint: "telescoping-flagpoles",
+  warranty_info: null, // No product for warranty questions
+  pricing_questions: "telescoping-flagpoles",
+  flag_questions: "usa-flags",
+  shipping_info: null, // No product for shipping questions
+  winter_guidelines: null, // No product for winter care
+  thank_you: null, // No product for thank you
 }
 
-async function getProductRecommendation(intentName: string) {
-  try {
-    const productHandle = INTENT_PRODUCT_MAP[intentName]
-    if (!productHandle) return null
+const KEYWORD_COLLECTION_MAP: Record<string, string> = {
+  light: "flagpole-lighting",
+  lighting: "flagpole-lighting",
+  solar: "flagpole-lighting",
+  flag: "usa-flags",
+  american: "usa-flags",
+  state: "state-flags",
+  international: "international-flags",
+  pole: "telescoping-flagpoles",
+  flagpole: "telescoping-flagpoles",
+  phoenix: "telescoping-flagpoles",
+  indoor: "indoor-flagpoles",
+  kit: "telescoping-flagpoles",
+  bundle: "telescoping-flagpoles",
+}
 
-    const product = await getProduct(productHandle)
+async function getProductRecommendation(intentName: string, userMessage: string) {
+  try {
+    // Don't show products for these intents
+    const noProductIntents = ["greeting", "warranty_info", "shipping_info", "winter_guidelines", "thank_you"]
+    if (noProductIntents.includes(intentName)) {
+      return null
+    }
+
+    // First, try to find collection based on keywords in user message
+    const messageLower = userMessage.toLowerCase()
+    let collectionHandle: string | null = null
+
+    // Search for keywords in user message
+    for (const [keyword, collection] of Object.entries(KEYWORD_COLLECTION_MAP)) {
+      if (messageLower.includes(keyword)) {
+        collectionHandle = collection
+        break
+      }
+    }
+
+    // If no keyword match, use intent-based collection
+    if (!collectionHandle) {
+      collectionHandle = INTENT_COLLECTION_MAP[intentName] || null
+    }
+
+    // If still no collection, don't show product
+    if (!collectionHandle) {
+      return null
+    }
+
+    // Fetch products from the collection
+    const products = await getCollectionProducts({ collection: collectionHandle })
+
+    if (!products || products.length === 0) {
+      return null
+    }
+
+    // Get the first product (or a random one for variety)
+    const product = products[0]
     if (!product) return null
 
     const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
-    const variantId = product.variants.nodes[0]?.id
+    const variantId = product.variants[0]?.id
 
     return {
       id: product.id,
       title: product.title,
       handle: product.handle,
-      image: product.images.nodes[0]?.url || "",
+      image: product.featuredImage?.url || "",
       price: `$${price.toFixed(2)}`,
       rating: 4.9,
       reviewCount: 2847,
       timesBought: "12,500+",
       variantId,
-      url: `/products/${product.handle}`,
+      url: `/product/${product.handle}`,
     }
   } catch (error) {
     console.error("[v0] Error fetching product recommendation:", error)
@@ -119,7 +168,7 @@ What can I help you with?`,
     context.attempts = 0
     context.lastIntent = matchedIntent.intent.name
 
-    const productRecommendation = await getProductRecommendation(matchedIntent.intent.name)
+    const productRecommendation = await getProductRecommendation(matchedIntent.intent.name, message)
 
     return NextResponse.json({
       shouldEscalate: false,
@@ -128,7 +177,7 @@ What can I help you with?`,
       links: matchedIntent.intent.links,
       matchedIntent: matchedIntent.intent.name,
       confidence: matchedIntent.score,
-      product: productRecommendation, // Include product recommendation in response
+      product: productRecommendation,
     })
   } catch (error) {
     console.error("[v0] Error in Flaggy chat API:", error)
