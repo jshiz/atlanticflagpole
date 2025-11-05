@@ -221,7 +221,7 @@ export function FlaggyChatWidget() {
         >
           <div className="relative w-32 h-32 animate-rock">
             <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Flaggy-k8cMXMGOUTeUqse9oPtGGq0HXYI4hy.png"
+              src="/images/design-mode/Flaggy.png"
               alt="Flaggy"
               fill
               className="object-contain drop-shadow-2xl"
@@ -242,7 +242,7 @@ export function FlaggyChatWidget() {
               <div className="relative w-12 h-12 bg-gradient-to-br from-[#C8A55C] to-[#B8954C] rounded-full p-1 shadow-lg">
                 <div className="relative w-full h-full bg-white rounded-full p-1 overflow-hidden">
                   <Image
-                    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Flaggy-k8cMXMGOUTeUqse9oPtGGq0HXYI4hy.png"
+                    src="/images/design-mode/Flaggy.png"
                     alt="Flaggy"
                     fill
                     className="object-cover"
@@ -280,7 +280,7 @@ export function FlaggyChatWidget() {
                     <div className="flex items-center gap-2 mb-1">
                       <div className="relative w-6 h-6">
                         <Image
-                          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Flaggy-k8cMXMGOUTeUqse9oPtGGq0HXYI4hy.png"
+                          src="/images/design-mode/Flaggy.png"
                           alt="Flaggy"
                           fill
                           className="object-contain"

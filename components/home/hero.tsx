@@ -53,7 +53,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
       <section className="relative w-full min-h-[500px] md:min-h-[550px] lg:min-h-[650px] overflow-hidden">
         <div className={`transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"}`}>
           <Image
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/newhero-OkNES0uBM9oLSoBk3L4YNHu0gLfHAA.avif"
+            src="/images/design-mode/newhero.avif"
             alt="Beautiful home with American flag on premium flagpole"
             fill
             priority
@@ -193,7 +193,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
                 <Shield className="w-10 h-10 text-[#C8A55C]" />
               </div>
               <h3 className="text-[#0B1C2C] text-lg font-bold text-center mb-2 leading-tight">
-                The Last Flagpole You'll Ever Need.
+                The Last Flagpole You'll Ever Need. Guaranteed.
               </h3>
               <p className="text-[#0B1C2C]/70 text-center text-sm leading-snug mb-4">
                 365-Day Guarantee • Forever Warranty
@@ -219,7 +219,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
         >
           <div className="inline-block bg-[#0B1C2C]/70 backdrop-blur-sm border border-[#C8A55C]/50 rounded-lg px-6 py-2.5 mb-3 shadow-lg">
             <h2 className="text-white text-base lg:text-lg xl:text-xl font-semibold drop-shadow-lg whitespace-nowrap">
-              Your Flag Deserves Better Than Cheap Poles
+              Your Flag Deserves Better Than a Cheap Pole.
             </h2>
           </div>
 
@@ -304,7 +304,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="flex items-center justify-center">
               <Image
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/as%20seen%20on-bB2aXokVrwbgjRpByiCMWod6CNDNks.png"
+                src="/images/design-mode/as%20seen%20on.png"
                 alt="As seen on The First, Fox News, Newsmax, ABC, NBC, CBS"
                 width={800}
                 height={160}

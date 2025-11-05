@@ -149,7 +149,7 @@ function PaperboyGame({ onWin }: { onWin: () => void }) {
       >
         <div className="relative w-20 h-20 md:w-28 md:h-28">
           <Image
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/bike-O8VNpgNtibHyuq4fLX2lu4TqguFcWS.gif"
+            src="/images/design-mode/bike.gif"
             alt="Paperboy on bicycle"
             width={112}
             height={112}
@@ -170,7 +170,7 @@ function PaperboyGame({ onWin }: { onWin: () => void }) {
           }}
         >
           <Image
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/paper-byadLr90xwRDYoZdZGM7O5WsuTmHbU.png"
+            src="/images/design-mode/paper.png"
             alt="Newspaper"
             width={32}
             height={32}

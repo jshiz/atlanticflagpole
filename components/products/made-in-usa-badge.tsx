@@ -59,7 +59,7 @@ export function MadeInUSABadge({ product }: MadeInUSABadgeProps) {
         {/* American Flag Icon */}
         <div className="relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0">
           <Image
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/madeinusabadge-lV1WdGQGgGLFMrb7p8HQc5WnBMQ6ES.jpg"
+            src="/images/design-mode/madeinusabadge.jpg"
             alt="Made in USA"
             fill
             className="object-contain"
