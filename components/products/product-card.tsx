@@ -5,6 +5,7 @@ import Image from "next/image"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import type { ShopifyProduct } from "@/lib/shopify"
+import { MadeInUSABadge } from "./made-in-usa-badge"
 
 interface ProductCardProps {
   product: ShopifyProduct
@@ -42,6 +43,7 @@ export function ProductCard({ product }: ProductCardProps) {
               <span className="text-gray-400">No image</span>
             </div>
           )}
+          <MadeInUSABadge product={product} />
         </div>
         <CardContent className="p-4">
           <h3 className="font-semibold text-[#0B1C2C] mb-2 line-clamp-2 group-hover:text-[#C8A55C] transition-colors">

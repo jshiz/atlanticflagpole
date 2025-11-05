@@ -6,7 +6,7 @@ import { Suspense } from "react"
 import { Header } from "@/components/header"
 import { HeaderSkeleton } from "@/components/header-skeleton"
 import { LazyFooter } from "@/components/ui/lazy-footer"
-import { LiveChatButton } from "@/components/live-chat-button"
+import { FlaggyChatWidget } from "@/components/flaggy-chat/flaggy-chat-widget"
 import { CartProvider } from "@/components/cart/cart-context"
 import { JudgeMePlatformScript } from "@/components/judgeme/judgeme-platform-script"
 import { PhoenixHomeTrialBar } from "@/components/phoenix-home-trial-bar"
@@ -58,7 +58,7 @@ export default function RootLayout({
             </Suspense>
             {children}
             <LazyFooter />
-            <LiveChatButton />
+            <FlaggyChatWidget />
             <CartSidebarButton />
             <LocationTab />
             <CookieConsentBanner />

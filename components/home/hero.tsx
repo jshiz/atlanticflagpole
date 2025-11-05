@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import { Shield, Wind, Lock, Award, CheckCircle, Gem } from "lucide-react"
 
 interface HeroProps {
   judgemeStats?: {
@@ -44,21 +45,23 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
     return () => clearInterval(timer)
   }, [])
 
-  const rating = judgemeStats?.averageRating ?? 4.8
-  const reviewCount = judgemeStats?.totalReviews ?? 1250
+  const rating = judgemeStats?.averageRating ?? 4.9
+  const reviewCount = judgemeStats?.totalReviews ?? 2500
+
+  console.log("[v0] Hero rendering with Judge.me stats:", { rating, reviewCount, judgemeStats })
 
   return (
     <>
       <section className="relative w-full min-h-[500px] md:min-h-[550px] lg:min-h-[650px] overflow-hidden">
         <div className={`transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"}`}>
           <Image
-            src="/images/design-mode/AtlanticFlagPoleHero.jpg"
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/newhero-OkNES0uBM9oLSoBk3L4YNHu0gLfHAA.avif"
             alt="Beautiful home with American flag on premium flagpole"
             fill
             priority
             quality={90}
             sizes="100vw"
-            className="object-cover object-[75%_center]"
+            className="object-cover object-center"
           />
         </div>
 
@@ -70,7 +73,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           }}
         />
 
-        <div className="relative z-10 flex items-center min-h-[500px] md:min-h-[550px] lg:min-h-[650px] px-4 md:px-12 lg:px-16 py-8 md:py-10">
+        <div className="relative z-10 flex items-center justify-between min-h-[500px] md:min-h-[550px] lg:min-h-[650px] px-4 md:px-12 lg:px-16 py-8 md:py-10">
           <div
             className={`max-w-[480px] w-full transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
@@ -99,9 +102,11 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
               }`}
             >
-              Up To 60% Off Flagpoles{" "}
+              Up To <span className="text-white font-bold">40%</span> Off Flagpoles
+              <br />
               <span className="text-base md:text-xl lg:text-2xl">
-                +$599 Of Accessories Included!<span className="text-red-400">*</span>
+                +<span className="text-white font-bold">$255</span> Of Accessories Included!
+                <span className="text-white">*</span>
               </span>
             </p>
 
@@ -179,6 +184,34 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
 
             <p className="text-white/60 text-[10px] md:text-xs mt-2">*See Terms</p>
           </div>
+
+          <div
+            className={`hidden lg:block max-w-[280px] transition-all duration-1000 delay-600 ${
+              isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
+            }`}
+          >
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-5 shadow-xl border border-[#C8A55C]/30">
+              <div className="flex items-center justify-center mb-3">
+                <Shield className="w-10 h-10 text-[#C8A55C]" />
+              </div>
+              <h3 className="text-[#0B1C2C] text-lg font-bold text-center mb-2 leading-tight">
+                The Last Flagpole You'll Ever Need.
+              </h3>
+              <p className="text-[#0B1C2C]/70 text-center text-sm leading-snug mb-4">
+                365-Day Guarantee • Forever Warranty
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col items-center text-center">
+                  <Wind className="w-6 h-6 text-[#C8A55C] mb-1" />
+                  <span className="text-xs font-semibold text-[#0B1C2C]">100 MPH</span>
+                </div>
+                <div className="flex flex-col items-center text-center">
+                  <Lock className="w-6 h-6 text-[#C8A55C] mb-1" />
+                  <span className="text-xs font-semibold text-[#0B1C2C]">Anti-Theft</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div
@@ -186,14 +219,22 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-8"
           }`}
         >
-          <div className="inline-block bg-[#0B1C2C]/85 backdrop-blur-sm px-5 py-1.5 rounded-full mb-3 border-2 border-[#C8A55C]/40">
-            <p className="text-white text-base font-bold tracking-wide">America's #1 Hybrid Luxury Flagpole</p>
+          <div className="inline-block bg-[#0B1C2C]/70 backdrop-blur-sm border border-[#C8A55C]/50 rounded-lg px-6 py-2.5 mb-3 shadow-lg">
+            <h2 className="text-white text-base lg:text-lg xl:text-xl font-semibold drop-shadow-lg whitespace-nowrap">
+              Built to Defy the Storm. Designed to Honor the Flag.
+            </h2>
           </div>
-          <div className="flex items-center justify-center gap-3">
+
+          <div className="flex items-center justify-center gap-3 mb-3">
             {[
               { src: "/images/ten-percent-badge.svg", alt: "10% Pledge", delay: "delay-[600ms]" },
               { src: "/images/bbb-logo.webp", alt: "BBB Accredited", delay: "delay-[700ms]" },
-              { src: "/images/one-percent-planet.svg", alt: "1% for Planet", delay: "delay-[800ms]" },
+              { src: "/images/one-percent-planet.svg", alt: "1% for Planet", delay: "delay-[750ms]" },
+              {
+                src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/madeinusabadge-lV1WdGQGgGLFMrb7p8HQc5WnBMQ6ES.jpg",
+                alt: "Made in USA",
+                delay: "delay-[800ms]",
+              },
             ].map((badge, index) => (
               <Link
                 key={index}
@@ -204,7 +245,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
                 }
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`w-16 h-16 ${index === 1 ? "" : "bg-white"} rounded-full overflow-hidden shadow-lg border-[3px] border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center p-1.5 relative ${badge.delay} ${
+                className={`w-14 h-14 lg:w-16 lg:h-16 ${index === 1 ? "" : "bg-white"} rounded-full overflow-hidden shadow-md border-2 border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center relative ${badge.delay} ${
                   isVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
                 }`}
               >
@@ -212,7 +253,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
                   src={badge.src || "/placeholder.svg"}
                   alt={badge.alt}
                   fill
-                  className={`object-${index === 1 ? "cover" : "contain"} ${index === 1 ? "" : "p-1.5"}`}
+                  className={`object-${index === 1 ? "cover" : "contain"} ${index === 3 ? "scale-75" : index === 1 ? "" : "p-1.5"}`}
                   sizes="64px"
                 />
               </Link>
@@ -225,54 +266,108 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
         </div>
       </section>
 
-      <div className="bg-[#0B1C2C] py-3 overflow-hidden border-y-2 border-[#C8A55C]/30">
-        <div className="animate-marquee whitespace-nowrap flex items-center gap-12">
-          {[...Array(2)].map((_, setIndex) => (
-            <div key={setIndex} className="flex items-center gap-12">
-              <div className="flex items-center gap-2">
-                <span className="text-[#C8A55C] text-lg">★</span>
-                <span className="text-[#C8A55C] font-semibold text-sm tracking-wide">Lifetime Warranty</span>
+      {/* First Marquee - Scrolling Left */}
+      <div className="bg-[#0B1C2C] py-3 overflow-hidden border-b-2 border-[#C8A55C]/30">
+        <div className="flex animate-marquee-seamless whitespace-nowrap">
+          {[...Array(3)].map((_, setIndex) => (
+            <div key={setIndex} className="flex items-center gap-12 px-6">
+              <div className="flex items-center gap-3">
+                <Award className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
+                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">2,500+ 5★ Reviews</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[#C8A55C] text-lg">★</span>
-                <span className="text-[#C8A55C] font-semibold text-sm tracking-wide">Free Shipping & Returns</span>
+              <div className="flex items-center gap-3">
+                <Shield className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
+                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">Forever Warranty</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[#C8A55C] text-lg">★</span>
-                <span className="text-[#C8A55C] font-semibold text-sm tracking-wide">
-                  Join 1 Million Happy Americans™
-                </span>
+              <div className="flex items-center gap-3">
+                <Wind className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
+                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">100 MPH Wind Guarantee</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[#C8A55C] text-lg">★</span>
-                <span className="text-[#C8A55C] font-semibold text-sm tracking-wide">365-Day Home Trial</span>
+              <div className="flex items-center gap-3">
+                <Lock className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
+                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">Anti-Theft Promise</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[#C8A55C] text-lg">★</span>
-                <span className="text-[#C8A55C] font-semibold text-sm tracking-wide">Premium Materials</span>
+              <div className="flex items-center gap-3">
+                <CheckCircle className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
+                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">Made in USA</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[#C8A55C] text-lg">★</span>
-                <span className="text-[#C8A55C] font-semibold text-sm tracking-wide">Made in USA</span>
+              <div className="flex items-center gap-3">
+                <Gem className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
+                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">Premium Materials</span>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes marquee {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-        .animate-marquee {
-          animation: marquee 30s linear infinite;
-        }
-      `}</style>
+      {/* As Seen On and Trusted By Section */}
+      <div className="bg-white py-16 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-20 items-center">
+            <div className="flex items-center justify-center">
+              <Image
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/as%20seen%20on-bB2aXokVrwbgjRpByiCMWod6CNDNks.png"
+                alt="As seen on The First, Fox News, Newsmax, ABC, NBC, CBS"
+                width={800}
+                height={160}
+                className="h-32 md:h-40 w-auto object-contain"
+              />
+            </div>
+
+            <div className="flex items-center justify-center">
+              <div className="bg-gray-50 rounded-lg p-12 border-2 border-dashed border-gray-300">
+                <p className="text-gray-500 text-lg font-semibold text-center">
+                  Trusted By Section
+                  <br />
+                  U.S. Air Force, U.S. Army
+                  <br />
+                  Jesse Kelly, Bill O'Reilly, Skip Bedell
+                  <br />
+                  <span className="text-base">(Awaiting images)</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Second Marquee - Scrolling Right */}
+      <div className="bg-[#0B1C2C] py-3 overflow-hidden border-b-2 border-[#C8A55C]/30">
+        <div className="flex animate-marquee-reverse whitespace-nowrap">
+          {[...Array(3)].map((_, setIndex) => (
+            <div key={setIndex} className="flex items-center gap-12 px-6">
+              <div className="flex items-center gap-3">
+                <CheckCircle className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
+                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">BBB A+ Rating</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Gem className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
+                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">
+                  LEGENDARY Phoenix 365-Day Money Back Guarantee
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Award className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
+                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">
+                  Join 1 Million Happy Americans
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Shield className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
+                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">365-Day Home Trial</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Wind className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
+                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">Free Shipping & Returns</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Lock className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
+                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">Lifetime Warranty</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </>
   )
 }

@@ -169,199 +169,197 @@ export function HeaderClient({
             </div>
           </div>
 
-          {!mobileMenuOpen && (
-            <div className="hidden lg:block border-t border-gray-100" ref={menuRef}>
-              <div className="relative">
-                <nav className="flex items-center justify-center gap-4 py-2">
-                  {menuItems.map((item) => {
-                    const hasSubmenu = item.items && item.items.length > 0
-                    const isChristmas = isChristmasTreeMenuItem(item.title)
+          <div className="hidden lg:block border-t border-gray-100" ref={menuRef}>
+            <div className="relative">
+              <nav className="flex items-center justify-center gap-4 py-2">
+                {menuItems.map((item) => {
+                  const hasSubmenu = item.items && item.items.length > 0
+                  const isChristmas = isChristmasTreeMenuItem(item.title)
 
-                    if (!hasSubmenu) {
-                      return (
-                        <Link
-                          key={item.id}
-                          href={item.url}
-                          className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors duration-300 font-semibold text-sm tracking-wide group"
-                        >
-                          {item.title}
-                          <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#C8A55C] group-hover:w-full transition-all duration-300" />
-                        </Link>
-                      )
-                    }
-
+                  if (!hasSubmenu) {
                     return (
-                      <div key={item.id} className="relative">
-                        <button
-                          onClick={() => setActiveDropdown(activeDropdown === item.id ? null : item.id)}
-                          className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors duration-300 font-semibold text-sm tracking-wide group py-1 relative"
-                        >
-                          {isChristmas && (
-                            <span className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-                              {[...Array(8)].map((_, i) => (
-                                <span
-                                  key={i}
-                                  className="absolute w-1 h-1 bg-green-400/30 rounded-full animate-snow-title"
-                                  style={{
-                                    left: `${10 + i * 12}%`,
-                                    animationDelay: `${i * 0.3}s`,
-                                    animationDuration: "3s",
-                                  }}
-                                />
-                              ))}
-                            </span>
-                          )}
-                          <span className={isChristmas ? "text-green-700" : ""}>{item.title}</span>
-                          <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#C8A55C] group-hover:w-full transition-all duration-300" />
-                        </button>
-                      </div>
+                      <Link
+                        key={item.id}
+                        href={item.url}
+                        className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors duration-300 font-semibold text-sm tracking-wide group"
+                      >
+                        {item.title}
+                        <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#C8A55C] group-hover:w-full transition-all duration-300" />
+                      </Link>
                     )
-                  })}
-                </nav>
+                  }
 
-                {activeDropdown && (
-                  <div className="absolute left-0 right-0 top-full bg-white border-t border-gray-200 shadow-2xl shadow-black/10 z-[90] animate-in slide-in-from-top-2 duration-300">
-                    <div className="container mx-auto px-4 py-4">
-                      {menuItems.map((item) => {
-                        if (activeDropdown !== item.id) return null
-
-                        const itemData = megaMenuData[item.id]
-                        const isResource = isResourceMenu(item)
-                        const isNFL = isNFLMenuItem(item.title)
-                        const isChristmas = isChristmasTreeMenuItem(item.title)
-
-                        if (isChristmas) {
-                          return (
-                            <div key={item.id}>
-                              <h3 className="text-2xl font-serif font-bold text-green-800 mb-4 pb-2 border-b-2 border-green-600 text-center flex items-center justify-center gap-3">
-                                <span className="text-3xl">🎄</span>
-                                {item.title}
-                                <span className="text-3xl">🎄</span>
-                              </h3>
-                              <ChristmasTreeMegaMenu
-                                products={christmasTreeProducts}
-                                submenuProductsData={submenuProductsData}
-                                onLinkClick={() => setActiveDropdown(null)}
+                  return (
+                    <div key={item.id} className="relative">
+                      <button
+                        onClick={() => setActiveDropdown(activeDropdown === item.id ? null : item.id)}
+                        className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors duration-300 font-semibold text-sm tracking-wide group py-1 relative"
+                      >
+                        {isChristmas && (
+                          <span className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+                            {[...Array(8)].map((_, i) => (
+                              <span
+                                key={i}
+                                className="absolute w-1 h-1 bg-green-400/30 rounded-full animate-snow-title"
+                                style={{
+                                  left: `${10 + i * 12}%`,
+                                  animationDelay: `${i * 0.3}s`,
+                                  animationDuration: "3s",
+                                }}
                               />
-                            </div>
-                          )
-                        }
+                            ))}
+                          </span>
+                        )}
+                        <span className={isChristmas ? "text-green-700" : ""}>{item.title}</span>
+                        <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#C8A55C] group-hover:w-full transition-all duration-300" />
+                      </button>
+                    </div>
+                  )
+                })}
+              </nav>
 
-                        if (isNFL) {
-                          return (
-                            <div key={item.id}>
-                              <h3 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-4 pb-2 border-b-2 border-[#C8A55C] text-center">
-                                {item.title}
-                              </h3>
-                              <NFLMenuClient
-                                nflFlagProducts={nflFlagProducts}
-                                onLinkClick={() => setActiveDropdown(null)}
-                              />
-                            </div>
-                          )
-                        }
+              {activeDropdown && (
+                <div className="absolute left-0 right-0 top-full bg-white border-t border-gray-200 shadow-2xl shadow-black/10 z-[90] animate-in slide-in-from-top-2 duration-300">
+                  <div className="container mx-auto px-4 py-4">
+                    {menuItems.map((item) => {
+                      if (activeDropdown !== item.id) return null
 
-                        if (isResource || !itemData) {
-                          return (
-                            <div key={item.id} className="max-w-4xl mx-auto">
-                              <h3 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-4 pb-2 border-b-2 border-[#C8A55C]">
-                                {item.title}
-                              </h3>
-                              <div className="grid grid-cols-3 gap-6">
-                                {item.title.toLowerCase().includes("info") && (
-                                  <>
-                                    <button
-                                      onClick={() => {
-                                        setQuizModalOpen(true)
-                                        setActiveDropdown(null)
-                                      }}
-                                      className="group p-6 bg-gradient-to-br from-[#C8A55C]/10 to-white rounded-xl border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all duration-300 flex flex-col h-full text-left"
-                                    >
-                                      <h4 className="text-lg font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors mb-2">
-                                        Flagpole Finder Quiz
-                                      </h4>
-                                      <p className="text-sm text-gray-600 flex-1">
-                                        Take our interactive quiz to find the perfect flagpole for your needs
-                                      </p>
-                                      <span className="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-[#C8A55C] group-hover:gap-2 transition-all">
-                                        Start Quiz
-                                        <span className="group-hover:translate-x-1 transition-transform duration-300">
-                                          →
-                                        </span>
-                                      </span>
-                                    </button>
-                                    <Link
-                                      href="/flagpole-finder"
-                                      className="group p-6 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all duration-300 flex flex-col h-full"
-                                      onClick={() => setActiveDropdown(null)}
-                                    >
-                                      <h4 className="text-lg font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors mb-2">
-                                        Flagpole Finder Tool
-                                      </h4>
-                                      <p className="text-sm text-gray-600 flex-1">
-                                        Browse and compare flagpoles by height, type, and features
-                                      </p>
-                                      <span className="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-[#C8A55C] group-hover:gap-2 transition-all">
-                                        Explore Options
-                                        <span className="group-hover:translate-x-1 transition-transform duration-300">
-                                          →
-                                        </span>
-                                      </span>
-                                    </Link>
-                                  </>
-                                )}
-                                {item.items?.map((subItem) => {
-                                  return (
-                                    <Link
-                                      key={subItem.id}
-                                      href={subItem.url}
-                                      className="group p-6 bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all duration-300 flex flex-col h-full"
-                                      onClick={() => {
-                                        setActiveDropdown(null)
-                                      }}
-                                    >
-                                      <h4 className="text-lg font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors mb-2">
-                                        {subItem.title}
-                                      </h4>
-                                      <p className="text-sm text-gray-600 flex-1">
-                                        {subItem.title === "Blog" && "Read our latest articles and updates"}
-                                        {subItem.title === "Installation Guides" &&
-                                          "Step-by-step installation instructions"}
-                                        {subItem.title === "FAQ" && "Frequently asked questions and answers"}
-                                      </p>
-                                      <span className="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-[#C8A55C] group-hover:gap-2 transition-all">
-                                        Learn More
-                                        <span className="group-hover:translate-x-1 transition-transform duration-300">
-                                          →
-                                        </span>
-                                      </span>
-                                    </Link>
-                                  )
-                                })}
-                              </div>
-                            </div>
-                          )
-                        }
+                      const itemData = megaMenuData[item.id]
+                      const isResource = isResourceMenu(item)
+                      const isNFL = isNFLMenuItem(item.title)
+                      const isChristmas = isChristmasTreeMenuItem(item.title)
 
-                        const displayProducts = itemData?.products?.nodes || []
-
+                      if (isChristmas) {
                         return (
                           <div key={item.id}>
-                            <MegaMenuWithCart
-                              title={item.title}
-                              menuItems={item.items || []}
-                              featuredProducts={displayProducts}
+                            <h3 className="text-2xl font-serif font-bold text-green-800 mb-4 pb-2 border-b-2 border-green-600 text-center flex items-center justify-center gap-3">
+                              <span className="text-3xl">🎄</span>
+                              {item.title}
+                              <span className="text-3xl">🎄</span>
+                            </h3>
+                            <ChristmasTreeMegaMenu
+                              products={christmasTreeProducts}
+                              submenuProductsData={submenuProductsData}
                               onLinkClick={() => setActiveDropdown(null)}
                             />
                           </div>
                         )
-                      })}
-                    </div>
+                      }
+
+                      if (isNFL) {
+                        return (
+                          <div key={item.id}>
+                            <h3 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-4 pb-2 border-b-2 border-[#C8A55C] text-center">
+                              {item.title}
+                            </h3>
+                            <NFLMenuClient
+                              nflFlagProducts={nflFlagProducts}
+                              onLinkClick={() => setActiveDropdown(null)}
+                            />
+                          </div>
+                        )
+                      }
+
+                      if (isResource || !itemData) {
+                        return (
+                          <div key={item.id} className="max-w-4xl mx-auto">
+                            <h3 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-4 pb-2 border-b-2 border-[#C8A55C]">
+                              {item.title}
+                            </h3>
+                            <div className="grid grid-cols-3 gap-6">
+                              {item.title.toLowerCase().includes("info") && (
+                                <>
+                                  <button
+                                    onClick={() => {
+                                      setQuizModalOpen(true)
+                                      setActiveDropdown(null)
+                                    }}
+                                    className="group p-6 bg-gradient-to-br from-[#C8A55C]/10 to-white rounded-xl border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all duration-300 flex flex-col h-full text-left"
+                                  >
+                                    <h4 className="text-lg font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors mb-2">
+                                      Flagpole Finder Quiz
+                                    </h4>
+                                    <p className="text-sm text-gray-600 flex-1">
+                                      Take our interactive quiz to find the perfect flagpole for your needs
+                                    </p>
+                                    <span className="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-[#C8A55C] group-hover:gap-2 transition-all">
+                                      Start Quiz
+                                      <span className="group-hover:translate-x-1 transition-transform duration-300">
+                                        →
+                                      </span>
+                                    </span>
+                                  </button>
+                                  <Link
+                                    href="/flagpole-finder"
+                                    className="group p-6 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all duration-300 flex flex-col h-full"
+                                    onClick={() => setActiveDropdown(null)}
+                                  >
+                                    <h4 className="text-lg font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors mb-2">
+                                      Flagpole Finder Tool
+                                    </h4>
+                                    <p className="text-sm text-gray-600 flex-1">
+                                      Browse and compare flagpoles by height, type, and features
+                                    </p>
+                                    <span className="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-[#C8A55C] group-hover:gap-2 transition-all">
+                                      Explore Options
+                                      <span className="group-hover:translate-x-1 transition-transform duration-300">
+                                        →
+                                      </span>
+                                    </span>
+                                  </Link>
+                                </>
+                              )}
+                              {item.items?.map((subItem) => {
+                                return (
+                                  <Link
+                                    key={subItem.id}
+                                    href={subItem.url}
+                                    className="group p-6 bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all duration-300 flex flex-col h-full"
+                                    onClick={() => {
+                                      setActiveDropdown(null)
+                                    }}
+                                  >
+                                    <h4 className="text-lg font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors mb-2">
+                                      {subItem.title}
+                                    </h4>
+                                    <p className="text-sm text-gray-600 flex-1">
+                                      {subItem.title === "Blog" && "Read our latest articles and updates"}
+                                      {subItem.title === "Installation Guides" &&
+                                        "Step-by-step installation instructions"}
+                                      {subItem.title === "FAQ" && "Frequently asked questions and answers"}
+                                    </p>
+                                    <span className="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-[#C8A55C] group-hover:gap-2 transition-all">
+                                      Learn More
+                                      <span className="group-hover:translate-x-1 transition-transform duration-300">
+                                        →
+                                      </span>
+                                    </span>
+                                  </Link>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        )
+                      }
+
+                      const displayProducts = itemData?.products?.nodes || []
+
+                      return (
+                        <div key={item.id}>
+                          <MegaMenuWithCart
+                            title={item.title}
+                            menuItems={item.items || []}
+                            featuredProducts={displayProducts}
+                            onLinkClick={() => setActiveDropdown(null)}
+                          />
+                        </div>
+                      )
+                    })}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </header>
 

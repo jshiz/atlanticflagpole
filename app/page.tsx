@@ -34,18 +34,27 @@ export const metadata: Metadata = generateHomeMetadata()
 export const revalidate = 3600
 
 export default async function Home() {
-  let judgemeStats = { average_rating: 4.8, total_reviews: 1250 }
+  let judgemeStats = { averageRating: 4.9, totalReviews: 2500 }
   let reviews: any[] = []
 
   try {
+    console.log("[v0] Fetching Judge.me data for home page...")
     const [stats, reviewsData] = await Promise.all([
       getJudgemeStats(),
       getJudgemeReviews({ perPage: 12, minRating: 4 }),
     ])
-    judgemeStats = stats
+
+    console.log("[v0] Judge.me stats fetched:", stats)
+    console.log("[v0] Judge.me reviews count:", reviewsData.reviews.length)
+
+    judgemeStats = {
+      averageRating: stats.averageRating,
+      totalReviews: stats.totalReviews,
+    }
     reviews = reviewsData.reviews
   } catch (error) {
     console.error("[v0] Failed to fetch Judge.me data during build:", error)
+    console.log("[v0] Using fallback Judge.me data: 4.9 rating, 2500 reviews")
   }
 
   const organizationSchema = generateOrganizationSchema()

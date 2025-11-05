@@ -226,6 +226,38 @@
     animation: marquee 30s linear infinite;
   }
 
+  /* Adding seamless marquee animations for dual marquees */
+  @keyframes marquee-seamless {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-33.333%);
+    }
+  }
+
+  @keyframes marquee-reverse {
+    0% {
+      transform: translateX(-33.333%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  .animate-marquee-seamless {
+    animation: marquee-seamless 40s linear infinite;
+  }
+
+  .animate-marquee-reverse {
+    animation: marquee-reverse 40s linear infinite;
+  }
+
+  .animate-marquee-seamless:hover,
+  .animate-marquee-reverse:hover {
+    animation-play-state: paused;
+  }
+
   /* Adding wiggle animation for ticket */
   @keyframes wiggle {
     0%,
