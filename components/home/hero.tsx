@@ -48,8 +48,6 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
   const rating = judgemeStats?.averageRating ?? 4.9
   const reviewCount = judgemeStats?.totalReviews ?? 2500
 
-  console.log("[v0] Hero rendering with Judge.me stats:", { rating, reviewCount, judgemeStats })
-
   return (
     <>
       <section className="relative w-full min-h-[500px] md:min-h-[550px] lg:min-h-[650px] overflow-hidden">
@@ -99,7 +97,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
 
             <p
               className={`text-xl md:text-3xl lg:text-4xl text-white font-light leading-tight mb-3 md:mb-4 transition-all duration-700 delay-300 ${
-                isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
               Up To <span className="text-white font-bold">40%</span> Off Flagpoles

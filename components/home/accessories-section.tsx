@@ -1,43 +1,62 @@
 import Link from "next/link"
 import { ShoppingCart } from "lucide-react"
+import { getCollectionProducts } from "@/lib/shopify"
+import Image from "next/image"
 
-export function AccessoriesSection() {
-  const accessories = [
-    {
-      name: "Solar Flagpole Light",
-      price: "$39.99",
-      description:
-        "Illuminate your flag with pride day and night using our premium solar-powered light. Features automatic dusk-to-dawn operation with no wiring required. Provides bright, respectful illumination that meets US Flag Code requirements.",
-      image: "/placeholder.svg?height=400&width=400&text=Solar+Light",
-      href: "/products/solar-flagpole-light",
-    },
-    {
-      name: "Gold Eagle Topper",
-      price: "$29.99",
-      description:
-        "Add a patriotic finishing touch with our stunning gold eagle ornament. Crafted from durable materials with a brilliant gold finish that won't fade. The perfect symbol of American pride for your flagpole display.",
-      image: "/placeholder.svg?height=400&width=400&text=Gold+Eagle",
-      href: "/products/gold-eagle-topper",
-    },
-    {
-      name: "Flash Collar",
-      price: "$19.99",
-      description:
-        "Create a professional, finished appearance at ground level with our premium flash collar. Conceals the ground sleeve opening for a clean, polished look. Easy to install and built to withstand all weather conditions.",
-      image: "/placeholder.svg?height=400&width=400&text=Flash+Collar",
-      href: "/products/flash-collar",
-    },
-    {
-      name: "Engraved Nameplate",
-      price: "$29.99",
-      description:
-        "Honor a veteran, hero, or loved one with a custom engraved nameplate. Precision laser engraving ensures lasting clarity and durability. A meaningful way to dedicate your flag display to someone special.",
-      image: "/placeholder.svg?height=400&width=400&text=Nameplate",
-      href: "/products/engraved-nameplate",
-    },
-  ]
+export async function AccessoriesSection() {
+  // Fetch products from the flagpole-lighting collection (which exists and has 5 products)
+  const products = await getCollectionProducts({
+    collection: "flagpole-lighting",
+    limit: 4,
+  })
 
-  console.log("[v0] AccessoriesSection rendering with", accessories.length, "products")
+  console.log("[v0] AccessoriesSection - Fetched products:", products.length)
+
+  // Map Shopify products to accessories format
+  const accessories =
+    products.length > 0
+      ? products.slice(0, 4).map((product) => ({
+          name: product.title,
+          price: `$${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}`,
+          description: product.description || "Premium flagpole accessory to enhance your display.",
+          image: product.images?.[0]?.url || "",
+          href: `/products/${product.handle}`,
+        }))
+      : [
+          // Fallback data if no products found
+          {
+            name: "Solar Flagpole Light",
+            price: "$39.99",
+            description:
+              "Illuminate your flag with pride day and night using our premium solar-powered light. Features automatic dusk-to-dawn operation with no wiring required. Provides bright, respectful illumination that meets US Flag Code requirements.",
+            image: "https://cdn.shopify.com/s/files/1/2133/9559/files/solar-light-placeholder.jpg",
+            href: "/products/solar-flagpole-light",
+          },
+          {
+            name: "Gold Eagle Topper",
+            price: "$29.99",
+            description:
+              "Add a patriotic finishing touch with our stunning gold eagle ornament. Crafted from durable materials with a brilliant gold finish that won't fade. The perfect symbol of American pride for your flagpole display.",
+            image: "https://cdn.shopify.com/s/files/1/2133/9559/files/eagle-topper-placeholder.jpg",
+            href: "/products/gold-eagle-topper",
+          },
+          {
+            name: "Flash Collar",
+            price: "$19.99",
+            description:
+              "Create a professional, finished appearance at ground level with our premium flash collar. Conceals the ground sleeve opening for a clean, polished look. Easy to install and built to withstand all weather conditions.",
+            image: "https://cdn.shopify.com/s/files/1/2133/9559/files/flash-collar-placeholder.jpg",
+            href: "/products/flash-collar",
+          },
+          {
+            name: "Engraved Nameplate",
+            price: "$29.99",
+            description:
+              "Honor a veteran, hero, or loved one with a custom engraved nameplate. Precision laser engraving ensures lasting clarity and durability. A meaningful way to dedicate your flag display to someone special.",
+            image: "https://cdn.shopify.com/s/files/1/2133/9559/files/nameplate-placeholder.jpg",
+            href: "/products/engraved-nameplate",
+          },
+        ]
 
   return (
     <section className="py-16 md:py-20 bg-white">
@@ -60,11 +79,19 @@ export function AccessoriesSection() {
               className="group bg-[#F5F3EF] rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-[#C8A55C]"
             >
               <div className="relative aspect-square bg-white overflow-hidden">
-                <img
-                  src={accessory.image || "/placeholder.svg"}
-                  alt={accessory.name}
-                  className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500"
-                />
+                {accessory.image ? (
+                  <Image
+                    src={accessory.image || "/placeholder.svg"}
+                    alt={accessory.name}
+                    fill
+                    className="object-contain p-4 group-hover:scale-110 transition-transform duration-500"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                    No image
+                  </div>
+                )}
               </div>
               <div className="p-5">
                 <h3 className="text-lg font-bold text-[#0B1C2C] mb-2 line-clamp-1">{accessory.name}</h3>
