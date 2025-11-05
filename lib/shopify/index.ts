@@ -104,76 +104,87 @@ export async function getProducts({
   reverse?: boolean
   query?: string
 }): Promise<ShopifyProduct[]> {
-  const query = /* gql */ `
-    query getProducts($first: Int!, $sortKey: ProductSortKeys!, $reverse: Boolean, $query: String) {
-      products(first: $first, sortKey: $sortKey, reverse: $reverse, query: $query) {
-        nodes {
-          id
-          title
-          description
-          descriptionHtml
-          handle
-          availableForSale
-          productType
-          tags
-          vendor
-          options {
+  try {
+    const query = /* gql */ `
+      query getProducts($first: Int!, $sortKey: ProductSortKeys!, $reverse: Boolean, $query: String) {
+        products(first: $first, sortKey: $sortKey, reverse: $reverse, query: $query) {
+          nodes {
             id
-            name
-            values
-          }
-          images(first: 5) {
-            nodes {
-              url
-              altText
-              thumbhash
-            }
-          }
-          priceRange {
-            minVariantPrice {
-              amount
-              currencyCode
-            }
-          }
-          compareAtPriceRange {
-            minVariantPrice {
-              amount
-              currencyCode
-            }
-          }
-          variants(first: 10) {
-            nodes {
+            title
+            description
+            descriptionHtml
+            handle
+            availableForSale
+            productType
+            tags
+            vendor
+            options {
               id
-              title
-              price {
+              name
+              values
+            }
+            images(first: 5) {
+              nodes {
+                url
+                altText
+                thumbhash
+              }
+            }
+            priceRange {
+              minVariantPrice {
                 amount
                 currencyCode
               }
-              compareAtPrice {
+            }
+            compareAtPriceRange {
+              minVariantPrice {
                 amount
                 currencyCode
               }
-              availableForSale
-              selectedOptions {
-                name
-                value
+            }
+            variants(first: 10) {
+              nodes {
+                id
+                title
+                price {
+                  amount
+                  currencyCode
+                }
+                compareAtPrice {
+                  amount
+                  currencyCode
+                }
+                availableForSale
+                selectedOptions {
+                  name
+                  value
+                }
               }
             }
           }
         }
       }
+    `
+
+    const result = await shopifyFetch<{
+      products: ConnectionLike<ShopifyProduct>
+    }>({
+      query,
+      variables: { first, sortKey, reverse, query: searchQuery },
+      tags: ["products"],
+    })
+
+    // Check if data exists and has products
+    if (!result || !result.data || !result.data.products) {
+      console.error("[v0] getProducts: Invalid response structure", result)
+      return []
     }
-  `
 
-  const { data } = await shopifyFetch<{
-    products: ConnectionLike<ShopifyProduct>
-  }>({
-    query,
-    variables: { first, sortKey, reverse, query: searchQuery },
-    tags: ["products"],
-  })
-
-  return toNodes(data.products)
+    return toNodes(result.data.products)
+  } catch (error) {
+    console.error("[v0] getProducts error:", error)
+    return []
+  }
 }
 
 export async function getProduct(handle: string): Promise<ShopifyProduct | null> {

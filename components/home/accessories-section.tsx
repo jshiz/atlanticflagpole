@@ -1,39 +1,44 @@
 import Link from "next/link"
-import Image from "next/image"
 import { ShoppingCart } from "lucide-react"
 
-const accessories = [
-  {
-    name: "Solar Flagpole Light",
-    price: "$39.99",
-    description: "Respectfully illuminate your flag at night.",
-    image: "/placeholder.svg?height=300&width=300",
-    href: "/products/solar-flagpole-light",
-  },
-  {
-    name: "Eagle Topper",
-    price: "$29.99",
-    description: "A patriotic finishing touch.",
-    image: "/placeholder.svg?height=300&width=300",
-    href: "/products/eagle-topper",
-  },
-  {
-    name: "Flash Collar",
-    price: "$19.99",
-    description: "Clean, professional install appearance.",
-    image: "/placeholder.svg?height=300&width=300",
-    href: "/products/flash-collar",
-  },
-  {
-    name: "Engraved Nameplate",
-    price: "$29.99",
-    description: "Memorialize a veteran, father, or fallen hero.",
-    image: "/placeholder.svg?height=300&width=300",
-    href: "/products/engraved-nameplate",
-  },
-]
-
 export function AccessoriesSection() {
+  const accessories = [
+    {
+      name: "Solar Flagpole Light",
+      price: "$39.99",
+      description:
+        "Illuminate your flag with pride day and night using our premium solar-powered light. Features automatic dusk-to-dawn operation with no wiring required. Provides bright, respectful illumination that meets US Flag Code requirements.",
+      image: "/placeholder.svg?height=400&width=400&text=Solar+Light",
+      href: "/products/solar-flagpole-light",
+    },
+    {
+      name: "Gold Eagle Topper",
+      price: "$29.99",
+      description:
+        "Add a patriotic finishing touch with our stunning gold eagle ornament. Crafted from durable materials with a brilliant gold finish that won't fade. The perfect symbol of American pride for your flagpole display.",
+      image: "/placeholder.svg?height=400&width=400&text=Gold+Eagle",
+      href: "/products/gold-eagle-topper",
+    },
+    {
+      name: "Flash Collar",
+      price: "$19.99",
+      description:
+        "Create a professional, finished appearance at ground level with our premium flash collar. Conceals the ground sleeve opening for a clean, polished look. Easy to install and built to withstand all weather conditions.",
+      image: "/placeholder.svg?height=400&width=400&text=Flash+Collar",
+      href: "/products/flash-collar",
+    },
+    {
+      name: "Engraved Nameplate",
+      price: "$29.99",
+      description:
+        "Honor a veteran, hero, or loved one with a custom engraved nameplate. Precision laser engraving ensures lasting clarity and durability. A meaningful way to dedicate your flag display to someone special.",
+      image: "/placeholder.svg?height=400&width=400&text=Nameplate",
+      href: "/products/engraved-nameplate",
+    },
+  ]
+
+  console.log("[v0] AccessoriesSection rendering with", accessories.length, "products")
+
   return (
     <section className="py-16 md:py-20 bg-white">
       <div className="container mx-auto px-4">
@@ -43,7 +48,7 @@ export function AccessoriesSection() {
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-[#0B1C2C] mb-3">Upgrade Your Installation</h2>
           <p className="text-base md:text-lg text-[#666666] max-w-2xl mx-auto">
-            Purpose-built accessories designed to enhance your flagpole display.
+            Premium accessories designed to enhance your flagpole display and honor the flag with pride
           </p>
         </div>
 
@@ -55,16 +60,15 @@ export function AccessoriesSection() {
               className="group bg-[#F5F3EF] rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-[#C8A55C]"
             >
               <div className="relative aspect-square bg-white overflow-hidden">
-                <Image
+                <img
                   src={accessory.image || "/placeholder.svg"}
                   alt={accessory.name}
-                  fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
               <div className="p-5">
-                <h3 className="text-lg font-bold text-[#0B1C2C] mb-2">{accessory.name}</h3>
-                <p className="text-sm text-[#666666] mb-3 min-h-[40px]">{accessory.description}</p>
+                <h3 className="text-lg font-bold text-[#0B1C2C] mb-2 line-clamp-1">{accessory.name}</h3>
+                <p className="text-sm text-[#666666] mb-3 line-clamp-3">{accessory.description}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-bold text-[#0B1C2C]">{accessory.price}</span>
                   <div className="flex items-center gap-1 text-[#C8A55C] font-semibold text-sm">
@@ -82,7 +86,7 @@ export function AccessoriesSection() {
             href="/collections/accessories"
             className="inline-flex items-center gap-2 bg-[#C8A55C] hover:bg-[#B8954C] text-[#0B1C2C] font-bold text-base py-3 px-8 rounded-md transition-colors shadow-lg hover:shadow-xl"
           >
-            Shop Accessories
+            Shop All Accessories
           </Link>
         </div>
       </div>

@@ -1,8 +1,14 @@
 import Link from "next/link"
-import Image from "next/image"
 import { Star, ShoppingCart, CheckCircle, Award, Shield } from "lucide-react"
 
 export function BestsellerSpotlight() {
+  const productImage = "/placeholder.svg?height=600&width=600&text=20ft+Phoenix+Flagpole+Kit"
+  const productPrice = "$999.71"
+  const productHandle = "20-phoenix-telescoping-flagpole-kit"
+  const productTitle = "20' Midnight Bronze Phoenix Flagpole Kit"
+
+  console.log("[v0] BestsellerSpotlight rendering with image:", productImage)
+
   return (
     <section id="bestseller" className="py-16 md:py-24 bg-gradient-to-br from-[#0B1C2C] to-[#1A2F44]">
       <div className="container mx-auto px-4">
@@ -13,13 +19,11 @@ export function BestsellerSpotlight() {
               <div className="absolute -top-4 -left-4 bg-[#C8A55C] text-[#0B1C2C] px-6 py-3 font-bold text-sm tracking-wider uppercase rounded-lg shadow-xl z-10">
                 BEST SELLER
               </div>
-              <div className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl border-4 border-[#C8A55C]/30">
-                <Image
-                  src="https://cdn.shopify.com/s/files/1/2133/9559/files/20-foot-phoenix-telescoping-flagpole-kit-midnight-bronze-finish.jpg?v=1687894210"
-                  alt="20' Midnight Bronze Phoenix Flagpole Kit"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
+              <div className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl border-4 border-[#C8A55C]/30 bg-white">
+                <img
+                  src={productImage || "/placeholder.svg"}
+                  alt={productTitle}
+                  className="w-full h-full object-contain p-4"
                 />
               </div>
               <div className="absolute -bottom-4 -right-4 bg-white text-[#0B1C2C] px-6 py-4 rounded-lg shadow-xl">
@@ -39,21 +43,20 @@ export function BestsellerSpotlight() {
                 <span className="text-sm font-semibold">Veteran Approved</span>
               </div>
 
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                The Flagpole Chosen by Thousands of American Homes
-              </h2>
+              <h2 className="text-4xl md:text-5xl font-bold mb-4">America's #1 Flagpole Kit</h2>
 
               <p className="text-xl text-white/80 mb-6">
-                Our most popular kit — a perfect balance of presence, price, and pride.
+                Our most popular flagpole kit combines premium quality with unbeatable value. Trusted by over 33,000
+                American homes, this complete kit includes everything you need for a professional installation. Built to
+                last with our lifetime warranty and backed by a full year trial period.
               </p>
 
               <div className="space-y-3 mb-8">
                 {[
-                  "20' Installed Height",
-                  "Wind Rated to 100 MPH",
-                  "Includes Premium 4×6' American Flag",
-                  "Ships Pre-Assembled — No Ropes, No Tangling",
-                  "Backed by 365-Day Home Trial + Lifetime Warranty",
+                  "20' Height • Wind Rated 100 MPH",
+                  "Includes Premium 4×6' Flag",
+                  "Pre-Assembled • No Ropes",
+                  "365-Day Trial + Lifetime Warranty",
                 ].map((feature, index) => (
                   <div key={index} className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-[#C8A55C] flex-shrink-0 mt-0.5" />
@@ -65,21 +68,21 @@ export function BestsellerSpotlight() {
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-8">
                 <div className="flex items-baseline gap-3 mb-2">
                   <span className="text-sm text-white/60 uppercase tracking-wide">From</span>
-                  <span className="text-5xl font-bold text-white">$999.71</span>
+                  <span className="text-5xl font-bold text-white">{productPrice}</span>
                 </div>
-                <p className="text-sm text-white/70">for Midnight Bronze finish</p>
+                <p className="text-sm text-white/70">Midnight Bronze finish</p>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  href="/products/20-phoenix-telescoping-flagpole-kit"
+                  href={`/products/${productHandle}`}
                   className="flex-1 inline-flex items-center justify-center gap-2 bg-[#C8A55C] hover:bg-[#B8954C] text-[#0B1C2C] font-bold text-lg py-4 px-8 rounded-md transition-colors shadow-lg hover:shadow-xl"
                 >
                   <ShoppingCart className="w-5 h-5" />
-                  Order the 20' Kit Now
+                  Order Now
                 </Link>
                 <Link
-                  href="/products/20-phoenix-telescoping-flagpole-kit"
+                  href={`/products/${productHandle}`}
                   className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-bold text-lg py-4 px-8 rounded-md transition-colors border-2 border-white/30"
                 >
                   Learn More
@@ -89,7 +92,7 @@ export function BestsellerSpotlight() {
               <div className="flex items-center gap-6 mt-6 text-sm">
                 <div className="flex items-center gap-2">
                   <Shield className="w-5 h-5 text-[#C8A55C]" />
-                  <span>33,784 Homes & Counting</span>
+                  <span>33,784+ Homes</span>
                 </div>
               </div>
             </div>
