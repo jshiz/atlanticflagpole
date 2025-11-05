@@ -279,6 +279,21 @@ export async function getProduct(handle: string): Promise<ShopifyProduct | null>
       tags: ["products", `product-${handle}`],
     })
 
+    console.log(`[v0] getProduct("${handle}") - Response:`, {
+      hasResult: !!result,
+      hasData: !!result?.data,
+      hasProduct: !!result?.data?.product,
+      productTitle: result?.data?.product?.title,
+      imagesStructure: result?.data?.product?.images
+        ? {
+            type: typeof result.data.product.images,
+            hasNodes: !!(result.data.product.images as any).nodes,
+            nodesLength: (result.data.product.images as any).nodes?.length,
+            firstImageUrl: (result.data.product.images as any).nodes?.[0]?.url,
+          }
+        : null,
+    })
+
     // Check if result and data exist before accessing product
     if (!result || !result.data) {
       console.error(`[v0] getProduct: Invalid response structure for handle "${handle}"`, result)
@@ -290,6 +305,20 @@ export async function getProduct(handle: string): Promise<ShopifyProduct | null>
     console.error(`[v0] getProduct error for handle "${handle}":`, error)
     return null
   }
+}
+
+export function getProductImage(product: ShopifyProduct | null): string | null {
+  if (!product) return null
+
+  // Try nodes array first (GraphQL response)
+  const imageUrl = product.images?.nodes?.[0]?.url || product.images?.[0]?.url
+
+  // Validate URL
+  if (imageUrl && imageUrl.startsWith("http")) {
+    return imageUrl
+  }
+
+  return null
 }
 
 export async function getCollections(first = 10): Promise<ShopifyCollection[]> {

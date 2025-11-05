@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { ShoppingCart } from "lucide-react"
-import { getCollectionProducts } from "@/lib/shopify"
+import { getCollectionProducts, getProductImage } from "@/lib/shopify"
 import Image from "next/image"
 
 export async function AccessoriesSection() {
@@ -12,10 +12,11 @@ export async function AccessoriesSection() {
 
   console.log("[v0] AccessoriesSection - Fetched products:", products.length)
   if (products.length > 0) {
+    const firstImage = getProductImage(products[0])
     console.log("[v0] AccessoriesSection - First product image:", {
       title: products[0]?.title,
-      hasImage: !!products[0]?.images?.[0]?.url,
-      imageUrl: products[0]?.images?.[0]?.url,
+      hasImage: !!firstImage,
+      imageUrl: firstImage,
     })
   }
 
@@ -23,14 +24,15 @@ export async function AccessoriesSection() {
   const accessories =
     products.length > 0
       ? products.slice(0, 4).map((product, index) => {
-          const hasValidImage = !!product.images?.[0]?.url && product.images[0].url.startsWith("http")
+          const imageUrl = getProductImage(product)
+          const hasValidImage = !!imageUrl
           return {
             name: product.title,
             price: `$${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}`,
             description: product.description || "Premium flagpole accessory to enhance your display.",
-            image: hasValidImage
-              ? product.images[0].url
-              : `https://placehold.co/400x400/f5f3ef/0b1c2c?text=${encodeURIComponent(product.title.substring(0, 20))}`,
+            image:
+              imageUrl ||
+              `https://placehold.co/400x400/f5f3ef/0b1c2c?text=${encodeURIComponent(product.title.substring(0, 20))}`,
             href: `/products/${product.handle}`,
             hasValidImage,
           }
@@ -96,20 +98,14 @@ export async function AccessoriesSection() {
               className="group bg-[#F5F3EF] rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-[#C8A55C]"
             >
               <div className="relative aspect-square bg-white overflow-hidden">
-                {accessory.image ? (
-                  <Image
-                    src={accessory.image || "/placeholder.svg"}
-                    alt={accessory.name}
-                    fill
-                    className="object-contain p-4 group-hover:scale-110 transition-transform duration-500"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    unoptimized={!accessory.hasValidImage}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400 text-sm">
-                    No image available
-                  </div>
-                )}
+                <Image
+                  src={accessory.image || "/placeholder.svg"}
+                  alt={accessory.name}
+                  fill
+                  className="object-contain p-4 group-hover:scale-110 transition-transform duration-500"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  unoptimized={!accessory.hasValidImage}
+                />
               </div>
               <div className="p-5">
                 <h3 className="text-lg font-bold text-[#0B1C2C] mb-2 line-clamp-1">{accessory.name}</h3>

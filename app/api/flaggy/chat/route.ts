@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { matchIntent } from "@/lib/flaggy/knowledge-base"
-import { getCollectionProducts } from "@/lib/shopify"
+import { matchIntent, getRandomResponse } from "@/lib/flaggy/knowledge-base"
+import { getCollectionProducts, getProductImage } from "@/lib/shopify"
 
 interface ConversationContext {
   attempts: number
@@ -79,23 +79,24 @@ async function getProductRecommendation(intentName: string, userMessage: string)
     }
 
     // Get the first product (or a random one for variety)
-    const product = products[0]
+    const product = products[Math.floor(Math.random() * Math.min(3, products.length))]
     if (!product) return null
 
     const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
-    const variantId = product.variants[0]?.id
+    const variantId = product.variants?.nodes?.[0]?.id || product.variants?.[0]?.id
+
+    const imageUrl = getProductImage(product)
 
     return {
       id: product.id,
       title: product.title,
       handle: product.handle,
-      image: product.featuredImage?.url || "",
+      image: imageUrl || "",
       price: `$${price.toFixed(2)}`,
       rating: 4.9,
       reviewCount: 2847,
-      timesBought: "12,500+",
       variantId,
-      url: `/product/${product.handle}`,
+      url: `/products/${product.handle}`,
     }
   } catch (error) {
     console.error("[v0] Error fetching product recommendation:", error)
@@ -168,11 +169,12 @@ What can I help you with?`,
     context.attempts = 0
     context.lastIntent = matchedIntent.intent.name
 
+    const response = getRandomResponse(matchedIntent.intent)
     const productRecommendation = await getProductRecommendation(matchedIntent.intent.name, message)
 
     return NextResponse.json({
       shouldEscalate: false,
-      response: matchedIntent.intent.response,
+      response,
       followUp: matchedIntent.intent.followUp,
       links: matchedIntent.intent.links,
       matchedIntent: matchedIntent.intent.name,

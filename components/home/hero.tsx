@@ -330,42 +330,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
       </div>
 
       {/* Second Marquee - Scrolling Right */}
-      <div className="bg-[#0B1C2C] py-3 overflow-hidden border-b-2 border-[#C8A55C]/30">
-        <div className="flex animate-marquee-reverse whitespace-nowrap">
-          {[...Array(4)].map((_, setIndex) => (
-            <div key={setIndex} className="flex items-center gap-12 px-6">
-              <div className="flex items-center gap-3">
-                <CheckCircle className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
-                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">BBB A+ Rating</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Gem className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
-                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">
-                  LEGENDARY Phoenix 365-Day Money Back Guarantee
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Award className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
-                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">
-                  Join 1 Million Happy Americans
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Shield className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
-                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">365-Day Home Trial</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Wind className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
-                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">Free Shipping & Returns</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Lock className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
-                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">Lifetime Warranty</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      null
     </>
   )
 }

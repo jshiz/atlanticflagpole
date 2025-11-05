@@ -1,11 +1,11 @@
 export interface Intent {
   name: string
   keywords: string[]
-  response: string
+  response: string | string[] // Allow multiple response variations
   followUp?: string[]
   links?: { label: string; url: string }[]
-  priority?: number // Higher priority intents match first
-  aliases?: string[] // Alternative phrasings
+  priority?: number
+  aliases?: string[]
 }
 
 export interface IntentMatch {
@@ -23,7 +23,11 @@ export const KNOWLEDGE_BASE: Intent[] = [
     keywords: ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "howdy", "greetings"],
     aliases: ["sup", "yo", "hiya"],
     priority: 10,
-    response: `Hey there! I'm Flaggy, your flagpole expert. I can help you with product info, installation, troubleshooting, warranty questions, and more. What brings you here today?`,
+    response: [
+      `Hey there! I'm Flaggy, your flagpole expert. I can help you with product info, installation, troubleshooting, warranty questions, and more. What brings you here today?`,
+      `Hi! Flaggy here - your friendly neighborhood flagpole specialist. Whether you need help choosing a flagpole, installing one, or troubleshooting an issue, I've got you covered. What can I help with?`,
+      `Hello! Welcome to Atlantic Flagpole. I'm Flaggy, and I'm here to help with everything flagpole-related. Product questions? Installation help? Troubleshooting? Just ask!`,
+    ],
     followUp: [
       "Tell me about Phoenix flagpoles",
       "Help with installation",
@@ -503,6 +507,39 @@ Is there anything else I can help with?`,
       { label: "Solar Lights", url: "https://atlanticflagpole.com/collections/flagpole-lighting" },
     ],
   },
+
+  // -------------------------------
+  // 13. Customer Orders
+  // -------------------------------
+  {
+    name: "order_status",
+    keywords: ["my order", "order status", "where is my order", "track order", "order number", "purchase", "bought"],
+    aliases: ["tracking", "shipment"],
+    priority: 9,
+    response: [
+      `I'd love to help you track your order! To check your order status, I'll need your order number or email address.
+
+You can also:
+• Check your email for tracking info (it's sent when your order ships)
+• Visit our order tracking page
+• Contact our support team for personalized help
+
+Do you have your order number handy?`,
+      `Let's get your order tracked down! I can help you find out where your flagpole is.
+
+To check your order:
+• Use the tracking link in your shipping confirmation email
+• Visit our order status page with your order number
+• Contact support if you need help
+
+What's your order number?`,
+    ],
+    followUp: ["I have my order number", "I didn't get tracking info", "Contact support", "When will it arrive?"],
+    links: [
+      { label: "Track Your Order", url: "https://atlanticflagpole.com/pages/contact" },
+      { label: "Contact Support", url: "https://atlanticflagpole.com/pages/contact" },
+    ],
+  },
 ]
 
 export function matchIntent(message: string): IntentMatch | null {
@@ -602,4 +639,12 @@ export function matchMultipleIntents(message: string, limit = 3): IntentMatch[] 
 
   matches.sort((a, b) => b.score - a.score)
   return matches.slice(0, limit)
+}
+
+export function getRandomResponse(intent: Intent): string {
+  if (Array.isArray(intent.response)) {
+    const randomIndex = Math.floor(Math.random() * intent.response.length)
+    return intent.response[randomIndex]
+  }
+  return intent.response
 }
