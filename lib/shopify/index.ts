@@ -76,20 +76,40 @@ async function shopifyFetch<T>({
 
     if (!response.ok) {
       const errorBody = await response.text()
+      console.error(`[v0] Shopify API HTTP error! Status: ${response.status}, Body: ${errorBody}`)
+
+      // Return empty data structure for rate limit errors instead of throwing
+      if (response.status === 429) {
+        console.error("[v0] Shopify API rate limit exceeded (429) - returning empty data")
+        return { data: {} as T }
+      }
+
       throw new Error(`Shopify API HTTP error! Status: ${response.status}, Body: ${errorBody}`)
     }
 
     const json = await response.json()
 
+    if (json.error) {
+      console.error("[v0] Shopify API error in response body:", json.error)
+
+      // Handle rate limit errors gracefully
+      if (json.error.code === "429" || json.error.message === "Too Many Requests") {
+        console.error("[v0] Shopify API rate limit exceeded - returning empty data")
+        return { data: {} as T }
+      }
+
+      throw new Error(`Shopify API error: ${JSON.stringify(json.error)}`)
+    }
+
     if (json.errors) {
-      console.error("Shopify API errors:", json.errors)
+      console.error("[v0] Shopify GraphQL errors:", json.errors)
       throw new Error(`Shopify GraphQL errors: ${JSON.stringify(json.errors)}`)
     }
 
     return json
   } catch (error) {
-    console.error("Shopify fetch error:", error)
-    throw error
+    console.error("[v0] Shopify fetch error:", error)
+    return { data: {} as T }
   }
 }
 
@@ -366,91 +386,96 @@ export async function getCollectionProducts({
     return getProducts({ first: limit, sortKey: sortKey as ProductSortKey, reverse, query: searchQuery })
   }
 
-  const query = /* gql */ `
-    query getCollectionProducts($handle: String!, $first: Int!, $sortKey: ProductCollectionSortKeys!, $reverse: Boolean) {
-      collection(handle: $handle) {
-        products(first: $first, sortKey: $sortKey, reverse: $reverse) {
-          nodes {
-            id
-            title
-            description
-            descriptionHtml
-            handle
-            availableForSale
-            productType
-            tags
-            vendor
-            category {
+  try {
+    const query = /* gql */ `
+      query getCollectionProducts($handle: String!, $first: Int!, $sortKey: ProductCollectionSortKeys!, $reverse: Boolean) {
+        collection(handle: $handle) {
+          products(first: $first, sortKey: $sortKey, reverse: $reverse) {
+            nodes {
               id
-              name
-            }
-            options {
-              id
-              name
-              values
-            }
-            images(first: 5) {
-              nodes {
-                url
-                altText
-                thumbhash
-              }
-            }
-            priceRange {
-              minVariantPrice {
-                amount
-                currencyCode
-              }
-            }
-            compareAtPriceRange {
-              minVariantPrice {
-                amount
-                currencyCode
-              }
-            }
-            variants(first: 10) {
-              nodes {
+              title
+              description
+              descriptionHtml
+              handle
+              availableForSale
+              productType
+              tags
+              vendor
+              category {
                 id
-                title
-                price {
+                name
+              }
+              options {
+                id
+                name
+                values
+              }
+              images(first: 5) {
+                nodes {
+                  url
+                  altText
+                  thumbhash
+                }
+              }
+              priceRange {
+                minVariantPrice {
                   amount
                   currencyCode
                 }
-                compareAtPrice {
+              }
+              compareAtPriceRange {
+                minVariantPrice {
                   amount
                   currencyCode
                 }
-                availableForSale
-                selectedOptions {
-                  name
-                  value
+              }
+              variants(first: 10) {
+                nodes {
+                  id
+                  title
+                  price {
+                    amount
+                    currencyCode
+                  }
+                  compareAtPrice {
+                    amount
+                    currencyCode
+                  }
+                  availableForSale
+                  selectedOptions {
+                    name
+                    value
+                  }
                 }
               }
             }
           }
         }
       }
+    `
+
+    const { data } = await shopifyFetch<{
+      collection: {
+        products: ConnectionLike<ShopifyProduct>
+      } | null
+    }>({
+      query,
+      variables: { handle: collection, first: limit, sortKey, query: searchQuery, reverse },
+      tags: ["collections", `collection-${collection}`],
+    })
+
+    if (!data || !data.collection) {
+      console.log(`[v0] Collection "${collection}" not found in Shopify or API error`)
+      return []
     }
-  `
 
-  const { data } = await shopifyFetch<{
-    collection: {
-      products: ConnectionLike<ShopifyProduct>
-    } | null
-  }>({
-    query,
-    variables: { handle: collection, first: limit, sortKey, query: searchQuery, reverse },
-    tags: ["collections", `collection-${collection}`],
-  })
-
-  if (!data.collection) {
-    console.log(`[v0] Collection "${collection}" not found in Shopify`)
+    const products = toNodes(data.collection.products)
+    console.log(`[v0] ✅ Found ${products.length} products in collection "${collection}"`)
+    return products
+  } catch (error) {
+    console.error(`[v0] getCollectionProducts error for collection "${collection}":`, error)
     return []
   }
-
-  const products = toNodes(data.collection.products)
-  console.log(`[v0] ✅ Found ${products.length} products in collection "${collection}"`)
-  return products
 }
 
 export async function getAllProducts(): Promise<ShopifyProduct[]> {

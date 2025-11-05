@@ -140,7 +140,7 @@ export function ChristmasTreeMegaMenu({ products, submenuProductsData = {}, onLi
           </h4>
           {displayProducts && displayProducts.length > 0 ? (
             <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
-              {displayProducts.slice(0, 12).map((product: any) => (
+              {displayProducts.slice(0, 6).map((product: any) => (
                 <Link
                   key={product.id}
                   href={`/products/${product.handle}`}

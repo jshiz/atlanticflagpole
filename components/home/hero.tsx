@@ -67,7 +67,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "linear-gradient(90deg, rgba(11, 28, 44, 0.88) 0%, rgba(11, 28, 44, 0.70) 35%, rgba(11, 28, 44, 0.40) 65%, rgba(11, 28, 44, 0.15) 100%)",
+              "linear-gradient(90deg, rgba(11, 28, 44, 0.88) 0%, rgba(11, 28, 44, 0.60) 25%, rgba(11, 28, 44, 0) 50%, rgba(11, 28, 44, 0) 100%)",
           }}
         />
 
