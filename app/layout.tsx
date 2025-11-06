@@ -37,8 +37,70 @@ const cinzel = Cinzel({
 export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
-  title: "Atlantic Flagpole - Premium American-Made Flagpoles",
-  description: "The last flagpole you will ever need. Handcrafted in the USA with a lifetime guarantee.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://atlanticflagpole.com"),
+  title: {
+    default: "Atlantic Flag & Pole - Premium American-Made Flagpoles",
+    template: "%s | Atlantic Flag & Pole",
+  },
+  description:
+    "The last flagpole you'll ever need. Handcrafted in the USA with a lifetime warranty. Premium telescoping flagpoles built to withstand 100+ MPH winds. Made by veterans, for patriots.",
+  keywords: [
+    "flagpole",
+    "American flagpole",
+    "telescoping flagpole",
+    "USA made flagpole",
+    "residential flagpole",
+    "commercial flagpole",
+    "lifetime warranty flagpole",
+    "Atlantic Flag & Pole",
+  ],
+  authors: [{ name: "Atlantic Flag & Pole" }],
+  creator: "Atlantic Flag & Pole",
+  publisher: "Atlantic Flag & Pole",
+  icons: {
+    icon: [
+      { url: "/favicon.png", sizes: "any" },
+      { url: "/favicon.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    siteName: "Atlantic Flag & Pole",
+    title: "Atlantic Flag & Pole - Premium American-Made Flagpoles",
+    description:
+      "The last flagpole you'll ever need. Handcrafted in the USA with a lifetime warranty. Premium telescoping flagpoles built to withstand 100+ MPH winds.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Atlantic Flag & Pole - Premium American-Made Flagpoles",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Atlantic Flag & Pole - Premium American-Made Flagpoles",
+    description:
+      "The last flagpole you'll ever need. Handcrafted in the USA with a lifetime warranty. Premium telescoping flagpoles built to withstand 100+ MPH winds.",
+    images: ["/og-image.png"],
+    creator: "@atlanticflagpole",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   generator: "v0.app",
 }
 
