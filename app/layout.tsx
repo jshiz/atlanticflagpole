@@ -68,17 +68,18 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "/",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://atlanticflagpole.com",
     siteName: "Atlantic Flag & Pole",
     title: "Atlantic Flag & Pole - Premium American-Made Flagpoles",
     description:
       "The last flagpole you'll ever need. Handcrafted in the USA with a lifetime warranty. Premium telescoping flagpoles built to withstand 100+ MPH winds.",
     images: [
       {
-        url: "/og-image.png",
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://atlanticflagpole.com"}/og-image.png`,
         width: 1200,
         height: 630,
         alt: "Atlantic Flag & Pole - Premium American-Made Flagpoles",
+        type: "image/png",
       },
     ],
   },
@@ -87,7 +88,7 @@ export const metadata: Metadata = {
     title: "Atlantic Flag & Pole - Premium American-Made Flagpoles",
     description:
       "The last flagpole you'll ever need. Handcrafted in the USA with a lifetime warranty. Premium telescoping flagpoles built to withstand 100+ MPH winds.",
-    images: ["/og-image.png"],
+    images: [`${process.env.NEXT_PUBLIC_SITE_URL || "https://atlanticflagpole.com"}/og-image.png`],
     creator: "@atlanticflagpole",
   },
   robots: {
