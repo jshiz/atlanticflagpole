@@ -3,10 +3,10 @@ import { Check, Heart, Globe, Users, Shield } from "lucide-react"
 
 export function ImpactMissionSection() {
   return (
-    <section className="relative bg-gradient-to-b from-white via-[#F5F3EF] to-white py-32 overflow-hidden">
+    <section className="relative bg-gradient-to-b from-white via-[#F5F3EF] to-white py-32 overflow-hidden opacity-100">
       {/* Subtle USA Flag Background */}
-      <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
-        <Image src="/images/usa-flag-background.png" alt="" fill className="object-cover" />
+      <div className="absolute inset-0 opacity-[0.2] pointer-events-none">
+        <Image src="/images/design-mode/american-flag-background-14774885226da.jpg" alt="" fill className="object-cover" />
       </div>
 
       {/* Content Container */}
