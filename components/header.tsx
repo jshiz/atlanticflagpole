@@ -137,7 +137,7 @@ export async function Header() {
     console.error("[v0] ❌ Error in Header component:", error)
     return (
       <HeaderClient
-        menuData={null}
+        menuData={{ items: [] }}
         megaMenuData={{}}
         submenuProductsData={{}}
         nflFlagProducts={[]}
