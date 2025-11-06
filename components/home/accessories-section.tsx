@@ -78,14 +78,14 @@ export async function AccessoriesSection() {
         ]
 
   return (
-    <section className="py-16 md:py-20 bg-white">
+    <section className="py-16 md:py-20 bg-gradient-to-b from-[#0B1C2C] to-[#0A2740]">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <div className="inline-block bg-[#0B1C2C] text-white px-4 py-2 mb-4 font-bold text-xs tracking-widest uppercase">
+          <div className="inline-block bg-[#C8A55C] text-[#0B1C2C] px-4 py-2 mb-4 font-bold text-xs tracking-widest uppercase">
             COMPLETE YOUR DISPLAY
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-[#0B1C2C] mb-3">Upgrade Your Installation</h2>
-          <p className="text-base md:text-lg text-[#666666] max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">Upgrade Your Installation</h2>
+          <p className="text-base md:text-lg text-white/80 max-w-2xl mx-auto">
             Premium accessories designed to enhance your flagpole display and honor the flag with pride
           </p>
         </div>
@@ -95,7 +95,7 @@ export async function AccessoriesSection() {
             <Link
               key={index}
               href={accessory.href}
-              className="group bg-[#F5F3EF] rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-[#C8A55C]"
+              className="group bg-white rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-[#C8A55C]"
             >
               <div className="relative aspect-square bg-white overflow-hidden">
                 <Image

@@ -2,6 +2,7 @@ import { Hero } from "@/components/home/hero"
 import { SizeSelector } from "@/components/home/size-selector"
 import { FeaturesSection } from "@/components/home/features-section"
 import { BestsellerSpotlight } from "@/components/home/bestseller-spotlight"
+import { ImpactMissionSection } from "@/components/home/impact-mission-section"
 import { AccessoriesSection } from "@/components/home/accessories-section"
 import { GuaranteeSection } from "@/components/home/guarantee-section"
 import { FinalCTABanner } from "@/components/home/final-cta-banner"
@@ -75,6 +76,10 @@ export default async function Home() {
 
       <FadeInOnScroll delay={150}>
         <BestsellerSpotlight />
+      </FadeInOnScroll>
+
+      <FadeInOnScroll delay={175}>
+        <ImpactMissionSection />
       </FadeInOnScroll>
 
       <FadeInOnScroll delay={200}>

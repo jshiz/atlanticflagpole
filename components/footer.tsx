@@ -93,12 +93,12 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="bg-white border-y border-gray-200">
+        <div className="bg-gradient-to-b from-[#0A2740] to-[#0B1C2C] border-y border-white/10">
           <div className="container mx-auto px-4 py-12">
             <div className="max-w-4xl mx-auto text-center">
-              <h3 className="text-[#0B1C2C] font-bold text-2xl mb-8">Trusted & Secure</h3>
+              <h3 className="text-white font-bold text-2xl mb-8">Trusted & Secure</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all flex items-center justify-center relative h-32">
+                <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 hover:border-[#C8A55C] hover:bg-white/10 transition-all flex items-center justify-center relative h-32">
                   <Image
                     src="/images/design-mode/phoenix-flagpole-sticker-logo-final-2020-securi-lok-opt.png"
                     alt="Phoenix Flagpole Securi-Lok Technology"
@@ -108,7 +108,7 @@ export function Footer() {
                     loading="lazy"
                   />
                 </div>
-                <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all flex items-center justify-center relative h-32">
+                <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 hover:border-[#C8A55C] hover:bg-white/10 transition-all flex items-center justify-center relative h-32">
                   <Image
                     src="/images/design-mode/flagpole-made-in-the-usa.png"
                     alt="Made in the USA - American Made Flagpoles"
@@ -118,7 +118,7 @@ export function Footer() {
                     loading="lazy"
                   />
                 </div>
-                <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all flex items-center justify-center relative h-32">
+                <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 hover:border-[#C8A55C] hover:bg-white/10 transition-all flex items-center justify-center relative h-32">
                   <Image
                     src="/images/design-mode/365-day-satisfaction-guarantee-phoenix-flagpole-200px.png"
                     alt="365-Day Satisfaction Guarantee"
@@ -128,7 +128,7 @@ export function Footer() {
                     loading="lazy"
                   />
                 </div>
-                <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all flex items-center justify-center relative h-32">
+                <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 hover:border-[#C8A55C] hover:bg-white/10 transition-all flex items-center justify-center relative h-32">
                   <Image
                     src="/images/design-mode/911-limited-edition-phoenix-flagpole-flagpole-bundle-200px.png"
                     alt="911 Limited Edition Phoenix Flagpole Bundle"

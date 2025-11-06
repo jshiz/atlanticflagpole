@@ -74,12 +74,12 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
         <div className="relative z-10 flex items-center justify-between min-h-[500px] md:min-h-[550px] lg:min-h-[650px] px-4 md:px-12 lg:px-16 py-8 md:py-10">
           <div
             className={`max-w-[480px] w-full transition-all duration-1000 ${
-              isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
+              isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
             }`}
           >
             <div
               className={`inline-block bg-white text-[#0B1C2C] px-3 py-1.5 mb-3 font-bold text-[10px] md:text-xs tracking-widest uppercase shadow-md transition-all duration-700 delay-100 ${
-                isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+                isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
               }`}
             >
               FALL INTO SAVINGS
@@ -87,7 +87,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
 
             <h1
               className={`font-serif text-3xl md:text-4xl lg:text-5xl text-white mb-2 md:mb-3 leading-tight transition-all duration-700 delay-200 ${
-                isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+                isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
               }`}
             >
               Our Biggest
@@ -97,7 +97,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
 
             <p
               className={`text-xl md:text-3xl lg:text-4xl text-white font-light leading-tight mb-3 md:mb-4 transition-all duration-700 delay-300 ${
-                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
               }`}
             >
               Up To <span className="text-white font-bold">40%</span> Off Flagpoles
@@ -110,7 +110,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
 
             <div
               className={`flex flex-col items-start gap-2 max-w-[360px] transition-all duration-700 delay-400 ${
-                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
               }`}
             >
               <div className="bg-white rounded-md p-2.5 w-full shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -185,7 +185,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
 
           <div
             className={`hidden lg:block max-w-[280px] transition-all duration-1000 delay-600 ${
-              isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
+              isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
             }`}
           >
             <div className="bg-white/90 backdrop-blur-sm rounded-lg p-5 shadow-xl border border-[#C8A55C]/30">
@@ -214,7 +214,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
 
         <div
           className={`hidden md:block absolute top-8 left-1/2 -translate-x-1/2 text-center z-20 transition-all duration-1000 delay-500 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-8"
+            isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
           }`}
         >
           <div className="inline-block bg-[#0B1C2C]/70 backdrop-blur-sm border border-[#C8A55C]/50 rounded-lg px-6 py-2.5 mb-3 shadow-lg">
@@ -263,7 +263,6 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           <p className="text-white text-sm md:text-base font-serif drop-shadow-lg">Prices Starting From $299</p>
         </div>
       </section>
-
       {/* First Marquee - Scrolling Left */}
       <div className="bg-[#0B1C2C] py-3 overflow-hidden border-b-2 border-[#C8A55C]/30">
         <div className="flex animate-marquee-seamless whitespace-nowrap">
@@ -297,7 +296,6 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           ))}
         </div>
       </div>
-
       {/* As Seen On and Trusted By Section */}
       <div className="bg-white py-6 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4">
@@ -328,7 +326,6 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           </div>
         </div>
       </div>
-
       {/* Second Marquee - Scrolling Right */}
       null
     </>
