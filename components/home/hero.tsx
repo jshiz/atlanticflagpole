@@ -326,8 +326,6 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           </div>
         </div>
       </div>
-      {/* Second Marquee - Scrolling Right */}
-      null
     </>
   )
 }

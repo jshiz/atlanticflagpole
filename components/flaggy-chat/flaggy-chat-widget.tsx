@@ -133,55 +133,62 @@ export function FlaggyChatWidget() {
       if (data.shouldEscalate) {
         setIsEscalating(true)
         addFlaggyMessage(
-          "That's a great question that needs a human expert's touch. I can create a support ticket for you, and one of our team members will email you back shortly.",
+          "That's a great question that needs a human expert's touch. I can connect you with our support team, and one of our team members will assist you shortly.",
         )
       } else {
         addFlaggyMessage(data.response, data.product)
       }
     } catch (error) {
       console.error("[v0] Error processing message:", error)
-      addFlaggyMessage("I'm having trouble connecting right now. Let me create a support ticket for you instead.")
+      addFlaggyMessage("I'm having trouble connecting right now. Let me connect you with our support team instead.")
       setIsEscalating(true)
     }
   }
 
   const handleTicketSubmit = async () => {
     if (!ticketForm.name || !ticketForm.email || !ticketForm.issue) {
-      addFlaggyMessage("Please fill in all fields so I can create your ticket.")
+      addFlaggyMessage("Please fill in all fields so I can connect you with our team.")
       return
     }
 
-    try {
-      const response = await fetch("/api/create-support-ticket", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customerName: ticketForm.name,
-          customerEmail: ticketForm.email,
-          issueSummary: ticketForm.issue,
-          chatHistory: messages.map((m) => `${m.sender}: ${m.text}`).join("\n"),
-        }),
-      })
+    // Open Shopify Inbox chat in a new window/popup
+    const shopifyInboxUrl = "/apps/shopify-chat"
 
-      const data = await response.json()
+    // Store customer info in sessionStorage so Shopify can access it
+    sessionStorage.setItem(
+      "pendingChatCustomer",
+      JSON.stringify({
+        name: ticketForm.name,
+        email: ticketForm.email,
+        initialMessage: ticketForm.issue,
+        chatHistory: messages.map((m) => `${m.sender}: ${m.text}`).join("\n"),
+      }),
+    )
 
-      if (data.success) {
-        addFlaggyMessage(
-          `Got it! Your ticket (#${data.ticketId}) has been created. Our team will be in touch with you at ${ticketForm.email} very soon. Is there anything else I can help with?`,
-        )
-        setIsEscalating(false)
-        setTicketForm({ name: "", email: "", issue: "" })
-      } else {
-        addFlaggyMessage(
-          "I had trouble creating your ticket. Please try again or email us directly at support@atlanticflagpole.com",
-        )
-      }
-    } catch (error) {
-      console.error("[v0] Error creating ticket:", error)
-      addFlaggyMessage(
-        "I had trouble creating your ticket. Please try again or email us directly at support@atlanticflagpole.com",
+    addFlaggyMessage(
+      `Perfect! I'm connecting you with our live support team now. They'll be able to help you with: "${ticketForm.issue}". Opening chat window...`,
+    )
+
+    // Open Shopify Inbox in a centered popup window
+    setTimeout(() => {
+      const width = 400
+      const height = 600
+      const left = window.screen.width / 2 - width / 2
+      const top = window.screen.height / 2 - height / 2
+
+      window.open(
+        shopifyInboxUrl,
+        "Shopify Chat",
+        `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`,
       )
-    }
+
+      setIsEscalating(false)
+      setTicketForm({ name: "", email: "", issue: "" })
+
+      addFlaggyMessage(
+        "Chat window opened! Our team will assist you there. Is there anything else I can help with in the meantime?",
+      )
+    }, 1000)
   }
 
   const handleFlaggyClick = () => {
@@ -466,7 +473,7 @@ export function FlaggyChatWidget() {
 
             {isEscalating && (
               <div className="mt-4 bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-                <h4 className="font-bold text-sm text-blue-900 mb-3">Create Support Ticket</h4>
+                <h4 className="font-bold text-sm text-blue-900 mb-3">Connect with Support</h4>
                 <div className="space-y-3">
                   <input
                     type="text"
@@ -493,7 +500,7 @@ export function FlaggyChatWidget() {
                     onClick={handleTicketSubmit}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition-colors font-medium text-sm"
                   >
-                    Submit Ticket
+                    Connect
                   </button>
                 </div>
               </div>
