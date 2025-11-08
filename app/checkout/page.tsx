@@ -14,7 +14,20 @@ import Image from "next/image"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { ShoppingBag, User, Truck, CreditCard, Shield, ChevronRight, Package, Mail, Phone, MapPin } from "lucide-react"
+import {
+  ShoppingBag,
+  User,
+  Truck,
+  CreditCard,
+  Shield,
+  ChevronRight,
+  Package,
+  Mail,
+  Phone,
+  MapPin,
+  Plus,
+} from "lucide-react"
+import { getBundleConfig } from "@/lib/bundles/bundle-config"
 
 type CheckoutStep = "customer" | "shipping" | "payment"
 
@@ -379,31 +392,81 @@ export default function CheckoutPage() {
                     const variant = line.merchandise
                     const image = product.images?.edges?.[0]?.node
                     const price = Number.parseFloat(line.cost.totalAmount.amount)
+                    const bundleConfig = getBundleConfig(product.handle)
+                    const hasBundle = bundleConfig && bundleConfig.components.length > 0
 
                     return (
-                      <div key={line.id} className="flex gap-3">
-                        <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                          {image ? (
-                            <Image
-                              src={image.url || "/placeholder.svg"}
-                              alt={image.altText || product.title}
-                              fill
-                              className="object-cover"
-                            />
-                          ) : (
-                            <Package className="w-8 h-8 text-gray-400 m-auto" />
-                          )}
-                          <div className="absolute -top-2 -right-2 w-6 h-6 bg-[#C8A55C] rounded-full flex items-center justify-center text-white text-xs font-bold">
-                            {line.quantity}
+                      <div key={line.id} className="space-y-2">
+                        {/* Main product */}
+                        <div className="flex gap-3">
+                          <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                            {image ? (
+                              <Image
+                                src={image.url || "/placeholder.svg"}
+                                alt={image.altText || product.title}
+                                fill
+                                className="object-cover"
+                              />
+                            ) : (
+                              <Package className="w-8 h-8 text-gray-400 m-auto" />
+                            )}
+                            <div className="absolute -top-2 -right-2 w-6 h-6 bg-[#C8A55C] rounded-full flex items-center justify-center text-white text-xs font-bold">
+                              {line.quantity}
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-[#0B1C2C] line-clamp-2">{product.title}</p>
+                            {variant.title !== "Default Title" && (
+                              <p className="text-xs text-gray-600">{variant.title}</p>
+                            )}
+                            <p className="text-sm font-bold text-[#C8A55C] mt-1">${price.toFixed(2)}</p>
+                            {hasBundle && (
+                              <div className="flex items-center gap-1 mt-1">
+                                <Package className="w-3 h-3 text-green-600" />
+                                <span className="text-xs font-bold text-green-600">Premier Kit Included!</span>
+                              </div>
+                            )}
                           </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-[#0B1C2C] line-clamp-2">{product.title}</p>
-                          {variant.title !== "Default Title" && (
-                            <p className="text-xs text-gray-600">{variant.title}</p>
-                          )}
-                          <p className="text-sm font-bold text-[#C8A55C] mt-1">${price.toFixed(2)}</p>
-                        </div>
+
+                        {hasBundle && bundleConfig && (
+                          <div className="ml-4 pl-3 border-l-2 border-green-500 bg-gradient-to-r from-green-50 to-transparent rounded-r-lg p-2">
+                            <p className="text-xs font-bold text-green-700 mb-2 flex items-center gap-1">
+                              <Plus className="w-3 h-3" />
+                              {bundleConfig.components.length} Premier Kit Items (FREE):
+                            </p>
+                            <div className="space-y-1">
+                              {bundleConfig.components.map((component, idx) => (
+                                <div key={idx} className="flex items-center gap-2 text-xs">
+                                  <div className="w-8 h-8 rounded overflow-hidden bg-white border border-green-200 flex-shrink-0">
+                                    {component.image ? (
+                                      <Image
+                                        src={component.image || "/placeholder.svg"}
+                                        alt={component.title}
+                                        width={32}
+                                        height={32}
+                                        className="object-cover"
+                                      />
+                                    ) : (
+                                      <Package className="w-4 h-4 text-green-400 m-auto mt-2" />
+                                    )}
+                                  </div>
+                                  <span className="flex-1 text-gray-700 truncate">{component.title}</span>
+                                  {component.quantity > 1 && (
+                                    <span className="text-green-600 font-semibold">x{component.quantity}</span>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                            <p className="text-xs text-green-700 font-bold mt-2 text-center bg-green-100 rounded px-2 py-1">
+                              $
+                              {bundleConfig.components
+                                .reduce((sum, c) => sum + (c.retailPrice || 0) * c.quantity, 0)
+                                .toFixed(2)}{" "}
+                              Value - FREE with your kit!
+                            </p>
+                          </div>
+                        )}
                       </div>
                     )
                   })}
@@ -470,29 +533,81 @@ export default function CheckoutPage() {
                   const variant = line.merchandise
                   const image = product.images?.edges?.[0]?.node
                   const price = Number.parseFloat(line.cost.totalAmount.amount)
+                  const bundleConfig = getBundleConfig(product.handle)
+                  const hasBundle = bundleConfig && bundleConfig.components.length > 0
 
                   return (
-                    <div key={line.id} className="flex gap-3">
-                      <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                        {image ? (
-                          <Image
-                            src={image.url || "/placeholder.svg"}
-                            alt={image.altText || product.title}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <Package className="w-8 h-8 text-gray-400 m-auto" />
-                        )}
-                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-[#C8A55C] rounded-full flex items-center justify-center text-white text-xs font-bold">
-                          {line.quantity}
+                    <div key={line.id} className="space-y-2">
+                      {/* Main product */}
+                      <div className="flex gap-3">
+                        <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                          {image ? (
+                            <Image
+                              src={image.url || "/placeholder.svg"}
+                              alt={image.altText || product.title}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <Package className="w-8 h-8 text-gray-400 m-auto" />
+                          )}
+                          <div className="absolute -top-2 -right-2 w-6 h-6 bg-[#C8A55C] rounded-full flex items-center justify-center text-white text-xs font-bold">
+                            {line.quantity}
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-[#0B1C2C] line-clamp-2">{product.title}</p>
+                          {variant.title !== "Default Title" && (
+                            <p className="text-xs text-gray-600">{variant.title}</p>
+                          )}
+                          <p className="text-sm font-bold text-[#C8A55C] mt-1">${price.toFixed(2)}</p>
+                          {hasBundle && (
+                            <div className="flex items-center gap-1 mt-1">
+                              <Package className="w-3 h-3 text-green-600" />
+                              <span className="text-xs font-bold text-green-600">Premier Kit Included!</span>
+                            </div>
+                          )}
                         </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-[#0B1C2C] line-clamp-2">{product.title}</p>
-                        {variant.title !== "Default Title" && <p className="text-xs text-gray-600">{variant.title}</p>}
-                        <p className="text-sm font-bold text-[#C8A55C] mt-1">${price.toFixed(2)}</p>
-                      </div>
+
+                      {hasBundle && bundleConfig && (
+                        <div className="ml-4 pl-3 border-l-2 border-green-500 bg-gradient-to-r from-green-50 to-transparent rounded-r-lg p-2">
+                          <p className="text-xs font-bold text-green-700 mb-2 flex items-center gap-1">
+                            <Plus className="w-3 h-3" />
+                            {bundleConfig.components.length} Premier Kit Items (FREE):
+                          </p>
+                          <div className="space-y-1">
+                            {bundleConfig.components.map((component, idx) => (
+                              <div key={idx} className="flex items-center gap-2 text-xs">
+                                <div className="w-8 h-8 rounded overflow-hidden bg-white border border-green-200 flex-shrink-0">
+                                  {component.image ? (
+                                    <Image
+                                      src={component.image || "/placeholder.svg"}
+                                      alt={component.title}
+                                      width={32}
+                                      height={32}
+                                      className="object-cover"
+                                    />
+                                  ) : (
+                                    <Package className="w-4 h-4 text-green-400 m-auto mt-2" />
+                                  )}
+                                </div>
+                                <span className="flex-1 text-gray-700 truncate">{component.title}</span>
+                                {component.quantity > 1 && (
+                                  <span className="text-green-600 font-semibold">x{component.quantity}</span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                          <p className="text-xs text-green-700 font-bold mt-2 text-center bg-green-100 rounded px-2 py-1">
+                            $
+                            {bundleConfig.components
+                              .reduce((sum, c) => sum + (c.retailPrice || 0) * c.quantity, 0)
+                              .toFixed(2)}{" "}
+                            Value - FREE with your kit!
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )
                 })}

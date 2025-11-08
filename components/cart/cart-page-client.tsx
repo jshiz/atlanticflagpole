@@ -23,6 +23,7 @@ interface BundleComponentWithImage {
   notes?: string
   imageUrl?: string
   imageAlt?: string
+  retailPrice?: number
 }
 
 export function CartPageClient() {
@@ -359,6 +360,11 @@ export function CartPageClient() {
     const bundleConfig = getBundleConfig(product.handle)
     const componentsWithImages = bundleComponentImages[line.id] || bundleConfig?.components || []
 
+    const hasPremierKit = componentsWithImages.length > 0
+    const premierKitValue = hasPremierKit
+      ? componentsWithImages.reduce((sum: number, c: any) => sum + (c.retailPrice || 0) * c.quantity, 0)
+      : 0
+
     return (
       <Card key={line.id} className="overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
@@ -377,18 +383,33 @@ export function CartPageClient() {
                   <Package className="w-16 h-16 text-gray-400" />
                 </div>
               )}
+
+              {hasPremierKit && (
+                <div className="absolute top-3 left-3 right-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-3 py-2 rounded-lg shadow-lg">
+                  <div className="flex items-center gap-2">
+                    <Package className="w-4 h-4" />
+                    <span className="text-xs font-bold">Premier Kit Included!</span>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {componentsWithImages.length > 0 && (
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border-2 border-green-200">
+            {hasPremierKit && (
+              <div className="bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 rounded-xl p-4 border-2 border-green-400 shadow-lg">
                 <div className="flex items-center gap-2 mb-3">
-                  <Package className="w-5 h-5 text-green-700" />
-                  <h4 className="font-bold text-green-800 text-sm">Premier Kit Included</h4>
+                  <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center shadow-md">
+                    <Package className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-green-900 text-sm">Premier Kit Included FREE!</h4>
+                    <p className="text-xs text-green-700 font-semibold">${premierKitValue.toFixed(2)} Value</p>
+                  </div>
+                  <div className="bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">FREE</div>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   {componentsWithImages.slice(0, 6).map((component: any, idx: number) => (
                     <div key={idx} className="relative">
-                      <div className="aspect-square rounded-md overflow-hidden bg-white shadow-sm border border-green-200">
+                      <div className="aspect-square rounded-md overflow-hidden bg-white shadow-sm border-2 border-green-300">
                         {component.imageUrl ? (
                           <Image
                             src={component.imageUrl || "/placeholder.svg"}
@@ -409,8 +430,8 @@ export function CartPageClient() {
                   ))}
                 </div>
                 {componentsWithImages.length > 6 && (
-                  <p className="text-xs text-green-700 mt-2 text-center font-semibold">
-                    +{componentsWithImages.length - 6} more items
+                  <p className="text-xs text-green-700 mt-2 text-center font-semibold bg-green-200 rounded py-1">
+                    +{componentsWithImages.length - 6} more items included
                   </p>
                 )}
               </div>
@@ -445,18 +466,24 @@ export function CartPageClient() {
                 </div>
               </div>
 
-              {componentsWithImages.length > 0 && (
-                <div className="bg-white border border-green-200 rounded-lg p-3 space-y-1">
-                  <p className="text-xs font-bold text-green-800 mb-2">Includes:</p>
+              {hasPremierKit && (
+                <div className="bg-white border-2 border-green-300 rounded-lg p-3 space-y-1 shadow-md">
+                  <p className="text-xs font-bold text-green-900 mb-2 flex items-center gap-1">
+                    <Package className="w-4 h-4" />
+                    Premier Kit Includes:
+                  </p>
                   {componentsWithImages.slice(0, 4).map((component: any, idx: number) => (
                     <div key={idx} className="flex items-center gap-2 text-xs text-gray-700">
-                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                      <span className="line-clamp-1">{component.title}</span>
+                      <div className="w-2 h-2 bg-green-600 rounded-full shadow-sm" />
+                      <span className="line-clamp-1 flex-1">{component.title}</span>
+                      {component.quantity > 1 && (
+                        <span className="text-green-600 font-bold">x{component.quantity}</span>
+                      )}
                     </div>
                   ))}
                   {componentsWithImages.length > 4 && (
-                    <p className="text-xs text-green-600 font-semibold pt-1">
-                      + {componentsWithImages.length - 4} more items
+                    <p className="text-xs text-green-700 font-bold pt-1 text-center bg-green-50 rounded py-1 mt-2">
+                      + {componentsWithImages.length - 4} more items • ${premierKitValue.toFixed(2)} FREE Value!
                     </p>
                   )}
                 </div>

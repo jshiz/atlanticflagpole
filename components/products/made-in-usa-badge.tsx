@@ -54,20 +54,15 @@ export function MadeInUSABadge({ product }: MadeInUSABadgeProps) {
   }
 
   return (
-    <div className="absolute top-2 right-2 z-10">
-      <div className="relative flex items-center gap-3.5 bg-white/95 backdrop-blur-sm px-6 py-4 rounded-lg shadow-lg border-2 border-[#C8A55C]/30 transition-transform duration-200 ease-out hover:scale-105 origin-top-right cursor-pointer">
-        {/* American Flag Icon */}
-        <div className="relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0">
-          <Image
-            src="/images/design-mode/madeinusabadge.jpg"
-            alt="Made in USA"
-            fill
-            className="object-contain"
-            sizes="96px"
-          />
-        </div>
-        {/* Text */}
-        <span className="text-lg font-bold text-[#0B1C2C] leading-none whitespace-nowrap">MADE IN USA</span>
+    <div className="absolute top-1 right-1 z-10 opacity-70 hover:opacity-100 transition-opacity duration-300">
+      <div className="relative w-12 h-12 md:w-14 md:h-14 flex-shrink-0 drop-shadow-md">
+        <Image
+          src="/images/design-mode/madeinusabadge.jpg"
+          alt="Made in USA"
+          fill
+          className="object-contain"
+          sizes="56px"
+        />
       </div>
     </div>
   )

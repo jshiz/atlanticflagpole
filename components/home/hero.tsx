@@ -73,12 +73,12 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
 
         <div className="relative z-10 flex flex-col items-center justify-center text-center lg:items-start lg:text-left min-h-[500px] md:min-h-[550px] lg:min-h-[650px] px-4 md:px-12 lg:px-16 py-8 md:py-10">
           <div
-            className={`lg:absolute lg:top-2 lg:left-1/2 lg:-translate-x-1/2 mb-4 transition-all duration-1000 delay-500 ${
+            className={`lg:absolute lg:top-2 lg:left-1/2 lg:-translate-x-1/2 mb-6 lg:mb-4 transition-all duration-1000 delay-500 ${
               isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
             }`}
           >
-            <div className="inline-block bg-[#0B1C2C]/80 backdrop-blur-sm border-2 border-[#C8A55C]/60 rounded-xl px-5 md:px-7 py-2.5 md:py-3 mb-3 shadow-xl">
-              <h2 className="text-white text-base md:text-lg lg:text-xl xl:text-2xl font-bold drop-shadow-lg leading-tight max-w-[400px]">
+            <div className="inline-block bg-[#0B1C2C]/80 backdrop-blur-sm border-2 border-[#C8A55C]/60 rounded-xl px-6 md:px-7 py-3 md:py-3 mb-3 shadow-xl">
+              <h2 className="text-white text-xl md:text-lg lg:text-xl xl:text-2xl font-bold drop-shadow-lg leading-tight max-w-[400px] text-center">
                 Your Flag Deserves Better
                 <br />
                 Than a Cheap Pole.

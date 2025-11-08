@@ -16,6 +16,7 @@ import { useSearchParams } from "next/navigation"
 import { CompanyStorySection } from "./company-story-section"
 import { SmartUpsellCTA } from "./smart-upsell-cta"
 import { SpotlightProducts } from "./spotlight-products"
+import { getBundleConfig } from "@/lib/bundles/bundle-config"
 
 interface ProductDetailsDreamCloudProps {
   product: ShopifyProduct
@@ -70,6 +71,12 @@ export function ProductDetailsDreamCloud({
   const discountPercentage = hasDiscount ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100) : 0
 
   const isPremierBundle = bundleData?.includesPremier || false
+
+  const premierKitConfig = getBundleConfig(product.handle)
+  const hasPremierKit = premierKitConfig && premierKitConfig.components.length > 0
+  const premierKitValue = hasPremierKit
+    ? premierKitConfig.components.reduce((sum, c) => sum + (c.retailPrice || 0) * c.quantity, 0)
+    : 0
 
   const displayTitle = product.title.length > 60 ? product.title.substring(0, 57) + "..." : product.title
 
@@ -195,11 +202,21 @@ export function ProductDetailsDreamCloud({
           {/* Right: Product Info */}
           <div className="space-y-6">
             <div>
-              {isPremierBundle && (
-                <Badge className="mb-4 bg-gradient-to-r from-[#C8A55C] to-[#a88947] text-white hover:from-[#a88947] hover:to-[#C8A55C] px-4 py-2 text-base font-bold shadow-lg">
-                  <Package className="w-5 h-5 mr-2" />
-                  Premier Kit - Everything Included
-                </Badge>
+              {hasPremierKit && (
+                <div className="mb-6 bg-gradient-to-r from-green-600 via-emerald-600 to-green-600 text-white rounded-2xl p-5 shadow-2xl border-2 border-green-400 animate-pulse">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                      <Package className="w-9 h-9 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-2xl font-bold mb-1">🎉 Premier Kit Included FREE!</p>
+                      <p className="text-base opacity-95">
+                        {premierKitConfig.components.length} premium items • ${premierKitValue.toFixed(2)} value
+                      </p>
+                    </div>
+                    <div className="text-3xl font-bold">FREE</div>
+                  </div>
+                </div>
               )}
 
               <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4 text-balance leading-tight">
@@ -313,6 +330,69 @@ export function ProductDetailsDreamCloud({
           </div>
         </div>
       </section>
+
+      {hasPremierKit && premierKitConfig && (
+        <section className="bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 py-16 md:py-24 border-y-4 border-green-400">
+          <div className="max-w-screen-xl mx-auto px-4 md:px-8">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-3 bg-green-600 text-white px-8 py-3 rounded-full mb-6 shadow-xl">
+                <Package className="w-6 h-6" />
+                <span className="text-lg font-bold">Complete Premier Kit</span>
+                <span className="bg-white text-green-600 px-3 py-1 rounded-full text-sm font-bold">FREE</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4">
+                Everything You Need, Included Free
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                ${premierKitValue.toFixed(2)} value of premium components - all in one complete package
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {premierKitConfig.components.map((component, index) => (
+                <Card
+                  key={index}
+                  className="p-6 bg-white hover:shadow-2xl transition-all border-2 border-green-300 hover:border-green-500"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-green-600 to-emerald-600 flex items-center justify-center flex-shrink-0 shadow-lg">
+                      <Check className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-card-foreground text-lg mb-2">{component.title}</h3>
+                      <div className="flex items-center gap-2 mb-2">
+                        {component.quantity > 1 && (
+                          <Badge className="bg-green-600 text-white text-sm">Qty: {component.quantity}</Badge>
+                        )}
+                        {component.retailPrice && (
+                          <span className="text-sm font-bold text-green-700">
+                            ${(component.retailPrice * component.quantity).toFixed(2)} value
+                          </span>
+                        )}
+                      </div>
+                      {component.notes && (
+                        <p className="text-sm text-muted-foreground leading-relaxed">{component.notes}</p>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            <div className="mt-12 text-center">
+              <div className="inline-flex items-center gap-4 bg-white border-2 border-green-400 rounded-2xl px-8 py-5 shadow-xl">
+                <Package className="w-8 h-8 text-green-600" />
+                <div className="text-left">
+                  <p className="text-2xl font-bold text-green-900">Complete Kit Value</p>
+                  <p className="text-sm text-gray-600">Everything ships together - no extra charges</p>
+                </div>
+                <div className="text-3xl font-bold text-green-600">${premierKitValue.toFixed(2)}</div>
+                <div className="text-4xl font-bold text-green-600">FREE</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Company Story Section */}
       <CompanyStorySection />
