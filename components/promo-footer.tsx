@@ -78,14 +78,16 @@ export function PromoFooter() {
           showAtTop ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
         }`}
       >
-        <div className="container mx-auto px-4 py-1.5">
-          <div className="relative h-5 flex items-center justify-center">
+        <div className="container mx-auto px-4 py-0.5">
+          <div className="relative h-3.5 flex items-center justify-center">
             <div
               className={`transition-all duration-600 ease-in-out ${
                 isTransitioning ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"
               }`}
             >
-              <p className="text-xs font-bold tracking-wide text-center">{promoMessages[currentPromoIndex].text}</p>
+              <p className="text-[10px] md:text-xs font-bold tracking-wide text-center">
+                {promoMessages[currentPromoIndex].text}
+              </p>
             </div>
           </div>
         </div>
@@ -97,14 +99,16 @@ export function PromoFooter() {
           showAtBottom ? "opacity-100 translate-y-0" : "opacity-0 translate-y-full pointer-events-none"
         }`}
       >
-        <div className="container mx-auto px-4 py-1.5">
-          <div className="relative h-5 flex items-center justify-center">
+        <div className="container mx-auto px-4 py-0.5">
+          <div className="relative h-3.5 flex items-center justify-center">
             <div
               className={`transition-all duration-600 ease-in-out ${
                 isTransitioning ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"
               }`}
             >
-              <p className="text-xs font-bold tracking-wide text-center">{promoMessages[currentPromoIndex].text}</p>
+              <p className="text-[10px] md:text-xs font-bold tracking-wide text-center">
+                {promoMessages[currentPromoIndex].text}
+              </p>
             </div>
           </div>
         </div>

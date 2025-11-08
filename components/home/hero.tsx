@@ -59,7 +59,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             priority
             quality={90}
             sizes="100vw"
-            className="object-cover object-[35%_center] md:object-[40%_center] lg:object-center"
+            className="object-cover object-[25%_center] md:object-[35%_center] lg:object-center"
           />
         </div>
 
@@ -103,7 +103,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
                   }
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`w-32 h-32 md:w-16 md:h-16 lg:w-18 lg:h-18 ${index === 1 ? "" : "bg-white"} rounded-full overflow-hidden shadow-md border-2 border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center relative ${badge.delay} ${
+                  className={`w-16 h-16 md:w-16 md:h-16 lg:w-18 lg:h-18 ${index === 1 ? "" : "bg-white"} rounded-full overflow-hidden shadow-md border-2 border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center relative ${badge.delay} ${
                     isVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
                   }`}
                 >

@@ -13,6 +13,7 @@ import { toNodes } from "@/lib/connection"
 import { Check, Shield, Truck, Award, Package, Wrench, Wind, Medal, ChevronDown, Star, Clock, Tag } from "lucide-react"
 import { JudgeMeBadge, JudgeMeReviewWidget } from "./judgeme-widgets"
 import { useSearchParams } from "next/navigation"
+import { CompanyStorySection } from "./company-story-section"
 
 interface ProductDetailsDreamCloudProps {
   product: ShopifyProduct
@@ -332,6 +333,9 @@ export function ProductDetailsDreamCloud({
           </div>
         </div>
       </section>
+
+      {/* Company Story Section */}
+      <CompanyStorySection />
 
       {/* Sticky Product Selector */}
       {isSticky && selectedVariant && (

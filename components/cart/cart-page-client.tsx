@@ -37,6 +37,7 @@ export function CartPageClient() {
   const [loadingProducts, setLoadingProducts] = useState(true)
   const [isUpdating, setIsUpdating] = useState(false)
   const updateTimeoutRef = useRef<NodeJS.Timeout>()
+  const [addingProducts, setAddingProducts] = useState<Set<string>>(new Set())
 
   const [discountCode, setDiscountCode] = useState("")
   const [appliedDiscount, setAppliedDiscount] = useState<string | null>(null)
@@ -90,12 +91,30 @@ export function CartPageClient() {
 
   const handleQuickAdd = useCallback(
     async (product: ShopifyProduct) => {
+      // Don't add if already adding this product
+      if (addingProducts.has(product.id)) {
+        console.log("[v0] Already adding product:", product.id)
+        return
+      }
+
       const variantId = product.variants.edges[0]?.node.id
       if (variantId) {
-        await handleCartUpdate(() => addToCart(variantId, 1))
+        setAddingProducts((prev) => new Set(prev).add(product.id))
+        try {
+          await addToCart(variantId, 1)
+        } finally {
+          // Remove from adding set after a short delay
+          setTimeout(() => {
+            setAddingProducts((prev) => {
+              const next = new Set(prev)
+              next.delete(product.id)
+              return next
+            })
+          }, 1000)
+        }
       }
     },
-    [addToCart, handleCartUpdate],
+    [addToCart, addingProducts],
   )
 
   const handleApplyDiscount = async () => {
@@ -528,34 +547,40 @@ export function CartPageClient() {
                 )}
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {geoProducts.map((product) => (
-                  <div key={product.id} className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
-                    <Link href={`/products/${product.handle}`} className="block">
-                      {product.featuredImage && (
-                        <div className="relative aspect-square mb-2 rounded overflow-hidden">
-                          <Image
-                            src={product.featuredImage.url || "/placeholder.svg"}
-                            alt={product.title}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      )}
-                      <p className="text-xs font-semibold text-[#0B1C2C] line-clamp-2 mb-1">{product.title}</p>
-                      <p className="text-sm font-bold text-[#C8A55C]">
-                        ${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}
-                      </p>
-                    </Link>
-                    <Button
-                      size="sm"
-                      className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white text-xs py-1"
-                      onClick={() => handleQuickAdd(product)}
-                      disabled={isUpdating}
+                {geoProducts.map((product) => {
+                  const isAdding = addingProducts.has(product.id)
+                  return (
+                    <div
+                      key={product.id}
+                      className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow"
                     >
-                      Add to Cart
-                    </Button>
-                  </div>
-                ))}
+                      <Link href={`/products/${product.handle}`} className="block">
+                        {product.featuredImage && (
+                          <div className="relative aspect-square mb-2 rounded overflow-hidden">
+                            <Image
+                              src={product.featuredImage.url || "/placeholder.svg"}
+                              alt={product.title}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                        <p className="text-xs font-semibold text-[#0B1C2C] line-clamp-2 mb-1">{product.title}</p>
+                        <p className="text-sm font-bold text-[#C8A55C]">
+                          ${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}
+                        </p>
+                      </Link>
+                      <Button
+                        size="sm"
+                        className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white text-xs py-1"
+                        onClick={() => handleQuickAdd(product)}
+                        disabled={isAdding}
+                      >
+                        {isAdding ? "Adding..." : "Add to Cart"}
+                      </Button>
+                    </div>
+                  )
+                })}
               </div>
             </Card>
           )}
@@ -570,35 +595,40 @@ export function CartPageClient() {
                 </span>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {addOnProducts.slice(0, 6).map((product) => (
-                  <div
-                    key={product.id}
-                    className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={() => !isUpdating && handleQuickAdd(product)}
-                  >
-                    {product.featuredImage && (
-                      <div className="relative aspect-square mb-2 rounded overflow-hidden">
-                        <Image
-                          src={product.featuredImage.url || "/placeholder.svg"}
-                          alt={product.title}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    )}
-                    <p className="text-xs font-semibold text-[#0B1C2C] line-clamp-2 mb-1">{product.title}</p>
-                    <p className="text-sm font-bold text-[#C8A55C]">
-                      ${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}
-                    </p>
-                    <Button
-                      size="sm"
-                      className="w-full mt-2 bg-green-600 hover:bg-green-700 text-white text-xs py-1"
-                      disabled={isUpdating}
+                {addOnProducts.slice(0, 6).map((product) => {
+                  const isAdding = addingProducts.has(product.id)
+                  return (
+                    <div
+                      key={product.id}
+                      className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow"
                     >
-                      Quick Add
-                    </Button>
-                  </div>
-                ))}
+                      <Link href={`/products/${product.handle}`} className="block">
+                        {product.featuredImage && (
+                          <div className="relative aspect-square mb-2 rounded overflow-hidden">
+                            <Image
+                              src={product.featuredImage.url || "/placeholder.svg"}
+                              alt={product.title}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                        <p className="text-xs font-semibold text-[#0B1C2C] line-clamp-2 mb-1">{product.title}</p>
+                        <p className="text-sm font-bold text-[#C8A55C]">
+                          ${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}
+                        </p>
+                      </Link>
+                      <Button
+                        size="sm"
+                        className="w-full mt-2 bg-green-600 hover:bg-green-700 text-white text-xs py-1"
+                        onClick={() => handleQuickAdd(product)}
+                        disabled={isAdding}
+                      >
+                        {isAdding ? "Adding..." : "Quick Add"}
+                      </Button>
+                    </div>
+                  )
+                })}
               </div>
             </Card>
           )}
@@ -619,39 +649,42 @@ export function CartPageClient() {
                     ? Number.parseFloat(product.compareAtPriceRange.minVariantPrice.amount)
                     : null
                   const savings = compareAt ? compareAt - price : 0
+                  const isAdding = addingProducts.has(product.id)
 
                   return (
                     <div
                       key={product.id}
-                      className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer relative"
-                      onClick={() => !isUpdating && handleQuickAdd(product)}
+                      className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow relative"
                     >
                       {savings > 0 && (
                         <div className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full font-bold z-10">
                           Save ${savings.toFixed(0)}
                         </div>
                       )}
-                      {product.featuredImage && (
-                        <div className="relative aspect-square mb-2 rounded overflow-hidden">
-                          <Image
-                            src={product.featuredImage.url || "/placeholder.svg"}
-                            alt={product.title}
-                            fill
-                            className="object-cover"
-                          />
+                      <Link href={`/products/${product.handle}`} className="block">
+                        {product.featuredImage && (
+                          <div className="relative aspect-square mb-2 rounded overflow-hidden">
+                            <Image
+                              src={product.featuredImage.url || "/placeholder.svg"}
+                              alt={product.title}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                        <p className="text-xs font-semibold text-[#0B1C2C] line-clamp-2 mb-1">{product.title}</p>
+                        <div className="flex items-center gap-2 mb-2">
+                          <p className="text-sm font-bold text-red-600">${price.toFixed(2)}</p>
+                          {compareAt && <p className="text-xs text-gray-500 line-through">${compareAt.toFixed(2)}</p>}
                         </div>
-                      )}
-                      <p className="text-xs font-semibold text-[#0B1C2C] line-clamp-2 mb-1">{product.title}</p>
-                      <div className="flex items-center gap-2 mb-2">
-                        <p className="text-sm font-bold text-red-600">${price.toFixed(2)}</p>
-                        {compareAt && <p className="text-xs text-gray-500 line-through">${compareAt.toFixed(2)}</p>}
-                      </div>
+                      </Link>
                       <Button
                         size="sm"
                         className="w-full bg-red-600 hover:bg-red-700 text-white text-xs py-1"
-                        disabled={isUpdating}
+                        onClick={() => handleQuickAdd(product)}
+                        disabled={isAdding}
                       >
-                        Add & Save
+                        {isAdding ? "Adding..." : "Add & Save"}
                       </Button>
                     </div>
                   )

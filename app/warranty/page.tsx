@@ -1,4 +1,5 @@
 import { Shield, CheckCircle, Clock, FileText } from "lucide-react"
+import Link from "next/link"
 
 export const dynamic = "force-dynamic"
 
@@ -97,17 +98,36 @@ export default function WarrantyPage() {
           <div className="bg-white rounded-lg p-8 shadow-md">
             <h2 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-4">Filing a Warranty Claim</h2>
             <div className="space-y-4 text-[#0B1C2C]/70">
-              <p>To file a warranty claim, please contact our customer service team with:</p>
+              <p>
+                To file a warranty claim, please contact our customer service team{" "}
+                <strong className="text-[#C8A55C]">via support form (portal)</strong> with:
+              </p>
               <ul className="list-disc list-inside space-y-2 ml-4">
+                <li>
+                  <strong className="text-[#C8A55C]">Name and contact information</strong>
+                </li>
                 <li>Your order number or proof of purchase</li>
+                <li>
+                  <strong className="text-[#C8A55C]">Photos and/or videos</strong>
+                </li>
                 <li>Photos of the defect or issue</li>
                 <li>Description of the problem</li>
                 <li>Date of purchase and installation</li>
               </ul>
               <p>
-                We'll review your claim and respond within 2-3 business days. If approved, we'll send replacement parts
-                or a new product at no charge.
+                We'll review your claim and respond within 2-3 business days. If approved, we'll send{" "}
+                <strong className="text-[#C8A55C] text-lg">
+                  replacement parts at no charge, you just pay shipping.
+                </strong>
               </p>
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <Link
+                  href="/contact?subject=Warranty+Claim"
+                  className="inline-block bg-[#C8A55C] hover:bg-[#a88947] text-white font-semibold px-8 py-4 rounded-md transition-colors text-lg shadow-lg"
+                >
+                  Submit Warranty Claim via Support Portal
+                </Link>
+              </div>
             </div>
           </div>
 

@@ -154,37 +154,53 @@ export function CartSidebarButton() {
                     </div>
                   </div>
 
-                  {/* Premier Kit items */}
+                  {/* Enhanced Premier Kit display with larger product images and better visibility */}
                   {bundleConfig && bundleConfig.components.length > 0 && (
-                    <div className="ml-6 pl-4 border-l-2 border-green-500/50 space-y-2 bg-green-500/5 rounded-r-lg p-3">
-                      <p className="text-xs text-green-400 font-bold flex items-center gap-2">
-                        <Plus className="w-3 h-3" />
-                        Premier Kit ({bundleConfig.components.length} items):
-                      </p>
-                      <div className="space-y-1.5">
+                    <div className="ml-6 pl-4 border-l-4 border-green-500 space-y-2 bg-gradient-to-r from-green-500/10 to-green-600/5 rounded-r-lg p-4 mt-3">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+                          <Plus className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-green-400 font-bold">Premier Kit Included FREE!</p>
+                          <p className="text-xs text-gray-300">
+                            {bundleConfig.components.length} premium items worth $
+                            {bundleConfig.components.reduce((sum, c) => sum + (c.retailPrice || 0), 0).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
                         {bundleConfig.components.map((component, idx) => (
                           <div
                             key={idx}
-                            className="flex items-center gap-2 text-xs text-gray-200 bg-white/5 rounded p-2"
+                            className="flex items-center gap-3 text-sm text-gray-200 bg-white/5 rounded-lg p-3 hover:bg-white/10 transition-colors"
                           >
-                            <div className="w-10 h-10 bg-white/10 rounded overflow-hidden flex-shrink-0 border border-white/20">
+                            <div className="w-16 h-16 bg-white/10 rounded-lg overflow-hidden flex-shrink-0 border-2 border-white/20">
                               {component.image ? (
                                 <Image
                                   src={component.image || "/placeholder.svg"}
                                   alt={component.title}
-                                  width={40}
-                                  height={40}
-                                  className="object-cover"
+                                  width={64}
+                                  height={64}
+                                  className="object-cover w-full h-full"
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
-                                  <Plus className="w-4 h-4 text-white/30" />
+                                  <Plus className="w-6 h-6 text-white/30" />
                                 </div>
                               )}
                             </div>
-                            <span className="flex-1 font-medium truncate">{component.title}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold truncate">{component.title}</p>
+                              {component.quantity > 1 && (
+                                <p className="text-xs text-gray-400">Qty: {component.quantity}</p>
+                              )}
+                            </div>
                             {component.retailPrice && (
-                              <span className="text-green-400 font-semibold">${component.retailPrice}</span>
+                              <div className="text-right flex-shrink-0">
+                                <p className="text-green-400 font-bold">${component.retailPrice}</p>
+                                <p className="text-xs text-green-300">FREE</p>
+                              </div>
                             )}
                           </div>
                         ))}
