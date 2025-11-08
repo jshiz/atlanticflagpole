@@ -10,7 +10,7 @@ import { ExpressCheckoutButtons } from "@/components/cart/express-checkout-butto
 import type { ShopifyProduct } from "@/lib/shopify"
 import type { BundleData } from "@/lib/shopify/bundles"
 import { toNodes } from "@/lib/connection"
-import { Check, Shield, Truck, Award, Package, Wrench, Wind, Medal, ChevronDown, Star, Clock } from "lucide-react"
+import { Check, Shield, Truck, Award, Package, Wrench, Wind, Medal, ChevronDown, Star, Clock, Tag } from "lucide-react"
 import { JudgeMeBadge, JudgeMeReviewWidget } from "./judgeme-widgets"
 import { useSearchParams } from "next/navigation"
 
@@ -31,6 +31,7 @@ export function ProductDetailsDreamCloud({
 }: ProductDetailsDreamCloudProps) {
   const searchParams = useSearchParams()
   const variantParam = searchParams.get("variant")
+  const discountParam = searchParams.get("discount")
 
   const images = toNodes(product.images)
   const [selectedImage, setSelectedImage] = useState(images[0])
@@ -103,11 +104,38 @@ export function ProductDetailsDreamCloud({
   ]
 
   const [openFaq, setOpenFaq] = useState<number | null>(0)
+  const [showDiscountBadge, setShowDiscountBadge] = useState(!!discountParam)
 
   return (
     <div className="bg-background">
       {/* Hero Section with Product Image and Sticky Selector */}
       <section className="max-w-screen-2xl mx-auto px-4 md:px-8 py-8 md:py-12">
+        {showDiscountBadge && discountParam && (
+          <div className="mb-6 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-4 rounded-xl shadow-lg animate-in slide-in-from-top duration-500">
+            <div className="flex items-center justify-between max-w-4xl mx-auto">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                  <Tag className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="font-bold text-lg">Discount Code Applied!</p>
+                  <p className="text-sm text-white/90">
+                    Code: <span className="font-mono font-bold">{discountParam}</span> will be applied at checkout
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowDiscountBadge(false)}
+                className="text-white hover:bg-white/20"
+              >
+                Dismiss
+              </Button>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
           {/* Left: Image Gallery */}
           <div className="space-y-4">
@@ -655,6 +683,7 @@ export function ProductDetailsDreamCloud({
               />
               <Button
                 variant="outline"
+                size="sm"
                 className="px-12 py-6 text-xl font-bold rounded-xl border-2 border-white text-white hover:bg-white hover:text-[#0B1C2C] w-full sm:w-auto bg-transparent"
                 onClick={() => {
                   const reviewsSection = document.getElementById("reviews")

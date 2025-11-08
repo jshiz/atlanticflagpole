@@ -41,6 +41,8 @@ export function HeaderClient({
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [quizModalOpen, setQuizModalOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
+  // </CHANGE>
   const { cart } = useCart()
   const cartItemCount = cart?.lines?.edges?.length || 0
   const { location } = useGeo()
@@ -49,20 +51,8 @@ export function HeaderClient({
   const shopifyAccountUrl = `https://${process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN}/account`
 
   useEffect(() => {
-    console.log("[v0] 🎯 Header mounted with menu data:", menuData)
-    if (menuData) {
-      console.log(
-        "[v0] ✅ Menu items:",
-        menuData.items.map((item) => item.title),
-      )
-    } else {
-      console.log("[v0] ❌ NO MENU DATA - this is the problem!")
-    }
-  }, [menuData])
-
-  useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100)
+      setIsScrolled(window.scrollY > 50)
     }
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
@@ -101,32 +91,38 @@ export function HeaderClient({
 
         <div className="bg-white">
           <div className="container mx-auto px-4">
-            {/* Mobile Header - 2 rows on mobile, collapses on scroll */}
             <div className="md:hidden">
-              {/* Row 1: Logo, Account, Cart */}
-              <div className="flex items-center justify-between h-16">
-                <button className="text-[#0B1C2C]" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                  <Menu className="w-6 h-6" />
+              <div
+                className={`flex items-center justify-between transition-all duration-300 ${isScrolled ? "h-12" : "h-14"}`}
+              >
+                {/* Left: Menu */}
+                <button className="text-[#0B1C2C] p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                  <Menu className={`transition-all ${isScrolled ? "w-5 h-5" : "w-6 h-6"}`} />
                 </button>
 
+                {/* Center: Logo */}
                 <Link href="/" className="flex items-center">
                   <Image
                     src="/images/favicon.png"
                     alt="Atlantic Flagpoles"
-                    width={32}
-                    height={32}
-                    className="w-8 h-8"
+                    width={28}
+                    height={28}
+                    className={`transition-all ${isScrolled ? "w-6 h-6" : "w-7 h-7"}`}
                   />
                 </Link>
 
-                <div className="flex items-center gap-3">
-                  <a href={shopifyAccountUrl} className="text-[#0B1C2C]">
-                    <User className="w-5 h-5" />
+                {/* Right: Search, Account, Cart */}
+                <div className="flex items-center gap-2">
+                  <button className="text-[#0B1C2C] p-2" onClick={() => setMobileSearchOpen(!mobileSearchOpen)}>
+                    <Search className={`transition-all ${isScrolled ? "w-5 h-5" : "w-5 h-5"}`} />
+                  </button>
+                  <a href={shopifyAccountUrl} className="text-[#0B1C2C] p-2">
+                    <User className={`transition-all ${isScrolled ? "w-5 h-5" : "w-5 h-5"}`} />
                   </a>
-                  <Link href="/cart" className="relative text-[#0B1C2C]">
-                    <ShoppingCart className="w-5 h-5" />
+                  <Link href="/cart" className="relative text-[#0B1C2C] p-2">
+                    <ShoppingCart className={`transition-all ${isScrolled ? "w-5 h-5" : "w-5 h-5"}`} />
                     {cartItemCount > 0 && (
-                      <span className="absolute -top-2 -right-2 bg-[#C8A55C] text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                      <span className="absolute top-0 right-0 bg-[#C8A55C] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
                         {cartItemCount}
                       </span>
                     )}
@@ -134,11 +130,14 @@ export function HeaderClient({
                 </div>
               </div>
 
-              {/* Row 2: Search Bar - full width */}
-              <div className="pb-3 px-2">
-                <SearchBarWrapper className="w-full" />
-              </div>
+              {/* Mobile Search Dropdown */}
+              {mobileSearchOpen && (
+                <div className="pb-3 px-2 border-t border-gray-200 pt-2 bg-gray-50">
+                  <SearchBarWrapper className="w-full" />
+                </div>
+              )}
             </div>
+            {/* </CHANGE> */}
 
             {/* Desktop Header */}
             <div className="hidden md:flex items-center justify-between h-24">
@@ -166,8 +165,6 @@ export function HeaderClient({
 
               {/* Desktop Navigation */}
               <nav className="hidden lg:flex items-center gap-6">
-                {menuItems.length === 0 && <div className="text-red-600 font-bold text-sm">NO MENU ITEMS LOADED</div>}
-
                 {menuItems.map((item) => {
                   const hasSubItems = item.items && item.items.length > 0
 
@@ -240,9 +237,7 @@ export function HeaderClient({
                     <Sparkles className="w-4 h-4" />
                     Flagpole Finder
                   </span>
-                  {/* Glowing effect */}
                   <span className="absolute inset-0 bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300" />
-                  {/* Animated shine */}
                   <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
                 </Link>
 
@@ -283,33 +278,35 @@ export function HeaderClient({
             />
           </div>
         </div>
-        {/* </CHANGE> */}
       </header>
 
       <div
         className={`fixed top-0 left-0 right-0 z-[999] bg-white border-b-2 border-gray-200 shadow-lg transition-all duration-300 ${
-          isScrolled ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+          isScrolled ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
         }`}
       >
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-14">
-            <button className="md:hidden text-[#0B1C2C]" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+          <div className="flex items-center justify-between h-12">
+            {/* Left: Menu */}
+            <button className="text-[#0B1C2C]" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               <Menu className="w-5 h-5" />
             </button>
 
+            {/* Center: Logo */}
             <Link href="/" className="flex items-center gap-2">
               <Image
                 src="/images/favicon.png"
                 alt="Atlantic Flagpoles Logo"
-                width={32}
-                height={32}
-                className="w-7 h-7 md:w-8 md:h-8"
+                width={28}
+                height={28}
+                className="w-6 h-6 md:w-7 md:h-7"
               />
               <span className="text-base md:text-lg font-serif font-bold text-[#0B1C2C] hidden sm:block">
                 ATLANTIC FLAGPOLES
               </span>
             </Link>
 
+            {/* Desktop Nav */}
             <nav className="hidden lg:flex items-center gap-6">
               {menuItems.map((item) => (
                 <Link
@@ -322,11 +319,12 @@ export function HeaderClient({
               ))}
             </nav>
 
-            <div className="flex items-center gap-3">
-              <button className="text-[#0B1C2C] md:hidden">
+            {/* Right: Search, Account, Cart */}
+            <div className="flex items-center gap-2">
+              <button className="text-[#0B1C2C]" onClick={() => setMobileSearchOpen(!mobileSearchOpen)}>
                 <Search className="w-5 h-5" />
               </button>
-              <a href={shopifyAccountUrl} className="text-[#0B1C2C] md:hidden">
+              <a href={shopifyAccountUrl} className="text-[#0B1C2C]">
                 <User className="w-5 h-5" />
               </a>
               <Link href="/cart" className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors">

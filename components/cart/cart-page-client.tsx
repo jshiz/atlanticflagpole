@@ -43,6 +43,21 @@ export function CartPageClient() {
   const [discountError, setDiscountError] = useState<string | null>(null)
   const [applyingDiscount, setApplyingDiscount] = useState(false)
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const urlDiscount = params.get("discount")
+    if (urlDiscount) {
+      setDiscountCode(urlDiscount.toUpperCase())
+      // Auto-apply the discount code
+      setTimeout(() => {
+        const applyBtn = document.getElementById("apply-discount-btn")
+        if (applyBtn) {
+          applyBtn.click()
+        }
+      }, 500)
+    }
+  }, [])
+
   const handleCartUpdate = useCallback(
     async (updateFn: () => Promise<void>) => {
       if (isUpdating) {
@@ -692,6 +707,7 @@ export function CartPageClient() {
                       disabled={applyingDiscount}
                     />
                     <Button
+                      id="apply-discount-btn"
                       onClick={handleApplyDiscount}
                       disabled={!discountCode.trim() || applyingDiscount}
                       className="bg-[#C8A55C] hover:bg-[#a88947] text-white"
