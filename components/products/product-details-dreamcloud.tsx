@@ -15,6 +15,7 @@ import { JudgeMeBadge, JudgeMeReviewWidget } from "./judgeme-widgets"
 import { useSearchParams } from "next/navigation"
 import { CompanyStorySection } from "./company-story-section"
 import { SmartUpsellCTA } from "./smart-upsell-cta"
+import { SpotlightProducts } from "./spotlight-products"
 
 interface ProductDetailsDreamCloudProps {
   product: ShopifyProduct
@@ -224,43 +225,18 @@ export function ProductDetailsDreamCloud({
                 )}
               </div>
 
-              {/* Trust Badges */}
-              <div className="grid grid-cols-2 gap-4 mb-8 p-6 bg-gradient-to-br from-accent/50 to-accent rounded-2xl border border-border">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-background flex items-center justify-center shadow-md">
-                    <Shield className="w-6 h-6 text-[#C8A55C]" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-foreground text-sm">Lifetime Warranty</p>
-                    <p className="text-xs text-muted-foreground">Forever guarantee</p>
-                  </div>
+              <div className="flex items-center gap-4 mb-8 p-4 bg-gradient-to-r from-accent/50 to-accent rounded-xl border border-border">
+                <div className="flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-[#C8A55C]" />
+                  <span className="text-sm font-semibold">Lifetime Warranty</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-background flex items-center justify-center shadow-md">
-                    <Truck className="w-6 h-6 text-[#C8A55C]" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-foreground text-sm">Free Shipping</p>
-                    <p className="text-xs text-muted-foreground">All orders</p>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Truck className="w-5 h-5 text-[#C8A55C]" />
+                  <span className="text-sm font-semibold">Free Shipping</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-background flex items-center justify-center shadow-md">
-                    <Award className="w-6 h-6 text-[#C8A55C]" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-foreground text-sm">Made in USA</p>
-                    <p className="text-xs text-muted-foreground">Premium quality</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-background flex items-center justify-center shadow-md">
-                    <Clock className="w-6 h-6 text-[#C8A55C]" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-foreground text-sm">365-Day Trial</p>
-                    <p className="text-xs text-muted-foreground">Risk-free</p>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Award className="w-5 h-5 text-[#C8A55C]" />
+                  <span className="text-sm font-semibold">Made in USA</span>
                 </div>
               </div>
             </div>
@@ -352,6 +328,9 @@ export function ProductDetailsDreamCloud({
         />
       </section>
 
+      {/* Spotlight Products Section */}
+      <SpotlightProducts />
+
       {/* Sticky Product Selector */}
       {isSticky && selectedVariant && (
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t-2 border-border shadow-2xl py-4 px-4 md:px-8 animate-in slide-in-from-bottom duration-300">
@@ -419,236 +398,156 @@ export function ProductDetailsDreamCloud({
         </section>
       )}
 
-      {/* Features Section - Alternating Layout */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4">
-              Why Choose Atlantic Flagpole
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Premium quality, unmatched durability, and American craftsmanship
-            </p>
-          </div>
-
-          {/* Feature 1 - Image Left */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
-              <Image src="/placeholder.svg?height=600&width=800" alt="Premium Quality" fill className="object-cover" />
-            </div>
-            <div className="space-y-6">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center">
-                <Wrench className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-3xl md:text-4xl font-serif font-bold text-foreground">Installs in 30 Minutes</h3>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                No special tools or expertise required. Our innovative design makes installation quick and easy for
-                anyone. Just follow our simple step-by-step guide and you'll have your flagpole standing tall in no
-                time.
-              </p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <Check className="w-6 h-6 text-[#2e7d32] mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Minimal tools needed - just basic household items</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-6 h-6 text-[#2e7d32] mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Clear instructions with photos and videos</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-6 h-6 text-[#2e7d32] mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Free installation support if you need help</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Feature 2 - Image Right */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
-            <div className="space-y-6 lg:order-1">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center">
-                <Medal className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-3xl md:text-4xl font-serif font-bold text-foreground">
-                Military-Grade Aerospace Aluminum
-              </h3>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                Forged from the same aluminum used in aircraft and military applications. This isn't your typical
-                hardware store flagpole - it's engineered to withstand decades of harsh weather without rattling,
-                rusting, or failing.
-              </p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <Check className="w-6 h-6 text-[#2e7d32] mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Unmatched strength and durability</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-6 h-6 text-[#2e7d32] mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">No rattles, no rust, no maintenance</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-6 h-6 text-[#2e7d32] mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Powder-coated finish that lasts forever</span>
-                </li>
-              </ul>
-            </div>
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl lg:order-2">
-              <Image src="/placeholder.svg?height=600&width=800" alt="Military Grade" fill className="object-cover" />
-            </div>
-          </div>
-
-          {/* Feature 3 - Image Left */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
-              <Image src="/placeholder.svg?height=600&width=800" alt="Wind Tested" fill className="object-cover" />
-            </div>
-            <div className="space-y-6">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center">
-                <Wind className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-3xl md:text-4xl font-serif font-bold text-foreground">Wind-Tested to 100 MPH</h3>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                Engineered and tested to withstand hurricane-force winds. While other flagpoles bend, break, or blow
-                away, Atlantic Flagpoles stand tall through the worst storms Mother Nature can throw at them.
-              </p>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <Check className="w-6 h-6 text-[#2e7d32] mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Tested in real-world storm conditions</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-6 h-6 text-[#2e7d32] mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Flexible design absorbs wind stress</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-6 h-6 text-[#2e7d32] mt-0.5 flex-shrink-0" />
-                  <span className="text-foreground">Secure foundation system prevents tipping</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Feature Cards Grid */}
-      <section className="bg-gradient-to-br from-[#0B1C2C] to-[#1a3a52] py-16 md:py-24 text-white">
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4">Built to Last a Lifetime</h2>
-            <p className="text-xl text-white/80 max-w-3xl mx-auto">
-              Every detail engineered for everyday patriots who demand the best
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="p-8 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mb-6">
-                <Wrench className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-3">Easy Install</h3>
-              <p className="text-white/80 leading-relaxed">
-                30-minute setup with minimal tools. No special equipment needed.
-              </p>
-            </Card>
-
-            <Card className="p-8 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mb-6">
-                <Medal className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-3">Military Grade</h3>
-              <p className="text-white/80 leading-relaxed">Aerospace aluminum forged to military specifications.</p>
-            </Card>
-
-            <Card className="p-8 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mb-6">
-                <Wind className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-3">Storm Proof</h3>
-              <p className="text-white/80 leading-relaxed">
-                Wind-tested to 100 MPH. Stands tall through serious storms.
-              </p>
-            </Card>
-
-            <Card className="p-8 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mb-6">
-                <Shield className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-3">Lifetime Warranty</h3>
-              <p className="text-white/80 leading-relaxed">
-                One flagpole. For life. We stand behind our products forever.
-              </p>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Guarantee Section */}
-      <section className="py-16 md:py-24 bg-gradient-to-br from-accent/50 to-accent">
+      <section className="py-16 md:py-20 bg-gradient-to-b from-background to-accent/20">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4">Our Unbeatable Guarantee</h2>
+            <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4">
+              Why Atlantic Flagpole Stands Above the Rest
+            </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              We're so confident you'll love your flagpole, we back it with the industry's best guarantees
+              Premium American craftsmanship meets unmatched durability
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="p-8 text-center bg-card hover:shadow-2xl transition-shadow">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mx-auto mb-6">
-                <Shield className="w-10 h-10 text-white" />
+            <Card className="p-8 hover:shadow-2xl transition-shadow bg-card">
+              <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-6">
+                <Image
+                  src="/images/products/flagpole-installation-easy.jpg"
+                  alt="Easy 30-Minute Installation"
+                  fill
+                  className="object-cover"
+                />
               </div>
-              <h3 className="text-2xl font-bold text-card-foreground mb-4">Lifetime Structural Warranty</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                If your flagpole ever fails due to manufacturing defects, we'll replace it free of charge. No time
-                limit. No questions asked.
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mb-4">
+                <Wrench className="w-7 h-7 text-white" />
+              </div>
+              <h3 className="text-2xl font-serif font-bold text-foreground mb-3">Installs in 30 Minutes</h3>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                No special tools or expertise required. Follow our simple guide and you're done.
               </p>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2">
+                  <Check className="w-5 h-5 text-[#2e7d32] mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-foreground">Minimal tools needed</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-5 h-5 text-[#2e7d32] mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-foreground">Clear photo instructions</span>
+                </li>
+              </ul>
             </Card>
 
-            <Card className="p-8 text-center bg-card hover:shadow-2xl transition-shadow">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mx-auto mb-6">
-                <Clock className="w-10 h-10 text-white" />
+            <Card className="p-8 hover:shadow-2xl transition-shadow bg-card">
+              <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-6">
+                <Image
+                  src="/images/products/flagpole-aluminum-quality.jpg"
+                  alt="Military-Grade Aerospace Aluminum"
+                  fill
+                  className="object-cover"
+                />
               </div>
-              <h3 className="text-2xl font-bold text-card-foreground mb-4">365-Day Home Trial</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Try your flagpole at home for a full year. If you're not completely satisfied for any reason, return it
-                for a full refund.
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mb-4">
+                <Medal className="w-7 h-7 text-white" />
+              </div>
+              <h3 className="text-2xl font-serif font-bold text-foreground mb-3">Military-Grade Aluminum</h3>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                Forged from aerospace aluminum used in aircraft. Built to last decades.
               </p>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2">
+                  <Check className="w-5 h-5 text-[#2e7d32] mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-foreground">No rattles, no rust</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-5 h-5 text-[#2e7d32] mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-foreground">Powder-coated finish</span>
+                </li>
+              </ul>
             </Card>
 
-            <Card className="p-8 text-center bg-card hover:shadow-2xl transition-shadow">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mx-auto mb-6">
-                <Truck className="w-10 h-10 text-white" />
+            <Card className="p-8 hover:shadow-2xl transition-shadow bg-card">
+              <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-6">
+                <Image
+                  src="/images/products/flagpole-wind-test.jpg"
+                  alt="Wind-Tested to 100 MPH"
+                  fill
+                  className="object-cover"
+                />
               </div>
-              <h3 className="text-2xl font-bold text-card-foreground mb-4">Free Shipping & Returns</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                We cover all shipping costs - both ways. If you need to return your flagpole, we'll even pay for the
-                return shipping.
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mb-4">
+                <Wind className="w-7 h-7 text-white" />
+              </div>
+              <h3 className="text-2xl font-serif font-bold text-foreground mb-3">Wind-Tested to 100 MPH</h3>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                Engineered to withstand hurricane-force winds. Stands tall through storms.
               </p>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2">
+                  <Check className="w-5 h-5 text-[#2e7d32] mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-foreground">Real-world tested</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-5 h-5 text-[#2e7d32] mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-foreground">Secure foundation</span>
+                </li>
+              </ul>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-4xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-xl text-muted-foreground">Everything you need to know about your flagpole</p>
+      <section className="py-16 md:py-20 bg-gradient-to-br from-accent/30 to-accent/10">
+        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-3">Risk-Free Guarantee</h2>
+            <p className="text-lg text-muted-foreground">We back every product with the industry's best protection</p>
           </div>
 
-          <div className="space-y-4">
-            {faqs.map((faq, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <Card className="p-6 text-center bg-card hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mx-auto mb-4">
+                <Shield className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-card-foreground mb-2">Lifetime Warranty</h3>
+              <p className="text-sm text-muted-foreground">Free replacement if manufacturing defects occur</p>
+            </Card>
+
+            <Card className="p-6 text-center bg-card hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mx-auto mb-4">
+                <Clock className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-card-foreground mb-2">365-Day Trial</h3>
+              <p className="text-sm text-muted-foreground">Full year to decide - full refund if unsatisfied</p>
+            </Card>
+
+            <Card className="p-6 text-center bg-card hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mx-auto mb-4">
+                <Truck className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-card-foreground mb-2">Free Shipping</h3>
+              <p className="text-sm text-muted-foreground">Both ways - we cover all shipping costs</p>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 md:py-20">
+        <div className="max-w-3xl mx-auto px-4 md:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-3">Common Questions</h2>
+          </div>
+
+          <div className="space-y-3">
+            {faqs.slice(0, 3).map((faq, index) => (
               <Card
                 key={index}
                 className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
                 onClick={() => setOpenFaq(openFaq === index ? null : index)}
               >
-                <div className="p-6">
+                <div className="p-5">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-bold text-card-foreground pr-4">{faq.question}</h3>
+                    <h3 className="text-lg font-bold text-card-foreground pr-4">{faq.question}</h3>
                     <ChevronDown
                       className={`w-6 h-6 text-[#C8A55C] flex-shrink-0 transition-transform ${
                         openFaq === index ? "rotate-180" : ""
@@ -656,8 +555,8 @@ export function ProductDetailsDreamCloud({
                     />
                   </div>
                   {openFaq === index && (
-                    <div className="mt-4 pt-4 border-t border-border">
-                      <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
+                    <div className="mt-3 pt-3 border-t border-border">
+                      <p className="text-muted-foreground leading-relaxed text-sm">{faq.answer}</p>
                     </div>
                   )}
                 </div>
@@ -668,7 +567,7 @@ export function ProductDetailsDreamCloud({
       </section>
 
       {/* Reviews Section */}
-      <section id="reviews" className="py-16 md:py-24 bg-muted">
+      <section id="reviews" className="py-16 md:py-20 bg-muted">
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-2 mb-4">
@@ -687,7 +586,7 @@ export function ProductDetailsDreamCloud({
       </section>
 
       {/* Final CTA */}
-      <section className="py-16 md:py-24 bg-gradient-to-br from-[#0B1C2C] to-[#1a3a52] text-white">
+      <section className="py-16 md:py-20 bg-gradient-to-br from-[#0B1C2C] to-[#1a3a52] text-white">
         <div className="max-w-4xl mx-auto px-4 md:px-8 text-center">
           <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">Ready to Display Your Pride?</h2>
           <p className="text-xl text-white/80 mb-8 leading-relaxed">

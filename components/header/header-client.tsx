@@ -6,10 +6,10 @@ import { ShoppingCart, Menu, ChevronDown, User, Sparkles, MapPin } from "lucide-
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
 import { useCart } from "@/components/cart/cart-context"
-import { SearchBarWrapper } from "@/components/search/search-bar-wrapper"
 import { useGeo } from "@/lib/geo/context"
 import { getStateCodeFromRegion } from "@/lib/geo/state-mapping"
 import { MobileMenuAmazon } from "@/components/header/mobile-menu-amazon"
+import { SearchBarWrapper } from "@/components/search/search-bar-wrapper"
 
 interface MenuItem {
   id: string
@@ -68,54 +68,48 @@ export function HeaderClient({
         className={`md:hidden fixed inset-x-0 top-8 z-[999] bg-white/95 backdrop-blur-md border-b-2 border-[#C8A55C]/30 shadow-xl transition-transform duration-300 ${
           isScrolled ? "translate-y-0" : "-translate-y-full"
         }`}
-        style={{ height: "40px" }}
+        style={{ height: "36px" }}
       >
-        <div className="flex items-center justify-between h-full px-2.5">
+        <div className="flex items-center justify-between h-full px-2">
           {/* Left: Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className="flex items-center justify-center w-9 h-9 hover:bg-gray-100 rounded-md transition-colors"
+            className="flex items-center justify-center w-8 h-8 hover:bg-gray-100 rounded-md transition-colors"
             aria-label="Open menu"
           >
             <Menu className="w-5 h-5 text-[#0B1C2C]" strokeWidth={2.5} />
           </button>
 
           {/* Center: Logo + Text */}
-          <Link href="/" className="flex items-center gap-1.5 flex-1 justify-center">
-            <Image
-              src="/images/favicon.png"
-              alt="Atlantic Flagpoles"
-              width={22}
-              height={22}
-              className="w-[22px] h-[22px]"
-            />
-            <span className="text-[11px] font-extrabold text-[#0B1C2C] tracking-wider">ATLANTIC FLAGPOLE</span>
+          <Link href="/" className="flex items-center gap-1 flex-1 justify-center">
+            <Image src="/images/favicon.png" alt="Atlantic Flagpoles" width={20} height={20} className="w-5 h-5" />
+            <span className="text-[10px] font-extrabold text-[#0B1C2C] tracking-wider">ATLANTIC FLAGPOLE</span>
           </Link>
 
-          {/* Right: Icons */}
+          {/* Right: Icons - just sparkle, user, cart */}
           <div className="flex items-center gap-0.5">
             <Link
               href="/flagpole-finder"
-              className="flex items-center justify-center w-9 h-9 hover:bg-gray-100 rounded-md transition-colors"
+              className="flex items-center justify-center w-8 h-8 hover:bg-gray-100 rounded-md transition-colors"
               aria-label="AI Flagpole Finder"
             >
-              <Sparkles className="w-5 h-5 text-[#C8A55C]" strokeWidth={2.5} />
+              <Sparkles className="w-4.5 h-4.5 text-[#C8A55C]" strokeWidth={2.5} />
             </Link>
             <a
               href={shopifyAccountUrl}
-              className="flex items-center justify-center w-9 h-9 hover:bg-gray-100 rounded-md transition-colors"
+              className="flex items-center justify-center w-8 h-8 hover:bg-gray-100 rounded-md transition-colors"
               aria-label="My account"
             >
-              <User className="w-5 h-5 text-[#0B1C2C]" strokeWidth={2.5} />
+              <User className="w-4.5 h-4.5 text-[#0B1C2C]" strokeWidth={2.5} />
             </a>
             <Link
               href="/cart"
-              className="relative flex items-center justify-center w-9 h-9 hover:bg-gray-100 rounded-md transition-colors"
+              className="relative flex items-center justify-center w-8 h-8 hover:bg-gray-100 rounded-md transition-colors"
               aria-label="Shopping cart"
             >
-              <ShoppingCart className="w-5 h-5 text-[#0B1C2C]" strokeWidth={2.5} />
+              <ShoppingCart className="w-4.5 h-4.5 text-[#0B1C2C]" strokeWidth={2.5} />
               {cartItemCount > 0 && (
-                <span className="absolute top-0.5 right-0.5 bg-red-600 text-white text-[9px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
+                <span className="absolute top-0 right-0 bg-red-600 text-white text-[8px] font-black rounded-full min-w-[14px] h-3.5 flex items-center justify-center px-0.5">
                   {cartItemCount}
                 </span>
               )}
@@ -154,56 +148,52 @@ export function HeaderClient({
         <div className="bg-white">
           <div className="container mx-auto px-4">
             <div className="md:hidden">
-              <div className="flex items-center justify-between py-2" style={{ height: "52px" }}>
+              <div className="flex items-center justify-between py-2" style={{ height: "48px" }}>
                 {/* Left: Hamburger */}
                 <button
                   onClick={() => setMobileMenuOpen(true)}
-                  className="flex items-center justify-center w-10 h-10 hover:bg-gray-50 rounded-lg transition-colors"
+                  className="flex items-center justify-center w-9 h-9 hover:bg-gray-50 rounded-lg transition-colors"
                   aria-label="Open navigation menu"
                 >
                   <Menu className="w-6 h-6 text-[#0B1C2C]" strokeWidth={2.5} />
                 </button>
 
                 {/* Center: Logo + Brand Name */}
-                <Link href="/" className="flex items-center gap-2 flex-1 justify-center">
+                <Link href="/" className="flex items-center gap-1.5 flex-1 justify-center">
                   <Image
                     src="/images/favicon.png"
                     alt="Atlantic Flagpoles"
-                    width={28}
-                    height={28}
-                    className="w-7 h-7"
+                    width={26}
+                    height={26}
+                    className="w-[26px] h-[26px]"
                   />
-                  <span className="text-xs font-extrabold text-[#0B1C2C] tracking-wider leading-tight">
-                    ATLANTIC
-                    <br />
-                    FLAGPOLE
-                  </span>
+                  <span className="text-[11px] font-extrabold text-[#0B1C2C] tracking-wider">ATLANTIC FLAGPOLE</span>
                 </Link>
 
-                {/* Right: Action Icons */}
+                {/* Right: Action Icons - sparkle (search), user, cart */}
                 <div className="flex items-center gap-0.5">
                   <Link
                     href="/flagpole-finder"
-                    className="flex items-center justify-center w-10 h-10 hover:bg-gray-50 rounded-lg transition-colors"
+                    className="flex items-center justify-center w-9 h-9 hover:bg-gray-50 rounded-lg transition-colors"
                     aria-label="AI Flagpole Finder"
                   >
-                    <Sparkles className="w-6 h-6 text-[#C8A55C]" strokeWidth={2.5} />
+                    <Sparkles className="w-5.5 h-5.5 text-[#C8A55C]" strokeWidth={2.5} />
                   </Link>
                   <a
                     href={shopifyAccountUrl}
-                    className="flex items-center justify-center w-10 h-10 hover:bg-gray-50 rounded-lg transition-colors"
+                    className="flex items-center justify-center w-9 h-9 hover:bg-gray-50 rounded-lg transition-colors"
                     aria-label="Account login"
                   >
-                    <User className="w-6 h-6 text-[#0B1C2C]" strokeWidth={2.5} />
+                    <User className="w-5.5 h-5.5 text-[#0B1C2C]" strokeWidth={2.5} />
                   </a>
                   <Link
                     href="/cart"
-                    className="relative flex items-center justify-center w-10 h-10 hover:bg-gray-50 rounded-lg transition-colors"
+                    className="relative flex items-center justify-center w-9 h-9 hover:bg-gray-50 rounded-lg transition-colors"
                     aria-label="View cart"
                   >
-                    <ShoppingCart className="w-6 h-6 text-[#0B1C2C]" strokeWidth={2.5} />
+                    <ShoppingCart className="w-5.5 h-5.5 text-[#0B1C2C]" strokeWidth={2.5} />
                     {cartItemCount > 0 && (
-                      <span className="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-black rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1.5">
+                      <span className="absolute top-0 right-0 bg-red-600 text-white text-[9px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
                         {cartItemCount}
                       </span>
                     )}

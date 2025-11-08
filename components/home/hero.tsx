@@ -59,7 +59,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             priority
             quality={90}
             sizes="100vw"
-            className="object-cover object-[25%_center] md:object-[35%_center] lg:object-center"
+            className="object-cover object-[40%_center] md:object-[45%_center] lg:object-center"
           />
         </div>
 
@@ -73,13 +73,15 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
 
         <div className="relative z-10 flex flex-col items-center justify-center text-center lg:items-start lg:text-left min-h-[500px] md:min-h-[550px] lg:min-h-[650px] px-4 md:px-12 lg:px-16 py-8 md:py-10">
           <div
-            className={`lg:absolute lg:top-8 lg:left-1/2 lg:-translate-x-1/2 mb-6 transition-all duration-1000 delay-500 ${
+            className={`lg:absolute lg:top-2 lg:left-1/2 lg:-translate-x-1/2 mb-4 transition-all duration-1000 delay-500 ${
               isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
             }`}
           >
-            <div className="inline-block bg-[#0B1C2C]/70 backdrop-blur-sm border border-[#C8A55C]/50 rounded-lg px-4 md:px-6 py-2 md:py-2.5 mb-3 shadow-lg">
-              <h2 className="text-white text-sm md:text-base lg:text-lg xl:text-xl font-semibold drop-shadow-lg whitespace-nowrap">
-                Your Flag Deserves Better Than a Cheap Pole.
+            <div className="inline-block bg-[#0B1C2C]/80 backdrop-blur-sm border-2 border-[#C8A55C]/60 rounded-xl px-5 md:px-7 py-2.5 md:py-3 mb-3 shadow-xl">
+              <h2 className="text-white text-base md:text-lg lg:text-xl xl:text-2xl font-bold drop-shadow-lg leading-tight max-w-[400px]">
+                Your Flag Deserves Better
+                <br />
+                Than a Cheap Pole.
               </h2>
             </div>
 
