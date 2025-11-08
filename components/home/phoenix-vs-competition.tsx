@@ -153,7 +153,7 @@ export function PhoenixVsCompetition() {
         </div>
 
         <div className="max-w-7xl mx-auto">
-          <div className="bg-white rounded-3xl overflow-hidden shadow-2xl border border-gray-100">
+          <div className="hidden lg:block bg-white rounded-3xl overflow-hidden shadow-2xl border border-gray-100">
             {/* Table Header */}
             <div className="grid grid-cols-6 gap-2 p-6 bg-gradient-to-r from-[#0B1C2C] via-[#1A2F44] to-[#0B1C2C]">
               <div className="text-sm font-bold text-white/90 flex items-center">Feature / Brand</div>
@@ -265,7 +265,80 @@ export function PhoenixVsCompetition() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-8 mt-16">
+          <div className="lg:hidden space-y-6">
+            {/* Phoenix Flagpole Featured Card */}
+            <div className="bg-gradient-to-br from-[#C8A55C] to-[#D4B76A] rounded-3xl overflow-hidden shadow-2xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-2xl font-bold text-[#0B1C2C] flex items-center gap-2">
+                  <Award className="w-6 h-6 fill-current" />
+                  Phoenix Flagpole
+                </h3>
+                <div className="text-right">
+                  <div className="text-3xl font-bold text-[#0B1C2C]">$999</div>
+                  <div className="text-xs text-[#0B1C2C]/70">Lifetime Value</div>
+                </div>
+              </div>
+              <div className="space-y-3">
+                {comparisons
+                  .filter((item) => item.phoenix === "✓" || item.highlight)
+                  .map((item, idx) => {
+                    const Icon = item.icon
+                    return (
+                      <div key={idx} className="flex items-center gap-3 bg-white/90 p-3 rounded-xl">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-[#0B1C2C] to-[#1A2F44] flex items-center justify-center">
+                          <Icon className="w-4 h-4 text-[#C8A55C]" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-bold text-[#0B1C2C]">{item.feature}</div>
+                          {item.description && <div className="text-xs text-gray-600">{item.description}</div>}
+                        </div>
+                        <div className="flex-shrink-0">
+                          {item.phoenix === "✓" ? (
+                            <Check className="w-6 h-6 text-green-600 stroke-[3]" />
+                          ) : (
+                            <span className="text-xs font-bold text-green-700">{item.phoenix}</span>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+              </div>
+            </div>
+
+            {/* Competitors Accordion/Cards */}
+            <div className="bg-white rounded-3xl shadow-xl p-6">
+              <h4 className="text-lg font-bold text-[#0B1C2C] mb-4">Compare to Competitors</h4>
+              <div className="space-y-4">
+                {["stand", "serviceFirst", "amazon", "oldGlory"].map((key) => {
+                  const compName = competitors.find((c) => c.key === key)?.name || key
+                  return (
+                    <div key={key} className="border border-gray-200 rounded-xl p-4">
+                      <div className="font-bold text-gray-700 mb-2">{compName}</div>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        {comparisons.slice(0, 4).map((item, idx) => {
+                          const value = item[key as keyof typeof item] as string
+                          return (
+                            <div key={idx} className="flex items-center gap-1">
+                              {value === "✓" ? (
+                                <Check className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                              ) : value === "✗" ? (
+                                <X className="w-4 h-4 text-red-400 flex-shrink-0" />
+                              ) : (
+                                <span className="text-gray-500 flex-shrink-0">•</span>
+                              )}
+                              <span className="text-gray-600 truncate">{item.feature.split(" ")[0]}</span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 mt-8 sm:mt-16">
             {[
               { value: "35,000+", label: "Happy American Patriots", icon: Heart },
               { value: "4.9★", label: "Average Rating (2,847 Reviews)", icon: Award },
@@ -280,8 +353,8 @@ export function PhoenixVsCompetition() {
                   <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#D4B76A] mb-4">
                     <StatIcon className="w-8 h-8 text-white" />
                   </div>
-                  <div className="text-5xl font-bold text-[#0B1C2C] mb-2">{stat.value}</div>
-                  <div className="text-sm text-gray-600 font-medium">{stat.label}</div>
+                  <div className="text-3xl sm:text-5xl font-bold text-[#0B1C2C] mb-2">{stat.value}</div>
+                  <div className="text-xs sm:text-sm text-gray-600 font-medium">{stat.label}</div>
                 </div>
               )
             })}

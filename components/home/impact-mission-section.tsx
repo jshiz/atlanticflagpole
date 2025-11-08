@@ -3,47 +3,51 @@ import { Check, Heart, Globe, Users, Shield } from "lucide-react"
 
 export function ImpactMissionSection() {
   return (
-    <section className="relative bg-gradient-to-b from-white via-[#F5F3EF] to-white py-32 overflow-hidden opacity-100">
+    <section className="relative bg-gradient-to-b from-white via-[#F5F3EF] to-white py-16 sm:py-24 md:py-32 overflow-hidden opacity-100">
       {/* Subtle USA Flag Background */}
       <div className="absolute inset-0 opacity-[0.2] pointer-events-none">
-        <Image src="/images/design-mode/american-flag-background-14774885226da.jpg" alt="" fill className="object-cover" />
+        <Image
+          src="/images/design-mode/american-flag-background-14774885226da.jpg"
+          alt=""
+          fill
+          className="object-cover"
+        />
       </div>
 
       {/* Content Container */}
       <div className="container mx-auto px-4 max-w-7xl relative z-10">
         {/* Hero Section with Heart Flag */}
-        <div className="text-center mb-20">
-          <div className="flex justify-center mb-8">
+        <div className="text-center mb-12 sm:mb-16 md:mb-20">
+          <div className="flex justify-center mb-6 sm:mb-8">
             <div className="relative">
               <Image
                 src="/images/heart-flag-icon.webp"
                 alt="American Heart Flag"
-                width={120}
-                height={120}
-                className="drop-shadow-2xl"
+                width={80}
+                height={80}
+                className="drop-shadow-2xl sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px]"
               />
               <div className="absolute inset-0 bg-[#C8A55C]/20 blur-3xl rounded-full scale-150" />
             </div>
           </div>
 
-          <h2 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-[#0B1C2C] mb-8 leading-tight">
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-[#0B1C2C] mb-6 sm:mb-8 leading-tight px-4">
             Fly Your Flag.
             <br />
             Feed a Family.
             <br />
             Free a Warrior.
           </h2>
-          <p className="text-xl md:text-2xl text-[#0B1C2C]/80 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-[#0B1C2C]/80 max-w-4xl mx-auto leading-relaxed px-4">
             When you invest in a <span className="font-bold text-[#0B1C2C]">Phoenix Flagpole</span>, you're not just
             buying the last flagpole you'll ever need. You're joining a movement that transforms lives across America.
           </p>
         </div>
 
-        {/* Staggered Impact Cards */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          {/* Card 1: Meals Donated - Elevated */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
+          {/* Card 1: Meals Donated */}
           <div className="md:transform md:-translate-y-8">
-            <div className="bg-white rounded-2xl shadow-2xl p-8 border-2 border-[#C8A55C]/20 hover:border-[#C8A55C] transition-all duration-300 hover:shadow-[#C8A55C]/20 hover:-translate-y-2 group">
+            <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 border-2 border-[#C8A55C]/20 hover:border-[#C8A55C] transition-all duration-300 hover:shadow-[#C8A55C]/20 hover:-translate-y-2 group">
               <div className="mb-6">
                 <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#0B1C2C] to-[#1A2F44] flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   <Check className="w-8 h-8 text-white stroke-[3]" />
@@ -65,9 +69,9 @@ export function ImpactMissionSection() {
             </div>
           </div>
 
-          {/* Card 2: K9s For Warriors - Center */}
+          {/* Card 2: K9s For Warriors */}
           <div>
-            <div className="bg-gradient-to-br from-[#0B1C2C] to-[#1A2F44] rounded-2xl shadow-2xl p-8 border-2 border-[#C8A55C] hover:shadow-[#C8A55C]/30 transition-all duration-300 hover:-translate-y-2 group">
+            <div className="bg-gradient-to-br from-[#0B1C2C] to-[#1A2F44] rounded-2xl shadow-2xl p-6 sm:p-8 border-2 border-[#C8A55C] hover:shadow-[#C8A55C]/30 transition-all duration-300 hover:-translate-y-2 group">
               <div className="mb-6">
                 <div className="w-16 h-16 rounded-xl bg-[#C8A55C] flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   <Heart className="w-8 h-8 text-white fill-white" />
@@ -88,9 +92,9 @@ export function ImpactMissionSection() {
             </div>
           </div>
 
-          {/* Card 3: Operation Underground Railroad - Elevated */}
+          {/* Card 3: Operation Underground Railroad */}
           <div className="md:transform md:-translate-y-8">
-            <div className="bg-white rounded-2xl shadow-2xl p-8 border-2 border-[#C8A55C]/20 hover:border-[#C8A55C] transition-all duration-300 hover:shadow-[#C8A55C]/20 hover:-translate-y-2 group">
+            <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 border-2 border-[#C8A55C]/20 hover:border-[#C8A55C] transition-all duration-300 hover:shadow-[#C8A55C]/20 hover:-translate-y-2 group">
               <div className="mb-6">
                 <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#0B1C2C] to-[#1A2F44] flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   <Globe className="w-8 h-8 text-white stroke-[2.5]" />
@@ -112,35 +116,36 @@ export function ImpactMissionSection() {
           </div>
         </div>
 
-        {/* Bottom Impact Statement with Heart Flag */}
         <div className="text-center max-w-5xl mx-auto">
-          <div className="bg-gradient-to-r from-[#0B1C2C] via-[#1A2F44] to-[#0B1C2C] rounded-3xl p-12 shadow-2xl border-2 border-[#C8A55C]">
-            <div className="flex items-center justify-center gap-4 mb-6">
+          <div className="bg-gradient-to-r from-[#0B1C2C] via-[#1A2F44] to-[#0B1C2C] rounded-3xl p-6 sm:p-8 md:p-12 shadow-2xl border-2 border-[#C8A55C]">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-4 sm:mb-6">
               <Image
                 src="/images/heart-flag-icon.webp"
                 alt="American Heart"
-                width={48}
-                height={48}
-                className="drop-shadow-lg"
+                width={40}
+                height={40}
+                className="drop-shadow-lg sm:w-[48px] sm:h-[48px]"
               />
-              <div className="h-12 w-px bg-[#C8A55C]" />
-              <p className="text-2xl md:text-3xl text-white font-serif italic">Every order helps restore lives.</p>
+              <div className="hidden sm:block h-12 w-px bg-[#C8A55C]" />
+              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white font-serif italic text-center">
+                Every order helps restore lives.
+              </p>
             </div>
-            <p className="text-2xl md:text-3xl text-white font-serif italic mb-6">
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white font-serif italic mb-4 sm:mb-6">
               Every flagpole helps raise more than a flag.
             </p>
-            <div className="flex flex-wrap justify-center gap-8 mt-8 pt-8 border-t border-[#C8A55C]/30">
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-8 mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-[#C8A55C]/30">
               <div className="text-center">
-                <div className="text-3xl font-bold text-[#C8A55C] mb-1">330K+</div>
-                <div className="text-sm text-white/70">Meals Donated</div>
+                <div className="text-2xl sm:text-3xl font-bold text-[#C8A55C] mb-1">330K+</div>
+                <div className="text-xs sm:text-sm text-white/70">Meals Donated</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-[#C8A55C] mb-1">100+</div>
-                <div className="text-sm text-white/70">Veterans Helped</div>
+                <div className="text-2xl sm:text-3xl font-bold text-[#C8A55C] mb-1">100+</div>
+                <div className="text-xs sm:text-sm text-white/70">Veterans Helped</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-[#C8A55C] mb-1">$50K+</div>
-                <div className="text-sm text-white/70">Donated to O.U.R.</div>
+                <div className="text-2xl sm:text-3xl font-bold text-[#C8A55C] mb-1">$50K+</div>
+                <div className="text-xs sm:text-sm text-white/70">Donated to O.U.R.</div>
               </div>
             </div>
           </div>

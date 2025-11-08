@@ -70,7 +70,10 @@ export function ReviewsMarquee() {
         <div ref={marqueeRef} className="flex gap-6 whitespace-nowrap">
           {/* Duplicate reviews for seamless loop */}
           {[...reviews, ...reviews].map((review, index) => (
-            <div key={index} className="inline-block bg-[#112B44] rounded-lg p-6 min-w-[300px] max-w-[300px]">
+            <div
+              key={index}
+              className="inline-block bg-[#112B44] rounded-lg p-4 md:p-6 min-w-[280px] max-w-[280px] md:min-w-[300px] md:max-w-[300px]"
+            >
               <div className="flex gap-1 mb-3">
                 {[...Array(review.rating)].map((_, i) => (
                   <Star key={i} className="w-4 h-4 fill-[#C8A55C] text-[#C8A55C]" />
