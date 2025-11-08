@@ -156,16 +156,16 @@ export function CartSidebarButton() {
 
                   {/* Enhanced Premier Kit display with larger product images and better visibility */}
                   {bundleConfig && bundleConfig.components.length > 0 && (
-                    <div className="ml-6 pl-4 border-l-4 border-green-500 space-y-2 bg-gradient-to-r from-green-500/10 to-green-600/5 rounded-r-lg p-4 mt-3">
+                    <div className="ml-6 pl-4 border-l-4 border-green-500 space-y-2 bg-gradient-to-r from-green-500/20 to-green-600/10 rounded-r-lg p-4 mt-3 shadow-lg">
                       <div className="flex items-center gap-2 mb-3">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
-                          <Plus className="w-5 h-5 text-white" />
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-md">
+                          <Plus className="w-6 h-6 text-white font-bold" />
                         </div>
                         <div>
-                          <p className="text-sm text-green-400 font-bold">Premier Kit Included FREE!</p>
-                          <p className="text-xs text-gray-300">
-                            {bundleConfig.components.length} premium items worth $
-                            {bundleConfig.components.reduce((sum, c) => sum + (c.retailPrice || 0), 0).toFixed(2)}
+                          <p className="text-base text-green-400 font-bold">Premier Kit Included FREE!</p>
+                          <p className="text-xs text-green-300 font-semibold">
+                            {bundleConfig.components.length} items • $
+                            {bundleConfig.components.reduce((sum, c) => sum + (c.retailPrice || 0), 0).toFixed(2)} value
                           </p>
                         </div>
                       </div>
@@ -173,9 +173,9 @@ export function CartSidebarButton() {
                         {bundleConfig.components.map((component, idx) => (
                           <div
                             key={idx}
-                            className="flex items-center gap-3 text-sm text-gray-200 bg-white/5 rounded-lg p-3 hover:bg-white/10 transition-colors"
+                            className="flex items-center gap-3 text-sm text-white bg-white/10 rounded-lg p-3 hover:bg-white/15 transition-colors border border-white/20"
                           >
-                            <div className="w-16 h-16 bg-white/10 rounded-lg overflow-hidden flex-shrink-0 border-2 border-white/20">
+                            <div className="w-16 h-16 bg-white/20 rounded-lg overflow-hidden flex-shrink-0 border-2 border-green-400/30 shadow-md">
                               {component.image ? (
                                 <Image
                                   src={component.image || "/placeholder.svg"}
@@ -186,20 +186,20 @@ export function CartSidebarButton() {
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
-                                  <Plus className="w-6 h-6 text-white/30" />
+                                  <Plus className="w-8 h-8 text-green-400/50" />
                                 </div>
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-semibold truncate">{component.title}</p>
+                              <p className="font-bold text-white truncate">{component.title}</p>
                               {component.quantity > 1 && (
-                                <p className="text-xs text-gray-400">Qty: {component.quantity}</p>
+                                <p className="text-xs text-green-300 font-semibold">Qty: {component.quantity}</p>
                               )}
                             </div>
                             {component.retailPrice && (
                               <div className="text-right flex-shrink-0">
-                                <p className="text-green-400 font-bold">${component.retailPrice}</p>
-                                <p className="text-xs text-green-300">FREE</p>
+                                <p className="text-green-400 font-bold text-lg">${component.retailPrice}</p>
+                                <p className="text-xs text-green-300 font-bold uppercase">FREE</p>
                               </div>
                             )}
                           </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { X, ChevronRight, ChevronLeft, User, Sparkles, MapPin, Package } from "lucide-react"
 import { navigationConfig, singleNavItems } from "@/lib/navigation-config"
 
@@ -147,6 +148,14 @@ export function MobileMenuAmazon({
                     onClick={handleLinkClick}
                     className="flex items-start gap-3 p-3 bg-white hover:bg-[#F5F3EF] rounded-lg transition-all shadow-sm hover:shadow-md border border-gray-100"
                   >
+                    <div className="relative w-16 h-16 shrink-0 bg-gray-100 rounded-md overflow-hidden">
+                      <Image
+                        src="https://cdn.shopify.com/s/files/1/2133/9559/files/Phoenix_Telescoping_Flagpole_Premier_Kit_-_Starter_Bundle.png?v=1761115372"
+                        alt="Phoenix Premier Kit"
+                        fill
+                        className="object-contain p-1"
+                      />
+                    </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="bg-[#C8A55C] text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">
@@ -156,10 +165,9 @@ export function MobileMenuAmazon({
                       <h4 className="font-bold text-sm text-[#0B1C2C] mb-1">Phoenix Premier Kit</h4>
                       <p className="text-xs text-gray-600 mb-2">Complete bundle with all accessories included</p>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-[#0B1C2C]">Starting at $399</span>
+                        <span className="text-sm font-bold text-[#0B1C2C]">Starting at $779</span>
                       </div>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-gray-400 shrink-0 mt-1" />
                   </Link>
 
                   <Link
@@ -167,6 +175,14 @@ export function MobileMenuAmazon({
                     onClick={handleLinkClick}
                     className="flex items-start gap-3 p-3 bg-white hover:bg-[#F5F3EF] rounded-lg transition-all shadow-sm hover:shadow-md border border-gray-100"
                   >
+                    <div className="relative w-16 h-16 shrink-0 bg-gray-100 rounded-md overflow-hidden">
+                      <Image
+                        src="https://cdn.shopify.com/s/files/1/2133/9559/files/phoenix-telescoping-flagpole-usa-flag.jpg?v=1735597814"
+                        alt="Telescoping Flagpoles"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">
@@ -179,7 +195,6 @@ export function MobileMenuAmazon({
                         <span className="text-sm font-bold text-[#0B1C2C]">Shop Collection</span>
                       </div>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-gray-400 shrink-0 mt-1" />
                   </Link>
                 </div>
               </div>
@@ -262,6 +277,13 @@ export function MobileMenuAmazon({
                   Help & Settings
                 </h3>
                 <div className="space-y-2">
+                  <Link
+                    href="/help-center"
+                    onClick={handleLinkClick}
+                    className="block text-[#0B1C2C] hover:text-[#C8A55C] transition-colors py-2 font-medium"
+                  >
+                    Help Center
+                  </Link>
                   <Link
                     href="/guarantee"
                     onClick={handleLinkClick}

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { ShoppingCart, Menu, ChevronDown, User, Sparkles, MapPin, Search, X } from "lucide-react"
+import { ShoppingCart, Menu, ChevronDown, User, Sparkles, MapPin } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
 import { useCart } from "@/components/cart/cart-context"
@@ -41,7 +41,6 @@ export function HeaderClient({
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [quizModalOpen, setQuizModalOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
   const { cart } = useCart()
   const cartItemCount = cart?.lines?.edges?.length || 0
   const { location } = useGeo()
@@ -52,50 +51,71 @@ export function HeaderClient({
   useEffect(() => {
     const handleScroll = () => {
       const scrolled = window.scrollY > 50
-      console.log("[v0] Mobile header scroll position:", window.scrollY, "isScrolled:", scrolled)
       setIsScrolled(scrolled)
+      console.log("[v0] Scroll position:", window.scrollY, "isScrolled:", scrolled)
     }
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  const menuItems = menuData?.items || []
+  console.log("[v0] Mobile menu isOpen:", mobileMenuOpen)
 
-  console.log("[v0] HeaderClient rendering - isScrolled:", isScrolled, "cartItemCount:", cartItemCount)
+  const menuItems = menuData?.items || []
 
   return (
     <>
       <div
-        className={`md:hidden fixed top-8 left-0 right-0 z-[999] bg-white border-b-2 border-[#C8A55C] shadow-2xl transition-all duration-200 ${
-          isScrolled ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+        className={`md:hidden fixed inset-x-0 top-8 z-[999] bg-white/95 backdrop-blur-md border-b-2 border-[#C8A55C]/30 shadow-xl transition-transform duration-300 ${
+          isScrolled ? "translate-y-0" : "-translate-y-full"
         }`}
+        style={{ height: "40px" }}
       >
-        <div className="flex items-center justify-between h-10 px-2">
-          {/* Hamburger */}
-          <button className="text-[#0B1C2C] p-1" onClick={() => setMobileMenuOpen(true)} aria-label="Open menu">
-            <Menu className="w-5 h-5" />
+        <div className="flex items-center justify-between h-full px-2.5">
+          {/* Left: Hamburger */}
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="flex items-center justify-center w-9 h-9 hover:bg-gray-100 rounded-md transition-colors"
+            aria-label="Open menu"
+          >
+            <Menu className="w-5 h-5 text-[#0B1C2C]" strokeWidth={2.5} />
           </button>
 
-          {/* Logo + Text */}
-          <Link href="/" className="flex items-center gap-1">
-            <Image src="/images/favicon.png" alt="Logo" width={20} height={20} className="w-5 h-5" />
-            <span className="text-[10px] font-bold text-[#0B1C2C] tracking-wider whitespace-nowrap">
-              ATLANTIC FLAGPOLE
-            </span>
+          {/* Center: Logo + Text */}
+          <Link href="/" className="flex items-center gap-1.5 flex-1 justify-center">
+            <Image
+              src="/images/favicon.png"
+              alt="Atlantic Flagpoles"
+              width={22}
+              height={22}
+              className="w-[22px] h-[22px]"
+            />
+            <span className="text-[11px] font-extrabold text-[#0B1C2C] tracking-wider">ATLANTIC FLAGPOLE</span>
           </Link>
 
-          {/* Icons */}
+          {/* Right: Icons */}
           <div className="flex items-center gap-0.5">
-            <button className="text-[#0B1C2C] p-1" onClick={() => setMobileSearchOpen(true)} aria-label="Search">
-              <Search className="w-5 h-5" />
-            </button>
-            <a href={shopifyAccountUrl} className="text-[#0B1C2C] p-1" aria-label="Account">
-              <User className="w-5 h-5" />
+            <Link
+              href="/flagpole-finder"
+              className="flex items-center justify-center w-9 h-9 hover:bg-gray-100 rounded-md transition-colors"
+              aria-label="AI Flagpole Finder"
+            >
+              <Sparkles className="w-5 h-5 text-[#C8A55C]" strokeWidth={2.5} />
+            </Link>
+            <a
+              href={shopifyAccountUrl}
+              className="flex items-center justify-center w-9 h-9 hover:bg-gray-100 rounded-md transition-colors"
+              aria-label="My account"
+            >
+              <User className="w-5 h-5 text-[#0B1C2C]" strokeWidth={2.5} />
             </a>
-            <Link href="/cart" className="relative text-[#0B1C2C] p-1" aria-label="Cart">
-              <ShoppingCart className="w-5 h-5" />
+            <Link
+              href="/cart"
+              className="relative flex items-center justify-center w-9 h-9 hover:bg-gray-100 rounded-md transition-colors"
+              aria-label="Shopping cart"
+            >
+              <ShoppingCart className="w-5 h-5 text-[#0B1C2C]" strokeWidth={2.5} />
               {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                <span className="absolute top-0.5 right-0.5 bg-red-600 text-white text-[9px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
                   {cartItemCount}
                 </span>
               )}
@@ -104,50 +124,7 @@ export function HeaderClient({
         </div>
       </div>
 
-      {mobileSearchOpen && (
-        <div className="md:hidden fixed inset-0 z-[99999] bg-white">
-          <div className="flex flex-col h-full">
-            {/* Search Header */}
-            <div className="flex items-center gap-3 p-3 border-b-2 border-[#C8A55C] bg-white shadow-md">
-              <button onClick={() => setMobileSearchOpen(false)} className="text-[#0B1C2C] p-1" aria-label="Close">
-                <X className="w-6 h-6" />
-              </button>
-              <div className="flex-1">
-                <SearchBarWrapper className="w-full" autoFocus />
-              </div>
-            </div>
-
-            {/* Quick Links */}
-            <div className="p-4 space-y-2 overflow-y-auto">
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Popular Searches</p>
-              <Link
-                href="/collections/residential-flagpoles"
-                onClick={() => setMobileSearchOpen(false)}
-                className="block px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm font-semibold text-[#0B1C2C]"
-              >
-                Residential Flagpoles
-              </Link>
-              <Link
-                href="/collections/commercial-flagpoles"
-                onClick={() => setMobileSearchOpen(false)}
-                className="block px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm font-semibold text-[#0B1C2C]"
-              >
-                Commercial Flagpoles
-              </Link>
-              <Link
-                href="/flagpole-finder"
-                onClick={() => setMobileSearchOpen(false)}
-                className="block px-4 py-3 bg-gradient-to-r from-[#C8A55C] to-[#d4b56f] rounded-lg text-sm font-semibold text-white flex items-center gap-2"
-              >
-                <Sparkles className="w-4 h-4" />
-                AI Flagpole Finder
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <header className="relative bg-white z-50 border-b-2 border-gray-200">
+      <header className="relative bg-white z-50 border-b border-gray-200">
         {/* Desktop Top Bar */}
         <div className="border-b border-gray-200 bg-[#F5F3EF] hidden md:block">
           <div className="container mx-auto px-4 py-2 flex justify-between items-center text-xs">
@@ -177,32 +154,56 @@ export function HeaderClient({
         <div className="bg-white">
           <div className="container mx-auto px-4">
             <div className="md:hidden">
-              <div className="flex items-center justify-between h-11 py-1.5">
-                {/* Hamburger */}
-                <button className="text-[#0B1C2C] p-1" onClick={() => setMobileMenuOpen(true)} aria-label="Menu">
-                  <Menu className="w-5 h-5" />
+              <div className="flex items-center justify-between py-2" style={{ height: "52px" }}>
+                {/* Left: Hamburger */}
+                <button
+                  onClick={() => setMobileMenuOpen(true)}
+                  className="flex items-center justify-center w-10 h-10 hover:bg-gray-50 rounded-lg transition-colors"
+                  aria-label="Open navigation menu"
+                >
+                  <Menu className="w-6 h-6 text-[#0B1C2C]" strokeWidth={2.5} />
                 </button>
 
-                {/* Logo + Brand Text */}
-                <Link href="/" className="flex items-center gap-1.5">
-                  <Image src="/images/favicon.png" alt="Logo" width={24} height={24} className="w-6 h-6" />
-                  <span className="text-[11px] font-bold text-[#0B1C2C] tracking-wider whitespace-nowrap">
-                    ATLANTIC FLAGPOLE
+                {/* Center: Logo + Brand Name */}
+                <Link href="/" className="flex items-center gap-2 flex-1 justify-center">
+                  <Image
+                    src="/images/favicon.png"
+                    alt="Atlantic Flagpoles"
+                    width={28}
+                    height={28}
+                    className="w-7 h-7"
+                  />
+                  <span className="text-xs font-extrabold text-[#0B1C2C] tracking-wider leading-tight">
+                    ATLANTIC
+                    <br />
+                    FLAGPOLE
                   </span>
                 </Link>
 
-                {/* Icons: Search, Account, Cart */}
+                {/* Right: Action Icons */}
                 <div className="flex items-center gap-0.5">
-                  <button className="text-[#0B1C2C] p-1" onClick={() => setMobileSearchOpen(true)} aria-label="Search">
-                    <Search className="w-5 h-5" />
-                  </button>
-                  <a href={shopifyAccountUrl} className="text-[#0B1C2C] p-1" aria-label="Account">
-                    <User className="w-5 h-5" />
+                  <Link
+                    href="/flagpole-finder"
+                    className="flex items-center justify-center w-10 h-10 hover:bg-gray-50 rounded-lg transition-colors"
+                    aria-label="AI Flagpole Finder"
+                  >
+                    <Sparkles className="w-6 h-6 text-[#C8A55C]" strokeWidth={2.5} />
+                  </Link>
+                  <a
+                    href={shopifyAccountUrl}
+                    className="flex items-center justify-center w-10 h-10 hover:bg-gray-50 rounded-lg transition-colors"
+                    aria-label="Account login"
+                  >
+                    <User className="w-6 h-6 text-[#0B1C2C]" strokeWidth={2.5} />
                   </a>
-                  <Link href="/cart" className="relative text-[#0B1C2C] p-1" aria-label="Cart">
-                    <ShoppingCart className="w-5 h-5" />
+                  <Link
+                    href="/cart"
+                    className="relative flex items-center justify-center w-10 h-10 hover:bg-gray-50 rounded-lg transition-colors"
+                    aria-label="View cart"
+                  >
+                    <ShoppingCart className="w-6 h-6 text-[#0B1C2C]" strokeWidth={2.5} />
                     {cartItemCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                      <span className="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-black rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1.5">
                         {cartItemCount}
                       </span>
                     )}
@@ -211,6 +212,7 @@ export function HeaderClient({
               </div>
             </div>
 
+            {/* Desktop Header */}
             <div className="hidden md:flex items-center justify-between h-24">
               <button className="lg:hidden text-[#0B1C2C]" onClick={() => setMobileMenuOpen(true)}>
                 <Menu className="w-8 h-8" />

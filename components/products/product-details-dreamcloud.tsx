@@ -14,6 +14,7 @@ import { Check, Shield, Truck, Award, Package, Wrench, Wind, Medal, ChevronDown,
 import { JudgeMeBadge, JudgeMeReviewWidget } from "./judgeme-widgets"
 import { useSearchParams } from "next/navigation"
 import { CompanyStorySection } from "./company-story-section"
+import { SmartUpsellCTA } from "./smart-upsell-cta"
 
 interface ProductDetailsDreamCloudProps {
   product: ShopifyProduct
@@ -68,6 +69,8 @@ export function ProductDetailsDreamCloud({
   const discountPercentage = hasDiscount ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100) : 0
 
   const isPremierBundle = bundleData?.includesPremier || false
+
+  const displayTitle = product.title.length > 60 ? product.title.substring(0, 57) + "..." : product.title
 
   useEffect(() => {
     const handleScroll = () => {
@@ -199,7 +202,8 @@ export function ProductDetailsDreamCloud({
               )}
 
               <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4 text-balance leading-tight">
-                {product.title}
+                <span className="md:hidden">{displayTitle}</span>
+                <span className="hidden md:block">{product.title}</span>
               </h1>
 
               <div className="mb-6">
@@ -336,6 +340,17 @@ export function ProductDetailsDreamCloud({
 
       {/* Company Story Section */}
       <CompanyStorySection />
+
+      {/* Smart Upsell Section */}
+      <section className="max-w-screen-xl mx-auto px-4 md:px-8 py-8">
+        <SmartUpsellCTA
+          currentProduct={{
+            handle: product.handle,
+            title: product.title,
+            productType: product.productType,
+          }}
+        />
+      </section>
 
       {/* Sticky Product Selector */}
       {isSticky && selectedVariant && (
