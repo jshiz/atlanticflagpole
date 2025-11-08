@@ -152,7 +152,7 @@ export function FlaggyChatWidget() {
     }
 
     const isProduction = window.location.hostname === "atlanticflagpole.com"
-    const shopifyInboxUrl = isProduction ? "/apps/shopify-chat" : "https://atlanticflagpole.com/apps/shopify-chat"
+    const shopifyInboxUrl = isProduction ? "/?show_chat" : "https://atlanticflagpole.com/?show_chat"
 
     // Store customer info in sessionStorage so Shopify can access it
     sessionStorage.setItem(
