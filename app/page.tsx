@@ -30,6 +30,20 @@ const ExpandableReviews = dynamic(
   },
 )
 
+const RealHomesShowcase = dynamic(
+  () => import("@/components/home/real-homes-showcase").then((mod) => ({ default: mod.RealHomesShowcase })),
+  {
+    loading: () => <div className="h-96 bg-[#0A2740] animate-pulse" />,
+  },
+)
+
+const CustomerSpotlightCards = dynamic(
+  () => import("@/components/home/customer-spotlight-cards").then((mod) => ({ default: mod.CustomerSpotlightCards })),
+  {
+    loading: () => <div className="h-96 bg-white animate-pulse" />,
+  },
+)
+
 export const metadata: Metadata = generateHomeMetadata()
 
 export const revalidate = 3600
@@ -74,6 +88,12 @@ export default async function Home() {
         <FeaturesSection />
       </FadeInOnScroll>
 
+      <FadeInOnScroll delay={125}>
+        <Suspense fallback={<div className="h-96 bg-[#0A2740] animate-pulse" />}>
+          <RealHomesShowcase />
+        </Suspense>
+      </FadeInOnScroll>
+
       <FadeInOnScroll delay={150}>
         <BestsellerSpotlight />
       </FadeInOnScroll>
@@ -85,6 +105,12 @@ export default async function Home() {
       <FadeInOnScroll delay={200}>
         <Suspense fallback={<div className="h-96 bg-white animate-pulse" />}>
           <PhoenixVsCompetition />
+        </Suspense>
+      </FadeInOnScroll>
+
+      <FadeInOnScroll delay={225}>
+        <Suspense fallback={<div className="h-96 bg-white animate-pulse" />}>
+          <CustomerSpotlightCards />
         </Suspense>
       </FadeInOnScroll>
 

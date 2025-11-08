@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { ShoppingCart, Menu, ChevronDown, User, Sparkles, MapPin } from "lucide-react"
+import { ShoppingCart, Menu, ChevronDown, User, Sparkles, MapPin, Search } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
 import { useCart } from "@/components/cart/cart-context"
@@ -99,10 +99,49 @@ export function HeaderClient({
           </div>
         </div>
 
-        {/* Main Header */}
         <div className="bg-white">
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between h-24">
+            {/* Mobile Header - 2 rows on mobile, collapses on scroll */}
+            <div className="md:hidden">
+              {/* Row 1: Logo, Account, Cart */}
+              <div className="flex items-center justify-between h-16">
+                <button className="text-[#0B1C2C]" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                  <Menu className="w-6 h-6" />
+                </button>
+
+                <Link href="/" className="flex items-center">
+                  <Image
+                    src="/images/favicon.png"
+                    alt="Atlantic Flagpoles"
+                    width={32}
+                    height={32}
+                    className="w-8 h-8"
+                  />
+                </Link>
+
+                <div className="flex items-center gap-3">
+                  <a href={shopifyAccountUrl} className="text-[#0B1C2C]">
+                    <User className="w-5 h-5" />
+                  </a>
+                  <Link href="/cart" className="relative text-[#0B1C2C]">
+                    <ShoppingCart className="w-5 h-5" />
+                    {cartItemCount > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-[#C8A55C] text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                        {cartItemCount}
+                      </span>
+                    )}
+                  </Link>
+                </div>
+              </div>
+
+              {/* Row 2: Search Bar - full width */}
+              <div className="pb-3 px-2">
+                <SearchBarWrapper className="w-full" />
+              </div>
+            </div>
+
+            {/* Desktop Header */}
+            <div className="hidden md:flex items-center justify-between h-24">
               <button className="lg:hidden text-[#0B1C2C]" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
                 <Menu className="w-8 h-8" />
               </button>
@@ -244,25 +283,31 @@ export function HeaderClient({
             />
           </div>
         </div>
+        {/* </CHANGE> */}
       </header>
 
-      {/* Sticky Header on Scroll */}
       <div
-        className={`fixed top-0 left-0 right-0 z-50 bg-white border-b-2 border-gray-200 shadow-lg transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-[999] bg-white border-b-2 border-gray-200 shadow-lg transition-all duration-300 ${
           isScrolled ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
         }`}
       >
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-14">
+            <button className="md:hidden text-[#0B1C2C]" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+              <Menu className="w-5 h-5" />
+            </button>
+
             <Link href="/" className="flex items-center gap-2">
               <Image
                 src="/images/favicon.png"
                 alt="Atlantic Flagpoles Logo"
                 width={32}
                 height={32}
-                className="w-8 h-8"
+                className="w-7 h-7 md:w-8 md:h-8"
               />
-              <span className="text-lg font-serif font-bold text-[#0B1C2C] hidden sm:block">ATLANTIC FLAGPOLES</span>
+              <span className="text-base md:text-lg font-serif font-bold text-[#0B1C2C] hidden sm:block">
+                ATLANTIC FLAGPOLES
+              </span>
             </Link>
 
             <nav className="hidden lg:flex items-center gap-6">
@@ -277,17 +322,26 @@ export function HeaderClient({
               ))}
             </nav>
 
-            <Link href="/cart" className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors">
-              <ShoppingCart className="w-5 h-5" />
-              {cartItemCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[#C8A55C] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartItemCount}
-                </span>
-              )}
-            </Link>
+            <div className="flex items-center gap-3">
+              <button className="text-[#0B1C2C] md:hidden">
+                <Search className="w-5 h-5" />
+              </button>
+              <a href={shopifyAccountUrl} className="text-[#0B1C2C] md:hidden">
+                <User className="w-5 h-5" />
+              </a>
+              <Link href="/cart" className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors">
+                <ShoppingCart className="w-5 h-5" />
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-[#C8A55C] text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center text-[10px]">
+                    {cartItemCount}
+                  </span>
+                )}
+              </Link>
+            </div>
           </div>
         </div>
       </div>
+      {/* </CHANGE> */}
 
       <FlagpoleQuizModal open={quizModalOpen} onOpenChange={setQuizModalOpen} />
     </>

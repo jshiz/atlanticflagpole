@@ -1,4 +1,5 @@
 import { Check, X } from "lucide-react"
+import Image from "next/image"
 
 export function WhyBetter() {
   const stats = [
@@ -18,6 +19,38 @@ export function WhyBetter() {
   return (
     <section className="py-16 md:py-24 bg-white">
       <div className="container mx-auto px-4">
+        <div className="mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#0B1C2C] mb-3 text-center">
+            Trusted by Thousands of Patriots
+          </h2>
+          <p className="text-lg text-[#666666] mb-8 text-center max-w-2xl mx-auto">
+            Real customers. Real flagpoles. Real American pride.
+          </p>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
+            {[
+              { src: "/images/customer-photos/customer1.jpg", alt: "Customer flagpole installation 1" },
+              { src: "/images/customer-photos/customer2.jpg", alt: "Customer flagpole installation 2" },
+              { src: "/images/customer-photos/customer3.jpg", alt: "Customer flagpole installation 3" },
+              { src: "/images/customer-photos/customer4.jpg", alt: "Customer flagpole installation 4" },
+              { src: "/images/customer-photos/customer5.jpg", alt: "Customer flagpole installation 5" },
+            ].map((photo, index) => (
+              <div
+                key={index}
+                className="relative aspect-square rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105"
+              >
+                <Image
+                  src={photo.src || "/placeholder.svg"}
+                  alt={photo.alt}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Column */}
           <div>

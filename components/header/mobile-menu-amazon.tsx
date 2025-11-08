@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { X, ChevronRight, ChevronLeft, User, Sparkles, MapPin } from "lucide-react"
+import { X, ChevronRight, ChevronLeft, User, Sparkles, MapPin, Package } from "lucide-react"
 import { navigationConfig, singleNavItems } from "@/lib/navigation-config"
 
 interface MobileMenuAmazonProps {
@@ -133,6 +133,55 @@ export function MobileMenuAmazon({
                   </div>
                   <ChevronRight className="w-5 h-5" />
                 </a>
+              </div>
+
+              {/* Featured Products */}
+              <div className="p-4 border-b border-gray-200 bg-gradient-to-br from-[#F5F3EF] to-white">
+                <h3 className="text-lg font-bold text-[#0B1C2C] mb-3 flex items-center gap-2">
+                  <Package className="w-5 h-5 text-[#C8A55C]" />
+                  Featured Products
+                </h3>
+                <div className="space-y-2">
+                  <Link
+                    href="/products/phoenix-telescoping-flagpole-premier-kit-starter-bundle"
+                    onClick={handleLinkClick}
+                    className="flex items-start gap-3 p-3 bg-white hover:bg-[#F5F3EF] rounded-lg transition-all shadow-sm hover:shadow-md border border-gray-100"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="bg-[#C8A55C] text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">
+                          Most Popular
+                        </span>
+                      </div>
+                      <h4 className="font-bold text-sm text-[#0B1C2C] mb-1">Phoenix Premier Kit</h4>
+                      <p className="text-xs text-gray-600 mb-2">Complete bundle with all accessories included</p>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-[#0B1C2C]">Starting at $399</span>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-gray-400 shrink-0 mt-1" />
+                  </Link>
+
+                  <Link
+                    href="/collections/telescoping-flagpoles"
+                    onClick={handleLinkClick}
+                    className="flex items-start gap-3 p-3 bg-white hover:bg-[#F5F3EF] rounded-lg transition-all shadow-sm hover:shadow-md border border-gray-100"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">
+                          Best Seller
+                        </span>
+                      </div>
+                      <h4 className="font-bold text-sm text-[#0B1C2C] mb-1">Telescoping Flagpoles</h4>
+                      <p className="text-xs text-gray-600 mb-2">Easy install, no ladders needed</p>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-[#0B1C2C]">Shop Collection</span>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-gray-400 shrink-0 mt-1" />
+                  </Link>
+                </div>
               </div>
 
               {/* Trending / Quick Actions */}

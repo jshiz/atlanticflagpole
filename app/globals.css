@@ -233,6 +233,11 @@
     animation: marquee 30s linear infinite;
   }
 
+  /* Adding faster marquee for hero section */
+  .animate-marquee-fast {
+    animation: marquee-seamless 15s linear infinite;
+  }
+
   /* Adding seamless marquee animations for dual marquees */
   @keyframes marquee-seamless {
     0% {

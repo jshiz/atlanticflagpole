@@ -71,9 +71,56 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           }}
         />
 
-        <div className="relative z-10 flex items-center justify-between min-h-[500px] md:min-h-[550px] lg:min-h-[650px] px-4 md:px-12 lg:px-16 py-8 md:py-10">
+        <div className="relative z-10 flex flex-col items-center justify-center text-center lg:items-start lg:text-left min-h-[500px] md:min-h-[550px] lg:min-h-[650px] px-4 md:px-12 lg:px-16 py-8 md:py-10">
           <div
-            className={`max-w-[480px] w-full transition-all duration-1000 ${
+            className={`lg:absolute lg:top-8 lg:left-1/2 lg:-translate-x-1/2 mb-6 transition-all duration-1000 delay-500 ${
+              isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+            }`}
+          >
+            <div className="inline-block bg-[#0B1C2C]/70 backdrop-blur-sm border border-[#C8A55C]/50 rounded-lg px-4 md:px-6 py-2 md:py-2.5 mb-3 shadow-lg">
+              <h2 className="text-white text-sm md:text-base lg:text-lg xl:text-xl font-semibold drop-shadow-lg whitespace-nowrap">
+                Your Flag Deserves Better Than a Cheap Pole.
+              </h2>
+            </div>
+
+            <div className="flex items-center justify-center gap-2 md:gap-3 mb-3">
+              {[
+                { src: "/images/ten-percent-badge.svg", alt: "10% Pledge", delay: "delay-[600ms]" },
+                { src: "/images/bbb-logo.webp", alt: "BBB Accredited", delay: "delay-[700ms]" },
+                { src: "/images/one-percent-planet.svg", alt: "1% for Planet", delay: "delay-[750ms]" },
+                {
+                  src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/madeinusabadge-lV1WdGQGgGLFMrb7p8HQc5WnBMQ6ES.jpg",
+                  alt: "Made in USA",
+                  delay: "delay-[800ms]",
+                },
+              ].map((badge, index) => (
+                <Link
+                  key={index}
+                  href={
+                    index === 1
+                      ? "https://www.bbb.org/us/ny/albany/profile/flag-poles/atlantic-flag-and-pole-0041-235985313/"
+                      : "https://judge.me/reviews/stores/atlanticflagpole.com"
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 ${index === 1 ? "" : "bg-white"} rounded-full overflow-hidden shadow-md border-2 border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center relative ${badge.delay} ${
+                    isVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
+                  }`}
+                >
+                  <Image
+                    src={badge.src || "/placeholder.svg"}
+                    alt={badge.alt}
+                    fill
+                    className={`object-${index === 1 ? "cover" : "contain"} ${index === 3 ? "scale-75" : index === 1 ? "" : "p-1.5"}`}
+                    sizes="64px"
+                  />
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div
+            className={`max-w-[480px] w-full lg:self-start transition-all duration-1000 ${
               isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
             }`}
           >
@@ -109,7 +156,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             </p>
 
             <div
-              className={`flex flex-col items-start gap-2 max-w-[360px] transition-all duration-700 delay-400 ${
+              className={`flex flex-col items-center lg:items-start gap-2 max-w-[360px] mx-auto lg:mx-0 transition-all duration-700 delay-400 ${
                 isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
               }`}
             >
@@ -184,13 +231,19 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           </div>
 
           <div
-            className={`hidden lg:block max-w-[280px] transition-all duration-1000 delay-600 ${
+            className={`max-w-[280px] mx-auto lg:absolute lg:right-16 lg:top-1/2 lg:-translate-y-1/2 mt-6 lg:mt-0 transition-all duration-1000 delay-600 ${
               isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
             }`}
           >
             <div className="bg-white/90 backdrop-blur-sm rounded-lg p-5 shadow-xl border border-[#C8A55C]/30">
               <div className="flex items-center justify-center mb-3">
-                <Shield className="w-10 h-10 text-[#C8A55C]" />
+                <Image
+                  src="/images/phoenix-flagpole-gold.png"
+                  alt="Phoenix Flagpole"
+                  width={200}
+                  height={60}
+                  className="w-full max-w-[200px] h-auto object-contain"
+                />
               </div>
               <h3 className="text-[#0B1C2C] text-lg font-bold text-center mb-2 leading-tight">
                 The Last Flagpole You'll Ever Need. Guaranteed.
@@ -210,62 +263,15 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
               </div>
             </div>
           </div>
-        </div>
 
-        <div
-          className={`hidden md:block absolute top-8 left-1/2 -translate-x-1/2 text-center z-20 transition-all duration-1000 delay-500 ${
-            isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
-          }`}
-        >
-          <div className="inline-block bg-[#0B1C2C]/70 backdrop-blur-sm border border-[#C8A55C]/50 rounded-lg px-6 py-2.5 mb-3 shadow-lg">
-            <h2 className="text-white text-base lg:text-lg xl:text-xl font-semibold drop-shadow-lg whitespace-nowrap">
-              Your Flag Deserves Better Than a Cheap Pole.
-            </h2>
+          <div className="lg:absolute lg:bottom-3 lg:left-4 lg:md:bottom-4 lg:md:left-6 mt-4 lg:mt-0">
+            <p className="text-white text-sm md:text-base font-serif drop-shadow-lg">Prices Starting From $299</p>
           </div>
-
-          <div className="flex items-center justify-center gap-3 mb-3">
-            {[
-              { src: "/images/ten-percent-badge.svg", alt: "10% Pledge", delay: "delay-[600ms]" },
-              { src: "/images/bbb-logo.webp", alt: "BBB Accredited", delay: "delay-[700ms]" },
-              { src: "/images/one-percent-planet.svg", alt: "1% for Planet", delay: "delay-[750ms]" },
-              {
-                src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/madeinusabadge-lV1WdGQGgGLFMrb7p8HQc5WnBMQ6ES.jpg",
-                alt: "Made in USA",
-                delay: "delay-[800ms]",
-              },
-            ].map((badge, index) => (
-              <Link
-                key={index}
-                href={
-                  index === 1
-                    ? "https://www.bbb.org/us/ny/albany/profile/flag-poles/atlantic-flag-and-pole-0041-235985313/"
-                    : "https://judge.me/reviews/stores/atlanticflagpole.com"
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`w-14 h-14 lg:w-16 lg:h-16 ${index === 1 ? "" : "bg-white"} rounded-full overflow-hidden shadow-md border-2 border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center relative ${badge.delay} ${
-                  isVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
-                }`}
-              >
-                <Image
-                  src={badge.src || "/placeholder.svg"}
-                  alt={badge.alt}
-                  fill
-                  className={`object-${index === 1 ? "cover" : "contain"} ${index === 3 ? "scale-75" : index === 1 ? "" : "p-1.5"}`}
-                  sizes="64px"
-                />
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div className="absolute bottom-3 left-4 md:bottom-4 md:left-6 z-20">
-          <p className="text-white text-sm md:text-base font-serif drop-shadow-lg">Prices Starting From $299</p>
         </div>
       </section>
-      {/* First Marquee - Scrolling Left */}
+
       <div className="bg-[#0B1C2C] py-3 overflow-hidden border-b-2 border-[#C8A55C]/30">
-        <div className="flex animate-marquee-seamless whitespace-nowrap">
+        <div className="flex animate-marquee-fast whitespace-nowrap">
           {[...Array(4)].map((_, setIndex) => (
             <div key={setIndex} className="flex items-center gap-12 px-6">
               <div className="flex items-center gap-3">
@@ -296,33 +302,33 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           ))}
         </div>
       </div>
-      {/* As Seen On and Trusted By Section */}
-      <div className="bg-white py-6 border-b border-gray-200">
+
+      <div className="bg-white py-8 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div className="flex items-center justify-center">
+          <h3 className="text-center text-2xl md:text-3xl font-serif font-bold text-[#0B1C2C] mb-6">
+            America's #1 Flagpole Company
+          </h3>
+
+          <div className="flex flex-col items-center justify-center gap-6 mb-8">
+            <div className="w-full max-w-2xl">
               <Image
-                src="/images/design-mode/as%20seen%20on.png"
-                alt="As seen on The First, Fox News, Newsmax, ABC, NBC, CBS"
-                width={800}
-                height={160}
-                className="h-20 md:h-24 w-auto object-contain"
+                src="/images/as-seen-on-media.png"
+                alt="As seen on The First, ABC, NBC, CBS, Fox News, Newsmax"
+                width={700}
+                height={100}
+                className="w-full h-auto object-contain"
               />
             </div>
 
-            <div className="flex items-center justify-center">
-              <div className="bg-gray-50 rounded-lg p-6 border-2 border-dashed border-gray-300">
-                <p className="text-gray-500 text-lg font-semibold text-center">
-                  Trusted By Section
-                  <br />
-                  U.S. Air Force, U.S. Army
-                  <br />
-                  Jesse Kelly, Bill O'Reilly, Skip Bedell
-                  <br />
-                  <span className="text-base">(Awaiting images)</span>
-                </p>
-              </div>
-            </div>
+            <p className="text-center text-[#0B1C2C]/70 max-w-3xl text-base md:text-lg leading-relaxed">
+              Featured on America's leading news networks including{" "}
+              <span className="font-semibold text-[#0B1C2C]">Fox News</span>,{" "}
+              <span className="font-semibold text-[#0B1C2C]">Newsmax</span>,{" "}
+              <span className="font-semibold text-[#0B1C2C]">ABC</span>,{" "}
+              <span className="font-semibold text-[#0B1C2C]">NBC</span>, and{" "}
+              <span className="font-semibold text-[#0B1C2C]">CBS</span>. Trusted by thousands of American patriots for
+              premium quality flagpoles that honor Old Glory.
+            </p>
           </div>
         </div>
       </div>

@@ -98,7 +98,6 @@ export function FlaggyChatWidget() {
   }
 
   const handleSuggestionClick = async (intent: string, label: string) => {
-    setShowSuggestions(false)
     addUserMessage(label)
     await processMessage(label, intent)
   }
@@ -107,7 +106,6 @@ export function FlaggyChatWidget() {
     if (message.trim()) {
       const userMessage = message.trim()
       setMessage("")
-      setShowSuggestions(false)
       addUserMessage(userMessage)
       await processMessage(userMessage)
     }
@@ -133,10 +131,11 @@ export function FlaggyChatWidget() {
       if (data.shouldEscalate) {
         setIsEscalating(true)
         addFlaggyMessage(
-          "That's a great question that needs a human expert's touch. I can connect you with our support team, and one of our team members will assist you shortly.",
+          "That's a great question that needs a human expert's touch. Let me collect your information and I'll have our team reach out to you via email within 24 hours.",
         )
       } else {
         addFlaggyMessage(data.response, data.product)
+        setShowSuggestions(true)
       }
     } catch (error) {
       console.error("[v0] Error processing message:", error)
@@ -151,44 +150,36 @@ export function FlaggyChatWidget() {
       return
     }
 
-    const isProduction = window.location.hostname === "atlanticflagpole.com"
-    const shopifyInboxUrl = isProduction ? "/?show_chat" : "https://atlanticflagpole.com/?show_chat"
+    try {
+      const response = await fetch("/api/create-support-ticket", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: ticketForm.name,
+          email: ticketForm.email,
+          issue: ticketForm.issue,
+          chatHistory: messages.map((m) => `${m.sender}: ${m.text}`).join("\n"),
+        }),
+      })
 
-    // Store customer info in sessionStorage so Shopify can access it
-    sessionStorage.setItem(
-      "pendingChatCustomer",
-      JSON.stringify({
-        name: ticketForm.name,
-        email: ticketForm.email,
-        initialMessage: ticketForm.issue,
-        chatHistory: messages.map((m) => `${m.sender}: ${m.text}`).join("\n"),
-      }),
-    )
-
-    addFlaggyMessage(
-      `Perfect! I'm connecting you with our live support team now. They'll be able to help you with: "${ticketForm.issue}". Opening chat window...`,
-    )
-
-    // Open Shopify Inbox in a centered popup window
-    setTimeout(() => {
-      const width = 400
-      const height = 600
-      const left = window.screen.width / 2 - width / 2
-      const top = window.screen.height / 2 - height / 2
-
-      window.open(
-        shopifyInboxUrl,
-        "Shopify Chat",
-        `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`,
-      )
-
-      setIsEscalating(false)
-      setTicketForm({ name: "", email: "", issue: "" })
-
+      if (response.ok) {
+        addFlaggyMessage(
+          `Perfect! I've created a support ticket and our team will reach out to you at ${ticketForm.email} within 24 hours. Your ticket details have been emailed to our support team. Is there anything else I can help with in the meantime?`,
+        )
+        setIsEscalating(false)
+        setTicketForm({ name: "", email: "", issue: "" })
+        setShowSuggestions(true)
+      } else {
+        addFlaggyMessage(
+          "I had trouble creating the ticket. Please email us directly at support@atlanticflagpole.com or call us.",
+        )
+      }
+    } catch (error) {
+      console.error("[v0] Error creating ticket:", error)
       addFlaggyMessage(
-        "Chat window opened! Our team will assist you there. Is there anything else I can help with in the meantime?",
+        "I had trouble creating the ticket. Please email us directly at support@atlanticflagpole.com or call us.",
       )
-    }, 1000)
+    }
   }
 
   const handleFlaggyClick = () => {
@@ -275,21 +266,21 @@ export function FlaggyChatWidget() {
       )}
 
       {flaggyState === "expanded" && (
-        <div className="fixed bottom-24 right-4 z-[120] w-[90vw] max-w-md h-[600px] bg-white rounded-2xl shadow-2xl border-2 border-[#C8A55C] flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
-          <div className="bg-gradient-to-r from-[#0B1C2C] to-[#1a2d3f] text-white p-4 flex items-center justify-between relative overflow-hidden">
+        <div className="fixed bottom-4 right-4 z-[120] w-[85vw] max-w-md h-[500px] md:h-[600px] bg-white rounded-2xl shadow-2xl border-2 border-[#C8A55C] flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
+          <div className="bg-gradient-to-r from-[#0B1C2C] to-[#1a2d3f] text-white p-3 md:p-4 flex items-center justify-between relative overflow-hidden">
             <div className="absolute inset-0 opacity-10">
               <div className="absolute inset-0 bg-[url('/placeholder.svg?height=100&width=100')] animate-pulse"></div>
             </div>
 
-            <div className="flex items-center gap-3 relative z-10">
-              <div className="relative w-12 h-12 bg-gradient-to-br from-[#C8A55C] to-[#B8954C] rounded-full p-1 shadow-lg">
+            <div className="flex items-center gap-2 md:gap-3 relative z-10">
+              <div className="relative w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-[#C8A55C] to-[#B8954C] rounded-full p-1 shadow-lg">
                 <div className="relative w-full h-full bg-white rounded-full p-1 overflow-hidden">
                   <Image src="/images/design-mode/Flaggy.png" alt="Flaggy" fill className="object-cover" />
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-lg">Flaggy</h3>
-                <p className="text-xs text-white/90 flex items-center gap-2">
+                <h3 className="font-bold text-base md:text-lg">Flaggy</h3>
+                <p className="text-[10px] md:text-xs text-white/90 flex items-center gap-2">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
@@ -309,38 +300,38 @@ export function FlaggyChatWidget() {
 
           <div
             ref={chatContainerRef}
-            className="flex-1 p-4 overflow-y-auto bg-gradient-to-b from-gray-50 to-white relative"
+            className="flex-1 p-3 md:p-4 overflow-y-auto bg-gradient-to-b from-gray-50 to-white relative"
           >
             {messages.map((msg) => (
-              <div key={msg.id} className={`mb-4 flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
+              <div
+                key={msg.id}
+                className={`mb-3 md:mb-4 flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+              >
                 <div className={`max-w-[80%] ${msg.sender === "user" ? "order-2" : "order-1"}`}>
                   {msg.sender === "flaggy" && (
                     <div className="flex items-center gap-2 mb-1">
-                      <div className="relative w-6 h-6">
+                      <div className="relative w-5 h-5 md:w-6 md:h-6">
                         <Image src="/images/design-mode/Flaggy.png" alt="Flaggy" fill className="object-contain" />
                       </div>
-                      <span className="text-xs font-semibold text-gray-600">Flaggy</span>
+                      <span className="text-[10px] md:text-xs font-semibold text-gray-600">Flaggy</span>
                     </div>
                   )}
                   <div
-                    className={`rounded-2xl p-3 shadow-sm ${
+                    className={`rounded-2xl p-2.5 md:p-3 shadow-sm text-xs md:text-sm ${
                       msg.sender === "user"
                         ? "bg-[#C8A55C] text-white rounded-tr-none"
                         : "bg-white border border-gray-200 rounded-tl-none"
                     }`}
                   >
-                    <p
-                      className={`text-sm whitespace-pre-line ${msg.sender === "user" ? "text-white" : "text-gray-800"}`}
-                    >
+                    <p className={`whitespace-pre-line ${msg.sender === "user" ? "text-white" : "text-gray-800"}`}>
                       {msg.text}
                     </p>
                   </div>
 
                   {msg.sender === "flaggy" && msg.product && (
-                    <div className="mt-3 bg-white border-2 border-[#C8A55C] rounded-xl overflow-hidden shadow-md">
-                      <div className="flex gap-3 p-3">
-                        {/* Product Image - Small square on the left */}
-                        <div className="relative w-20 h-20 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
+                    <div className="mt-2 md:mt-3 bg-white border-2 border-[#C8A55C] rounded-xl overflow-hidden shadow-md">
+                      <div className="flex gap-2 md:gap-3 p-2 md:p-3">
+                        <div className="relative w-16 h-16 md:w-20 md:h-20 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
                           {msg.product.image && msg.product.image.startsWith("http") ? (
                             <Image
                               src={msg.product.image || "/placeholder.svg"}
@@ -351,40 +342,41 @@ export function FlaggyChatWidget() {
                               unoptimized={msg.product.image.includes("placehold.co")}
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400 text-xs">
+                            <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400 text-[10px]">
                               No image
                             </div>
                           )}
                         </div>
 
-                        {/* Product Info - All on the right */}
                         <div className="flex-1 flex flex-col justify-between min-w-0">
                           <div>
-                            <h4 className="font-bold text-xs text-gray-900 mb-1 line-clamp-2">{msg.product.title}</h4>
+                            <h4 className="font-bold text-[10px] md:text-xs text-gray-900 mb-1 line-clamp-2">
+                              {msg.product.title}
+                            </h4>
                             <div className="flex items-center gap-1 mb-1">
                               {[...Array(5)].map((_, i) => (
                                 <Star
                                   key={i}
-                                  className={`w-2.5 h-2.5 ${
+                                  className={`w-2 h-2 md:w-2.5 md:h-2.5 ${
                                     i < Math.floor(msg.product!.rating)
                                       ? "fill-[#C8A55C] text-[#C8A55C]"
                                       : "fill-gray-200 text-gray-200"
                                   }`}
                                 />
                               ))}
-                              <span className="text-[10px] text-gray-600 ml-0.5">
+                              <span className="text-[9px] md:text-[10px] text-gray-600 ml-0.5">
                                 {msg.product.rating} ({msg.product.reviewCount.toLocaleString()})
                               </span>
                             </div>
                           </div>
                           <div className="flex items-center justify-between gap-2">
-                            <span className="text-base font-bold text-[#0B1C2C]">{msg.product.price}</span>
+                            <span className="text-sm md:text-base font-bold text-[#0B1C2C]">{msg.product.price}</span>
                             <button
                               onClick={() => handleAddToCart(msg.product!.variantId, msg.product!.title)}
-                              className="bg-[#C8A55C] hover:bg-[#B8954C] text-white px-2.5 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1 transition-colors whitespace-nowrap"
+                              className="bg-[#C8A55C] hover:bg-[#B8954C] text-white px-2 py-1 rounded-lg text-[9px] md:text-[10px] font-semibold flex items-center gap-1 transition-colors whitespace-nowrap"
                             >
-                              <ShoppingCart className="w-3 h-3" />
-                              Add to Cart
+                              <ShoppingCart className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                              Add
                             </button>
                           </div>
                         </div>
@@ -392,7 +384,7 @@ export function FlaggyChatWidget() {
                     </div>
                   )}
 
-                  <p className="text-xs text-gray-400 mt-1 px-2">
+                  <p className="text-[10px] md:text-xs text-gray-400 mt-1 px-2">
                     {msg.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </p>
                 </div>
@@ -451,9 +443,9 @@ export function FlaggyChatWidget() {
               </div>
             )}
 
-            {showSuggestions && messages.length > 0 && (
-              <div className="mt-4 space-y-2">
-                <p className="text-xs text-gray-500 font-semibold mb-2">Quick topics:</p>
+            {showSuggestions && messages.length > 0 && !isEscalating && (
+              <div className="mt-3 md:mt-4 space-y-2">
+                <p className="text-[10px] md:text-xs text-gray-500 font-semibold mb-2">Quick topics:</p>
                 {[
                   { label: "Product Recommendations", intent: "product_recommendation" },
                   { label: "Installation Help", intent: "installation_help" },
@@ -463,7 +455,7 @@ export function FlaggyChatWidget() {
                   <button
                     key={suggestion.intent}
                     onClick={() => handleSuggestionClick(suggestion.intent, suggestion.label)}
-                    className="w-full text-left px-4 py-2 bg-white border-2 border-[#C8A55C] text-[#0B1C2C] rounded-lg hover:bg-[#C8A55C] hover:text-white transition-all duration-200 text-sm font-medium shadow-sm"
+                    className="w-full text-left px-3 md:px-4 py-1.5 md:py-2 bg-white border-2 border-[#C8A55C] text-[#0B1C2C] rounded-lg hover:bg-[#C8A55C] hover:text-white transition-all duration-200 text-xs md:text-sm font-medium shadow-sm"
                   >
                     {suggestion.label}
                   </button>
@@ -472,36 +464,39 @@ export function FlaggyChatWidget() {
             )}
 
             {isEscalating && (
-              <div className="mt-4 bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-                <h4 className="font-bold text-sm text-blue-900 mb-3">Connect with Support</h4>
-                <div className="space-y-3">
+              <div className="mt-3 md:mt-4 bg-blue-50 border-2 border-blue-200 rounded-lg p-3 md:p-4">
+                <h4 className="font-bold text-xs md:text-sm text-blue-900 mb-2 md:mb-3">Connect with Support</h4>
+                <div className="space-y-2 md:space-y-3">
                   <input
                     type="text"
                     placeholder="Your Name"
                     value={ticketForm.name}
                     onChange={(e) => setTicketForm({ ...ticketForm, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    className="w-full px-2.5 md:px-3 py-1.5 md:py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs md:text-sm"
                   />
                   <input
                     type="email"
                     placeholder="Your Email"
                     value={ticketForm.email}
                     onChange={(e) => setTicketForm({ ...ticketForm, email: e.target.value })}
-                    className="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    className="w-full px-2.5 md:px-3 py-1.5 md:py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs md:text-sm"
                   />
                   <textarea
                     placeholder="Brief summary of your issue"
                     value={ticketForm.issue}
                     onChange={(e) => setTicketForm({ ...ticketForm, issue: e.target.value })}
                     rows={3}
-                    className="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none"
+                    className="w-full px-2.5 md:px-3 py-1.5 md:py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs md:text-sm resize-none"
                   />
                   <button
                     onClick={handleTicketSubmit}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition-colors font-medium text-sm"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 md:py-2 rounded-md transition-colors font-medium text-xs md:text-sm"
                   >
-                    Connect
+                    Send to Support Team
                   </button>
+                  <p className="text-[10px] md:text-xs text-blue-700 text-center">
+                    Our team will email you within 24 hours
+                  </p>
                 </div>
               </div>
             )}
@@ -509,7 +504,7 @@ export function FlaggyChatWidget() {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="p-4 border-t-2 border-gray-200 bg-white">
+          <div className="p-3 md:p-4 border-t-2 border-gray-200 bg-white">
             <div className="flex gap-2">
               <input
                 type="text"
@@ -518,18 +513,20 @@ export function FlaggyChatWidget() {
                 onKeyPress={(e) => e.key === "Enter" && handleSend()}
                 placeholder="Type your message..."
                 disabled={isThinking || isTyping}
-                className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#C8A55C] focus:border-transparent text-sm disabled:bg-gray-100"
+                className="flex-1 px-3 md:px-4 py-2 md:py-3 border-2 border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#C8A55C] focus:border-transparent text-xs md:text-sm disabled:bg-gray-100"
               />
               <button
                 onClick={handleSend}
                 disabled={isThinking || isTyping || !message.trim()}
-                className="bg-[#C8A55C] hover:bg-[#B8954C] text-white p-3 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                className="bg-[#C8A55C] hover:bg-[#B8954C] text-white p-2 md:p-3 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                 aria-label="Send message"
               >
-                <Send className="w-5 h-5" />
+                <Send className="w-4 h-4 md:w-5 md:h-5" />
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-2 text-center">Powered by Flaggy AI - Here to help 24/7</p>
+            <p className="text-[10px] md:text-xs text-gray-500 mt-2 text-center">
+              Powered by Flaggy AI - Here to help 24/7
+            </p>
           </div>
         </div>
       )}

@@ -1,4 +1,5 @@
 import { Wrench, Flag, Wind, Award } from "lucide-react"
+import Image from "next/image"
 
 const features = [
   {
@@ -54,6 +55,42 @@ export function FeaturesSection() {
               <p className="text-sm text-[#666666] leading-relaxed">{feature.description}</p>
             </div>
           ))}
+        </div>
+
+        <div className="mt-16 space-y-8 max-w-6xl mx-auto">
+          <div className="relative rounded-xl overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300">
+            <Image
+              src="/images/features/easy-installation.jpg"
+              alt="Install in as little as 30 minutes"
+              width={1200}
+              height={400}
+              className="w-full h-auto"
+              sizes="(max-width: 1200px) 100vw, 1200px"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="relative rounded-xl overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300">
+              <Image
+                src="/images/features/easy-to-use.jpg"
+                alt="Easy to use with Securi-LOK system"
+                width={600}
+                height={500}
+                className="w-full h-auto"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            </div>
+            <div className="relative rounded-xl overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300">
+              <Image
+                src="/images/features/many-uses.jpg"
+                alt="Many uses - Ground, Porch, Hitch, Side, Wheel, Business"
+                width={600}
+                height={500}
+                className="w-full h-auto"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="text-center mt-10">
