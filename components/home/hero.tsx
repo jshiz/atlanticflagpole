@@ -59,7 +59,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             priority
             quality={90}
             sizes="100vw"
-            className="object-cover object-center"
+            className="object-cover object-[35%_center] md:object-[40%_center] lg:object-center"
           />
         </div>
 
@@ -103,7 +103,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
                   }
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 ${index === 1 ? "" : "bg-white"} rounded-full overflow-hidden shadow-md border-2 border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center relative ${badge.delay} ${
+                  className={`w-32 h-32 md:w-16 md:h-16 lg:w-18 lg:h-18 ${index === 1 ? "" : "bg-white"} rounded-full overflow-hidden shadow-md border-2 border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center relative ${badge.delay} ${
                     isVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
                   }`}
                 >
@@ -112,7 +112,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
                     alt={badge.alt}
                     fill
                     className={`object-${index === 1 ? "cover" : "contain"} ${index === 3 ? "scale-75" : index === 1 ? "" : "p-1.5"}`}
-                    sizes="64px"
+                    sizes="128px"
                   />
                 </Link>
               ))}
@@ -133,7 +133,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             </div>
 
             <h1
-              className={`font-serif text-3xl md:text-4xl lg:text-5xl text-white mb-2 md:mb-3 leading-tight transition-all duration-700 delay-200 ${
+              className={`font-serif text-3xl md:text-4xl lg:text-5xl text-white mb-2 md:mb-3 leading-tight transition-all duration-700 delay-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] ${
                 isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
               }`}
             >
@@ -143,7 +143,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             </h1>
 
             <p
-              className={`text-xl md:text-3xl lg:text-4xl text-white font-light leading-tight mb-3 md:mb-4 transition-all duration-700 delay-300 ${
+              className={`text-xl md:text-3xl lg:text-4xl text-white font-light leading-tight mb-3 md:mb-4 transition-all duration-700 delay-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] ${
                 isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
               }`}
             >
@@ -296,7 +296,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
               </div>
               <div className="flex items-center gap-3">
                 <CheckCircle className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
-                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">Made in USA</span>
+                <span className="text-[#0B1C2C] font-semibold text-base tracking-wide">Made in USA</span>
               </div>
               <div className="flex items-center gap-3">
                 <Gem className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
