@@ -15,7 +15,7 @@ const sizes = [
       "Ideal for properties with limited space or HOA restrictions. This height provides excellent flag visibility while maintaining a proportional aesthetic for single-story homes and townhouses. Popular with RV enthusiasts and vacation properties.",
     details:
       "Great for smaller lots, condos, and properties where a subtle yet patriotic display is desired. The 15' height is tall enough to be seen from the street while remaining proportional to most single-story homes.",
-    price: "$779.71",
+    price: "$779",
     variant: "15' Flagpole",
     href: "/product/phoenix-telescoping-flagpole-premier-kit-starter-bundle?variant=15",
   },
@@ -28,7 +28,7 @@ const sizes = [
       "The perfect balance of visibility and proportion for most properties. Recommended by professionals for standard two-story homes and typical suburban lots. This is our #1 seller for good reason – it's the sweet spot that works for 80% of homeowners.",
     details:
       "The 20' flagpole is the industry standard for residential properties. It's tall enough to be prominently visible from the street and neighboring properties, yet proportional to most two-story homes. This is the size most professionals recommend.",
-    price: "$979.71",
+    price: "$899",
     badge: "BEST SELLER",
     variant: "20' Flagpole",
     href: "/product/phoenix-telescoping-flagpole-premier-kit-starter-bundle?variant=20",
@@ -42,7 +42,7 @@ const sizes = [
       "Make a bold statement with maximum visibility from the street and beyond. Perfect for larger properties, corner lots, farms, and businesses. This height ensures your flag can be seen from a distance and creates an impressive patriotic display.",
     details:
       "For those who want maximum visibility and impact. The 25' flagpole towers over most residential properties and can be seen from blocks away. Ideal for corner lots, farms, estates, and commercial properties where you want to make a bold patriotic statement.",
-    price: "$1,079.71",
+    price: "$999",
     variant: "25' Flagpole",
     href: "/product/phoenix-telescoping-flagpole-premier-kit-starter-bundle?variant=25",
   },

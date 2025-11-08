@@ -227,7 +227,9 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
               </div>
             </div>
 
-            <p className="text-white/60 text-[10px] md:text-xs mt-2">*See Terms</p>
+            <p className="text-white/80 text-xs md:text-sm mt-3 font-semibold drop-shadow-md">
+              *See Terms and Conditions
+            </p>
           </div>
 
           <div
@@ -265,7 +267,9 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           </div>
 
           <div className="lg:absolute lg:bottom-3 lg:left-4 lg:md:bottom-4 lg:md:left-6 mt-4 lg:mt-0">
-            <p className="text-white text-sm md:text-base font-serif drop-shadow-lg">Prices Starting From $299</p>
+            <p className="text-white text-base md:text-lg font-serif drop-shadow-lg font-bold">
+              Prices Starting From $779
+            </p>
           </div>
         </div>
       </section>

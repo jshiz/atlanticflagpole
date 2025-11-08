@@ -42,7 +42,6 @@ export function HeaderClient({
   const [quizModalOpen, setQuizModalOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
-  // </CHANGE>
   const { cart } = useCart()
   const cartItemCount = cart?.lines?.edges?.length || 0
   const { location } = useGeo()
@@ -58,10 +57,55 @@ export function HeaderClient({
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  useEffect(() => {
+    console.log("[v0] Header scroll state:", { isScrolled, scrollY: window.scrollY })
+  }, [isScrolled])
+
   const menuItems = menuData?.items || []
 
   return (
     <>
+      <div
+        className={`md:hidden fixed top-0 left-0 right-0 z-[101] bg-white border-b border-gray-200 shadow-md transition-all duration-300 ${
+          isScrolled ? "translate-y-0" : "-translate-y-full"
+        }`}
+      >
+        <div className="flex items-center justify-between h-12 px-3">
+          <button
+            className="text-[#0B1C2C] p-1.5"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Open menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+
+          <Link href="/" className="flex items-center">
+            <Image src="/images/favicon.png" alt="Atlantic Flagpoles" width={28} height={28} className="w-7 h-7" />
+          </Link>
+
+          <div className="flex items-center gap-1">
+            <button
+              className="text-[#0B1C2C] p-1.5"
+              onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+              aria-label="Search"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+            <a href={shopifyAccountUrl} className="text-[#0B1C2C] p-1.5" aria-label="Account">
+              <User className="w-5 h-5" />
+            </a>
+            <Link href="/cart" className="relative text-[#0B1C2C] p-1.5" aria-label="Cart">
+              <ShoppingCart className="w-5 h-5" />
+              {cartItemCount > 0 && (
+                <span className="absolute top-0 right-0 bg-[#C8A55C] text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                  {cartItemCount}
+                </span>
+              )}
+            </Link>
+          </div>
+        </div>
+      </div>
+
       <header className="relative bg-white z-[100] border-b-2 border-gray-200">
         {/* Top Bar */}
         <div className="border-b border-gray-200 bg-[#F5F3EF] hidden md:block">
@@ -92,35 +136,38 @@ export function HeaderClient({
         <div className="bg-white">
           <div className="container mx-auto px-4">
             <div className="md:hidden">
-              <div
-                className={`flex items-center justify-between transition-all duration-300 ${isScrolled ? "h-12" : "h-14"}`}
-              >
-                {/* Left: Menu */}
-                <button className="text-[#0B1C2C] p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                  <Menu className={`transition-all ${isScrolled ? "w-5 h-5" : "w-6 h-6"}`} />
+              <div className="flex items-center justify-between h-14 py-2">
+                <button
+                  className="text-[#0B1C2C] p-1.5 -ml-1.5"
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  aria-label="Open menu"
+                >
+                  <Menu className="w-6 h-6" />
                 </button>
 
-                {/* Center: Logo */}
                 <Link href="/" className="flex items-center">
                   <Image
                     src="/images/favicon.png"
                     alt="Atlantic Flagpoles"
-                    width={28}
-                    height={28}
-                    className={`transition-all ${isScrolled ? "w-6 h-6" : "w-7 h-7"}`}
+                    width={36}
+                    height={36}
+                    className="w-9 h-9"
                   />
                 </Link>
 
-                {/* Right: Search, Account, Cart */}
-                <div className="flex items-center gap-2">
-                  <button className="text-[#0B1C2C] p-2" onClick={() => setMobileSearchOpen(!mobileSearchOpen)}>
-                    <Search className={`transition-all ${isScrolled ? "w-5 h-5" : "w-5 h-5"}`} />
+                <div className="flex items-center gap-1">
+                  <button
+                    className="text-[#0B1C2C] p-1.5"
+                    onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+                    aria-label="Search"
+                  >
+                    <Search className="w-5 h-5" />
                   </button>
-                  <a href={shopifyAccountUrl} className="text-[#0B1C2C] p-2">
-                    <User className={`transition-all ${isScrolled ? "w-5 h-5" : "w-5 h-5"}`} />
+                  <a href={shopifyAccountUrl} className="text-[#0B1C2C] p-1.5" aria-label="Account">
+                    <User className="w-5 h-5" />
                   </a>
-                  <Link href="/cart" className="relative text-[#0B1C2C] p-2">
-                    <ShoppingCart className={`transition-all ${isScrolled ? "w-5 h-5" : "w-5 h-5"}`} />
+                  <Link href="/cart" className="relative text-[#0B1C2C] p-1.5" aria-label="Cart">
+                    <ShoppingCart className="w-5 h-5" />
                     {cartItemCount > 0 && (
                       <span className="absolute top-0 right-0 bg-[#C8A55C] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
                         {cartItemCount}
@@ -130,14 +177,12 @@ export function HeaderClient({
                 </div>
               </div>
 
-              {/* Mobile Search Dropdown */}
               {mobileSearchOpen && (
                 <div className="pb-3 px-2 border-t border-gray-200 pt-2 bg-gray-50">
                   <SearchBarWrapper className="w-full" />
                 </div>
               )}
             </div>
-            {/* </CHANGE> */}
 
             {/* Desktop Header */}
             <div className="hidden md:flex items-center justify-between h-24">
@@ -279,67 +324,6 @@ export function HeaderClient({
           </div>
         </div>
       </header>
-
-      <div
-        className={`fixed top-0 left-0 right-0 z-[999] bg-white border-b-2 border-gray-200 shadow-lg transition-all duration-300 ${
-          isScrolled ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
-        }`}
-      >
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-12">
-            {/* Left: Menu */}
-            <button className="text-[#0B1C2C]" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              <Menu className="w-5 h-5" />
-            </button>
-
-            {/* Center: Logo */}
-            <Link href="/" className="flex items-center gap-2">
-              <Image
-                src="/images/favicon.png"
-                alt="Atlantic Flagpoles Logo"
-                width={28}
-                height={28}
-                className="w-6 h-6 md:w-7 md:h-7"
-              />
-              <span className="text-base md:text-lg font-serif font-bold text-[#0B1C2C] hidden sm:block">
-                ATLANTIC FLAGPOLES
-              </span>
-            </Link>
-
-            {/* Desktop Nav */}
-            <nav className="hidden lg:flex items-center gap-6">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.id}
-                  href={item.url}
-                  className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors font-semibold text-sm"
-                >
-                  {item.title}
-                </Link>
-              ))}
-            </nav>
-
-            {/* Right: Search, Account, Cart */}
-            <div className="flex items-center gap-2">
-              <button className="text-[#0B1C2C]" onClick={() => setMobileSearchOpen(!mobileSearchOpen)}>
-                <Search className="w-5 h-5" />
-              </button>
-              <a href={shopifyAccountUrl} className="text-[#0B1C2C]">
-                <User className="w-5 h-5" />
-              </a>
-              <Link href="/cart" className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors">
-                <ShoppingCart className="w-5 h-5" />
-                {cartItemCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-[#C8A55C] text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center text-[10px]">
-                    {cartItemCount}
-                  </span>
-                )}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* </CHANGE> */}
 
       <FlagpoleQuizModal open={quizModalOpen} onOpenChange={setQuizModalOpen} />
     </>
