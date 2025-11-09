@@ -1,15 +1,15 @@
-import { Shield, Truck, Award, RotateCcw } from "lucide-react"
+import { Shield, Award, RotateCcw, Clock } from "lucide-react"
 
 export function TrustBadges() {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4">
       <div className="flex flex-col items-center text-center gap-2">
         <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-          <Truck className="w-6 h-6 text-green-600" />
+          <Clock className="w-6 h-6 text-green-600" />
         </div>
         <div>
-          <p className="text-xs font-semibold text-[#0B1C2C]">FREE SHIPPING</p>
-          <p className="text-xs text-[#0B1C2C]/60">On all orders</p>
+          <p className="text-xs font-semibold text-[#0B1C2C]">FAST SHIPPING</p>
+          <p className="text-xs text-[#0B1C2C]/60">Ships in 1-2 days</p>
         </div>
       </div>
 

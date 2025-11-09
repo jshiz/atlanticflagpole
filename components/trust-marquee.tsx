@@ -4,11 +4,11 @@ const trustMessages = [
   "American Made™",
   "365-Night Home Trial",
   "Lifetime Warranty",
-  "Free Shipping & Returns",
   "Premium Materials at Half the Price",
   "30-Day Price Match Guarantee",
   "Made in USA",
   "Aircraft-Grade Aluminum",
+  "Ships in 1-2 Business Days",
 ]
 
 export function TrustMarquee() {

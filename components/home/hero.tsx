@@ -50,7 +50,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
 
   return (
     <>
-      <section className="relative w-full min-h-[500px] md:min-h-[650px] lg:min-h-[700px] overflow-hidden bg-[#0B1C2C]">
+      <section className="relative w-full min-h-[600px] md:min-h-[650px] lg:min-h-[700px] overflow-hidden bg-[#0B1C2C]">
         {/* Background Image - centered on mobile, right-aligned on desktop */}
         <div className={`transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"}`}>
           <Image
@@ -68,12 +68,12 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "linear-gradient(90deg, rgba(11, 28, 44, 0.95) 0%, rgba(11, 28, 44, 0.85) 40%, rgba(11, 28, 44, 0.5) 70%, rgba(11, 28, 44, 0) 100%)",
+              "linear-gradient(180deg, rgba(11, 28, 44, 0.75) 0%, rgba(11, 28, 44, 0.85) 50%, rgba(11, 28, 44, 0.75) 100%), linear-gradient(90deg, rgba(11, 28, 44, 0.95) 0%, rgba(11, 28, 44, 0.85) 40%, rgba(11, 28, 44, 0.5) 70%, rgba(11, 28, 44, 0) 100%)",
           }}
         />
 
-        <div className="relative z-10 container mx-auto px-3 md:px-8 lg:px-12 py-4 md:py-12 min-h-[500px] md:min-h-[650px] lg:min-h-[700px] flex flex-col justify-center">
-          <div className="absolute top-2 md:top-6 left-1/2 -translate-x-1/2 z-20 w-[calc(100%-24px)] md:w-auto flex justify-center">
+        <div className="relative z-10 container mx-auto px-4 md:px-8 lg:px-12 py-6 md:py-12 min-h-[600px] md:min-h-[650px] lg:min-h-[700px] flex flex-col justify-center">
+          <div className="absolute top-4 md:top-6 left-1/2 -translate-x-1/2 z-20 w-[calc(100%-32px)] md:w-auto flex justify-center">
             <div className="inline-block bg-[#0B1C2C]/95 backdrop-blur-sm border-2 border-[#C8A55C] rounded-xl px-3 py-1.5 md:px-4 md:py-2 shadow-2xl">
               <p className="text-white font-extrabold text-xs md:text-lg lg:text-xl text-center leading-tight">
                 Your Flag Deserves Better Than a Cheap Pole.
@@ -81,11 +81,11 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             </div>
           </div>
 
-          <div className="absolute top-12 md:top-24 right-1 md:right-8 lg:right-12 flex flex-col items-center gap-1.5 md:gap-4">
-            <h3 className="text-white text-[9px] md:text-sm font-extrabold tracking-wide text-center">
+          <div className="absolute top-[70px] md:top-24 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-8 lg:right-12 flex flex-col items-center gap-1 md:gap-4">
+            <h3 className="text-white text-[8px] md:text-sm font-extrabold tracking-wide text-center">
               America's #1 Flagpole Company
             </h3>
-            <div className="flex items-center gap-1 md:gap-3">
+            <div className="flex items-center gap-1.5 md:gap-3">
               {[
                 { src: "/images/ten-percent-badge.svg", alt: "10% Pledge" },
                 { src: "/images/bbb-logo.webp", alt: "BBB Accredited" },
@@ -104,13 +104,13 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
                   }
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`w-8 h-8 md:w-14 md:h-14 lg:w-16 lg:h-16 ${index === 1 ? "" : "bg-white"} rounded-full overflow-hidden shadow-lg border-2 border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center relative`}
+                  className={`w-8 h-8 md:w-14 md:h-14 lg:w-16 lg:h-16 ${index === 1 ? "" : "bg-white"} rounded-full overflow-hidden shadow-lg border border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center relative`}
                 >
                   <Image
                     src={badge.src || "/placeholder.svg"}
                     alt={badge.alt}
                     fill
-                    className={`object-${index === 1 ? "cover" : "contain"} ${index === 1 ? "" : "p-1"}`}
+                    className={`object-${index === 1 ? "cover" : "contain"} ${index === 1 ? "" : "p-0.5 md:p-1"}`}
                     sizes="64px"
                   />
                 </Link>
@@ -118,10 +118,10 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             </div>
           </div>
 
-          <div className="max-w-xl lg:max-w-2xl mt-20 md:mt-0 text-center md:text-left">
+          <div className="max-w-xl lg:max-w-2xl mt-32 md:mt-0 mx-auto md:mx-0 text-center md:text-left">
             {/* Sale Badge */}
             <div
-              className={`inline-block bg-white text-[#0B1C2C] px-3 py-1.5 md:px-4 md:py-1.5 mb-2 md:mb-4 font-extrabold text-xs md:text-sm tracking-widest uppercase shadow-lg transition-all duration-700 ${
+              className={`inline-block bg-white text-[#0B1C2C] px-4 py-1.5 md:px-4 md:py-1.5 mb-3 md:mb-4 font-extrabold text-xs md:text-sm tracking-widest uppercase shadow-lg transition-all duration-700 ${
                 isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
               }`}
             >
@@ -129,7 +129,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             </div>
 
             <h1
-              className={`font-serif text-3xl md:text-5xl lg:text-6xl xl:text-7xl text-white mb-2 md:mb-6 leading-tight transition-all duration-700 delay-100 drop-shadow-2xl font-bold ${
+              className={`font-serif text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-white mb-3 md:mb-6 leading-tight transition-all duration-700 delay-100 drop-shadow-2xl font-bold ${
                 isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
               }`}
             >
@@ -137,54 +137,54 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             </h1>
 
             <div
-              className={`mb-3 md:mb-8 transition-all duration-700 delay-200 ${
+              className={`mb-4 md:mb-8 transition-all duration-700 delay-200 ${
                 isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
               }`}
             >
-              <p className="text-xl md:text-4xl lg:text-5xl text-white font-semibold leading-tight mb-1.5">
+              <p className="text-2xl md:text-4xl lg:text-5xl text-white font-bold leading-tight mb-2">
                 Up To <span className="font-extrabold">40% Off</span>
               </p>
-              <p className="text-xl md:text-4xl lg:text-5xl text-white font-semibold leading-tight mb-2">
-                Flagpoles <span className="text-base md:text-3xl lg:text-4xl font-bold">+ $255 Of</span>
+              <p className="text-2xl md:text-4xl lg:text-5xl text-white font-bold leading-tight mb-2">
+                Flagpoles <span className="text-lg md:text-3xl lg:text-4xl font-bold">+ $255 Of</span>
               </p>
-              <p className="text-xl md:text-4xl lg:text-5xl text-white font-semibold leading-tight">
-                Accessories Included!<span className="text-white text-lg md:text-2xl font-bold">*</span>
+              <p className="text-2xl md:text-4xl lg:text-5xl text-white font-bold leading-tight">
+                Accessories Included!<span className="text-white text-xl md:text-2xl font-bold">*</span>
               </p>
             </div>
 
             <div
-              className={`max-w-sm mx-auto md:mx-0 mb-3 md:mb-4 transition-all duration-700 delay-300 ${
+              className={`max-w-md mx-auto md:mx-0 mb-4 md:mb-4 transition-all duration-700 delay-300 ${
                 isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
               }`}
             >
-              <div className="bg-white rounded-lg p-2.5 md:p-4 shadow-xl">
+              <div className="bg-white rounded-lg p-3 md:p-4 shadow-xl">
                 <p className="text-[#0B1C2C] text-xs md:text-base font-bold mb-2 md:mb-3 text-center">
                   Order Today For Fastest Shipping
                 </p>
-                <div className="flex items-center justify-center gap-1.5 md:gap-2">
-                  <div className="bg-[#0B1C2C] px-2 py-1.5 md:px-3 md:py-2 rounded min-w-[42px] md:min-w-[50px] text-center">
-                    <div className="text-lg md:text-xl font-bold text-white tabular-nums">{timeLeft.days}</div>
+                <div className="flex items-center justify-center gap-2 md:gap-2">
+                  <div className="bg-[#0B1C2C] px-2 py-1.5 md:px-3 md:py-2 rounded min-w-[44px] md:min-w-[50px] text-center">
+                    <div className="text-xl md:text-xl font-bold text-white tabular-nums">{timeLeft.days}</div>
                     <div className="text-[7px] md:text-[8px] text-white/80 uppercase tracking-widest font-bold">
                       DAYS
                     </div>
                   </div>
-                  <div className="text-base md:text-lg text-[#0B1C2C] font-bold">:</div>
-                  <div className="bg-[#0B1C2C] px-2 py-1.5 md:px-3 md:py-2 rounded min-w-[42px] md:min-w-[50px] text-center">
-                    <div className="text-lg md:text-xl font-bold text-white tabular-nums">{timeLeft.hours}</div>
+                  <div className="text-lg md:text-lg text-[#0B1C2C] font-bold">:</div>
+                  <div className="bg-[#0B1C2C] px-2 py-1.5 md:px-3 md:py-2 rounded min-w-[44px] md:min-w-[50px] text-center">
+                    <div className="text-xl md:text-xl font-bold text-white tabular-nums">{timeLeft.hours}</div>
                     <div className="text-[7px] md:text-[8px] text-white/80 uppercase tracking-widest font-bold">
                       HRS
                     </div>
                   </div>
-                  <div className="text-base md:text-lg text-[#0B1C2C] font-bold">:</div>
-                  <div className="bg-[#0B1C2C] px-2 py-1.5 md:px-3 md:py-2 rounded min-w-[42px] md:min-w-[50px] text-center">
-                    <div className="text-lg md:text-xl font-bold text-white tabular-nums">{timeLeft.minutes}</div>
+                  <div className="text-lg md:text-lg text-[#0B1C2C] font-bold">:</div>
+                  <div className="bg-[#0B1C2C] px-2 py-1.5 md:px-3 md:py-2 rounded min-w-[44px] md:min-w-[50px] text-center">
+                    <div className="text-xl md:text-xl font-bold text-white tabular-nums">{timeLeft.minutes}</div>
                     <div className="text-[7px] md:text-[8px] text-white/80 uppercase tracking-widest font-bold">
                       MIN
                     </div>
                   </div>
-                  <div className="text-base md:text-lg text-[#0B1C2C] font-bold">:</div>
-                  <div className="bg-[#0B1C2C] px-2 py-1.5 md:px-3 md:py-2 rounded min-w-[42px] md:min-w-[50px] text-center">
-                    <div className="text-lg md:text-xl font-bold text-white tabular-nums">{timeLeft.seconds}</div>
+                  <div className="text-lg md:text-lg text-[#0B1C2C] font-bold">:</div>
+                  <div className="bg-[#0B1C2C] px-2 py-1.5 md:px-3 md:py-2 rounded min-w-[44px] md:min-w-[50px] text-center">
+                    <div className="text-xl md:text-xl font-bold text-white tabular-nums">{timeLeft.seconds}</div>
                     <div className="text-[7px] md:text-[8px] text-white/80 uppercase tracking-widest font-bold">
                       SEC
                     </div>
@@ -194,25 +194,25 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             </div>
 
             <div
-              className={`max-w-sm mx-auto md:mx-0 mb-2.5 md:mb-4 transition-all duration-700 delay-400 ${
+              className={`max-w-md mx-auto md:mx-0 mb-3 md:mb-4 transition-all duration-700 delay-400 ${
                 isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
               }`}
             >
               <Link
                 href="/products"
-                className="block w-full bg-[#C8A55C] hover:bg-[#B8954C] text-[#0B1C2C] text-center font-extrabold text-base md:text-lg py-3 md:py-4 px-6 md:px-8 rounded-md transition-all shadow-lg hover:shadow-2xl hover:scale-[1.02] duration-300"
+                className="block w-full bg-[#C8A55C] hover:bg-[#B8954C] text-[#0B1C2C] text-center font-extrabold text-lg md:text-lg py-4 md:py-4 px-8 md:px-8 rounded-md transition-all shadow-lg hover:shadow-2xl hover:scale-[1.02] duration-300"
               >
                 Shop Flagpoles
               </Link>
             </div>
 
             <div
-              className={`flex items-center justify-center md:justify-start gap-2 mb-2.5 md:mb-4 transition-all duration-700 delay-500 ${
+              className={`flex items-center justify-center md:justify-start gap-2 mb-3 md:mb-4 transition-all duration-700 delay-500 ${
                 isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
               }`}
             >
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <p className="text-[10px] md:text-sm font-extrabold text-white uppercase tracking-wide">
+              <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>
+              <p className="text-xs md:text-sm font-extrabold text-white uppercase tracking-wide">
                 IN STOCK | SHIPS IN 1-2 BUSINESS DAYS
               </p>
             </div>
@@ -227,6 +227,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             </p>
           </div>
 
+          {/* Hidden lg:block section */}
           <div className="absolute bottom-4 md:bottom-12 right-3 md:right-8 lg:right-12 hidden lg:block">
             <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border-3 border-[#C8A55C] p-6 max-w-[280px]">
               <div className="flex flex-col items-center gap-3">
@@ -254,8 +255,8 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             </div>
           </div>
 
-          <div className="absolute bottom-3 md:bottom-10 left-1/2 md:left-8 lg:left-12 -translate-x-1/2 md:translate-x-0">
-            <p className="text-white text-base md:text-xl lg:text-2xl font-serif drop-shadow-lg font-extrabold">
+          <div className="absolute bottom-4 md:bottom-10 left-1/2 -translate-x-1/2 md:left-8 lg:left-12 md:translate-x-0">
+            <p className="text-white text-lg md:text-xl lg:text-2xl font-serif drop-shadow-lg font-extrabold">
               Prices Starting From $779
             </p>
           </div>
@@ -264,7 +265,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
 
       {/* Trust Marquee */}
       <div className="bg-[#0B1C2C] py-3 overflow-hidden border-b-2 border-[#C8A55C]/30">
-        <div className="flex animate-scroll-infinite whitespace-nowrap">
+        <div className="flex animate-scroll-fast whitespace-nowrap">
           {/* Duplicate the content 3 times for seamless infinite scroll */}
           {[...Array(3)].map((_, setIndex) => (
             <div key={setIndex} className="flex items-center gap-12 px-6 flex-shrink-0">
@@ -278,7 +279,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
               </div>
               <div className="flex items-center gap-3">
                 <Wind className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
-                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">Free Shipping & Returns</span>
+                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">Made in USA</span>
               </div>
               <div className="flex items-center gap-3">
                 <CheckCircle className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />

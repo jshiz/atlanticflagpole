@@ -462,7 +462,7 @@ export function CartPageClient() {
                 </div>
                 <div className="flex items-center gap-1 text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded-full">
                   <Truck className="w-3 h-3" />
-                  <span>Free Shipping</span>
+                  <span>Fast Shipping</span>
                 </div>
               </div>
 
@@ -798,12 +798,12 @@ export function CartPageClient() {
                 </span>
                 <span className="font-semibold">${subtotal.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-green-600 font-semibold">
+              <div className="flex justify-between text-[#0B1C2C]/70">
                 <span className="flex items-center gap-1">
                   <Truck className="w-4 h-4" />
                   Shipping
                 </span>
-                <span>FREE</span>
+                <span className="font-semibold">Calculated at checkout</span>
               </div>
               <div className="border-t-2 border-gray-200 pt-4 flex justify-between text-xl font-bold text-[#0B1C2C]">
                 <span>Total</span>
@@ -833,7 +833,7 @@ export function CartPageClient() {
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-700">
                 <Truck className="w-5 h-5 text-purple-600" />
-                <span>Free Shipping & Returns</span>
+                <span>Fast Delivery</span>
               </div>
             </div>
           </Card>

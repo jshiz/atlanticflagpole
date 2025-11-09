@@ -271,6 +271,20 @@
     animation: scroll-infinite 30s linear infinite;
   }
 
+  /* Adding faster scroll animation for hero marquee */
+  @keyframes scroll-fast {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-33.333%);
+    }
+  }
+
+  .animate-scroll-fast {
+    animation: scroll-fast 20s linear infinite;
+  }
+
   .animate-marquee-seamless {
     animation: marquee-seamless 40s linear infinite;
   }

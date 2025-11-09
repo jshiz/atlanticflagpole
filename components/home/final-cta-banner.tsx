@@ -34,7 +34,7 @@ export function FinalCTABanner() {
                   clipRule="evenodd"
                 />
               </svg>
-              <span>Free Shipping</span>
+              <span>Fast Shipping</span>
             </div>
             <div className="flex items-center gap-2">
               <svg className="w-5 h-5 text-[#C8A55C]" fill="currentColor" viewBox="0 0 20 20">

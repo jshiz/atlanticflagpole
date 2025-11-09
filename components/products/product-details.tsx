@@ -148,9 +148,9 @@ export function ProductDetails({
     content: (
       <div className="space-y-4">
         <div>
-          <p className="font-semibold mb-2">Free Shipping</p>
+          <p className="font-semibold mb-2">Fast Shipping</p>
           <p className="text-sm text-gray-600">
-            All orders ship free within the continental United States. Most orders ship within 1-2 business days.
+            Most orders ship within 1-2 business days. Shipping costs calculated at checkout.
           </p>
         </div>
         <div>
@@ -315,8 +315,8 @@ export function ProductDetails({
               <div className="flex items-start gap-3">
                 <Truck className="w-5 h-5 text-[#C8A55C] mt-0.5 flex-shrink-0" />
                 <div>
-                  <h3 className="font-semibold text-[#0B1C2C] text-sm">Free Shipping</h3>
-                  <p className="text-xs text-[#0B1C2C]/70">On all orders</p>
+                  <h3 className="font-semibold text-[#0B1C2C] text-sm">Fast Shipping</h3>
+                  <p className="text-xs text-[#0B1C2C]/70">Ships in 1-2 days</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">

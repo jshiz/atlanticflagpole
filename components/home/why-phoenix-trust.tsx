@@ -24,8 +24,8 @@ const trustReasons = [
   },
   {
     icon: <Truck className="w-12 h-12" />,
-    title: "Free Fast Shipping",
-    description: "Ships in 1-2 business days. Free shipping on all orders. No hidden fees.",
+    title: "Fast Shipping",
+    description: "Ships in 1-2 business days. Most orders arrive within a week.",
     color: "from-green-600 to-green-800",
   },
   {
