@@ -118,6 +118,34 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             </div>
           </div>
 
+          {/* Hidden lg:block section */}
+          <div className="absolute bottom-16 md:bottom-20 lg:bottom-28 right-3 md:right-8 lg:right-12 hidden lg:block">
+            <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border-3 border-[#C8A55C] p-6 max-w-[280px]">
+              <div className="flex flex-col items-center gap-3">
+                <Image
+                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Phoenix-flagpole-gold-AuN5dkO3XA16aLxg8Pl9D924ScFRDU.png"
+                  alt="Phoenix Flagpole Gold Logo"
+                  width={220}
+                  height={80}
+                  className="object-contain"
+                />
+                <div className="text-center space-y-2 mt-2">
+                  <p className="text-[#0B1C2C] font-bold text-base leading-tight">
+                    Revolutionary Telescoping Flagpoles
+                  </p>
+                  <p className="text-[#0B1C2C]/70 font-medium text-xs leading-relaxed">
+                    Engineered with premium-grade aluminum and patented technology for effortless flag raising. Built to
+                    withstand extreme weather and honor your patriotism for generations.
+                  </p>
+                  <div className="flex items-center justify-center gap-1 pt-2">
+                    <Shield className="w-4 h-4 text-[#C8A55C]" />
+                    <span className="text-[#C8A55C] font-bold text-xs uppercase tracking-wide">Lifetime Warranty</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="max-w-xl lg:max-w-2xl mt-[100px] sm:mt-[110px] md:mt-0 mx-auto md:mx-0 text-center md:text-left">
             {/* Sale Badge */}
             <div
@@ -233,34 +261,6 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             >
               *See Terms
             </p>
-          </div>
-
-          {/* Hidden lg:block section */}
-          <div className="absolute bottom-2 md:bottom-10 right-3 md:right-8 lg:right-12 hidden lg:block">
-            <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border-3 border-[#C8A55C] p-6 max-w-[280px]">
-              <div className="flex flex-col items-center gap-3">
-                <Image
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Phoenix-flagpole-gold-AuN5dkO3XA16aLxg8Pl9D924ScFRDU.png"
-                  alt="Phoenix Flagpole Gold Logo"
-                  width={220}
-                  height={80}
-                  className="object-contain"
-                />
-                <div className="text-center space-y-2 mt-2">
-                  <p className="text-[#0B1C2C] font-bold text-base leading-tight">
-                    Revolutionary Telescoping Flagpoles
-                  </p>
-                  <p className="text-[#0B1C2C]/70 font-medium text-xs leading-relaxed">
-                    Engineered with premium-grade aluminum and patented technology for effortless flag raising. Built to
-                    withstand extreme weather and honor your patriotism for generations.
-                  </p>
-                  <div className="flex items-center justify-center gap-1 pt-2">
-                    <Shield className="w-4 h-4 text-[#C8A55C]" />
-                    <span className="text-[#C8A55C] font-bold text-xs uppercase tracking-wide">Lifetime Warranty</span>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
           <div className="absolute bottom-2 md:bottom-10 left-1/2 -translate-x-1/2 md:left-8 lg:left-12 md:translate-x-0">

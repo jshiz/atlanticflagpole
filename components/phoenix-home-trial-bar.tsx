@@ -78,7 +78,7 @@ export function PhoenixHomeTrialBar() {
 
             <div
               ref={tooltipRef}
-              className={`absolute left-1/2 -translate-x-1/2 top-full mt-3 w-72 md:w-80 z-[150] transition-all duration-300 ease-out ${
+              className={`absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[calc(100vw-2rem)] max-w-[288px] md:w-80 md:max-w-none z-[150] transition-all duration-300 ease-out ${
                 showTooltip
                   ? "opacity-100 translate-y-0 pointer-events-auto"
                   : "opacity-0 -translate-y-2 pointer-events-none"
