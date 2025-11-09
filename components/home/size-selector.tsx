@@ -147,14 +147,15 @@ function PaperboyGame({ onWin }: { onWin: () => void }) {
         className="absolute bottom-28 pointer-events-none transition-transform z-[100]"
         style={{ left: `${paperboyX}%` }}
       >
-        <div className="relative w-20 h-20 md:w-28 md:h-28">
+        <div className="relative w-16 h-16 md:w-20 md:h-20">
           <Image
             src="/images/design-mode/bike.gif"
             alt="Paperboy on bicycle"
-            width={112}
-            height={112}
-            className="w-full h-full drop-shadow-lg"
+            width={64}
+            height={64}
+            className="w-full h-full object-contain drop-shadow-lg"
             unoptimized
+            loading="lazy"
           />
         </div>
       </div>

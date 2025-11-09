@@ -82,9 +82,9 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           </div>
 
           <div className="absolute top-[42px] sm:top-[48px] md:top-24 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-8 lg:right-12 flex flex-col items-center gap-1.5 md:gap-4">
-            <h3 className="text-white text-[9px] sm:text-[10px] md:text-sm font-extrabold tracking-wide text-center leading-tight px-2">
+            <h2 className="text-white text-[9px] sm:text-[10px] md:text-sm font-extrabold tracking-wide text-center leading-tight px-2">
               America's #1 Flagpole Company
-            </h3>
+            </h2>
             <div className="flex items-center gap-2 md:gap-3">
               {[
                 { src: "/images/ten-percent-badge.svg", alt: "10% Pledge" },
@@ -131,7 +131,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
                 />
                 <div className="text-center space-y-2 mt-2">
                   <p className="text-[#0B1C2C] font-bold text-base leading-tight">
-                    Revolutionary Telescoping Flagpoles
+                    The last flagpole you will ever need. Guaranteed.
                   </p>
                   <p className="text-[#0B1C2C]/70 font-medium text-xs leading-relaxed">
                     Engineered with premium-grade aluminum and patented technology for effortless flag raising. Built to
@@ -307,9 +307,9 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
       {/* Existing code here */}
       <div className="bg-white py-6 md:py-8 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4">
-          <h3 className="text-center text-xl md:text-2xl lg:text-3xl font-serif font-bold text-[#0B1C2C] mb-4 md:mb-6">
+          <div className="text-center text-xl md:text-2xl lg:text-3xl font-serif font-bold text-[#0B1C2C] mb-4 md:mb-6">
             America's #1 Flagpole Company
-          </h3>
+          </div>
 
           <div className="flex flex-col items-center justify-center gap-4 md:gap-6 mb-6 md:mb-8">
             <div className="w-full max-w-2xl">

@@ -139,7 +139,7 @@ export function HeaderClient({
                     ATLANTIC
                   </span>
                   <span
-                    className="font-semibold text-[#C8A55C] tracking-widest text-[9px]"
+                    className="font-semibold text-[#A08940] tracking-widest text-[9px]"
                     style={{ fontFamily: "system-ui, -apple-system, sans-serif", letterSpacing: "0.1em" }}
                   >
                     FLAGPOLE
@@ -214,7 +214,7 @@ export function HeaderClient({
                     ATLANTIC
                   </span>
                   <span
-                    className="font-semibold text-[#C8A55C] tracking-widest block leading-none text-[10px]"
+                    className="font-semibold text-[#A08940] tracking-widest block leading-none text-[10px]"
                     style={{ fontFamily: "system-ui, -apple-system, sans-serif", letterSpacing: "0.15em" }}
                   >
                     FLAGPOLE
