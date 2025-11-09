@@ -125,7 +125,7 @@ export function HeaderClient({
 
               <Link href="/" className="flex items-center gap-2 flex-1 justify-center">
                 <Image
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/favicon-YQNeE3MdsChyJvmpaxCgbayiwZA6Ts.png"
+                  src="/images/design-mode/favicon.png"
                   alt="Atlantic Flagpoles"
                   width={32}
                   height={32}
@@ -200,7 +200,7 @@ export function HeaderClient({
             <div className="flex items-center justify-between gap-4 h-16 py-3">
               <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
                 <Image
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/favicon-YQNeE3MdsChyJvmpaxCgbayiwZA6Ts.png"
+                  src="/images/design-mode/favicon.png"
                   alt="Atlantic Flagpole Logo"
                   width={44}
                   height={44}

@@ -140,7 +140,7 @@ export function PhoenixPremierKitSalesPage() {
             <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
               <Badge className="bg-white/10 backdrop-blur-sm text-white px-4 py-2 text-sm font-semibold border border-white/20">
                 <Image
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/madeinusabadge-y7lnHFiqBn1o0YpH7y5tKHymKkmgPA.jpg"
+                  src="/images/design-mode/madeinusabadge(1).jpg"
                   alt="Made in USA"
                   width={24}
                   height={24}

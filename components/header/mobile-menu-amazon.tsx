@@ -150,7 +150,7 @@ export function MobileMenuAmazon({
                   >
                     <div className="relative w-16 h-16 shrink-0 bg-gray-100 rounded-md overflow-hidden">
                       <Image
-                        src="https://cdn.shopify.com/s/files/1/2133/9559/files/Phoenix_Telescoping_Flagpole_Premier_Kit_-_Starter_Bundle.png?v=1761115372"
+                        src="/images/design-mode/Phoenix_Telescoping_Flagpole_Premier_Kit_-_Starter_Bundle.png"
                         alt="Phoenix Premier Kit"
                         fill
                         className="object-contain p-1"

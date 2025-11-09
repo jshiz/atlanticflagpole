@@ -123,7 +123,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border-3 border-[#C8A55C] p-6 max-w-[280px]">
               <div className="flex flex-col items-center gap-3">
                 <Image
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Phoenix-flagpole-gold-AuN5dkO3XA16aLxg8Pl9D924ScFRDU.png"
+                  src="/images/design-mode/Phoenix-flagpole-gold.png"
                   alt="Phoenix Flagpole Gold Logo"
                   width={220}
                   height={80}
@@ -131,7 +131,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
                 />
                 <div className="text-center space-y-2 mt-2">
                   <p className="text-[#0B1C2C] font-bold text-base leading-tight">
-                    The last flagpole you will ever need. Guaranteed.
+                    The Last Flagpole You Will Ever Need. Guaranteed.
                   </p>
                   <p className="text-[#0B1C2C]/70 font-medium text-xs leading-relaxed">
                     Engineered with premium-grade aluminum and patented technology for effortless flag raising. Built to
