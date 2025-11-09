@@ -152,15 +152,8 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
     console.log(`[v0] 🔍 MegaMenuWithCart received ${featuredProducts.length} products for "${title}"`)
 
     const activeProducts = featuredProducts.filter((p) => {
-      // Check if product has availableForSale field at product level
-      if ("availableForSale" in p && (p as any).availableForSale === true) {
-        return true
-      }
-
-      // Fallback: check variant availability
       const hasVariant = p.variants?.edges?.[0]?.node
-      const isAvailable = hasVariant?.availableForSale
-      return hasVariant && isAvailable
+      return hasVariant // Remove availability check to show all products
     })
 
     console.log(`[v0] ✅ Filtered to ${activeProducts.length} available products for "${title}"`)
@@ -194,7 +187,6 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
                   href={item.url}
                   onClick={onLinkClick}
                   onMouseEnter={() => setHoveredCategory(item.id)}
-                  onMouseLeave={() => setHoveredCategory(null)}
                   className="group flex items-center justify-between text-[#0B1C2C] hover:text-[#C8A55C] transition-colors text-sm py-2 px-3 rounded-lg hover:bg-[#F5F3EF]"
                 >
                   <span className="font-medium">{item.title}</span>
@@ -202,7 +194,11 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
                 </Link>
 
                 {hoveredCategory === item.id && item.items && item.items.length > 0 && (
-                  <ul className="ml-4 mt-1 space-y-1">
+                  <ul
+                    className="ml-4 mt-1 space-y-1 relative z-10"
+                    onMouseEnter={() => setHoveredCategory(item.id)}
+                    onMouseLeave={() => setHoveredCategory(null)}
+                  >
                     {item.items.slice(0, 8).map((subItem) => (
                       <li key={subItem.id}>
                         <Link

@@ -282,6 +282,15 @@ export function HeaderClient({
                       </div>
                     )
                   })}
+                  <div className="relative">
+                    <button
+                      onMouseEnter={() => setActiveDropdown("affiliate")}
+                      className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors duration-300 font-semibold text-sm tracking-wide group py-1 relative"
+                    >
+                      Join Affiliates
+                      <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#C8A55C] group-hover:w-full transition-all duration-300" />
+                    </button>
+                  </div>
                 </nav>
 
                 {activeDropdown && (
