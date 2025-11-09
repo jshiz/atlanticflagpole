@@ -258,11 +258,10 @@ export function ProductDetailsDreamCloud({
               </div>
             </div>
 
-            {/* Variant Selector */}
             {variants.length > 1 && (
-              <div className="space-y-4 p-6 bg-muted rounded-2xl">
+              <div className="space-y-4 p-5 bg-muted rounded-2xl border border-border">
                 <label className="text-lg font-bold text-foreground">Choose Your Size:</label>
-                <div className="grid grid-cols-1 gap-3">
+                <div className="grid grid-cols-1 gap-2.5">
                   {variants.map((variant) => {
                     const variantPrice = Number.parseFloat(variant.price.amount)
                     const variantCompareAt = variant.compareAtPrice

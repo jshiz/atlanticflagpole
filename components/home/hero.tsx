@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import { Shield, Wind, Lock, Award, CheckCircle, Gem } from "lucide-react"
+import { Shield, Wind, Award, CheckCircle } from "lucide-react"
 
 interface HeroProps {
   judgemeStats?: {
@@ -50,7 +50,8 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
 
   return (
     <>
-      <section className="relative w-full min-h-[500px] md:min-h-[550px] lg:min-h-[650px] overflow-hidden">
+      <section className="relative w-full min-h-[500px] md:min-h-[650px] lg:min-h-[700px] overflow-hidden bg-[#0B1C2C]">
+        {/* Background Image - centered on mobile, right-aligned on desktop */}
         <div className={`transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"}`}>
           <Image
             src="/images/design-mode/newhero.avif"
@@ -59,7 +60,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
             priority
             quality={90}
             sizes="100vw"
-            className="object-cover object-[40%_center] md:object-[45%_center] lg:object-center"
+            className="object-cover object-center md:object-center lg:object-right"
           />
         </div>
 
@@ -67,33 +68,31 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "linear-gradient(90deg, rgba(11, 28, 44, 0.88) 0%, rgba(11, 28, 44, 0.60) 25%, rgba(11, 28, 44, 0) 50%, rgba(11, 28, 44, 0) 100%)",
+              "linear-gradient(90deg, rgba(11, 28, 44, 0.95) 0%, rgba(11, 28, 44, 0.85) 40%, rgba(11, 28, 44, 0.5) 70%, rgba(11, 28, 44, 0) 100%)",
           }}
         />
 
-        <div className="relative z-10 flex flex-col items-center justify-center text-center lg:items-start lg:text-left min-h-[500px] md:min-h-[550px] lg:min-h-[650px] px-4 md:px-12 lg:px-16 py-8 md:py-10">
-          <div
-            className={`lg:absolute lg:top-2 lg:left-1/2 lg:-translate-x-1/2 mb-6 lg:mb-4 transition-all duration-1000 delay-500 ${
-              isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
-            }`}
-          >
-            <div className="inline-block bg-[#0B1C2C]/80 backdrop-blur-sm border-2 border-[#C8A55C]/60 rounded-xl px-6 md:px-7 py-3 md:py-3 mb-3 shadow-xl">
-              <h2 className="text-white text-xl md:text-lg lg:text-xl xl:text-2xl font-bold drop-shadow-lg leading-tight max-w-[400px] text-center">
-                Your Flag Deserves Better
-                <br />
-                Than a Cheap Pole.
-              </h2>
+        <div className="relative z-10 container mx-auto px-3 md:px-8 lg:px-12 py-4 md:py-12 min-h-[500px] md:min-h-[650px] lg:min-h-[700px] flex flex-col justify-center">
+          <div className="absolute top-2 md:top-6 left-1/2 -translate-x-1/2 z-20 w-[calc(100%-24px)] md:w-auto flex justify-center">
+            <div className="inline-block bg-[#0B1C2C]/95 backdrop-blur-sm border-2 border-[#C8A55C] rounded-xl px-3 py-1.5 md:px-4 md:py-2 shadow-2xl">
+              <p className="text-white font-extrabold text-xs md:text-lg lg:text-xl text-center leading-tight">
+                Your Flag Deserves Better Than a Cheap Pole.
+              </p>
             </div>
+          </div>
 
-            <div className="flex items-center justify-center gap-2 md:gap-3 mb-3">
+          <div className="absolute top-12 md:top-24 right-1 md:right-8 lg:right-12 flex flex-col items-center gap-1.5 md:gap-4">
+            <h3 className="text-white text-[9px] md:text-sm font-extrabold tracking-wide text-center">
+              America's #1 Flagpole Company
+            </h3>
+            <div className="flex items-center gap-1 md:gap-3">
               {[
-                { src: "/images/ten-percent-badge.svg", alt: "10% Pledge", delay: "delay-[600ms]" },
-                { src: "/images/bbb-logo.webp", alt: "BBB Accredited", delay: "delay-[700ms]" },
-                { src: "/images/one-percent-planet.svg", alt: "1% for Planet", delay: "delay-[750ms]" },
+                { src: "/images/ten-percent-badge.svg", alt: "10% Pledge" },
+                { src: "/images/bbb-logo.webp", alt: "BBB Accredited" },
+                { src: "/images/one-percent-planet.svg", alt: "1% for Planet" },
                 {
-                  src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/madeinusabadge-lV1WdGQGgGLFMrb7p8HQc5WnBMQ6ES.jpg",
+                  src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/madeinusabadge-y7lnHFiqBn1o0YpH7y5tKHymKkmgPA.jpg",
                   alt: "Made in USA",
-                  delay: "delay-[800ms]",
                 },
               ].map((badge, index) => (
                 <Link
@@ -105,184 +104,173 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
                   }
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`w-16 h-16 md:w-16 md:h-16 lg:w-18 lg:h-18 ${index === 1 ? "" : "bg-white"} rounded-full overflow-hidden shadow-md border-2 border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center relative ${badge.delay} ${
-                    isVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
-                  }`}
+                  className={`w-8 h-8 md:w-14 md:h-14 lg:w-16 lg:h-16 ${index === 1 ? "" : "bg-white"} rounded-full overflow-hidden shadow-lg border-2 border-[#C8A55C] hover:border-[#D8B56C] hover:scale-110 transition-all duration-300 flex items-center justify-center relative`}
                 >
                   <Image
                     src={badge.src || "/placeholder.svg"}
                     alt={badge.alt}
                     fill
-                    className={`object-${index === 1 ? "cover" : "contain"} ${index === 3 ? "scale-75" : index === 1 ? "" : "p-1.5"}`}
-                    sizes="128px"
+                    className={`object-${index === 1 ? "cover" : "contain"} ${index === 1 ? "" : "p-1"}`}
+                    sizes="64px"
                   />
                 </Link>
               ))}
             </div>
           </div>
 
-          <div
-            className={`max-w-[480px] w-full lg:self-start transition-all duration-1000 ${
-              isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
-            }`}
-          >
+          <div className="max-w-xl lg:max-w-2xl mt-20 md:mt-0 text-center md:text-left">
+            {/* Sale Badge */}
             <div
-              className={`inline-block bg-white text-[#0B1C2C] px-3 py-1.5 mb-3 font-bold text-[10px] md:text-xs tracking-widest uppercase shadow-md transition-all duration-700 delay-100 ${
-                isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+              className={`inline-block bg-white text-[#0B1C2C] px-3 py-1.5 md:px-4 md:py-1.5 mb-2 md:mb-4 font-extrabold text-xs md:text-sm tracking-widest uppercase shadow-lg transition-all duration-700 ${
+                isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
               }`}
             >
               FALL INTO SAVINGS
             </div>
 
             <h1
-              className={`font-serif text-3xl md:text-4xl lg:text-5xl text-white mb-2 md:mb-3 leading-tight transition-all duration-700 delay-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] ${
-                isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+              className={`font-serif text-3xl md:text-5xl lg:text-6xl xl:text-7xl text-white mb-2 md:mb-6 leading-tight transition-all duration-700 delay-100 drop-shadow-2xl font-bold ${
+                isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
               }`}
             >
-              Our Biggest
-              <br />
-              Offer Ever!
+              Our Best Offer!
             </h1>
 
-            <p
-              className={`text-xl md:text-3xl lg:text-4xl text-white font-light leading-tight mb-3 md:mb-4 transition-all duration-700 delay-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] ${
-                isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+            <div
+              className={`mb-3 md:mb-8 transition-all duration-700 delay-200 ${
+                isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
               }`}
             >
-              Up To <span className="text-white font-bold">40%</span> Off Flagpoles
-              <br />
-              <span className="text-base md:text-xl lg:text-2xl">
-                +<span className="text-white font-bold">$255</span> Of Accessories Included!
-                <span className="text-white">*</span>
-              </span>
-            </p>
+              <p className="text-xl md:text-4xl lg:text-5xl text-white font-semibold leading-tight mb-1.5">
+                Up To <span className="font-extrabold">40% Off</span>
+              </p>
+              <p className="text-xl md:text-4xl lg:text-5xl text-white font-semibold leading-tight mb-2">
+                Flagpoles <span className="text-base md:text-3xl lg:text-4xl font-bold">+ $255 Of</span>
+              </p>
+              <p className="text-xl md:text-4xl lg:text-5xl text-white font-semibold leading-tight">
+                Accessories Included!<span className="text-white text-lg md:text-2xl font-bold">*</span>
+              </p>
+            </div>
 
             <div
-              className={`flex flex-col items-center lg:items-start gap-2 max-w-[360px] mx-auto lg:mx-0 transition-all duration-700 delay-400 ${
-                isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+              className={`max-w-sm mx-auto md:mx-0 mb-3 md:mb-4 transition-all duration-700 delay-300 ${
+                isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
               }`}
             >
-              <div className="bg-white rounded-md p-2.5 w-full shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <p className="text-[#0B1C2C] text-xs md:text-sm font-semibold mb-1.5 text-center">
+              <div className="bg-white rounded-lg p-2.5 md:p-4 shadow-xl">
+                <p className="text-[#0B1C2C] text-xs md:text-base font-bold mb-2 md:mb-3 text-center">
                   Order Today For Fastest Shipping
                 </p>
-                <div className="flex items-center justify-center gap-1.5">
-                  <div className="bg-[#0B1C2C] px-2 py-1.5 rounded min-w-[44px] text-center hover:scale-105 transition-transform duration-200">
-                    <div className="text-lg font-bold text-white tabular-nums">{timeLeft.days}</div>
-                    <div className="text-[7px] text-white/80 uppercase tracking-widest font-bold">DAYS</div>
-                  </div>
-                  <div className="text-base text-[#0B1C2C]">:</div>
-                  <div className="bg-[#0B1C2C] px-2 py-1.5 rounded min-w-[44px] text-center hover:scale-105 transition-transform duration-200">
-                    <div className="text-lg font-bold text-white tabular-nums">{timeLeft.hours}</div>
-                    <div className="text-[7px] text-white/80 uppercase tracking-widest font-bold">HRS</div>
-                  </div>
-                  <div className="text-base text-[#0B1C2C]">:</div>
-                  <div className="bg-[#0B1C2C] px-2 py-1.5 rounded min-w-[44px] text-center hover:scale-105 transition-transform duration-200">
-                    <div className="text-lg font-bold text-white tabular-nums">{timeLeft.minutes}</div>
-                    <div className="text-[7px] text-white/80 uppercase tracking-widest font-bold">MIN</div>
-                  </div>
-                  <div className="text-base text-[#0B1C2C]">:</div>
-                  <div className="bg-[#0B1C2C] px-2 py-1.5 rounded min-w-[44px] text-center hover:scale-105 transition-transform duration-200">
-                    <div className="text-lg font-bold text-white tabular-nums">{timeLeft.seconds}</div>
-                    <div className="text-[7px] text-white/80 uppercase tracking-widest font-bold">SEC</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative w-full">
-                <Link
-                  href="/products"
-                  className="block w-full bg-[#C8A55C] hover:bg-[#B8954C] text-[#0B1C2C] text-center font-bold text-sm py-3 px-6 rounded-md transition-all shadow-lg hover:shadow-2xl hover:scale-[1.03] duration-300"
-                >
-                  Shop Flagpoles
-                </Link>
-
-                <div className="absolute -top-2 -right-2 flex items-center gap-1 bg-white px-2 py-1 rounded-full shadow-lg border-2 border-[#C8A55C] rotate-12 hover:rotate-6 hover:scale-110 transition-all duration-300">
-                  <img
-                    src="/images/design-mode/award.png"
-                    alt="Award"
-                    className="w-4 h-4 md:w-5 md:h-5 object-contain"
-                  />
-                  <div className="flex flex-col leading-none">
-                    <div className="flex items-center gap-0.5">
-                      {[...Array(5)].map((_, i) => (
-                        <span
-                          key={i}
-                          className={`text-[9px] md:text-[10px] ${i < Math.floor(rating) ? "text-[#C8A55C]" : "text-gray-300"}`}
-                        >
-                          ★
-                        </span>
-                      ))}
+                <div className="flex items-center justify-center gap-1.5 md:gap-2">
+                  <div className="bg-[#0B1C2C] px-2 py-1.5 md:px-3 md:py-2 rounded min-w-[42px] md:min-w-[50px] text-center">
+                    <div className="text-lg md:text-xl font-bold text-white tabular-nums">{timeLeft.days}</div>
+                    <div className="text-[7px] md:text-[8px] text-white/80 uppercase tracking-widest font-bold">
+                      DAYS
                     </div>
-                    <span className="text-[#0B1C2C] text-[8px] md:text-[9px] font-bold whitespace-nowrap">
-                      {rating.toFixed(1)} ({reviewCount.toLocaleString()})
-                    </span>
+                  </div>
+                  <div className="text-base md:text-lg text-[#0B1C2C] font-bold">:</div>
+                  <div className="bg-[#0B1C2C] px-2 py-1.5 md:px-3 md:py-2 rounded min-w-[42px] md:min-w-[50px] text-center">
+                    <div className="text-lg md:text-xl font-bold text-white tabular-nums">{timeLeft.hours}</div>
+                    <div className="text-[7px] md:text-[8px] text-white/80 uppercase tracking-widest font-bold">
+                      HRS
+                    </div>
+                  </div>
+                  <div className="text-base md:text-lg text-[#0B1C2C] font-bold">:</div>
+                  <div className="bg-[#0B1C2C] px-2 py-1.5 md:px-3 md:py-2 rounded min-w-[42px] md:min-w-[50px] text-center">
+                    <div className="text-lg md:text-xl font-bold text-white tabular-nums">{timeLeft.minutes}</div>
+                    <div className="text-[7px] md:text-[8px] text-white/80 uppercase tracking-widest font-bold">
+                      MIN
+                    </div>
+                  </div>
+                  <div className="text-base md:text-lg text-[#0B1C2C] font-bold">:</div>
+                  <div className="bg-[#0B1C2C] px-2 py-1.5 md:px-3 md:py-2 rounded min-w-[42px] md:min-w-[50px] text-center">
+                    <div className="text-lg md:text-xl font-bold text-white tabular-nums">{timeLeft.seconds}</div>
+                    <div className="text-[7px] md:text-[8px] text-white/80 uppercase tracking-widest font-bold">
+                      SEC
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <p className="text-[10px] md:text-xs font-bold text-white uppercase tracking-wide">
-                  IN STOCK • SHIPS IN 1-2 BUSINESS DAYS
-                </p>
               </div>
             </div>
 
-            <p className="text-white/80 text-xs md:text-sm mt-3 font-semibold drop-shadow-md">
-              *See Terms and Conditions
+            <div
+              className={`max-w-sm mx-auto md:mx-0 mb-2.5 md:mb-4 transition-all duration-700 delay-400 ${
+                isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
+              }`}
+            >
+              <Link
+                href="/products"
+                className="block w-full bg-[#C8A55C] hover:bg-[#B8954C] text-[#0B1C2C] text-center font-extrabold text-base md:text-lg py-3 md:py-4 px-6 md:px-8 rounded-md transition-all shadow-lg hover:shadow-2xl hover:scale-[1.02] duration-300"
+              >
+                Shop Flagpoles
+              </Link>
+            </div>
+
+            <div
+              className={`flex items-center justify-center md:justify-start gap-2 mb-2.5 md:mb-4 transition-all duration-700 delay-500 ${
+                isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
+              }`}
+            >
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <p className="text-[10px] md:text-sm font-extrabold text-white uppercase tracking-wide">
+                IN STOCK | SHIPS IN 1-2 BUSINESS DAYS
+              </p>
+            </div>
+
+            {/* Terms */}
+            <p
+              className={`text-white/80 text-xs md:text-sm mb-4 md:mb-8 transition-all duration-700 delay-600 font-semibold ${
+                isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
+              }`}
+            >
+              *See Terms
             </p>
           </div>
 
-          <div
-            className={`max-w-[280px] mx-auto lg:absolute lg:right-16 lg:top-1/2 lg:-translate-y-1/2 mt-6 lg:mt-0 transition-all duration-1000 delay-600 ${
-              isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
-            }`}
-          >
-            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-5 shadow-xl border border-[#C8A55C]/30">
-              <div className="flex items-center justify-center mb-3">
+          <div className="absolute bottom-4 md:bottom-12 right-3 md:right-8 lg:right-12 hidden lg:block">
+            <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl border-3 border-[#C8A55C] p-6 max-w-[280px]">
+              <div className="flex flex-col items-center gap-3">
                 <Image
-                  src="/images/phoenix-flagpole-gold.png"
-                  alt="Phoenix Flagpole"
-                  width={200}
-                  height={60}
-                  className="w-full max-w-[200px] h-auto object-contain"
+                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Phoenix-flagpole-gold-AuN5dkO3XA16aLxg8Pl9D924ScFRDU.png"
+                  alt="Phoenix Flagpole Gold Logo"
+                  width={220}
+                  height={80}
+                  className="object-contain"
                 />
-              </div>
-              <h3 className="text-[#0B1C2C] text-lg font-bold text-center mb-2 leading-tight">
-                The Last Flagpole You'll Ever Need. Guaranteed.
-              </h3>
-              <p className="text-[#0B1C2C]/70 text-center text-sm leading-snug mb-4">
-                365-Day Guarantee • Forever Warranty
-              </p>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="flex flex-col items-center text-center">
-                  <Wind className="w-6 h-6 text-[#C8A55C] mb-1" />
-                  <span className="text-xs font-semibold text-[#0B1C2C]">100 MPH</span>
-                </div>
-                <div className="flex flex-col items-center text-center">
-                  <Lock className="w-6 h-6 text-[#C8A55C] mb-1" />
-                  <span className="text-xs font-semibold text-[#0B1C2C]">Anti-Theft</span>
+                <div className="text-center space-y-2 mt-2">
+                  <p className="text-[#0B1C2C] font-bold text-base leading-tight">
+                    Revolutionary Telescoping Flagpoles
+                  </p>
+                  <p className="text-[#0B1C2C]/70 font-medium text-xs leading-relaxed">
+                    Engineered with premium-grade aluminum and patented technology for effortless flag raising. Built to
+                    withstand extreme weather and honor your patriotism for generations.
+                  </p>
+                  <div className="flex items-center justify-center gap-1 pt-2">
+                    <Shield className="w-4 h-4 text-[#C8A55C]" />
+                    <span className="text-[#C8A55C] font-bold text-xs uppercase tracking-wide">Lifetime Warranty</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="lg:absolute lg:bottom-3 lg:left-4 lg:md:bottom-4 lg:md:left-6 mt-4 lg:mt-0">
-            <p className="text-white text-base md:text-lg font-serif drop-shadow-lg font-bold">
+          <div className="absolute bottom-3 md:bottom-10 left-1/2 md:left-8 lg:left-12 -translate-x-1/2 md:translate-x-0">
+            <p className="text-white text-base md:text-xl lg:text-2xl font-serif drop-shadow-lg font-extrabold">
               Prices Starting From $779
             </p>
           </div>
         </div>
       </section>
 
+      {/* Trust Marquee */}
       <div className="bg-[#0B1C2C] py-3 overflow-hidden border-b-2 border-[#C8A55C]/30">
-        <div className="flex animate-marquee-fast whitespace-nowrap">
-          {[...Array(4)].map((_, setIndex) => (
-            <div key={setIndex} className="flex items-center gap-12 px-6">
+        <div className="flex animate-scroll-infinite whitespace-nowrap">
+          {/* Duplicate the content 3 times for seamless infinite scroll */}
+          {[...Array(3)].map((_, setIndex) => (
+            <div key={setIndex} className="flex items-center gap-12 px-6 flex-shrink-0">
               <div className="flex items-center gap-3">
                 <Award className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
-                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">2,500+ 5★ Reviews</span>
+                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">365-Day Home Trial</span>
               </div>
               <div className="flex items-center gap-3">
                 <Shield className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
@@ -290,25 +278,20 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
               </div>
               <div className="flex items-center gap-3">
                 <Wind className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
-                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">100 MPH Wind Guarantee</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Lock className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
-                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">Anti-Theft Promise</span>
+                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">Free Shipping & Returns</span>
               </div>
               <div className="flex items-center gap-3">
                 <CheckCircle className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
-                <span className="text-[#0B1C2C] font-semibold text-base tracking-wide">Made in USA</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Gem className="w-6 h-6 text-[#C8A55C] flex-shrink-0" />
-                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">Premium Materials</span>
+                <span className="text-[#C8A55C] font-semibold text-base tracking-wide">
+                  Join 2.5 Million Happy American Homeowners
+                </span>
               </div>
             </div>
           ))}
         </div>
       </div>
 
+      {/* Existing code here */}
       <div className="bg-white py-8 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4">
           <h3 className="text-center text-2xl md:text-3xl font-serif font-bold text-[#0B1C2C] mb-6">

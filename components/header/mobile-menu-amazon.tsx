@@ -96,14 +96,14 @@ export function MobileMenuAmazon({
               className="flex items-center gap-2 text-white hover:text-[#C8A55C] transition-colors"
             >
               <ChevronLeft className="w-6 h-6" />
-              <span className="font-semibold text-lg">Back</span>
+              <span className="font-semibold text-lg antialiased">Back</span>
             </button>
           ) : (
             <div className="flex items-center gap-3">
               <div className="bg-white/10 p-2 rounded-full">
                 <User className="w-5 h-5" />
               </div>
-              <span className="text-lg font-semibold">Hello, Sign In</span>
+              <span className="text-lg font-semibold antialiased">Hello, Sign In</span>
             </div>
           )}
           <button onClick={handleClose} className="text-white p-2 hover:bg-white/10 rounded-lg transition-colors">
@@ -112,7 +112,7 @@ export function MobileMenuAmazon({
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto antialiased">
           {/* Main Panel */}
           {currentPanel.view === "main" && (
             <div className="animate-in slide-in-from-left duration-200">
@@ -128,7 +128,7 @@ export function MobileMenuAmazon({
                       <User className="w-6 h-6" />
                     </div>
                     <div>
-                      <div className="text-sm text-white/80">Hello, Sign In</div>
+                      <div className="text-sm text-white/90 font-normal">Hello, Sign In</div>
                       <div className="text-base font-semibold">My Account</div>
                     </div>
                   </div>
@@ -138,7 +138,7 @@ export function MobileMenuAmazon({
 
               {/* Featured Products */}
               <div className="p-4 border-b border-gray-200 bg-gradient-to-br from-[#F5F3EF] to-white">
-                <h3 className="text-lg font-bold text-[#0B1C2C] mb-3 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-[#0B1C2C] mb-3 flex items-center gap-2 antialiased">
                   <Package className="w-5 h-5 text-[#C8A55C]" />
                   Featured Products
                 </h3>
@@ -158,14 +158,16 @@ export function MobileMenuAmazon({
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="bg-[#C8A55C] text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">
+                        <span className="bg-[#C8A55C] text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase antialiased">
                           Most Popular
                         </span>
                       </div>
-                      <h4 className="font-bold text-sm text-[#0B1C2C] mb-1">Phoenix Premier Kit</h4>
-                      <p className="text-xs text-gray-600 mb-2">Complete bundle with all accessories included</p>
+                      <h4 className="font-bold text-sm text-[#0B1C2C] mb-1 antialiased">Phoenix Premier Kit</h4>
+                      <p className="text-xs text-gray-600 mb-2 antialiased">
+                        Complete bundle with all accessories included
+                      </p>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-[#0B1C2C]">Starting at $779</span>
+                        <span className="text-sm font-bold text-[#0B1C2C] antialiased">Starting at $779</span>
                       </div>
                     </div>
                   </Link>
@@ -185,14 +187,14 @@ export function MobileMenuAmazon({
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">
+                        <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase antialiased">
                           Best Seller
                         </span>
                       </div>
-                      <h4 className="font-bold text-sm text-[#0B1C2C] mb-1">Telescoping Flagpoles</h4>
-                      <p className="text-xs text-gray-600 mb-2">Easy install, no ladders needed</p>
+                      <h4 className="font-bold text-sm text-[#0B1C2C] mb-1 antialiased">Telescoping Flagpoles</h4>
+                      <p className="text-xs text-gray-600 mb-2 antialiased">Easy install, no ladders needed</p>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-[#0B1C2C]">Shop Collection</span>
+                        <span className="text-sm font-bold text-[#0B1C2C] antialiased">Shop Collection</span>
                       </div>
                     </div>
                   </Link>
@@ -201,7 +203,7 @@ export function MobileMenuAmazon({
 
               {/* Trending / Quick Actions */}
               <div className="p-4 border-b border-gray-200">
-                <h3 className="text-lg font-bold text-[#0B1C2C] mb-3">Trending</h3>
+                <h3 className="text-lg font-bold text-[#0B1C2C] mb-3 antialiased">Trending</h3>
                 <div className="space-y-2">
                   {location && stateCode && (
                     <Link
@@ -211,7 +213,7 @@ export function MobileMenuAmazon({
                     >
                       <div className="flex items-center gap-3">
                         <MapPin className="w-5 h-5 text-[#C8A55C]" />
-                        <span className="text-[#0B1C2C] font-medium">Shop {location.region}</span>
+                        <span className="text-[#0B1C2C] font-medium antialiased">Shop {location.region}</span>
                       </div>
                       <ChevronRight className="w-5 h-5 text-gray-400" />
                     </Link>
@@ -223,7 +225,7 @@ export function MobileMenuAmazon({
                   >
                     <div className="flex items-center gap-3">
                       <Sparkles className="w-5 h-5 text-[#C8A55C]" />
-                      <span className="text-[#0B1C2C] font-medium">Flagpole Finder</span>
+                      <span className="text-[#0B1C2C] font-medium antialiased">Flagpole Finder</span>
                     </div>
                     <ChevronRight className="w-5 h-5 text-gray-400" />
                   </Link>
@@ -236,7 +238,7 @@ export function MobileMenuAmazon({
                   >
                     <div className="flex items-center gap-3">
                       <Sparkles className="w-5 h-5 text-[#C8A55C]" />
-                      <span className="text-[#0B1C2C] font-medium">Flagpole Quiz</span>
+                      <span className="text-[#0B1C2C] font-medium antialiased">Flagpole Quiz</span>
                     </div>
                     <ChevronRight className="w-5 h-5 text-gray-400" />
                   </button>
@@ -245,7 +247,7 @@ export function MobileMenuAmazon({
 
               {/* Shop by Department */}
               <div className="p-4">
-                <h3 className="text-lg font-bold text-[#0B1C2C] mb-3">Shop by Department</h3>
+                <h3 className="text-lg font-bold text-[#0B1C2C] mb-3 antialiased">Shop by Department</h3>
                 <div className="space-y-1">
                   {navigationConfig.map((category, index) => (
                     <button
@@ -253,7 +255,7 @@ export function MobileMenuAmazon({
                       onClick={() => navigateToCategory(index, category.label)}
                       className="flex items-center justify-between w-full p-3 hover:bg-[#F5F3EF] rounded-lg transition-colors text-left"
                     >
-                      <span className="text-[#0B1C2C] font-medium">{category.label}</span>
+                      <span className="text-[#0B1C2C] font-medium antialiased">{category.label}</span>
                       <ChevronRight className="w-5 h-5 text-gray-400" />
                     </button>
                   ))}
@@ -264,7 +266,7 @@ export function MobileMenuAmazon({
                       onClick={handleLinkClick}
                       className="flex items-center justify-between w-full p-3 hover:bg-[#F5F3EF] rounded-lg transition-colors"
                     >
-                      <span className="text-[#0B1C2C] font-medium">{item.label}</span>
+                      <span className="text-[#0B1C2C] font-medium antialiased">{item.label}</span>
                       <ChevronRight className="w-5 h-5 text-gray-400" />
                     </Link>
                   ))}
@@ -273,35 +275,35 @@ export function MobileMenuAmazon({
 
               {/* Help & Settings */}
               <div className="p-4 border-t border-gray-200 bg-[#F5F3EF]">
-                <h3 className="text-sm font-semibold text-[#0B1C2C]/60 uppercase tracking-wider mb-3">
+                <h3 className="text-sm font-semibold text-[#0B1C2C]/60 uppercase tracking-wider mb-3 antialiased">
                   Help & Settings
                 </h3>
                 <div className="space-y-2">
                   <Link
                     href="/help-center"
                     onClick={handleLinkClick}
-                    className="block text-[#0B1C2C] hover:text-[#C8A55C] transition-colors py-2 font-medium"
+                    className="block text-[#0B1C2C] hover:text-[#C8A55C] transition-colors py-2 font-medium antialiased"
                   >
                     Help Center
                   </Link>
                   <Link
                     href="/guarantee"
                     onClick={handleLinkClick}
-                    className="block text-[#0B1C2C] hover:text-[#C8A55C] transition-colors py-2 font-medium"
+                    className="block text-[#0B1C2C] hover:text-[#C8A55C] transition-colors py-2 font-medium antialiased"
                   >
                     Our Guarantee
                   </Link>
                   <Link
                     href="/about"
                     onClick={handleLinkClick}
-                    className="block text-[#0B1C2C] hover:text-[#C8A55C] transition-colors py-2 font-medium"
+                    className="block text-[#0B1C2C] hover:text-[#C8A55C] transition-colors py-2 font-medium antialiased"
                   >
                     About Us
                   </Link>
                   <Link
                     href="/contact"
                     onClick={handleLinkClick}
-                    className="block text-[#0B1C2C] hover:text-[#C8A55C] transition-colors py-2 font-medium"
+                    className="block text-[#0B1C2C] hover:text-[#C8A55C] transition-colors py-2 font-medium antialiased"
                   >
                     Contact Us
                   </Link>
@@ -315,12 +317,12 @@ export function MobileMenuAmazon({
             <div className="animate-in slide-in-from-right duration-200">
               {/* Category Header */}
               <div className="p-4 border-b border-gray-200 bg-[#F5F3EF]">
-                <h2 className="text-xl font-bold text-[#0B1C2C]">{currentPanel.title}</h2>
+                <h2 className="text-xl font-bold text-[#0B1C2C] antialiased">{currentPanel.title}</h2>
                 {selectedCategory.href && (
                   <Link
                     href={selectedCategory.href}
                     onClick={handleLinkClick}
-                    className="text-sm text-[#C8A55C] hover:text-[#0B1C2C] font-semibold mt-1 inline-block"
+                    className="text-sm text-[#C8A55C] hover:text-[#0B1C2C] font-semibold mt-1 inline-block antialiased"
                   >
                     View All {currentPanel.title}
                   </Link>
@@ -335,7 +337,7 @@ export function MobileMenuAmazon({
                       onClick={() => navigateToSubcategory(index, subcategory.label)}
                       className="flex items-center justify-between w-full p-3 hover:bg-[#F5F3EF] rounded-lg transition-colors text-left mb-2"
                     >
-                      <span className="text-[#0B1C2C] font-semibold">{subcategory.label}</span>
+                      <span className="text-[#0B1C2C] font-semibold antialiased">{subcategory.label}</span>
                       <ChevronRight className="w-5 h-5 text-gray-400" />
                     </button>
                     {/* Show first 3 items as preview */}
@@ -345,7 +347,7 @@ export function MobileMenuAmazon({
                           key={item.label}
                           href={item.href}
                           onClick={handleLinkClick}
-                          className="block text-[#0B1C2C]/70 hover:text-[#C8A55C] hover:bg-[#F5F3EF] transition-colors py-2 px-3 rounded-lg text-sm"
+                          className="block text-[#0B1C2C]/70 hover:text-[#C8A55C] hover:bg-[#F5F3EF] transition-colors py-2 px-3 rounded-lg text-sm antialiased"
                         >
                           {item.label}
                         </Link>
@@ -353,7 +355,7 @@ export function MobileMenuAmazon({
                       {subcategory.items.length > 3 && (
                         <button
                           onClick={() => navigateToSubcategory(index, subcategory.label)}
-                          className="block text-[#C8A55C] hover:text-[#0B1C2C] transition-colors py-2 px-3 text-sm font-semibold"
+                          className="block text-[#C8A55C] hover:text-[#0B1C2C] transition-colors py-2 px-3 text-sm font-semibold antialiased"
                         >
                           See all {subcategory.items.length} items →
                         </button>
@@ -370,7 +372,7 @@ export function MobileMenuAmazon({
             <div className="animate-in slide-in-from-right duration-200">
               {/* Subcategory Header */}
               <div className="p-4 border-b border-gray-200 bg-[#F5F3EF]">
-                <h2 className="text-xl font-bold text-[#0B1C2C]">{currentPanel.title}</h2>
+                <h2 className="text-xl font-bold text-[#0B1C2C] antialiased">{currentPanel.title}</h2>
               </div>
 
               {/* Items */}
@@ -381,11 +383,13 @@ export function MobileMenuAmazon({
                       key={item.label}
                       href={item.href}
                       onClick={handleLinkClick}
-                      className="flex items-center justify-between p-3 hover:bg-[#F5F3EF] rounded-lg transition-colors"
+                      className="flex items-center justify-between p-3 hover:bg-[#F5F3EF] rounded-lg transition-colors antialiased"
                     >
                       <div>
-                        <div className="text-[#0B1C2C] font-medium">{item.label}</div>
-                        {item.description && <div className="text-xs text-[#0B1C2C]/60 mt-0.5">{item.description}</div>}
+                        <div className="text-[#0B1C2C] font-medium antialiased">{item.label}</div>
+                        {item.description && (
+                          <div className="text-xs text-[#0B1C2C]/60 mt-0.5 antialiased">{item.description}</div>
+                        )}
                       </div>
                       <ChevronRight className="w-5 h-5 text-gray-400 shrink-0" />
                     </Link>

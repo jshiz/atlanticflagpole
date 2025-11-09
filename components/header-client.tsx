@@ -3,7 +3,7 @@
 import type React from "react"
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
-import { ShoppingCart, MenuIcon, User, Sparkles } from "lucide-react"
+import { ShoppingCart, MenuIcon, User } from "lucide-react"
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
 import { useCart } from "@/components/cart/cart-context"
@@ -14,10 +14,11 @@ import { ChristmasTreeMegaMenu } from "@/components/header/christmas-tree-mega-m
 import { isNFLMenuItem, isChristmasTreeMenuItem } from "@/lib/nfl-teams"
 import type { ShopifyProduct } from "@/lib/shopify/types"
 import { MegaMenuWithCart } from "@/components/header/mega-menu-with-cart"
-import { AccountMenu } from "@/components/header/account-menu"
 import { MobileMenuAmazon } from "@/components/header/mobile-menu-amazon"
 import { useGeo } from "@/lib/geo/context"
 import { getStateCodeFromRegion } from "@/lib/geo/state-mapping"
+import { AffiliateMegaMenu } from "@/components/header/affiliate-mega-menu"
+import { InfoCenterMegaMenu } from "@/components/header/info-center-mega-menu"
 
 interface HeaderClientProps {
   menuData: Menu | null
@@ -39,7 +40,8 @@ export function HeaderClient({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [quizModalOpen, setQuizModalOpen] = useState(false)
-  const [isSticky, setIsSticky] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
   const { cart } = useCart()
   const cartItemCount = cart?.lines?.edges ? cart.lines.edges.length : 0
   const menuRef = useRef<HTMLDivElement>(null)
@@ -49,9 +51,10 @@ export function HeaderClient({
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsSticky(window.scrollY > 100)
+      setIsScrolled(window.scrollY > 10)
     }
-    window.addEventListener("scroll", handleScroll)
+    handleScroll() // Check initial state
+    window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
@@ -70,6 +73,17 @@ export function HeaderClient({
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [activeDropdown])
+
+  console.log("[v0] 📦 HeaderClient received megaMenuData keys:", Object.keys(megaMenuData || {}))
+  console.log(
+    "[v0] 📦 HeaderClient menu items with products:",
+    menuData?.items?.map((item: any) => ({
+      id: item.id,
+      title: item.title,
+      hasProducts: !!megaMenuData?.[item.id]?.products?.nodes?.length,
+      productCount: megaMenuData?.[item.id]?.products?.nodes?.length || 0,
+    })),
+  )
 
   if (!menuData || !menuData.items || menuData.items.length === 0) {
     return null
@@ -95,19 +109,15 @@ export function HeaderClient({
 
       <header
         className={`sticky top-0 z-[100] bg-white border-b border-gray-200 transition-all duration-300 ${
-          isSticky ? "shadow-lg" : "shadow-sm"
+          isScrolled ? "shadow-lg" : "shadow-sm"
         }`}
       >
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-3 lg:px-4">
           <div className="md:hidden">
-            <div
-              className={`flex items-center justify-between transition-all duration-300 ${
-                isSticky ? "h-12 py-2" : "h-16 py-3"
-              }`}
-            >
+            <div className="flex items-center justify-between h-14 py-2">
               <button
                 onClick={() => setMobileMenuOpen(true)}
-                className="flex items-center justify-center w-10 h-10 hover:bg-gray-50 rounded-lg transition-colors"
+                className="flex items-center justify-center w-9 h-9 hover:bg-gray-50 rounded-lg transition-colors"
                 aria-label="Open menu"
               >
                 <MenuIcon className="w-5 h-5 text-[#0B1C2C]" strokeWidth={2.5} />
@@ -115,103 +125,124 @@ export function HeaderClient({
 
               <Link href="/" className="flex items-center gap-2 flex-1 justify-center">
                 <Image
-                  src="/images/favicon.png"
+                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/favicon-YQNeE3MdsChyJvmpaxCgbayiwZA6Ts.png"
                   alt="Atlantic Flagpoles"
-                  width={isSticky ? 28 : 36}
-                  height={isSticky ? 28 : 36}
-                  className={`transition-all duration-300 ${isSticky ? "w-7 h-7" : "w-9 h-9"}`}
+                  width={32}
+                  height={32}
+                  className="w-8 h-8"
                 />
-                <span
-                  className={`font-extrabold text-[#0B1C2C] tracking-wider transition-all duration-300 ${
-                    isSticky ? "text-xs" : "text-sm"
-                  }`}
-                >
-                  ATLANTIC FLAGPOLE
-                </span>
-              </Link>
-
-              <div className="flex items-center gap-1">
-                <Link
-                  href="/flagpole-finder"
-                  className="flex items-center justify-center w-10 h-10 hover:bg-gray-50 rounded-lg transition-colors"
-                  aria-label="AI Search"
-                >
-                  <Sparkles className="w-5 h-5 text-[#C8A55C]" strokeWidth={2.5} />
-                </Link>
-                <a
-                  href={shopifyAccountUrl}
-                  className="flex items-center justify-center w-10 h-10 hover:bg-gray-50 rounded-lg transition-colors"
-                  aria-label="Account"
-                >
-                  <User className="w-5 h-5 text-[#0B1C2C]" strokeWidth={2.5} />
-                </a>
-                <Link
-                  href="/cart"
-                  className="relative flex items-center justify-center w-10 h-10 hover:bg-gray-50 rounded-lg transition-colors"
-                  aria-label="Cart"
-                >
-                  <ShoppingCart className="w-5 h-5 text-[#0B1C2C]" strokeWidth={2.5} />
-                  {cartItemCount > 0 && (
-                    <span className="absolute top-1 right-1 bg-red-600 text-white text-[9px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
-                      {cartItemCount}
-                    </span>
-                  )}
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <div className="hidden md:block">
-            <div
-              className={`flex items-center justify-between gap-4 transition-all duration-300 ${
-                isSticky ? "h-16" : "h-20"
-              }`}
-            >
-              <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
-                <Image
-                  src="/images/favicon.png"
-                  alt="Atlantic Flagpole Logo"
-                  width={isSticky ? 48 : 56}
-                  height={isSticky ? 48 : 56}
-                  className={`group-hover:scale-105 transition-all duration-300 ${
-                    isSticky ? "w-12 h-12" : "w-14 h-14"
-                  }`}
-                />
-                <div className={isSticky ? "hidden lg:block" : "block"}>
+                <div className="flex flex-col leading-none">
                   <span
-                    className={`font-serif font-bold text-[#0B1C2C] tracking-tight block leading-none transition-all duration-300 ${
-                      isSticky ? "text-xl" : "text-2xl"
-                    }`}
+                    className="font-bold text-[#0B1C2C] tracking-wider text-xs"
+                    style={{ fontFamily: "system-ui, -apple-system, sans-serif", letterSpacing: "0.05em" }}
                   >
                     ATLANTIC
                   </span>
                   <span
-                    className={`font-serif font-medium text-[#C8A55C] tracking-widest block leading-none transition-all duration-300 ${
-                      isSticky ? "text-[10px]" : "text-xs"
-                    }`}
+                    className="font-semibold text-[#C8A55C] tracking-widest text-[9px]"
+                    style={{ fontFamily: "system-ui, -apple-system, sans-serif", letterSpacing: "0.1em" }}
                   >
                     FLAGPOLE
                   </span>
                 </div>
               </Link>
 
-              <div className="flex-1 max-w-2xl mx-auto">
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+                  className="flex items-center justify-center w-9 h-9 hover:bg-gray-50 rounded-lg transition-colors"
+                  aria-label="Search"
+                >
+                  <svg
+                    className="w-5 h-5 text-[#0B1C2C]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2.5}
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                  </svg>
+                </button>
+                <a
+                  href={shopifyAccountUrl}
+                  className="flex items-center justify-center w-9 h-9 hover:bg-gray-50 rounded-lg transition-colors"
+                  aria-label="Account"
+                >
+                  <User className="w-5 h-5 text-[#0B1C2C]" strokeWidth={2.5} />
+                </a>
+                <Link
+                  href="/cart"
+                  className="relative flex items-center justify-center w-9 h-9 hover:bg-gray-50 rounded-lg transition-colors"
+                  aria-label="Cart"
+                >
+                  <ShoppingCart className="w-5 h-5 text-[#0B1C2C]" strokeWidth={2.5} />
+                  {cartItemCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 bg-[#C41E3A] text-white text-[9px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
+                      {cartItemCount}
+                    </span>
+                  )}
+                </Link>
+              </div>
+            </div>
+
+            {/* Mobile Search - Better flow */}
+            {mobileSearchOpen && (
+              <div className="pb-3 border-t border-gray-100">
+                <div className="pt-3">
+                  <SearchBarWrapper className="w-full" />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="hidden md:block">
+            <div className="flex items-center justify-between gap-4 h-16 py-3">
+              <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
+                <Image
+                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/favicon-YQNeE3MdsChyJvmpaxCgbayiwZA6Ts.png"
+                  alt="Atlantic Flagpole Logo"
+                  width={44}
+                  height={44}
+                  className="w-11 h-11 group-hover:scale-105 transition-transform duration-300"
+                />
+                <div>
+                  <span
+                    className="font-bold text-[#0B1C2C] tracking-tight block leading-none text-xl"
+                    style={{ fontFamily: "system-ui, -apple-system, sans-serif", letterSpacing: "0.02em" }}
+                  >
+                    ATLANTIC
+                  </span>
+                  <span
+                    className="font-semibold text-[#C8A55C] tracking-widest block leading-none text-[10px]"
+                    style={{ fontFamily: "system-ui, -apple-system, sans-serif", letterSpacing: "0.15em" }}
+                  >
+                    FLAGPOLE
+                  </span>
+                </div>
+              </Link>
+
+              <div className="flex-1 max-w-xl mx-auto">
                 <SearchBarWrapper className="w-full" />
               </div>
 
-              <div className="flex items-center gap-4 flex-shrink-0">
-                {judgemeBadge && !isSticky && <div className="hidden lg:block scale-75">{judgemeBadge}</div>}
-
-                <AccountMenu />
+              <div className="flex items-center gap-3 flex-shrink-0">
+                <a
+                  href={shopifyAccountUrl}
+                  className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors"
+                  aria-label="Account"
+                >
+                  <User className="w-5 h-5" />
+                </a>
 
                 <Link
                   href="/cart"
                   className="relative text-[#0B1C2C] hover:text-[#C8A55C] transition-colors group"
                   aria-label="Shopping cart"
                 >
-                  <ShoppingCart className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
+                  <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
                   {cartItemCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-[#C8A55C] text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center text-[10px]">
+                    <span className="absolute -top-1 -right-1 bg-[#C41E3A] text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center text-[10px]">
                       {cartItemCount}
                     </span>
                   )}
@@ -221,11 +252,7 @@ export function HeaderClient({
 
             <div className="border-t border-gray-100" ref={menuRef}>
               <div className="relative">
-                <nav
-                  className={`flex items-center justify-center gap-4 transition-all duration-300 ${
-                    isSticky ? "py-1.5" : "py-2"
-                  }`}
-                >
+                <nav className="flex items-center justify-center gap-6 py-2.5">
                   {menuItems.map((item) => {
                     const hasSubmenu = item.items && item.items.length > 0
                     const isChristmas = isChristmasTreeMenuItem(item.title)
@@ -246,7 +273,7 @@ export function HeaderClient({
                     return (
                       <div key={item.id} className="relative">
                         <button
-                          onClick={() => setActiveDropdown(activeDropdown === item.id ? null : item.id)}
+                          onMouseEnter={() => setActiveDropdown(item.id)}
                           className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors duration-300 font-semibold text-sm tracking-wide group py-1 relative"
                         >
                           <span className={isChristmas ? "text-green-700" : ""}>{item.title}</span>
@@ -258,7 +285,10 @@ export function HeaderClient({
                 </nav>
 
                 {activeDropdown && (
-                  <div className="absolute left-0 right-0 top-full bg-white border-t border-gray-200 shadow-2xl shadow-black/10 z-[90] animate-in slide-in-from-top-2 duration-300">
+                  <div
+                    className="absolute left-0 right-0 top-full bg-white border-t border-gray-200 shadow-2xl z-[90]"
+                    onMouseLeave={() => setActiveDropdown(null)}
+                  >
                     <div className="container mx-auto px-4 py-4">
                       {menuItems.map((item) => {
                         if (activeDropdown !== item.id) return null
@@ -267,15 +297,11 @@ export function HeaderClient({
                         const isResource = isResourceMenu(item)
                         const isNFL = isNFLMenuItem(item.title)
                         const isChristmas = isChristmasTreeMenuItem(item.title)
+                        const isInfoCenter = item.title.toLowerCase().includes("info")
 
                         if (isChristmas) {
                           return (
                             <div key={item.id}>
-                              <h3 className="text-2xl font-serif font-bold text-green-800 mb-4 pb-2 border-b-2 border-green-600 text-center flex items-center justify-center gap-3">
-                                <span className="text-3xl">🎄</span>
-                                {item.title}
-                                <span className="text-3xl">🎄</span>
-                              </h3>
                               <ChristmasTreeMegaMenu
                                 products={christmasTreeProducts}
                                 submenuProductsData={submenuProductsData}
@@ -288,9 +314,6 @@ export function HeaderClient({
                         if (isNFL) {
                           return (
                             <div key={item.id}>
-                              <h3 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-4 pb-2 border-b-2 border-[#C8A55C] text-center">
-                                {item.title}
-                              </h3>
                               <NFLMenuClient
                                 nflFlagProducts={nflFlagProducts}
                                 onLinkClick={() => setActiveDropdown(null)}
@@ -299,84 +322,10 @@ export function HeaderClient({
                           )
                         }
 
-                        if (isResource) {
+                        if (isInfoCenter) {
                           return (
-                            <div key={item.id} className="max-w-4xl mx-auto">
-                              <h3 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-4 pb-2 border-b-2 border-[#C8A55C]">
-                                {item.title}
-                              </h3>
-                              <div className="grid grid-cols-3 gap-6">
-                                {item.title.toLowerCase().includes("info") && (
-                                  <>
-                                    <button
-                                      onClick={() => {
-                                        setQuizModalOpen(true)
-                                        setActiveDropdown(null)
-                                      }}
-                                      className="group p-6 bg-gradient-to-br from-[#C8A55C]/10 to-white rounded-xl border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all duration-300 flex flex-col h-full text-left"
-                                    >
-                                      <h4 className="text-lg font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors mb-2">
-                                        Flagpole Finder Quiz
-                                      </h4>
-                                      <p className="text-sm text-gray-600 flex-1">
-                                        Take our interactive quiz to find the perfect flagpole for your needs
-                                      </p>
-                                      <span className="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-[#C8A55C] group-hover:gap-2 transition-all">
-                                        Start Quiz
-                                        <span className="group-hover:translate-x-1 transition-transform duration-300">
-                                          →
-                                        </span>
-                                      </span>
-                                    </button>
-                                    <Link
-                                      href="/flagpole-finder"
-                                      className="group p-6 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all duration-300 flex flex-col h-full"
-                                      onClick={() => setActiveDropdown(null)}
-                                    >
-                                      <h4 className="text-lg font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors mb-2">
-                                        Flagpole Finder Tool
-                                      </h4>
-                                      <p className="text-sm text-gray-600 flex-1">
-                                        Browse and compare flagpoles by height, type, and features
-                                      </p>
-                                      <span className="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-[#C8A55C] group-hover:gap-2 transition-all">
-                                        Explore Options
-                                        <span className="group-hover:translate-x-1 transition-transform duration-300">
-                                          →
-                                        </span>
-                                      </span>
-                                    </Link>
-                                  </>
-                                )}
-                                {item.items?.map((subItem) => {
-                                  return (
-                                    <Link
-                                      key={subItem.id}
-                                      href={subItem.url}
-                                      className="group p-6 bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 hover:border-[#C8A55C] hover:shadow-lg transition-all duration-300 flex flex-col h-full"
-                                      onClick={() => {
-                                        setActiveDropdown(null)
-                                      }}
-                                    >
-                                      <h4 className="text-lg font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors mb-2">
-                                        {subItem.title}
-                                      </h4>
-                                      <p className="text-sm text-gray-600 flex-1">
-                                        {subItem.title === "Blog" && "Read our latest articles and updates"}
-                                        {subItem.title === "Installation Guides" &&
-                                          "Step-by-step installation instructions"}
-                                        {subItem.title === "FAQ" && "Frequently asked questions and answers"}
-                                      </p>
-                                      <span className="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-[#C8A55C] group-hover:gap-2 transition-all">
-                                        Learn More
-                                        <span className="group-hover:translate-x-1 transition-transform duration-300">
-                                          →
-                                        </span>
-                                      </span>
-                                    </Link>
-                                  )
-                                })}
-                              </div>
+                            <div key={item.id}>
+                              <InfoCenterMegaMenu onLinkClick={() => setActiveDropdown(null)} />
                             </div>
                           )
                         }
@@ -394,6 +343,11 @@ export function HeaderClient({
                           </div>
                         )
                       })}
+                      {activeDropdown === "affiliate" && (
+                        <div className="relative">
+                          <AffiliateMegaMenu onLinkClick={() => setActiveDropdown(null)} />
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}

@@ -40,7 +40,7 @@ export function LocationBanner() {
   }
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md z-[200] animate-slide-up">
+    <div className="hidden md:block fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md z-[150] animate-slide-up">
       <div className="bg-gradient-to-r from-[#002868] to-[#003d82] text-white rounded-lg shadow-2xl p-4 border border-[#C8A55C]/20">
         <button
           onClick={handleDismiss}

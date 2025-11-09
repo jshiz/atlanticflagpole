@@ -3,10 +3,9 @@
 import { useState, useEffect } from "react"
 
 const promoMessages = [
-  { text: "66% OFF + Free Shipping", discount: "66% OFF" },
-  { text: "Save $599 on Accessories Bundle", discount: "SAVE $599" },
-  { text: "Limited Time: 60% Off All Flagpoles", discount: "60% OFF" },
-  { text: "30-Day Price Match Guarantee", discount: "PRICE MATCH" },
+  { text: "FREE SHIPPING + 66% OFF", discount: "66% OFF" },
+  { text: "SAVE $599 ON ACCESSORY BUNDLES", discount: "SAVE $599" },
+  { text: "LIMITED TIME: 60% OFF ALL FLAGPOLES", discount: "60% OFF" },
 ]
 
 export function PromoFooter() {
@@ -78,14 +77,14 @@ export function PromoFooter() {
           showAtTop ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
         }`}
       >
-        <div className="container mx-auto px-4 py-0.5">
-          <div className="relative h-3.5 flex items-center justify-center">
+        <div className="container mx-auto px-4">
+          <div className="relative h-6 flex items-center justify-center">
             <div
               className={`transition-all duration-600 ease-in-out ${
                 isTransitioning ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"
               }`}
             >
-              <p className="text-[10px] md:text-xs font-bold tracking-wide text-center">
+              <p className="text-[11px] md:text-xs font-bold tracking-widest text-center leading-none">
                 {promoMessages[currentPromoIndex].text}
               </p>
             </div>
@@ -99,14 +98,14 @@ export function PromoFooter() {
           showAtBottom ? "opacity-100 translate-y-0" : "opacity-0 translate-y-full pointer-events-none"
         }`}
       >
-        <div className="container mx-auto px-4 py-0.5">
-          <div className="relative h-3.5 flex items-center justify-center">
+        <div className="container mx-auto px-4">
+          <div className="relative h-6 flex items-center justify-center">
             <div
               className={`transition-all duration-600 ease-in-out ${
                 isTransitioning ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"
               }`}
             >
-              <p className="text-[10px] md:text-xs font-bold tracking-wide text-center">
+              <p className="text-[11px] md:text-xs font-bold tracking-widest text-center leading-none">
                 {promoMessages[currentPromoIndex].text}
               </p>
             </div>

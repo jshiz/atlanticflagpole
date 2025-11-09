@@ -34,27 +34,26 @@ export function LocationTab() {
 
   const stateCode = location?.region ? getStateCodeFromRegion(location.region) : null
 
-  // Initial popup banner
   if (showInitialBanner && location?.region) {
     return (
-      <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md z-[200] animate-slide-up">
-        <div className="bg-gradient-to-r from-[#0B1C2C] via-[#1a2f42] to-[#0B1C2C] text-white rounded-lg shadow-2xl p-4 border-2 border-[#C8A55C]/30">
+      <div className="fixed bottom-16 md:bottom-4 left-2 right-2 md:left-auto md:right-4 md:max-w-md z-[150] animate-slide-up">
+        <div className="bg-gradient-to-r from-[#0B1C2C] via-[#1a2f42] to-[#0B1C2C] text-white rounded-lg shadow-2xl p-3 md:p-4 border-2 border-[#C8A55C]/30">
           <button
             onClick={() => handleInitialDismiss("dismiss")}
-            className="absolute top-2 right-2 text-white/60 hover:text-white transition-colors"
+            className="absolute top-1 right-1 md:top-2 md:right-2 text-white/60 hover:text-white transition-colors"
             aria-label="Dismiss"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4 md:w-5 md:h-5" />
           </button>
 
-          <div className="flex items-start gap-3 pr-6">
-            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#C8A55C]/20 flex items-center justify-center">
-              <MapPin className="w-5 h-5 text-[#C8A55C]" />
+          <div className="flex items-start gap-2 md:gap-3 pr-5 md:pr-6">
+            <div className="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#C8A55C]/20 flex items-center justify-center">
+              <MapPin className="w-4 h-4 md:w-5 md:h-5 text-[#C8A55C]" />
             </div>
 
             <div className="flex-1">
-              <h3 className="font-semibold text-sm mb-1">Shopping from {location.region}?</h3>
-              <p className="text-xs text-white/80 mb-3">
+              <h3 className="font-semibold text-xs md:text-sm mb-1">Shopping from {location.region}?</h3>
+              <p className="text-[10px] md:text-xs text-white/80 mb-2 md:mb-3">
                 We're showing you products popular in your area, including {location.region} state flags and local
                 sports team flags.
               </p>
@@ -62,13 +61,13 @@ export function LocationTab() {
               <div className="flex gap-2">
                 <button
                   onClick={() => handleInitialDismiss("ok")}
-                  className="text-xs px-3 py-1.5 bg-[#C8A55C] hover:bg-[#B8954C] text-[#0B1C2C] font-semibold rounded transition-colors"
+                  className="text-[10px] md:text-xs px-2.5 py-1 md:px-3 md:py-1.5 bg-[#C8A55C] hover:bg-[#B8954C] text-[#0B1C2C] font-semibold rounded transition-colors"
                 >
                   Got it!
                 </button>
                 <button
                   onClick={() => handleInitialDismiss("dismiss")}
-                  className="text-xs px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded transition-colors"
+                  className="text-[10px] md:text-xs px-2.5 py-1 md:px-3 md:py-1.5 bg-white/10 hover:bg-white/20 text-white rounded transition-colors"
                 >
                   Dismiss
                 </button>
@@ -80,7 +79,6 @@ export function LocationTab() {
     )
   }
 
-  // Don't show tab if no location or not yet interacted
   if (!hasInteracted || !location?.region) {
     return null
   }
@@ -90,7 +88,7 @@ export function LocationTab() {
       {!isExpanded && (
         <button
           onClick={() => setIsExpanded(true)}
-          className="fixed bottom-[260px] right-0 z-[110] bg-[#0B1C2C] hover:bg-[#1a2d3f] text-white px-2 py-6 rounded-l-lg shadow-lg transition-all duration-300 hover:px-3 group"
+          className="hidden md:flex fixed bottom-[260px] right-0 z-[110] bg-[#0B1C2C] hover:bg-[#1a2d3f] text-white px-2 py-6 rounded-l-lg shadow-lg transition-all duration-300 hover:px-3 group"
           aria-label="Open location menu"
         >
           <div className="flex flex-col items-center">
@@ -100,7 +98,7 @@ export function LocationTab() {
       )}
 
       {isExpanded && (
-        <div className="fixed bottom-24 right-0 z-[120] w-[90vw] max-w-sm bg-gradient-to-br from-[#0B1C2C] via-[#1a2f42] to-[#0B1C2C] rounded-l-lg shadow-2xl border-2 border-[#C8A55C]/30 flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
+        <div className="hidden md:flex fixed bottom-24 right-0 z-[120] w-[90vw] max-w-sm bg-gradient-to-br from-[#0B1C2C] via-[#1a2f42] to-[#0B1C2C] rounded-l-lg shadow-2xl border-2 border-[#C8A55C]/30 flex-col overflow-hidden animate-in slide-in-from-right duration-300">
           {/* Header */}
           <div className="bg-gradient-to-r from-[#0B1C2C] to-[#1a2f42] text-white p-4 flex items-center justify-between border-b border-white/10">
             <div className="flex-1">

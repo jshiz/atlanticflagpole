@@ -1,9 +1,14 @@
 "use client"
 
+import type React from "react"
+
 import Link from "next/link"
 import Image from "next/image"
 import { useState, useEffect } from "react"
-import { TrendingUp } from "lucide-react"
+import { TrendingUp, ShoppingCart, Check } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useCart } from "@/components/cart/cart-context"
+import { cn } from "@/lib/utils"
 
 interface MenuItem {
   id: string
@@ -55,6 +60,61 @@ function shuffleArray<T>(array: T[]): T[] {
     ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
   }
   return shuffled
+}
+
+function QuickAddButton({ product }: { product: Product }) {
+  const { addToCart, loading } = useCart()
+  const [added, setAdded] = useState(false)
+
+  const defaultVariant = product.variants?.edges?.[0]?.node
+  const isAvailable = defaultVariant?.availableForSale
+
+  const handleQuickAdd = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (!defaultVariant || !isAvailable) return
+
+    try {
+      await addToCart(defaultVariant.id, 1)
+      setAdded(true)
+      setTimeout(() => setAdded(false), 2000)
+    } catch (error) {
+      console.error("[v0] Error adding to cart:", error)
+    }
+  }
+
+  if (!defaultVariant || !isAvailable) {
+    return (
+      <Button size="sm" variant="outline" disabled className="w-full text-xs h-10 px-4 bg-transparent">
+        Unavailable
+      </Button>
+    )
+  }
+
+  return (
+    <Button
+      size="sm"
+      onClick={handleQuickAdd}
+      disabled={loading || added}
+      className={cn(
+        "w-full text-xs transition-all duration-300 h-10 px-4 font-semibold",
+        added ? "bg-green-600 hover:bg-green-700" : "bg-[#C8A55C] hover:bg-[#a88947] text-white",
+      )}
+    >
+      {added ? (
+        <>
+          <Check className="w-4 h-4 mr-1.5" />
+          Added!
+        </>
+      ) : (
+        <>
+          <ShoppingCart className="w-4 h-4 mr-1.5" />
+          Quick Add
+        </>
+      )}
+    </Button>
+  )
 }
 
 export function EnhancedMegaMenu({ title, menuItems, featuredProducts = [], onLinkClick }: EnhancedMegaMenuProps) {
@@ -151,12 +211,16 @@ export function EnhancedMegaMenu({ title, menuItems, featuredProducts = [], onLi
                     </div>
                   )}
                 </div>
-                <h5 className="text-[10px] font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-1 leading-tight">
+                <h5 className="text-[10px] font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-1 leading-tight min-h-[2.5rem]">
                   {product.title}
                 </h5>
-                <p className="text-xs font-bold text-[#C8A55C]">
+                <p className="text-xs font-bold text-[#C8A55C] mb-2">
                   ${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}
                 </p>
+                <div className="h-10">
+                  <QuickAddButton product={product} />
+                </div>
+                {/* </CHANGE> */}
               </Link>
             ))}
           </div>

@@ -37,6 +37,7 @@ export function FlaggyChatWidget() {
   const [isEscalating, setIsEscalating] = useState(false)
   const [ticketForm, setTicketForm] = useState({ name: "", email: "", issue: "" })
   const [hasShownInitialAnimation, setHasShownInitialAnimation] = useState(false)
+  const [showHelpBubble, setShowHelpBubble] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
 
@@ -46,12 +47,13 @@ export function FlaggyChatWidget() {
         console.log("[v0] Flaggy sliding in after 5 seconds")
         setFlaggyState("sliding-in")
         setHasShownInitialAnimation(true)
+        setTimeout(() => setShowHelpBubble(true), 500)
 
-        // Auto-minimize after 10 seconds if user doesn't interact
         setTimeout(() => {
           if (flaggyState === "sliding-in") {
             console.log("[v0] Auto-minimizing Flaggy after 10 seconds")
             setFlaggyState("minimized")
+            setShowHelpBubble(false)
           }
         }, 10000)
       }, 5000)
@@ -184,6 +186,7 @@ export function FlaggyChatWidget() {
 
   const handleFlaggyClick = () => {
     console.log("[v0] Flaggy clicked, current state:", flaggyState)
+    setShowHelpBubble(false)
     if (flaggyState === "sliding-in") {
       setFlaggyState("expanded")
     } else if (flaggyState === "minimized") {
@@ -236,37 +239,53 @@ export function FlaggyChatWidget() {
       {flaggyState === "minimized" && (
         <button
           onClick={handleFlaggyClick}
-          className="fixed bottom-[180px] right-0 z-[110] bg-[#C8A55C] hover:bg-[#B8954C] text-white px-2 py-6 rounded-l-lg shadow-lg transition-all duration-300 hover:px-3 group"
+          className="fixed bottom-20 md:bottom-[180px] right-1 md:right-0 z-[110] bg-[#C8A55C] hover:bg-[#B8954C] text-white px-1.5 md:px-2 py-4 md:py-6 rounded-l-lg shadow-lg transition-all duration-300 hover:px-2 md:hover:px-3 group"
           aria-label="Open Flaggy chat"
         >
           <div className="flex flex-col items-center">
-            <HelpCircle className="w-5 h-5 text-white" />
+            <HelpCircle className="w-4 h-4 md:w-5 md:h-5 text-white" />
           </div>
         </button>
       )}
 
       {flaggyState === "sliding-in" && (
-        <div
-          onClick={handleFlaggyClick}
-          className="fixed bottom-4 right-4 z-[110] cursor-pointer animate-slide-in-from-right"
-          style={{
-            transform: "translateX(0%) rotate(-5deg)",
-          }}
-        >
-          <div className="relative w-32 h-32 animate-rock">
-            <Image
-              src="/images/design-mode/Flaggy.png"
-              alt="Flaggy"
-              fill
-              className="object-contain drop-shadow-2xl"
-              priority
-            />
+        <>
+          <div
+            onClick={handleFlaggyClick}
+            className="fixed bottom-2 md:bottom-4 right-2 md:right-4 z-[110] cursor-pointer animate-slide-in-from-right"
+            style={{
+              transform: "translateX(0%) rotate(-5deg)",
+            }}
+          >
+            <div className="relative w-20 h-20 md:w-32 md:h-32 animate-rock">
+              <Image
+                src="/images/design-mode/Flaggy.png"
+                alt="Flaggy"
+                fill
+                className="object-contain drop-shadow-2xl"
+                priority
+              />
+            </div>
           </div>
-        </div>
+
+          {showHelpBubble && (
+            <div
+              className="fixed bottom-24 md:bottom-40 right-2 md:right-4 z-[109] animate-in fade-in slide-in-from-bottom-2 duration-500"
+              style={{ animationDelay: "0.3s" }}
+            >
+              <div className="relative bg-white px-3 py-2 md:px-4 md:py-2.5 rounded-2xl shadow-xl border-2 border-[#C8A55C] max-w-[140px] md:max-w-[180px]">
+                <p className="text-xs md:text-sm font-semibold text-[#0B1C2C] text-center whitespace-nowrap">
+                  Hey, Need help?
+                </p>
+                <div className="absolute -bottom-2 right-6 md:right-10 w-4 h-4 bg-white border-r-2 border-b-2 border-[#C8A55C] transform rotate-45"></div>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {flaggyState === "expanded" && (
-        <div className="fixed bottom-4 right-4 z-[120] w-[85vw] max-w-md h-[500px] md:h-[600px] bg-white rounded-2xl shadow-2xl border-2 border-[#C8A55C] flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
+        <div className="fixed bottom-2 md:bottom-4 right-2 md:right-4 z-[120] w-[90vw] md:w-[85vw] max-w-md h-[500px] md:h-[600px] bg-white rounded-2xl shadow-2xl border-2 border-[#C8A55C] flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
           <div className="bg-gradient-to-r from-[#0B1C2C] to-[#1a2d3f] text-white p-3 md:p-4 flex items-center justify-between relative overflow-hidden">
             <div className="absolute inset-0 opacity-10">
               <div className="absolute inset-0 bg-[url('/placeholder.svg?height=100&width=100')] animate-pulse"></div>

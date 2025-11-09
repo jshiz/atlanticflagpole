@@ -105,7 +105,7 @@ function QuickAddButton({ product }: { product: Product }) {
 
   if (!defaultVariant) {
     return (
-      <Button size="sm" variant="outline" disabled className="w-full text-xs bg-transparent h-9">
+      <Button size="sm" variant="outline" disabled className="w-full text-xs bg-transparent h-10 px-4">
         Unavailable
       </Button>
     )
@@ -113,7 +113,7 @@ function QuickAddButton({ product }: { product: Product }) {
 
   if (!isAvailable) {
     return (
-      <Button size="sm" variant="outline" disabled className="w-full text-xs bg-transparent h-9">
+      <Button size="sm" variant="outline" disabled className="w-full text-xs bg-transparent h-10 px-4">
         Out of Stock
       </Button>
     )
@@ -125,18 +125,18 @@ function QuickAddButton({ product }: { product: Product }) {
       onClick={handleQuickAdd}
       disabled={loading || added}
       className={cn(
-        "w-full text-xs transition-all duration-300 h-9",
+        "w-full text-xs transition-all duration-300 h-10 px-4 font-semibold",
         added ? "bg-green-600 hover:bg-green-700" : "bg-[#C8A55C] hover:bg-[#a88947] text-white",
       )}
     >
       {added ? (
         <>
-          <Check className="w-3 h-3 mr-1" />
+          <Check className="w-4 h-4 mr-1.5" />
           Added!
         </>
       ) : (
         <>
-          <ShoppingCart className="w-3 h-3 mr-1" />
+          <ShoppingCart className="w-4 h-4 mr-1.5" />
           Quick Add
         </>
       )}
@@ -180,9 +180,9 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
   }
 
   return (
-    <div className="grid grid-cols-12 gap-6 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <div className="grid grid-cols-12 gap-4 max-w-7xl mx-auto">
       {/* Left Sidebar - Categories */}
-      <div className="col-span-3 border-r border-gray-100 pr-6">
+      <div className="col-span-3 border-r border-gray-100 pr-4">
         <div className="sticky top-2">
           <h3 className="text-base font-serif font-bold text-[#0B1C2C] mb-3 pb-2 border-b-2 border-[#C8A55C]">
             {title}
@@ -197,12 +197,12 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
                   onMouseLeave={() => setHoveredCategory(null)}
                   className="group flex items-center justify-between text-[#0B1C2C] hover:text-[#C8A55C] transition-colors text-sm py-2 px-3 rounded-lg hover:bg-[#F5F3EF]"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform font-medium">{item.title}</span>
+                  <span className="font-medium">{item.title}</span>
                   {item.items && item.items.length > 0 && <span className="text-xs text-gray-400">→</span>}
                 </Link>
 
                 {hoveredCategory === item.id && item.items && item.items.length > 0 && (
-                  <ul className="ml-4 mt-1 space-y-1 animate-in fade-in slide-in-from-left-2 duration-200">
+                  <ul className="ml-4 mt-1 space-y-1">
                     {item.items.slice(0, 8).map((subItem) => (
                       <li key={subItem.id}>
                         <Link
@@ -238,7 +238,7 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
         </div>
 
         {displayProducts && displayProducts.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {displayProducts.map((product, index) => {
               const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
               const rating = getProductRating(product.id)
@@ -249,8 +249,7 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
                   key={product.id}
                   href={`/products/${product.handle}`}
                   onClick={onLinkClick}
-                  className="group block animate-in fade-in slide-in-from-bottom-2 duration-300"
-                  style={{ animationDelay: `${index * 40}ms` }}
+                  className="group block"
                 >
                   <div className="relative aspect-square bg-gray-50 rounded-lg overflow-hidden mb-3 shadow-sm group-hover:shadow-xl transition-all duration-300">
                     {product.featuredImage ? (
@@ -276,7 +275,7 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
                     )}
                   </div>
 
-                  <h5 className="text-xs font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-2 leading-snug min-h-[3rem] flex items-start">
+                  <h5 className="text-xs font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors line-clamp-2 mb-2 leading-snug h-[2.8rem] flex items-start">
                     {product.title}
                   </h5>
 
@@ -286,7 +285,7 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
 
                   <p className="text-sm font-bold text-[#C8A55C] mb-2.5">${price.toFixed(2)}</p>
 
-                  <div className="h-9">
+                  <div className="h-10">
                     <QuickAddButton product={product} />
                   </div>
                 </Link>

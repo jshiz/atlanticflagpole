@@ -158,8 +158,8 @@ export function TicketPopup() {
             console.log("[v0] TicketPopup - expanding")
             setIsExpanded(!isExpanded)
           }}
-          className={`fixed bottom-6 z-50 w-32 h-auto transition-all duration-500 ease-out hover:scale-110 animate-sway cursor-pointer shadow-2xl ${
-            isExpanded ? "left-6" : "left-6"
+          className={`fixed bottom-4 md:bottom-6 z-50 w-24 md:w-32 h-auto transition-all duration-500 ease-out hover:scale-110 animate-sway cursor-pointer shadow-2xl ${
+            isExpanded ? "left-4 md:left-6" : "left-4 md:left-6"
           }`}
           aria-label="Open VIP ticket offer"
         >
@@ -170,7 +170,7 @@ export function TicketPopup() {
       {isExpanded && showButton && !isOpen && (
         <button
           onClick={handleTicketClick}
-          className="fixed bottom-6 left-6 z-50 w-32 h-auto transition-all duration-500 ease-out hover:scale-110 animate-sway cursor-pointer shadow-2xl"
+          className="fixed bottom-4 md:bottom-6 left-4 md:left-6 z-50 w-24 md:w-32 h-auto transition-all duration-500 ease-out hover:scale-110 animate-sway cursor-pointer shadow-2xl"
           aria-label="Open VIP ticket offer"
         >
           <img src="/vip-patriots-ticket.svg" alt="VIP Patriots Ticket" className="w-full h-auto" />
@@ -185,52 +185,54 @@ export function TicketPopup() {
             onClick={handleClose}
           />
 
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 md:p-4">
             <div className="relative bg-white rounded-lg shadow-2xl max-w-2xl w-full animate-in zoom-in-95 duration-300">
               <button
                 onClick={handleClose}
-                className="absolute -top-4 -right-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors z-10"
+                className="absolute -top-3 -right-3 md:-top-4 md:-right-4 bg-white rounded-full p-1.5 md:p-2 shadow-lg hover:bg-gray-100 transition-colors z-10"
               >
-                <X className="w-6 h-6 text-gray-600" />
+                <X className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
               </button>
 
-              <div className="p-8 text-center">
-                <h2 className="text-3xl font-serif font-bold text-[#0B1C2C] mb-4">Congratulations!</h2>
-                <p className="text-lg text-[#0B1C2C]/70 mb-6">
+              <div className="p-4 md:p-8 text-center">
+                <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#0B1C2C] mb-3 md:mb-4">
+                  Congratulations!
+                </h2>
+                <p className="text-base md:text-lg text-[#0B1C2C]/70 mb-4 md:mb-6">
                   You've unlocked an exclusive <span className="font-bold text-[#C8A55C]">$5 OFF</span> your first
                   order!
                 </p>
 
-                <div className="mb-6 flex justify-center">
+                <div className="mb-4 md:mb-6 flex justify-center">
                   <img src="/vip-patriots-ticket.svg" alt="VIP Patriots Ticket" className="w-full max-w-lg h-auto" />
                 </div>
 
-                <div className="bg-gradient-to-r from-[#C8A55C]/10 to-[#0B1C2C]/10 rounded-lg p-6 mb-6 border-2 border-dashed border-[#C8A55C]">
-                  <p className="text-sm text-[#0B1C2C]/70 mb-2">Your Sign-Up Bonus Code:</p>
+                <div className="bg-gradient-to-r from-[#C8A55C]/10 to-[#0B1C2C]/10 rounded-lg p-4 md:p-6 mb-4 md:mb-6 border-2 border-dashed border-[#C8A55C]">
+                  <p className="text-xs md:text-sm text-[#0B1C2C]/70 mb-2">Your Sign-Up Bonus Code:</p>
                   <div className="flex items-center justify-center gap-3">
-                    <code className="text-2xl font-bold text-[#0B1C2C] tracking-wider">WELCOME5</code>
+                    <code className="text-xl md:text-2xl font-bold text-[#0B1C2C] tracking-wider">WELCOME5</code>
                     <button
                       onClick={handleCopyCode}
                       className="p-2 hover:bg-white/50 rounded-lg transition-colors"
                       aria-label="Copy code"
                     >
                       {isCopied ? (
-                        <Check className="w-5 h-5 text-green-600" />
+                        <Check className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
                       ) : (
-                        <Copy className="w-5 h-5 text-[#C8A55C]" />
+                        <Copy className="w-4 h-4 md:w-5 md:h-5 text-[#C8A55C]" />
                       )}
                     </button>
                   </div>
-                  <p className="text-xs text-[#0B1C2C]/50 mt-2">
+                  <p className="text-[10px] md:text-xs text-[#0B1C2C]/50 mt-2">
                     {isCopied ? "Code copied! Use at checkout." : "Click to copy code"}
                   </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
                   <Button
                     onClick={handleSignUp}
                     size="lg"
-                    className="bg-[#C8A55C] hover:bg-[#a88947] text-white font-bold text-lg px-8"
+                    className="bg-[#C8A55C] hover:bg-[#a88947] text-white font-bold text-base md:text-lg px-6 md:px-8 py-2.5 md:py-3"
                   >
                     Sign Up & Save $5
                   </Button>
@@ -241,13 +243,15 @@ export function TicketPopup() {
                     }}
                     size="lg"
                     variant="outline"
-                    className="font-semibold bg-transparent border-2 border-[#0B1C2C]"
+                    className="font-semibold bg-transparent border-2 border-[#0B1C2C] text-sm md:text-base py-2.5 md:py-3"
                   >
                     Shop Now
                   </Button>
                 </div>
 
-                <p className="text-sm text-[#0B1C2C]/50 mt-6">Limited time offer. Code valid for new customers only.</p>
+                <p className="text-xs md:text-sm text-[#0B1C2C]/50 mt-4 md:mt-6">
+                  Limited time offer. Code valid for new customers only.
+                </p>
               </div>
             </div>
           </div>

@@ -1,33 +1,43 @@
 import { getMenu } from "@/lib/menus"
 import { getCollectionWithProducts } from "@/lib/shopify/catalog"
-import { HeaderClient } from "@/components/header-client"
 import { getProducts } from "@/lib/shopify"
 import { getCached, setCache } from "@/lib/cache"
 import { JudgemeBadge } from "@/components/judgeme/judgeme-badge"
-import { navigationConfig } from "@/lib/navigation-config"
+import { navigationConfig, singleNavItems } from "@/lib/navigation-config"
+import { HeaderClient } from "@/components/header-client"
 
 function findCollectionHandle(menuTitle: string): string | null {
   const normalizedTitle = menuTitle.toLowerCase().trim()
 
+  console.log(`[v0] 🔍 Looking for collection handle for menu: "${menuTitle}"`)
+
+  for (const item of singleNavItems) {
+    if (item.label.toLowerCase() === normalizedTitle) {
+      console.log(`[v0] ✅ Found in singleNavItems: ${item.collection}`)
+      return item.collection || null
+    }
+  }
+
   for (const menu of navigationConfig) {
     if (menu.label.toLowerCase() === normalizedTitle) {
-      // For top-level menus, use the first category's first item's collection
       if (menu.categories && menu.categories.length > 0) {
         const firstItem = menu.categories[0].items[0]
+        console.log(`[v0] ✅ Found in navigationConfig: ${firstItem?.collection}`)
         return firstItem?.collection || null
       }
     }
 
-    // Check categories and items
     for (const category of menu.categories) {
       for (const item of category.items) {
         if (item.label.toLowerCase() === normalizedTitle) {
+          console.log(`[v0] ✅ Found in category items: ${item.collection}`)
           return item.collection || null
         }
       }
     }
   }
 
+  console.log(`[v0] ❌ No collection handle found for "${menuTitle}"`)
   return null
 }
 
@@ -55,14 +65,18 @@ export async function Header() {
     console.log("[v0] 🔄 Fetching fresh header data...")
     const startTime = Date.now()
 
-    const [menuData, nflFlagProducts, christmasTreeProducts] = await Promise.all([
+    const [menuData, nflFlagProducts, christmasTreeProducts, holidayProducts, partsProducts] = await Promise.all([
       getMenu("main-menu-new"),
       getProducts({ first: 12, query: "tag:nfl-flags" }).catch(() => []),
       getProducts({ first: 8, query: "tag:Christmas Tree" }).catch(() => []),
+      getProducts({ first: 8, query: "tag:holiday OR tag:seasonal OR tag:christmas" }).catch(() => []),
+      getProducts({ first: 8, query: "tag:phoenix OR tag:parts OR tag:accessories" }).catch(() => []),
     ])
 
     console.log(`[v0] ✅ Found ${nflFlagProducts?.length || 0} NFL flag products`)
     console.log(`[v0] ✅ Found ${christmasTreeProducts?.length || 0} Christmas tree products`)
+    console.log(`[v0] ✅ Found ${holidayProducts?.length || 0} holiday products`)
+    console.log(`[v0] ✅ Found ${partsProducts?.length || 0} parts products`)
 
     const megaMenuData: Record<string, any> = {}
     const submenuProductsData: Record<string, any[]> = {}
@@ -76,41 +90,48 @@ export async function Header() {
           continue
         }
 
+        if (title.includes("holiday") && title.includes("seasonal")) {
+          if (holidayProducts && holidayProducts.length > 0) {
+            megaMenuData[item.id] = {
+              products: { nodes: holidayProducts },
+            }
+            console.log(`[v0] ✅ Added ${holidayProducts.length} holiday products for "${item.title}" menu`)
+          }
+          continue
+        }
+
+        if (title.includes("parts") && title.includes("accessories")) {
+          if (partsProducts && partsProducts.length > 0) {
+            megaMenuData[item.id] = {
+              products: { nodes: partsProducts },
+            }
+            console.log(`[v0] ✅ Added ${partsProducts.length} parts products for "${item.title}" menu`)
+          }
+          continue
+        }
+
         const collectionHandle = findCollectionHandle(item.title)
 
         if (collectionHandle) {
           try {
-            const collection = await getCollectionWithProducts(collectionHandle, 5, "PRICE", true)
+            const collection = await getCollectionWithProducts(collectionHandle, 8, "PRICE", true)
             if (collection?.products?.nodes && collection.products.nodes.length > 0) {
               megaMenuData[item.id] = {
                 products: { nodes: collection.products.nodes },
               }
               console.log(
-                `[v0] ✅ Found ${collection.products.nodes.length} products for "${item.title}" menu (${collectionHandle}, sorted by price)`,
+                `[v0] ✅ Found ${collection.products.nodes.length} products for "${item.title}" menu (${collectionHandle})`,
               )
-            } else {
-              console.log(`[v0] ⚠️ No products in collection "${collectionHandle}" for "${item.title}"`)
             }
-          } catch (error) {
+          } catch (error: any) {
             console.log(`[v0] ❌ Error fetching collection "${collectionHandle}" for "${item.title}":`, error.message)
           }
-        } else {
-          console.log(`[v0] ⚠️ No collection handle found for menu item "${item.title}"`)
         }
-
-        // Submenu products can be fetched on-demand when user hovers
       }
     }
 
     const endTime = Date.now()
     console.log(`[v0] ⚡ Header data fetched in ${endTime - startTime}ms`)
-    console.log(`[v0] 📊 Mega menu data summary:`, {
-      menuItemsWithProducts: Object.keys(megaMenuData).length,
-      totalProducts: Object.values(megaMenuData).reduce(
-        (sum: number, item: any) => sum + (item.products?.nodes?.length || 0),
-        0,
-      ),
-    })
 
     const headerData = {
       menuData,
@@ -118,6 +139,8 @@ export async function Header() {
       submenuProductsData,
       nflFlagProducts: nflFlagProducts || [],
       christmasTreeProducts: christmasTreeProducts || [],
+      holidayProducts: holidayProducts || [],
+      partsProducts: partsProducts || [],
     }
     setCache(cacheKey, headerData, 21600000)
 
@@ -129,6 +152,8 @@ export async function Header() {
           submenuProductsData={headerData.submenuProductsData}
           nflFlagProducts={headerData.nflFlagProducts}
           christmasTreeProducts={headerData.christmasTreeProducts}
+          holidayProducts={headerData.holidayProducts}
+          partsProducts={headerData.partsProducts}
           judgemeBadge={<JudgemeBadge />}
         />
       </>
@@ -142,6 +167,8 @@ export async function Header() {
         submenuProductsData={{}}
         nflFlagProducts={[]}
         christmasTreeProducts={[]}
+        holidayProducts={[]}
+        partsProducts={[]}
         judgemeBadge={<JudgemeBadge />}
       />
     )
