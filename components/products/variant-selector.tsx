@@ -1,57 +1,50 @@
 "use client"
 
 import type { ShopifyProduct, ProductVariant, ProductOption } from "@/lib/shopify/types"
-import { useSearchParams, useRouter, usePathname } from "next/navigation"
-import { useMemo } from "react"
+import { useState, useMemo } from "react"
 import { toNodes } from "@/lib/connection"
 import { Check } from "lucide-react"
-
-export function useSelectedVariant(product: ShopifyProduct): ProductVariant | undefined {
-  const searchParams = useSearchParams()
-
-  return useMemo(() => {
-    const variants = toNodes(product.variants)
-    const { options } = product
-
-    if (variants.length === 0) return undefined
-    if (variants.length === 1) return variants[0]
-
-    const selectedOptions: Record<string, string> = {}
-    options.forEach((option) => {
-      const paramValue = searchParams.get(option.name.toLowerCase())
-      if (paramValue) {
-        selectedOptions[option.name] = paramValue
-      }
-    })
-
-    const matchingVariant = variants.find((variant) => {
-      return variant.selectedOptions.every((option) => selectedOptions[option.name] === option.value)
-    })
-
-    return matchingVariant
-  }, [product, searchParams])
-}
 
 interface VariantSelectorProps {
   options: ProductOption[]
   variants: ProductVariant[]
+  onVariantChange?: (variant: ProductVariant | undefined) => void
 }
 
-export function VariantSelector({ options, variants }: VariantSelectorProps) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
+export function VariantSelector({ options, variants, onVariantChange }: VariantSelectorProps) {
+  const initialSelections: Record<string, string> = {}
+  options.forEach((option) => {
+    if (option.values.length > 0) {
+      initialSelections[option.name] = option.values[0]
+    }
+  })
+
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(initialSelections)
+
+  const selectedVariant = useMemo(() => {
+    const matchingVariant = variants.find((variant) => {
+      return variant.selectedOptions.every((option) => selectedOptions[option.name] === option.value)
+    })
+    return matchingVariant
+  }, [variants, selectedOptions])
+
+  useMemo(() => {
+    if (onVariantChange) {
+      onVariantChange(selectedVariant)
+    }
+  }, [selectedVariant, onVariantChange])
 
   const handleOptionChange = (optionName: string, value: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set(optionName.toLowerCase(), value)
-    router.push(`${pathname}?${params.toString()}`)
+    setSelectedOptions((prev) => ({
+      ...prev,
+      [optionName]: value,
+    }))
   }
 
   return (
     <div className="space-y-6">
       {options.map((option) => {
-        const currentValue = searchParams.get(option.name.toLowerCase()) || option.values[0]
+        const currentValue = selectedOptions[option.name] || option.values[0]
         const isColorOption =
           option.name.toLowerCase().includes("color") || option.name.toLowerCase().includes("finish")
 
@@ -65,7 +58,6 @@ export function VariantSelector({ options, variants }: VariantSelectorProps) {
               <div className="flex flex-wrap gap-3">
                 {option.values.map((value) => {
                   const isSelected = currentValue === value
-                  // Map color names to hex values
                   const colorMap: Record<string, string> = {
                     silver: "#C0C0C0",
                     bronze: "#CD7F32",
@@ -135,4 +127,9 @@ export function VariantSelector({ options, variants }: VariantSelectorProps) {
       })}
     </div>
   )
+}
+
+export function useSelectedVariant(product: ShopifyProduct): ProductVariant | undefined {
+  const variants = toNodes(product.variants)
+  return variants[0]
 }

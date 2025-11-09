@@ -7,21 +7,21 @@ const spotlights = [
     name: "Michael R.",
     location: "Fort Worth, TX",
     quote: "After serving 20 years in the Army, I wanted a flagpole that matched my pride. Phoenix delivered.",
-    product: "35ft Premier Kit",
+    product: "15ft Premier Kit",
   },
   {
     image: "/images/customer-photos/customer5.jpg",
     name: "Sarah J.",
     location: "Minneapolis, MN",
     quote: "The POW/MIA flag flies beautifully. Quality that honors those who served.",
-    product: "25ft Premier Kit",
+    product: "20ft Premier Kit",
   },
   {
     image: "/images/customer-photos/customer3.jpg",
     name: "David L.",
     location: "Naples, FL",
     quote: "Survived Hurricane Ian without a scratch. This pole is built to last.",
-    product: "30ft Premier Kit",
+    product: "25ft Premier Kit",
   },
 ]
 
