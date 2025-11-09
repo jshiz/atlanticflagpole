@@ -256,8 +256,9 @@ export function HeaderClient({
                   {menuItems.map((item) => {
                     const hasSubmenu = item.items && item.items.length > 0
                     const isChristmas = isChristmasTreeMenuItem(item.title)
+                    const isAffiliate = item.title.toLowerCase().includes("affiliate")
 
-                    if (!hasSubmenu) {
+                    if (!hasSubmenu && !isAffiliate) {
                       return (
                         <Link
                           key={item.id}
@@ -282,15 +283,6 @@ export function HeaderClient({
                       </div>
                     )
                   })}
-                  <div className="relative">
-                    <button
-                      onMouseEnter={() => setActiveDropdown("affiliate")}
-                      className="text-[#0B1C2C] hover:text-[#C8A55C] transition-colors duration-300 font-semibold text-sm tracking-wide group py-1 relative"
-                    >
-                      Join Affiliates
-                      <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#C8A55C] group-hover:w-full transition-all duration-300" />
-                    </button>
-                  </div>
                 </nav>
 
                 {activeDropdown && (
@@ -307,6 +299,7 @@ export function HeaderClient({
                         const isNFL = isNFLMenuItem(item.title)
                         const isChristmas = isChristmasTreeMenuItem(item.title)
                         const isInfoCenter = item.title.toLowerCase().includes("info")
+                        const isAffiliate = item.title.toLowerCase().includes("affiliate")
 
                         if (isChristmas) {
                           return (
@@ -339,6 +332,14 @@ export function HeaderClient({
                           )
                         }
 
+                        if (isAffiliate) {
+                          return (
+                            <div key={item.id}>
+                              <AffiliateMegaMenu onLinkClick={() => setActiveDropdown(null)} />
+                            </div>
+                          )
+                        }
+
                         const displayProducts = itemData?.products?.nodes || []
 
                         return (
@@ -352,11 +353,6 @@ export function HeaderClient({
                           </div>
                         )
                       })}
-                      {activeDropdown === "affiliate" && (
-                        <div className="relative">
-                          <AffiliateMegaMenu onLinkClick={() => setActiveDropdown(null)} />
-                        </div>
-                      )}
                     </div>
                   </div>
                 )}
