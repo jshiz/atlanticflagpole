@@ -141,7 +141,7 @@ export function Footer() {
               </div>
               {/* Added safe checkout image to footer */}
               <div className="mt-12 flex justify-center">
-                <div className="relative w-full max-w-md h-24">
+                <div className="relative w-full max-w-md md:max-w-4xl h-24 md:h-72">
                   <Image
                     src="/images/safecheckout.png"
                     alt="Guaranteed Safe Checkout"

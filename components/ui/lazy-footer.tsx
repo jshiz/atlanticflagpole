@@ -2,11 +2,19 @@
 
 import { useEffect, useState } from "react"
 import { Footer } from "@/components/footer"
+import { usePathname } from 'next/navigation'
 
 export function LazyFooter() {
   const [shouldRender, setShouldRender] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
+    // Always render immediately on cart page or if already rendered
+    if (pathname === "/cart" || pathname === "/checkout") {
+      setShouldRender(true)
+      return
+    }
+
     let mounted = true
     let timeoutId: NodeJS.Timeout
 
@@ -43,7 +51,7 @@ export function LazyFooter() {
       }
       window.removeEventListener("scroll", handleScroll)
     }
-  }, [])
+  }, [pathname])
 
   if (!shouldRender) {
     return null
