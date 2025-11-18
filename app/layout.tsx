@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter, JetBrains_Mono, Cinzel } from "next/font/google"
+import { Inter, JetBrains_Mono, Cinzel } from 'next/font/google'
 import "./globals.css"
 import { Suspense } from "react"
 import { Header } from "@/components/header"
@@ -11,10 +11,10 @@ import { CartProvider } from "@/components/cart/cart-context"
 import { JudgeMePlatformScript } from "@/components/judgeme/judgeme-platform-script"
 import { PhoenixHomeTrialBar } from "@/components/phoenix-home-trial-bar"
 import { GeoProvider } from "@/lib/geo/context"
-import { LocationTab } from "@/components/geo/location-tab"
 import { Toaster } from "@/components/ui/toaster"
 import { CookieConsentBanner } from "@/components/cookie-consent/cookie-consent-banner"
-import { CartSidebarButton } from "@/components/cart/cart-sidebar-button"
+import { FloatingActionMenu } from "@/components/floating-action-menu/floating-action-menu"
+import { StickyFooterUnified } from "@/components/layout/sticky-footer-unified"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -112,19 +112,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans ${inter.variable} ${jetbrainsMono.variable} ${cinzel.variable}`}>
+      <body className={`font-sans ${inter.variable} ${jetbrainsMono.variable} ${cinzel.variable} overflow-x-hidden w-full`}>
         <CartProvider>
           <GeoProvider>
             <PhoenixHomeTrialBar />
             <Suspense fallback={<HeaderSkeleton />}>
               <Header />
             </Suspense>
-            {children}
+            <main className="w-full overflow-x-hidden relative">
+              {children}
+            </main>
             <LazyFooter />
-            <FlaggyChatWidget />
-            <CartSidebarButton />
-            <LocationTab />
-            <CookieConsentBanner />
+            {/* Replaced individual components with Unified Footer */}
+            <StickyFooterUnified />
           </GeoProvider>
         </CartProvider>
         <JudgeMePlatformScript />

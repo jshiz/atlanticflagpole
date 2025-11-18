@@ -4,7 +4,8 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Loader } from "@/components/ui/loader"
 import { useCart } from "@/components/cart/cart-context"
-import { ShoppingCart } from "lucide-react"
+import { ShoppingCart } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 interface AddToCartButtonProps {
   variantId: string
@@ -15,6 +16,7 @@ interface AddToCartButtonProps {
 export function AddToCartButton({ variantId, availableForSale, quantity = 1 }: AddToCartButtonProps) {
   const [isAdding, setIsAdding] = useState(false)
   const { addToCart } = useCart()
+  const router = useRouter()
 
   const handleAddToCart = async () => {
     if (!availableForSale) return
@@ -22,6 +24,7 @@ export function AddToCartButton({ variantId, availableForSale, quantity = 1 }: A
     setIsAdding(true)
     try {
       await addToCart(variantId, quantity)
+      router.push("/cart")
     } catch (error) {
       console.error("Error adding to cart:", error)
     } finally {

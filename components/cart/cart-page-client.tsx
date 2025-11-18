@@ -5,15 +5,16 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import Image from "next/image"
 import Link from "next/link"
-import { Minus, Plus, Trash2, ShoppingBag, Package, Shield, Truck, Award, Zap, MapPin, Tag, X, Star, CheckCircle2, Wind, Sun, Snowflake, Lightbulb, Anchor, Settings } from 'lucide-react'
+import { Minus, Plus, Trash2, ShoppingBag, Package, Shield, Truck, Award, Zap, MapPin, Tag, X, Star, CheckCircle2, Wind, Sun, Snowflake, Lightbulb, Anchor, Settings, TrendingUp, Sparkles, Lock } from 'lucide-react'
 import { useState, useEffect, useCallback, useRef } from "react"
 import { getBundleConfig } from "@/lib/bundles/bundle-config"
 import { useRouter } from 'next/navigation'
 import { useGeo } from "@/lib/geo/context"
 import type { ShopifyProduct } from "@/lib/shopify/types"
 import { ExpressCheckoutButtons } from "@/components/cart/express-checkout-buttons"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { CartCountdownTimer } from "@/components/cart/cart-countdown-timer"
+import { CartSupportSection } from "@/components/cart/cart-support-section"
+import { ProtectionPlanModal } from "./protection-plan-modal"
 
 interface BundleComponentWithImage {
   title: string
@@ -106,6 +107,7 @@ export function CartPageClient() {
 
   const [isUpdating, setIsUpdating] = useState(false)
   const updateTimeoutRef = useRef<NodeJS.Timeout>()
+  const [isProtectionModalOpen, setIsProtectionModalOpen] = useState(false)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -279,6 +281,46 @@ export function CartPageClient() {
   const subtotal = cart?.cost?.subtotalAmount ? Number.parseFloat(cart.cost.subtotalAmount.amount) : 0
   const total = cart?.cost?.totalAmount ? Number.parseFloat(cart.cost.totalAmount.amount) : 0
 
+  const calculateRetailValue = () => {
+    let retailValue = subtotal
+    
+    // Add premier kit values
+    lines.forEach((line) => {
+      const componentsWithImages = bundleComponentImages[line.id] || []
+      if (componentsWithImages.length > 0) {
+        const premierKitValue = componentsWithImages.reduce(
+          (sum: number, c: any) => sum + (c.retailPrice || 0) * c.quantity, 
+          0
+        )
+        retailValue += premierKitValue
+      }
+    })
+    
+    return retailValue
+  }
+
+  const retailValue = calculateRetailValue()
+  const savings = retailValue - subtotal
+
+  const handleAddProtectionPlan = (planType: "monthly" | "2year") => {
+    // Placeholder for adding the plan to cart
+    console.log(`Adding ${planType} protection plan`)
+    setIsProtectionModalOpen(false)
+    // You would call addItem() here with the specific variant ID for the plan
+  }
+
+  useEffect(() => {
+    // Show modal after a short delay if items are in cart and modal hasn't been shown this session
+    const hasShownModal = sessionStorage.getItem("hasShownProtectionModal")
+    if (cart && cart.lines.edges.length > 0 && !hasShownModal) {
+      const timer = setTimeout(() => {
+        setIsProtectionModalOpen(true)
+        sessionStorage.setItem("hasShownProtectionModal", "true")
+      }, 1500)
+      return () => clearTimeout(timer)
+    }
+  }, [cart])
+
   if (isEmpty) {
     return (
       <div className="container mx-auto px-4 py-16">
@@ -309,176 +351,130 @@ export function CartPageClient() {
     const premierKitValue = hasPremierKit
       ? componentsWithImages.reduce((sum: number, c: any) => sum + (c.retailPrice || 0) * c.quantity, 0)
       : 0
+    
+    // Calculate total value for this item (price + potential savings/premier kit)
+    // For display purposes, let's assume a 20% markup as "retail value" if no premier kit, 
+    // or use the premier kit value if present.
+    const itemRetailValue = hasPremierKit 
+      ? price + premierKitValue 
+      : price * 1.2
 
     const { description, highlights } = getProductHighlights(product)
 
     return (
-      <Card key={line.id} className="overflow-hidden border-l-4 border-l-[#C8A55C]">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 p-6">
-          {/* Column 1: Product Image & Bundle Items (3 cols - 25%) */}
-          <div className="md:col-span-4 lg:col-span-3 space-y-4">
-            <div className="relative aspect-square rounded-lg overflow-hidden bg-white shadow-md">
-              {image ? (
-                <Image
-                  src={image.url || "/placeholder.svg"}
-                  alt={image.altText || product.title}
-                  fill
-                  className="object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                  <Package className="w-16 h-16 text-gray-400" />
-                </div>
-              )}
-
-              {hasPremierKit && (
-                <div className="bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 rounded-xl p-4 border-2 border-green-400 shadow-lg">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center shadow-md shrink-0">
-                      <Package className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-green-900 text-sm truncate">Premier Kit Included!</h4>
-                      <p className="text-xs text-green-700 font-semibold">${premierKitValue.toFixed(2)} Value</p>
-                    </div>
-                    <div className="bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md shrink-0">FREE</div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {componentsWithImages.slice(0, 6).map((component: any, idx: number) => (
-                      <div key={idx} className="relative">
-                        <div className="aspect-square rounded-md overflow-hidden bg-white shadow-sm border-2 border-green-300">
-                          {component.imageUrl ? (
-                            <Image
-                              src={component.imageUrl || "/placeholder.svg"}
-                              alt={component.imageAlt || component.title}
-                              fill
-                              className="object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gray-50">
-                              <Package className="w-6 h-6 text-gray-300" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-600 rounded-full flex items-center justify-center shadow-md">
-                          <Plus className="w-3 h-3 text-white" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  {componentsWithImages.length > 6 && (
-                    <p className="text-xs text-green-700 mt-2 text-center font-semibold bg-green-200 rounded py-1">
-                      +{componentsWithImages.length - 6} more items included
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Column 2: Product Details (6 cols - 50%) */}
-          <div className="md:col-span-5 lg:col-span-6 flex flex-col justify-between h-full">
-            <div className="space-y-4">
-              <div className="text-center md:text-left">
-                <Link
-                  href={`/products/${product.handle}`}
-                  className="text-2xl md:text-3xl font-serif font-bold text-[#0B1C2C] hover:text-[#C8A55C] transition-colors block leading-tight text-balance"
-                >
-                  {product.title}
-                </Link>
-                {variant.title !== "Default Title" && (
-                  <div className="mt-2 flex justify-center md:justify-start">
-                    <span className="text-sm font-semibold text-[#0B1C2C]/80 bg-gray-100 px-3 py-1 rounded-full border border-gray-200">
-                      {variant.title}
-                    </span>
+      <Card key={line.id} className="overflow-hidden border border-gray-200 shadow-sm">
+        <div className="p-6">
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* Left Column: Image & Controls */}
+            <div className="w-full md:w-48 shrink-0 flex flex-col gap-4">
+              <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                {image ? (
+                  <Image
+                    src={image.url || "/placeholder.svg"}
+                    alt={image.altText || product.title}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                    <Package className="w-16 h-16 text-gray-400" />
                   </div>
                 )}
               </div>
+              
+              {/* Quantity & Remove - Below Image */}
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center border border-gray-300 rounded-md overflow-hidden h-9 w-full max-w-[120px]">
+                  <button
+                    className="px-3 h-full hover:bg-gray-100 transition-colors disabled:opacity-50"
+                    onClick={() => handleCartUpdate(() => updateCartLine(line.id, line.quantity - 1))}
+                    disabled={line.quantity <= 1 || isUpdating}
+                  >
+                    <Minus className="w-3 h-3" />
+                  </button>
+                  <span className="flex-1 text-center text-sm font-medium">{line.quantity}</span>
+                  <button
+                    className="px-3 h-full hover:bg-gray-100 transition-colors disabled:opacity-50"
+                    onClick={() => handleCartUpdate(() => updateCartLine(line.id, line.quantity + 1))}
+                    disabled={isUpdating}
+                  >
+                    <Plus className="w-3 h-3" />
+                  </button>
+                </div>
+                <button
+                  onClick={() => handleCartUpdate(() => removeFromCart(line.id))}
+                  className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                  disabled={isUpdating}
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
 
-              <p className="text-base text-gray-600 leading-relaxed border-l-4 border-[#C8A55C] pl-4 py-1 italic bg-gray-50/50 rounded-r-lg text-left">
-                {description}
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {highlights.map((highlight, idx) => (
-                  <div key={idx} className={`flex items-center gap-3 text-sm px-3 py-2 rounded-lg border ${highlight.bg} border-opacity-60 shadow-sm justify-center md:justify-start`}>
-                    <div className={`p-1.5 rounded-full bg-white shadow-sm ${highlight.color} shrink-0`}>
-                      <highlight.icon className="w-4 h-4" />
-                    </div>
-                    <span className={`font-bold ${highlight.color.replace('text-', 'text-opacity-90 ')}`}>{highlight.text}</span>
-                  </div>
-                ))}
+            {/* Middle Column: Details */}
+            <div className="flex-1 min-w-0 space-y-3">
+              <div className="flex justify-between items-start gap-4">
+                <div>
+                  <Link
+                    href={`/products/${product.handle}`}
+                    className="text-xl font-bold text-[#0B1C2C] hover:text-[#C8A55C] transition-colors block leading-tight"
+                  >
+                    {product.title}
+                  </Link>
+                  {variant.title !== "Default Title" && (
+                    <p className="text-sm text-gray-500 mt-1">Size: {variant.title}</p>
+                  )}
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-xl font-bold text-[#0B1C2C]">${price.toFixed(2)}</p>
+                  <p className="text-sm text-gray-500 line-through decoration-red-500 decoration-1">
+                    Total Value ${itemRetailValue.toFixed(2)}
+                  </p>
+                </div>
               </div>
 
+              {/* Trial Badge */}
+              <div className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-2 py-1">
+                <Shield className="w-3 h-3 text-[#C8A55C]" />
+                <span className="text-xs font-bold text-[#0B1C2C]">365-Day Home Trial</span>
+              </div>
+
+              {/* Premier Kit / Bundle Items */}
               {hasPremierKit && (
-                <div className="bg-white border border-green-200 rounded-lg p-4 shadow-sm mt-4 text-left">
-                  <p className="text-sm font-bold text-green-900 mb-3 flex items-center gap-2 border-b border-green-100 pb-2">
-                    <Package className="w-4 h-4" />
-                    Premier Kit Contents
+                <div className="mt-3">
+                  <p className="text-sm font-bold text-green-700 mb-2 flex items-center gap-1">
+                    <CheckCircle2 className="w-4 h-4" />
+                    Included in Bundle:
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
-                    {componentsWithImages.slice(0, 6).map((component: any, idx: number) => (
-                      <div key={idx} className="flex items-center gap-2 text-xs text-gray-700">
-                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full shadow-sm shrink-0" />
-                        <span className="truncate font-medium">{component.title}</span>
-                        {component.quantity > 1 && (
-                          <span className="text-green-600 font-bold text-[10px] bg-green-50 px-1.5 rounded border border-green-100">x{component.quantity}</span>
-                        )}
+                  <div className="space-y-1.5">
+                    {componentsWithImages.slice(0, 4).map((component: any, idx: number) => (
+                      <div key={idx} className="flex items-start gap-2 text-sm text-gray-600">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
+                        <span className="leading-tight">{component.title}</span>
                       </div>
                     ))}
+                    {componentsWithImages.length > 4 && (
+                      <p className="text-xs text-gray-500 pl-6">+ {componentsWithImages.length - 4} more items</p>
+                    )}
                   </div>
-                  {componentsWithImages.length > 6 && (
-                    <p className="text-xs text-green-700 font-bold pt-2 mt-2 text-center border-t border-green-100">
-                      + {componentsWithImages.length - 6} more items included
-                    </p>
-                  )}
                 </div>
               )}
             </div>
           </div>
-
-          {/* Column 3: Price & Actions (3 cols - 25%) */}
-          <div className="md:col-span-3 lg:col-span-3 flex flex-col justify-between items-center md:items-end h-full border-t md:border-t-0 md:border-l border-gray-100 pt-6 md:pt-0 md:pl-6 mt-6 md:mt-0">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleCartUpdate(() => removeFromCart(line.id))}
-              className="text-red-500 hover:text-red-700 hover:bg-red-50 gap-2 px-3 mb-4 md:mb-0"
-              disabled={isUpdating}
-            >
-              <Trash2 className="w-4 h-4" />
-              <span className="inline md:hidden">Remove</span>
-              <span className="hidden md:inline">Remove Item</span>
-            </Button>
-
-            <div className="text-center md:text-right space-y-6 w-full md:w-auto flex flex-col items-center md:items-end">
-              <div>
-                <p className="text-sm text-gray-500 mb-1 font-medium">Total Price</p>
-                <p className="text-3xl md:text-4xl font-bold text-[#C8A55C] tracking-tight">${price.toFixed(2)}</p>
-              </div>
-
-              <div className="flex items-center justify-center md:justify-end gap-3 bg-gray-50 rounded-xl p-1.5 border border-gray-200 w-fit">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9 hover:bg-white hover:shadow-sm rounded-lg transition-all"
-                  onClick={() => handleCartUpdate(() => updateCartLine(line.id, line.quantity - 1))}
-                  disabled={line.quantity <= 1 || isUpdating}
-                >
-                  <Minus className="w-4 h-4" />
-                </Button>
-                <span className="w-8 text-center font-bold text-lg text-[#0B1C2C]">{line.quantity}</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9 hover:bg-white hover:shadow-sm rounded-lg transition-all"
-                  onClick={() => handleCartUpdate(() => updateCartLine(line.id, line.quantity + 1))}
-                  disabled={isUpdating}
-                >
-                  <Plus className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
+          
+          {/* Upsell Checkbox Area (Mockup for now, could be dynamic) */}
+          <div className="mt-6 pt-4 border-t border-gray-100">
+             <label className="flex items-start gap-3 cursor-pointer group">
+               <div className="relative flex items-center">
+                 <input type="checkbox" className="peer h-5 w-5 rounded border-gray-300 text-[#C8A55C] focus:ring-[#C8A55C]" />
+               </div>
+               <div className="text-sm">
+                 <span className="font-bold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors">Add Lifetime Theft Protection</span>
+                 <span className="text-gray-500 mx-1">-</span>
+                 <span className="font-bold text-[#0B1C2C]">$29.00</span>
+                 <p className="text-gray-500 text-xs mt-0.5">Protect your investment against theft or vandalism forever.</p>
+               </div>
+             </label>
           </div>
         </div>
       </Card>
@@ -487,11 +483,18 @@ export function CartPageClient() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <ProtectionPlanModal 
+        isOpen={isProtectionModalOpen} 
+        onClose={() => setIsProtectionModalOpen(false)}
+        onAddPlan={handleAddProtectionPlan}
+      />
+      <CartCountdownTimer />
+
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#0B1C2C]">Shopping Cart</h1>
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#0B1C2C]">Your Cart</h1>
           <p className="text-[#0B1C2C]/60 mt-2">
-            {lines.length} {lines.length === 1 ? "item" : "items"} in your cart
+            {lines.length} {lines.length === 1 ? "item" : "items"}
           </p>
         </div>
         <div className="text-right">
@@ -509,14 +512,21 @@ export function CartPageClient() {
           {lines.map((line) => renderCartLine(line))}
 
           {geoProducts.length > 0 && (
-            <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <MapPin className="w-5 h-5 text-blue-700" />
-                <h3 className="text-lg font-bold text-[#0B1C2C]">
-                  Popular in {location?.region || location?.city || "Your Area"}
-                </h3>
+            <Card className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-[#C8A55C] p-6 shadow-lg">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="p-2 bg-[#C8A55C] rounded-lg shadow-md">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-[#0B1C2C]">
+                    Complete Your Setup
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Popular additions in {location?.region || location?.city || "your area"}
+                  </p>
+                </div>
                 {location?.region_code && (
-                  <span className="ml-auto text-xs bg-blue-600 text-white px-2 py-1 rounded-full font-semibold">
+                  <span className="text-xs bg-[#C8A55C] text-white px-3 py-1.5 rounded-full font-bold shadow-md">
                     {location.region_code}
                   </span>
                 )}
@@ -524,34 +534,53 @@ export function CartPageClient() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {geoProducts.map((product) => {
                   const isAdding = addingProducts.has(product.id)
+                  const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
+                  
                   return (
                     <div
                       key={product.id}
-                      className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow"
+                      className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-all border-2 border-transparent hover:border-[#C8A55C] group"
                     >
                       <Link href={`/products/${product.handle}`} className="block">
                         {product.featuredImage && (
-                          <div className="relative aspect-square mb-2 rounded overflow-hidden">
+                          <div className="relative aspect-square mb-3 rounded-lg overflow-hidden bg-gray-50">
                             <Image
                               src={product.featuredImage.url || "/placeholder.svg"}
                               alt={product.title}
                               fill
-                              className="object-cover"
+                              className="object-cover group-hover:scale-105 transition-transform"
                             />
                           </div>
                         )}
-                        <p className="text-xs font-semibold text-[#0B1C2C] line-clamp-2 mb-1">{product.title}</p>
-                        <p className="text-sm font-bold text-[#C8A55C]">
-                          ${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}
-                        </p>
+                        <p className="text-sm font-bold text-[#0B1C2C] line-clamp-2 mb-2 min-h-[2.5rem]">{product.title}</p>
+                        <div className="flex items-baseline gap-1 mb-3">
+                          <p className="text-lg font-bold text-[#C8A55C]">
+                            ${price.toFixed(2)}
+                          </p>
+                          {price > 50 && (
+                            <p className="text-xs text-gray-400 line-through">
+                              ${(price * 1.3).toFixed(2)}
+                            </p>
+                          )}
+                        </div>
                       </Link>
                       <Button
                         size="sm"
-                        className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white text-xs py-1"
+                        className="w-full bg-[#C8A55C] hover:bg-[#a88947] text-white font-bold shadow-md hover:shadow-lg transition-all"
                         onClick={() => handleQuickAdd(product)}
                         disabled={isAdding}
                       >
-                        {isAdding ? "Adding..." : "Add to Cart"}
+                        {isAdding ? (
+                          <>
+                            <Plus className="w-4 h-4 mr-1 animate-spin" />
+                            Adding...
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="w-4 h-4 mr-1" />
+                            Add to Cart
+                          </>
+                        )}
                       </Button>
                     </div>
                   )
@@ -559,63 +588,122 @@ export function CartPageClient() {
               </div>
             </Card>
           )}
+
+          <CartSupportSection />
         </div>
 
         {/* Order Summary - Sticky */}
         <div className="lg:col-span-1">
-          <Card className="p-4 sticky top-24 shadow-xl border-2 border-[#C8A55C]/20">
-            <h2 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-3 text-center">Order Summary</h2>
+          <Card className="p-6 sticky top-24 shadow-lg border border-gray-200 bg-white">
+            <h2 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-6 border-b border-gray-100 pb-4">Order Summary</h2>
 
-            <div className="space-y-2 mb-3">
-              <div className="flex justify-between text-[#0B1C2C] text-base">
-                <span>
-                  Subtotal ({lines.length} {lines.length === 1 ? "item" : "items"})
-                </span>
-                <span className="font-semibold">${subtotal.toFixed(2)}</span>
+            {/* Coupon Section */}
+            <div className="bg-gray-50 rounded-md p-3 mb-6 flex items-center justify-between border border-gray-200">
+               <div className="flex items-center gap-2">
+                 <Tag className="w-4 h-4 text-[#C8A55C]" />
+                 <span className="text-sm font-medium text-gray-700">Coupon Code</span>
+               </div>
+               <span className="text-xs text-gray-400 italic">Add at checkout</span>
+            </div>
+
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between text-gray-900 text-sm">
+                <span>Total Value</span>
+                <span className="line-through">${retailValue.toFixed(2)}</span>
               </div>
-              <div className="border-t-2 border-gray-200 pt-2 flex justify-between text-xl font-bold text-[#0B1C2C]">
-                <span>Total</span>
-                <span className="text-[#C8A55C]">${total.toFixed(2)}</span>
+              
+              {savings > 0 && (
+                <div className="flex justify-between text-sm text-red-600 font-medium">
+                  <span>Total Value Savings</span>
+                  <span>-${savings.toFixed(2)}</span>
+                </div>
+              )}
+
+              <div className="flex justify-between text-sm text-gray-900">
+                <span>Taxes</span>
+                <span className="text-gray-500 italic">Calculated at checkout</span>
+              </div>
+
+              <div className="flex justify-between text-sm text-gray-900">
+                <span>Shipping</span>
+                <span className="text-green-600 font-bold">FREE</span>
+              </div>
+
+              <div className="border-t border-gray-200 pt-4 mt-4 flex justify-between items-baseline">
+                <span className="text-xl font-bold text-[#0B1C2C]">Total</span>
+                <span className="text-3xl font-bold text-[#C8A55C]">${total.toFixed(2)}</span>
               </div>
             </div>
 
-            <ExpressCheckoutButtons cartId={cart?.id} />
-
-            <div className="my-3">
-              <div className="relative w-full h-40">
-                <Image
-                  src="/images/safecheckout.png"
-                  alt="Guaranteed Safe Checkout - McAfee, Norton, Visa, MasterCard, Amex, Discover, PayPal"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2 mb-4">
-              <div className="flex flex-col items-center justify-center text-center p-2 bg-gray-50 rounded-lg border border-gray-100">
-                <Shield className="w-5 h-5 text-[#C8A55C] mb-1" />
-                <span className="text-[10px] font-bold text-[#0B1C2C] leading-tight">Lifetime<br/>Warranty</span>
-              </div>
-              <div className="flex flex-col items-center justify-center text-center p-2 bg-gray-50 rounded-lg border border-gray-100">
-                <Award className="w-5 h-5 text-[#C8A55C] mb-1" />
-                <span className="text-[10px] font-bold text-[#0B1C2C] leading-tight">Made in<br/>USA</span>
-              </div>
-              <div className="flex flex-col items-center justify-center text-center p-2 bg-gray-50 rounded-lg border border-gray-100">
-                <Truck className="w-5 h-5 text-[#C8A55C] mb-1" />
-                <span className="text-[10px] font-bold text-[#0B1C2C] leading-tight">Fast<br/>Shipping</span>
-              </div>
+            {/* Shipping Banner */}
+            <div className="bg-gray-100 rounded-md p-3 mb-6 flex items-center justify-center gap-2 text-sm text-gray-700 font-medium">
+              <Truck className="w-4 h-4 text-gray-500" />
+              <span>Ships in 1 - 2 business days</span>
             </div>
 
             <Button
               onClick={handleCheckout}
               size="lg"
-              className="w-full bg-[#C8A55C] hover:bg-[#a88947] text-white py-6 text-lg font-bold shadow-[0_0_15px_rgba(200,165,92,0.5)] hover:shadow-[0_0_25px_rgba(200,165,92,0.7)] transition-all transform hover:scale-[1.02]"
+              className="w-full bg-[#C8A55C] hover:bg-[#b69550] text-white h-14 text-lg font-bold shadow-md mb-4 relative overflow-hidden group"
               disabled={isUpdating}
             >
-              PROCEED TO CHECKOUT
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+              <Lock className="w-5 h-5 mr-2 relative z-10" />
+              <span className="relative z-10">Proceed to Checkout</span>
             </Button>
+
+            <div className="text-center mb-6">
+              <p className="text-xs text-gray-500">
+                As low as <span className="font-bold text-[#0B1C2C]">${(total / 12).toFixed(2)}/mo</span> with <span className="font-bold text-[#004cdd]">affirm</span>
+              </p>
+              <button className="text-xs text-blue-600 underline hover:text-blue-800 mt-1">
+                See if you qualify
+              </button>
+            </div>
+
+            <ExpressCheckoutButtons cartId={cart?.id} />
+
+            {/* Trust Icons Grid */}
+            <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-gray-100">
+              <div className="flex flex-col items-center text-center gap-2">
+                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-[#C8A55C]">
+                  <Shield className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-bold text-gray-600 leading-tight">365-Day<br/>Home Trial</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-2">
+                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-[#C8A55C]">
+                  <Award className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-bold text-gray-600 leading-tight">Lifetime<br/>Warranty</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-2">
+                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-[#C8A55C]">
+                  <Truck className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-bold text-gray-600 leading-tight">Free Shipping<br/>& Returns</span>
+              </div>
+            </div>
+
+            {/* Affirm Banner */}
+            <div className="mt-6 bg-[#F5F5F5] rounded-lg p-4 text-center">
+               <span className="text-[#004cdd] font-bold text-lg block mb-1">affirm</span>
+               <p className="text-sm font-medium text-gray-800">Big Dreams, Small Payments</p>
+               <p className="text-xs text-gray-500 mt-1 mb-2">Check if you prequalify without affecting your credit score.</p>
+               <button className="text-xs font-bold underline text-gray-700 hover:text-black">See if you qualify</button>
+            </div>
+
+            <div className="mt-6 text-center">
+              <Button variant="link" asChild className="text-[#C8A55C] hover:text-[#a88947] font-bold">
+                <Link href="/collections/flagpoles">Continue Shopping</Link>
+              </Button>
+            </div>
           </Card>
+          
+          {/* Support Section - Below Summary */}
+          <div className="mt-6">
+             <CartSupportSection />
+          </div>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { X, Send, HelpCircle, Star, ShoppingCart } from "lucide-react"
+import { X, Send, HelpCircle, Star, ShoppingCart } from 'lucide-react'
 import Image from "next/image"
 
 interface Message {
@@ -27,8 +27,31 @@ interface ProductRecommendation {
 
 type FlaggyState = "hidden" | "sliding-in" | "minimized" | "expanded"
 
-export function FlaggyChatWidget() {
-  const [flaggyState, setFlaggyState] = useState<FlaggyState>("hidden")
+interface FlaggyChatWidgetProps {
+  embedded?: boolean
+  isOpen?: boolean
+  onClose?: () => void
+  onToggle?: () => void
+}
+
+export function FlaggyChatWidget({ embedded = false, isOpen, onClose, onToggle }: FlaggyChatWidgetProps) {
+  const [internalState, setInternalState] = useState<FlaggyState>("hidden")
+  
+  // Use props if provided, otherwise internal state
+  const flaggyState = isOpen !== undefined 
+    ? (isOpen ? "expanded" : "minimized") 
+    : internalState
+
+  const setFlaggyState = (newState: FlaggyState) => {
+    if (onToggle && (newState === "expanded" || newState === "minimized")) {
+      onToggle()
+    } else if (onClose && newState === "minimized") {
+      onClose()
+    } else {
+      setInternalState(newState)
+    }
+  }
+
   const [message, setMessage] = useState("")
   const [messages, setMessages] = useState<Message[]>([])
   const [isThinking, setIsThinking] = useState(false)
@@ -187,16 +210,24 @@ export function FlaggyChatWidget() {
   const handleFlaggyClick = () => {
     console.log("[v0] Flaggy clicked, current state:", flaggyState)
     setShowHelpBubble(false)
-    if (flaggyState === "sliding-in") {
-      setFlaggyState("expanded")
-    } else if (flaggyState === "minimized") {
-      setFlaggyState("expanded")
+    if (onToggle) {
+      onToggle()
+    } else {
+      if (flaggyState === "sliding-in") {
+        setFlaggyState("expanded")
+      } else if (flaggyState === "minimized") {
+        setFlaggyState("expanded")
+      }
     }
   }
 
   const handleClose = () => {
     console.log("[v0] Flaggy closed, minimizing")
-    setFlaggyState("minimized")
+    if (onClose) {
+      onClose()
+    } else {
+      setFlaggyState("minimized")
+    }
   }
 
   const handleAddToCart = async (variantId: string, productTitle: string) => {
@@ -233,6 +264,282 @@ export function FlaggyChatWidget() {
   }
 
   console.log("[v0] Flaggy current state:", flaggyState)
+
+  if (embedded) {
+    return (
+      <>
+        {flaggyState === "expanded" && (
+          <div className="fixed bottom-[90px] right-2 md:right-4 z-[120] w-[90vw] md:w-[85vw] max-w-md h-[500px] md:h-[600px] bg-white rounded-2xl shadow-2xl border-2 border-[#C8A55C] flex flex-col overflow-hidden animate-in slide-in-from-bottom-10 duration-300">
+            {/* Chat Header */}
+            <div className="bg-gradient-to-r from-[#0B1C2C] to-[#1a2d3f] text-white p-3 md:p-4 flex items-center justify-between relative overflow-hidden">
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute inset-0 bg-[url('/placeholder.svg?height=100&width=100')] animate-pulse"></div>
+              </div>
+
+              <div className="flex items-center gap-2 md:gap-3 relative z-10">
+                <div className="relative w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-[#C8A55C] to-[#B8954C] rounded-full p-1 shadow-lg">
+                  <div className="relative w-full h-full bg-white rounded-full p-1 overflow-hidden">
+                    <Image src="/images/design-mode/Flaggy.png" alt="Flaggy" fill className="object-cover" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-base md:text-lg">Flaggy</h3>
+                  <p className="text-[10px] md:text-xs text-white/90 flex items-center gap-2">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
+                    Your AI Flagpole Assistant
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={handleClose}
+                className="ml-2 text-white hover:text-gray-300 transition-colors relative z-10"
+                aria-label="Minimize chat"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Chat Body */}
+            <div
+              ref={chatContainerRef}
+              className="flex-1 p-3 md:p-4 overflow-y-auto bg-gradient-to-b from-gray-50 to-white relative"
+            >
+              {/* ... existing chat messages rendering ... */}
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`mb-3 md:mb-4 flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  <div className={`max-w-[80%] ${msg.sender === "user" ? "order-2" : "order-1"}`}>
+                    {msg.sender === "flaggy" && (
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="relative w-5 h-5 md:w-6 md:h-6">
+                          <Image src="/images/design-mode/Flaggy.png" alt="Flaggy" fill className="object-contain" />
+                        </div>
+                        <span className="text-[10px] md:text-xs font-semibold text-gray-600">Flaggy</span>
+                      </div>
+                    )}
+                    <div
+                      className={`rounded-2xl p-2.5 md:p-3 shadow-sm text-xs md:text-sm ${
+                        msg.sender === "user"
+                          ? "bg-[#C8A55C] text-white rounded-tr-none"
+                          : "bg-white border border-gray-200 rounded-tl-none"
+                      }`}
+                    >
+                      <p className={`whitespace-pre-line ${msg.sender === "user" ? "text-white" : "text-gray-800"}`}>
+                        {msg.text}
+                      </p>
+                    </div>
+
+                    {msg.sender === "flaggy" && msg.product && (
+                      <div className="mt-2 md:mt-3 bg-white border-2 border-[#C8A55C] rounded-xl overflow-hidden shadow-md">
+                        <div className="flex gap-2 md:gap-3 p-2 md:p-3">
+                          <div className="relative w-16 h-16 md:w-20 md:h-20 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
+                            {msg.product.image && msg.product.image.startsWith("http") ? (
+                              <Image
+                                src={msg.product.image || "/placeholder.svg"}
+                                alt={msg.product.title}
+                                fill
+                                className="object-cover"
+                                sizes="80px"
+                                unoptimized={msg.product.image.includes("placehold.co")}
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400 text-[10px]">
+                                No image
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex-1 flex flex-col justify-between min-w-0">
+                            <div>
+                              <h4 className="font-bold text-[10px] md:text-xs text-gray-900 mb-1 line-clamp-2">
+                                {msg.product.title}
+                              </h4>
+                              <div className="flex items-center gap-1 mb-1">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`w-2 h-2 md:w-2.5 md:h-2.5 ${
+                                      i < Math.floor(msg.product!.rating)
+                                        ? "fill-[#C8A55C] text-[#C8A55C]"
+                                        : "fill-gray-200 text-gray-200"
+                                    }`}
+                                  />
+                                ))}
+                                <span className="text-[9px] md:text-[10px] text-gray-600 ml-0.5">
+                                  {msg.product.rating} ({msg.product.reviewCount.toLocaleString()})
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-sm md:text-base font-bold text-[#0B1C2C]">{msg.product.price}</span>
+                              <button
+                                onClick={() => handleAddToCart(msg.product!.variantId, msg.product!.title)}
+                                className="bg-[#C8A55C] hover:bg-[#B8954C] text-white px-2 py-1 rounded-lg text-[9px] md:text-[10px] font-semibold flex items-center gap-1 transition-colors whitespace-nowrap"
+                              >
+                                <ShoppingCart className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                                Add
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <p className="text-[10px] md:text-xs text-gray-400 mt-1 px-2">
+                      {msg.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    </p>
+                  </div>
+                </div>
+              ))}
+
+              {isThinking && (
+                <div className="mb-4 flex justify-start">
+                  <div className="max-w-[80%]">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-semibold text-gray-600">Flaggy is thinking...</span>
+                    </div>
+                    <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-none p-3 shadow-sm">
+                      <div className="flex gap-1">
+                        <div
+                          className="w-2 h-2 bg-[#C8A55C] rounded-full animate-bounce"
+                          style={{ animationDelay: "0ms" }}
+                        ></div>
+                        <div
+                          className="w-2 h-2 bg-[#C8A55C] rounded-full animate-bounce"
+                          style={{ animationDelay: "150ms" }}
+                        ></div>
+                        <div
+                          className="w-2 h-2 bg-[#C8A55C] rounded-full animate-bounce"
+                          style={{ animationDelay: "300ms" }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {isTyping && (
+                <div className="mb-4 flex justify-start">
+                  <div className="max-w-[80%]">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-semibold text-gray-600">Flaggy is typing...</span>
+                    </div>
+                    <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-none p-3 shadow-sm">
+                      <div className="flex gap-1">
+                        <div
+                          className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"
+                          style={{ animationDelay: "0ms" }}
+                        ></div>
+                        <div
+                          className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"
+                          style={{ animationDelay: "200ms" }}
+                        ></div>
+                        <div
+                          className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"
+                          style={{ animationDelay: "400ms" }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {showSuggestions && messages.length > 0 && !isEscalating && (
+                <div className="mt-3 md:mt-4 space-y-2">
+                  <p className="text-[10px] md:text-xs text-gray-500 font-semibold mb-2">Quick topics:</p>
+                  {[
+                    { label: "Product Recommendations", intent: "product_recommendation" },
+                    { label: "Installation Help", intent: "installation_help" },
+                    { label: "Order Tracking", intent: "order_tracking" },
+                    { label: "Shipping Questions", intent: "shipping_questions" },
+                  ].map((suggestion) => (
+                    <button
+                      key={suggestion.intent}
+                      onClick={() => handleSuggestionClick(suggestion.intent, suggestion.label)}
+                      className="w-full text-left px-3 md:px-4 py-1.5 md:py-2 bg-white border-2 border-[#C8A55C] text-[#0B1C2C] rounded-lg hover:bg-[#C8A55C] hover:text-white transition-all duration-200 text-xs md:text-sm font-medium shadow-sm"
+                    >
+                      {suggestion.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {isEscalating && (
+                <div className="mt-3 md:mt-4 bg-blue-50 border-2 border-blue-200 rounded-lg p-3 md:p-4">
+                  <h4 className="font-bold text-xs md:text-sm text-blue-900 mb-2 md:mb-3">Connect with Support</h4>
+                  <div className="space-y-2 md:space-y-3">
+                    <input
+                      type="text"
+                      placeholder="Your Name"
+                      value={ticketForm.name}
+                      onChange={(e) => setTicketForm({ ...ticketForm, name: e.target.value })}
+                      className="w-full px-2.5 md:px-3 py-1.5 md:py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs md:text-sm"
+                    />
+                    <input
+                      type="email"
+                      placeholder="Your Email"
+                      value={ticketForm.email}
+                      onChange={(e) => setTicketForm({ ...ticketForm, email: e.target.value })}
+                      className="w-full px-2.5 md:px-3 py-1.5 md:py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs md:text-sm"
+                    />
+                    <textarea
+                      placeholder="Brief summary of your issue"
+                      value={ticketForm.issue}
+                      onChange={(e) => setTicketForm({ ...ticketForm, issue: e.target.value })}
+                      rows={3}
+                      className="w-full px-2.5 md:px-3 py-1.5 md:py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs md:text-sm resize-none"
+                    />
+                    <button
+                      onClick={handleTicketSubmit}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 md:py-2 rounded-md transition-colors font-medium text-xs md:text-sm"
+                    >
+                      Send to Support Team
+                    </button>
+                    <p className="text-[10px] md:text-xs text-blue-700 text-center">
+                      Our team will email you within 24 hours
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Chat Input */}
+            <div className="p-3 md:p-4 border-t-2 border-gray-200 bg-white">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                  placeholder="Type your message..."
+                  disabled={isThinking || isTyping}
+                  className="flex-1 px-3 md:px-4 py-2 md:py-3 border-2 border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#C8A55C] focus:border-transparent text-xs md:text-sm disabled:bg-gray-100"
+                />
+                <button
+                  onClick={handleSend}
+                  disabled={isThinking || isTyping || !message.trim()}
+                  className="bg-[#C8A55C] hover:bg-[#B8954C] text-white p-2 md:p-3 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                  aria-label="Send message"
+                >
+                  <Send className="w-4 h-4 md:w-5 md:h-5" />
+                </button>
+              </div>
+              <p className="text-[10px] md:text-xs text-gray-500 mt-2 text-center">
+                Powered by Flaggy AI - Here to help 24/7
+              </p>
+            </div>
+          </div>
+        )}
+      </>
+    )
+  }
 
   return (
     <>

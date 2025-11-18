@@ -1,11 +1,11 @@
-import { Shield, Award, RotateCcw, Clock } from "lucide-react"
+import { Shield, Award, RotateCcw, Clock } from 'lucide-react'
 
 export function TrustBadges() {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4">
       <div className="flex flex-col items-center text-center gap-2">
-        <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-          <Clock className="w-6 h-6 text-green-600" />
+        <div className="w-12 h-12 rounded-full bg-[#C8A55C]/10 flex items-center justify-center">
+          <Clock className="w-6 h-6 text-[#C8A55C]" />
         </div>
         <div>
           <p className="text-xs font-semibold text-[#0B1C2C]">FAST SHIPPING</p>
@@ -14,8 +14,8 @@ export function TrustBadges() {
       </div>
 
       <div className="flex flex-col items-center text-center gap-2">
-        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-          <RotateCcw className="w-6 h-6 text-blue-600" />
+        <div className="w-12 h-12 rounded-full bg-[#C8A55C]/10 flex items-center justify-center">
+          <RotateCcw className="w-6 h-6 text-[#C8A55C]" />
         </div>
         <div>
           <p className="text-xs font-semibold text-[#0B1C2C]">MONEY-BACK</p>
@@ -24,8 +24,8 @@ export function TrustBadges() {
       </div>
 
       <div className="flex flex-col items-center text-center gap-2">
-        <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-          <Shield className="w-6 h-6 text-purple-600" />
+        <div className="w-12 h-12 rounded-full bg-[#C8A55C]/10 flex items-center justify-center">
+          <Shield className="w-6 h-6 text-[#C8A55C]" />
         </div>
         <div>
           <p className="text-xs font-semibold text-[#0B1C2C]">SECURED</p>
@@ -34,8 +34,8 @@ export function TrustBadges() {
       </div>
 
       <div className="flex flex-col items-center text-center gap-2">
-        <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-          <Award className="w-6 h-6 text-amber-600" />
+        <div className="w-12 h-12 rounded-full bg-[#C8A55C]/10 flex items-center justify-center">
+          <Award className="w-6 h-6 text-[#C8A55C]" />
         </div>
         <div>
           <p className="text-xs font-semibold text-[#0B1C2C]">LIFETIME</p>

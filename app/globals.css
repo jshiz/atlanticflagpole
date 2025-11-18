@@ -146,9 +146,15 @@
   }
 
   /* Prevent horizontal scrolling on mobile */
-  html,
+  html {
+    overflow-x: hidden;
+    width: 100%;
+  }
+
   body {
     overflow-x: hidden;
+    width: 100%;
+    position: relative;
     max-width: 100vw;
   }
 

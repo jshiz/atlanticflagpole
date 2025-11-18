@@ -1,12 +1,12 @@
 "use client"
 
-import { PlusCircleIcon } from "lucide-react"
+import { PlusCircleIcon } from 'lucide-react'
 import type { Product, ProductVariant } from "@/lib/shopify/types"
 import { useMemo, useTransition } from "react"
 import { useCart } from "./cart-context"
 import { Button, type ButtonProps } from "../ui/button"
 import { useSelectedVariant } from "@/components/products/variant-selector"
-import { useParams, useSearchParams } from "next/navigation"
+import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import type { ReactNode } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { Loader } from "../ui/loader"
@@ -47,6 +47,7 @@ export function AddToCartButton({
 }: AddToCartButtonProps) {
   const { addItem } = useCart()
   const [isLoading, startTransition] = useTransition()
+  const router = useRouter()
 
   const resolvedVariant = useMemo(() => {
     if (selectedVariant) return selectedVariant
@@ -81,7 +82,8 @@ export function AddToCartButton({
 
         if (resolvedVariant) {
           startTransition(async () => {
-            addItem(resolvedVariant, product)
+            await addItem(resolvedVariant, product)
+            router.push("/cart")
           })
         }
       }}

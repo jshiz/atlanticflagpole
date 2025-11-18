@@ -10,9 +10,9 @@ import { ExpressCheckoutButtons } from "@/components/cart/express-checkout-butto
 import type { ShopifyProduct } from "@/lib/shopify"
 import type { BundleData } from "@/lib/shopify/bundles"
 import { toNodes } from "@/lib/connection"
-import { Check, Shield, Truck, Award, Package, Wrench, Wind, Medal, ChevronDown, Star, Clock, Tag } from "lucide-react"
+import { Check, Shield, Truck, Award, Package, Wrench, Wind, Medal, ChevronDown, Star, Clock, Tag } from 'lucide-react'
 import { JudgeMeBadge, JudgeMeReviewWidget } from "./judgeme-widgets"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams } from 'next/navigation'
 import { CompanyStorySection } from "./company-story-section"
 import { SmartUpsellCTA } from "./smart-upsell-cta"
 import { SpotlightProducts } from "./spotlight-products"
@@ -489,16 +489,16 @@ export function ProductDetailsDreamCloud({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="p-8 hover:shadow-2xl transition-shadow bg-card">
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-6">
+            <Card className="p-8 hover:shadow-2xl transition-shadow bg-card border-2 border-transparent hover:border-[#C8A55C]/20">
+              <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-6 shadow-lg">
                 <Image
-                  src="/images/products/flagpole-installation-easy.jpg"
+                  src="/easy-flagpole-installation.jpg"
                   alt="Easy 30-Minute Installation"
                   fill
-                  className="object-cover"
+                  className="object-cover hover:scale-105 transition-transform duration-500"
                 />
               </div>
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mb-4">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mb-4 shadow-lg">
                 <Wrench className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-2xl font-serif font-bold text-foreground mb-3">Installs in 30 Minutes</h3>
@@ -507,26 +507,30 @@ export function ProductDetailsDreamCloud({
               </p>
               <ul className="space-y-2">
                 <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-[#2e7d32] mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-foreground">Minimal tools needed</span>
+                  <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <Check className="w-3 h-3 text-green-600" />
+                  </div>
+                  <span className="text-sm text-foreground font-medium">Minimal tools needed</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-[#2e7d32] mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-foreground">Clear photo instructions</span>
+                  <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <Check className="w-3 h-3 text-green-600" />
+                  </div>
+                  <span className="text-sm text-foreground font-medium">Clear photo instructions</span>
                 </li>
               </ul>
             </Card>
 
-            <Card className="p-8 hover:shadow-2xl transition-shadow bg-card">
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-6">
+            <Card className="p-8 hover:shadow-2xl transition-shadow bg-card border-2 border-transparent hover:border-[#C8A55C]/20">
+              <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-6 shadow-lg">
                 <Image
-                  src="/images/products/flagpole-aluminum-quality.jpg"
+                  src="/aluminum-metal-texture.jpg"
                   alt="Military-Grade Aerospace Aluminum"
                   fill
-                  className="object-cover"
+                  className="object-cover hover:scale-105 transition-transform duration-500"
                 />
               </div>
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mb-4">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mb-4 shadow-lg">
                 <Medal className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-2xl font-serif font-bold text-foreground mb-3">Military-Grade Aluminum</h3>
@@ -535,26 +539,30 @@ export function ProductDetailsDreamCloud({
               </p>
               <ul className="space-y-2">
                 <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-[#2e7d32] mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-foreground">No rattles, no rust</span>
+                  <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <Check className="w-3 h-3 text-green-600" />
+                  </div>
+                  <span className="text-sm text-foreground font-medium">No rattles, no rust</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-[#2e7d32] mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-foreground">Powder-coated finish</span>
+                  <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <Check className="w-3 h-3 text-green-600" />
+                  </div>
+                  <span className="text-sm text-foreground font-medium">Powder-coated finish</span>
                 </li>
               </ul>
             </Card>
 
-            <Card className="p-8 hover:shadow-2xl transition-shadow bg-card">
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-6">
+            <Card className="p-8 hover:shadow-2xl transition-shadow bg-card border-2 border-transparent hover:border-[#C8A55C]/20">
+              <div className="relative aspect-[4/3] rounded-xl overflow-hidden mb-6 shadow-lg">
                 <Image
-                  src="/images/products/flagpole-wind-test.jpg"
+                  src="/flagpole-in-wind.jpg"
                   alt="Wind-Tested to 100 MPH"
                   fill
-                  className="object-cover"
+                  className="object-cover hover:scale-105 transition-transform duration-500"
                 />
               </div>
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mb-4">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#C8A55C] to-[#a88947] flex items-center justify-center mb-4 shadow-lg">
                 <Wind className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-2xl font-serif font-bold text-foreground mb-3">Wind-Tested to 100 MPH</h3>
@@ -563,12 +571,16 @@ export function ProductDetailsDreamCloud({
               </p>
               <ul className="space-y-2">
                 <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-[#2e7d32] mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-foreground">Real-world tested</span>
+                  <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <Check className="w-3 h-3 text-green-600" />
+                  </div>
+                  <span className="text-sm text-foreground font-medium">Real-world tested</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-[#2e7d32] mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-foreground">Secure foundation</span>
+                  <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center mt-0.5 flex-shrink-0">
+                    <Check className="w-3 h-3 text-green-600" />
+                  </div>
+                  <span className="text-sm text-foreground font-medium">Secure foundation</span>
                 </li>
               </ul>
             </Card>

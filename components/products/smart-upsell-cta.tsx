@@ -3,7 +3,7 @@
 import { useCart } from "@/components/cart/cart-context"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { ArrowRight, Plus, ShoppingBag } from "lucide-react"
+import { ArrowRight, Plus, ShoppingBag } from 'lucide-react'
 import Link from "next/link"
 import Image from "next/image"
 import { useState, useEffect } from "react"
@@ -45,9 +45,13 @@ export function SmartUpsellCTA({ currentProduct }: SmartUpsellProps) {
           {
             handle: "gold-ball-ornament-for-flagpole",
             title: "Gold Ball Topper",
-            image: "/images/products/gold-ball-topper.jpg",
+            image: "/gold-ball-flagpole-topper.jpg",
           },
-          { handle: "eagle-ornament-for-flagpole", title: "Eagle Topper", image: "/images/products/eagle-topper.jpg" },
+          { 
+            handle: "eagle-ornament-for-flagpole", 
+            title: "Eagle Topper", 
+            image: "/eagle-flagpole-topper.jpg" 
+          },
         ],
         badge: "Popular Add-On",
       })
@@ -56,7 +60,11 @@ export function SmartUpsellCTA({ currentProduct }: SmartUpsellProps) {
         title: "Protect Your Investment",
         description: "Keep your flag looking new with a premium flash collar cover",
         products: [
-          { handle: "flash-collar-cover", title: "Flash Collar Cover", image: "/images/products/flash-cover.jpg" },
+          { 
+            handle: "flash-collar-cover", 
+            title: "Flash Collar Cover", 
+            image: "/flagpole-flash-collar.jpg" 
+          },
         ],
         badge: "Best Value",
       })
@@ -68,9 +76,13 @@ export function SmartUpsellCTA({ currentProduct }: SmartUpsellProps) {
           {
             handle: "oversized-american-flag",
             title: "American Flag 3x5",
-            image: "/images/products/american-flag.jpg",
+            image: "/american-flag.png",
           },
-          { handle: "state-flags", title: "State Flags", image: "/images/products/state-flags.jpg" },
+          { 
+            handle: "state-flags", 
+            title: "State Flags", 
+            image: "/state-flag.jpg" 
+          },
         ],
         badge: "Smart Choice",
       })
@@ -82,10 +94,39 @@ export function SmartUpsellCTA({ currentProduct }: SmartUpsellProps) {
         title: "Complete Your Setup",
         description: "Bundle customers love these premium upgrades",
         products: [
-          { handle: "solar-light-for-flagpole", title: "Solar Light", image: "/images/products/solar-light.jpg" },
-          { handle: "flagpole-beacon", title: "LED Beacon", image: "/images/products/beacon.jpg" },
+          { 
+            handle: "solar-light-for-flagpole", 
+            title: "Solar Light", 
+            image: "/solar-flagpole-light.jpg" 
+          },
+          { 
+            handle: "flagpole-beacon", 
+            title: "LED Beacon", 
+            image: "/flagpole-beacon-light.jpg" 
+          },
         ],
         badge: "Bundle Exclusive",
+      })
+    }
+    
+    // Default suggestions if none match
+    if (suggestions.length === 0) {
+       suggestions.push({
+        title: "Essential Accessories",
+        description: "Must-have items for every flagpole owner",
+        products: [
+          { 
+            handle: "solar-light-for-flagpole", 
+            title: "Solar Light", 
+            image: "/solar-flagpole-light.jpg" 
+          },
+          {
+            handle: "gold-ball-ornament-for-flagpole",
+            title: "Gold Ball Topper",
+            image: "/gold-ball-flagpole-topper.jpg",
+          },
+        ],
+        badge: "Customer Favorites",
       })
     }
 
@@ -94,64 +135,65 @@ export function SmartUpsellCTA({ currentProduct }: SmartUpsellProps) {
 
   const suggestions = getUpsellSuggestions()
 
-  if (suggestions.length === 0) return null
-
   return (
-    <div className="space-y-6 my-8">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-[#0B1C2C]">
-          <ShoppingBag className="w-6 h-6 inline-block mr-2 text-[#C8A55C]" />
-          Complete Your Order
-        </h2>
-        {hasBundle && (
-          <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold">
-            Bundle Savings Active
-          </span>
-        )}
+    <div className="space-y-8 my-12">
+      <div className="flex items-center justify-center text-center mb-8">
+        <div>
+          <h2 className="text-3xl font-serif font-bold text-[#0B1C2C] mb-2">
+            <ShoppingBag className="w-8 h-8 inline-block mr-3 text-[#C8A55C] mb-1" />
+            Complete Your Order
+          </h2>
+          <p className="text-muted-foreground">Frequently bought together with your selection</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {suggestions.map((suggestion, idx) => (
           <Card
             key={idx}
-            className="p-4 border-2 border-[#C8A55C]/20 hover:border-[#C8A55C] transition-all hover:shadow-lg"
+            className="p-6 border-2 border-[#C8A55C]/20 hover:border-[#C8A55C] transition-all hover:shadow-xl bg-white group"
           >
-            <div className="flex items-start justify-between mb-3">
+            <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
-                <h3 className="font-bold text-[#0B1C2C] mb-1">{suggestion.title}</h3>
-                <p className="text-xs text-gray-600 leading-relaxed">{suggestion.description}</p>
+                <h3 className="font-bold text-xl text-[#0B1C2C] mb-2">{suggestion.title}</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">{suggestion.description}</p>
               </div>
-              <span className="text-[10px] bg-[#C8A55C] text-white px-2 py-0.5 rounded-full font-semibold whitespace-nowrap ml-2">
+              <span className="text-xs bg-[#C8A55C] text-white px-3 py-1 rounded-full font-bold whitespace-nowrap ml-3 shadow-sm">
                 {suggestion.badge}
               </span>
             </div>
 
-            <div className="space-y-2 mb-3">
+            <div className="space-y-3 mb-6">
               {suggestion.products.map((product, pidx) => (
                 <Link
                   key={pidx}
                   href={`/products/${product.handle}`}
-                  className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg hover:bg-[#C8A55C]/10 transition-colors group"
+                  className="flex items-center gap-4 p-3 bg-gray-50 rounded-xl hover:bg-[#C8A55C]/10 transition-colors group/item border border-transparent hover:border-[#C8A55C]/20"
                 >
-                  <div className="w-12 h-12 bg-white rounded-md overflow-hidden flex-shrink-0">
+                  <div className="w-16 h-16 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-gray-100 shadow-sm">
                     <Image
-                      src={product.image || "/placeholder.svg?height=48&width=48&query=flagpole accessory"}
+                      src={product.image || "/placeholder.svg?height=64&width=64&query=flagpole accessory"}
                       alt={product.title}
-                      width={48}
-                      height={48}
+                      width={64}
+                      height={64}
                       className="object-cover w-full h-full"
                     />
                   </div>
-                  <span className="text-sm font-semibold text-[#0B1C2C] group-hover:text-[#C8A55C] transition-colors flex-1">
-                    {product.title}
-                  </span>
-                  <Plus className="w-4 h-4 text-[#C8A55C]" />
+                  <div className="flex-1">
+                    <span className="text-sm font-bold text-[#0B1C2C] group-hover/item:text-[#C8A55C] transition-colors block mb-1">
+                      {product.title}
+                    </span>
+                    <span className="text-xs text-muted-foreground">View Details</span>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm group-hover/item:bg-[#C8A55C] transition-colors">
+                    <Plus className="w-4 h-4 text-[#C8A55C] group-hover/item:text-white" />
+                  </div>
                 </Link>
               ))}
             </div>
 
-            <Link href={`/products/${suggestion.products[0].handle}`}>
-              <Button className="w-full bg-[#C8A55C] hover:bg-[#a88947] text-white text-sm py-2">
+            <Link href={`/products/${suggestion.products[0].handle}`} className="block">
+              <Button className="w-full bg-[#0B1C2C] hover:bg-[#C8A55C] text-white text-sm py-6 font-bold rounded-xl transition-all shadow-lg hover:shadow-xl">
                 Add to Cart
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
