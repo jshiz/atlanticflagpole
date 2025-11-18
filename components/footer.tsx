@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import { Facebook, Instagram, Youtube } from "lucide-react"
+import { Facebook, Instagram, Youtube } from 'lucide-react'
 
 const PinterestIcon = () => (
   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -136,6 +136,17 @@ export function Footer() {
                     className="object-contain p-4"
                     sizes="(max-width: 768px) 50vw, 25vw"
                     loading="lazy"
+                  />
+                </div>
+              </div>
+              {/* Added safe checkout image to footer */}
+              <div className="mt-12 flex justify-center">
+                <div className="relative w-full max-w-md h-24">
+                  <Image
+                    src="/images/safecheckout.png"
+                    alt="Guaranteed Safe Checkout"
+                    fill
+                    className="object-contain"
                   />
                 </div>
               </div>

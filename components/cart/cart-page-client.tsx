@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import Image from "next/image"
 import Link from "next/link"
-import { Minus, Plus, Trash2, ShoppingBag, Package, Shield, Truck, Award, Zap, MapPin, Tag, X } from "lucide-react"
+import { Minus, Plus, Trash2, ShoppingBag, Package, Shield, Truck, Award, Zap, MapPin, Tag, X } from 'lucide-react'
 import { useState, useEffect, useCallback, useRef } from "react"
 import { getBundleConfig } from "@/lib/bundles/bundle-config"
-import { useRouter } from "next/navigation"
+import { useRouter } from 'next/navigation'
 import { useGeo } from "@/lib/geo/context"
 import type { ShopifyProduct } from "@/lib/shopify/types"
 import { ExpressCheckoutButtons } from "@/components/cart/express-checkout-buttons"
@@ -33,23 +33,15 @@ export function CartPageClient() {
   const router = useRouter()
   const { location, loading: geoLoading } = useGeo()
   const [geoProducts, setGeoProducts] = useState<ShopifyProduct[]>([])
-  const [addOnProducts, setAddOnProducts] = useState<ShopifyProduct[]>([])
-  const [savingsProducts, setSavingsProducts] = useState<ShopifyProduct[]>([])
-  const [loadingProducts, setLoadingProducts] = useState(true)
-  const [isUpdating, setIsUpdating] = useState(false)
-  const updateTimeoutRef = useRef<NodeJS.Timeout>()
   const [addingProducts, setAddingProducts] = useState<Set<string>>(new Set())
 
-  const [discountCode, setDiscountCode] = useState("")
-  const [appliedDiscount, setAppliedDiscount] = useState<string | null>(null)
-  const [discountError, setDiscountError] = useState<string | null>(null)
-  const [applyingDiscount, setApplyingDiscount] = useState(false)
+  const [isUpdating, setIsUpdating] = useState(false)
+  const updateTimeoutRef = useRef<NodeJS.Timeout>()
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const urlDiscount = params.get("discount")
     if (urlDiscount) {
-      setDiscountCode(urlDiscount.toUpperCase())
       // Auto-apply the discount code
       setTimeout(() => {
         const applyBtn = document.getElementById("apply-discount-btn")
@@ -118,63 +110,6 @@ export function CartPageClient() {
     [addToCart, addingProducts],
   )
 
-  const handleApplyDiscount = async () => {
-    if (!discountCode.trim() || !cart?.id) return
-
-    setApplyingDiscount(true)
-    setDiscountError(null)
-
-    try {
-      const response = await fetch("/api/cart/apply-discount", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          cartId: cart.id,
-          discountCode: discountCode.trim().toUpperCase(),
-        }),
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        setAppliedDiscount(discountCode.trim().toUpperCase())
-        setDiscountCode("")
-        // Refresh cart to show discount
-        window.location.reload()
-      } else {
-        setDiscountError(data.error || "Invalid discount code")
-      }
-    } catch (error) {
-      console.error("[v0] Error applying discount:", error)
-      setDiscountError("Failed to apply discount code")
-    } finally {
-      setApplyingDiscount(false)
-    }
-  }
-
-  const handleRemoveDiscount = async () => {
-    if (!cart?.id) return
-
-    setApplyingDiscount(true)
-
-    try {
-      const response = await fetch("/api/cart/remove-discount", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cartId: cart.id }),
-      })
-
-      if (response.ok) {
-        setAppliedDiscount(null)
-        window.location.reload()
-      }
-    } catch (error) {
-      console.error("[v0] Error removing discount:", error)
-    } finally {
-      setApplyingDiscount(false)
-    }
-  }
-
   useEffect(() => {
     return () => {
       if (updateTimeoutRef.current) {
@@ -207,57 +142,6 @@ export function CartPageClient() {
 
     fetchGeoProducts()
   }, [location])
-
-  useEffect(() => {
-    const fetchUpsellProducts = async () => {
-      try {
-        setLoadingProducts(true)
-
-        const [productsRes] = await Promise.all([fetch("/api/products?first=50")])
-
-        if (!productsRes.ok) {
-          throw new Error(`Failed to fetch products: ${productsRes.status}`)
-        }
-        const productsData = await productsRes.json()
-        console.log("[v0] Cart - fetched products for upsells:", productsData)
-
-        if (productsData.products && Array.isArray(productsData.products)) {
-          const accessories = productsData.products
-            .filter((p: ShopifyProduct) =>
-              p.tags.some(
-                (tag: string) =>
-                  tag.toLowerCase().includes("accessory") ||
-                  tag.toLowerCase().includes("mount") ||
-                  tag.toLowerCase().includes("hardware") ||
-                  tag.toLowerCase().includes("bracket"),
-              ),
-            )
-            .slice(0, 6)
-
-          const saleItems = productsData.products
-            .filter((p: ShopifyProduct) => {
-              const hasComparePrice =
-                p.compareAtPriceRange?.minVariantPrice?.amount &&
-                Number.parseFloat(p.compareAtPriceRange.minVariantPrice.amount) >
-                  Number.parseFloat(p.priceRange.minVariantPrice.amount)
-              return hasComparePrice
-            })
-            .slice(0, 4)
-
-          console.log("[v0] Cart - found", accessories.length, "accessories and", saleItems.length, "sale items")
-
-          setAddOnProducts(accessories)
-          setSavingsProducts(saleItems)
-        }
-      } catch (error) {
-        console.error("[v0] Cart - failed to fetch upsell products:", error)
-      } finally {
-        setLoadingProducts(false)
-      }
-    }
-
-    fetchUpsellProducts()
-  }, [])
 
   useEffect(() => {
     const fetchBundleComponentImages = async () => {
@@ -325,14 +209,6 @@ export function CartPageClient() {
 
   const subtotal = cart?.cost?.subtotalAmount ? Number.parseFloat(cart.cost.subtotalAmount.amount) : 0
   const total = cart?.cost?.totalAmount ? Number.parseFloat(cart.cost.totalAmount.amount) : 0
-
-  const potentialSavings = savingsProducts.reduce((sum, product) => {
-    const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
-    const compareAt = product.compareAtPriceRange?.minVariantPrice?.amount
-      ? Number.parseFloat(product.compareAtPriceRange.minVariantPrice.amount)
-      : price
-    return sum + (compareAt - price)
-  }, 0)
 
   if (isEmpty) {
     return (
@@ -611,201 +487,28 @@ export function CartPageClient() {
               </div>
             </Card>
           )}
-
-          {addOnProducts.length > 0 && (
-            <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Plus className="w-5 h-5 text-green-700" />
-                <h3 className="text-lg font-bold text-[#0B1C2C]">Complete Your Setup</h3>
-                <span className="ml-auto text-xs bg-green-600 text-white px-2 py-1 rounded-full font-semibold">
-                  Add-Ons
-                </span>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {addOnProducts.slice(0, 6).map((product) => {
-                  const isAdding = addingProducts.has(product.id)
-                  return (
-                    <div
-                      key={product.id}
-                      className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow"
-                    >
-                      <Link href={`/products/${product.handle}`} className="block">
-                        {product.featuredImage && (
-                          <div className="relative aspect-square mb-2 rounded overflow-hidden">
-                            <Image
-                              src={product.featuredImage.url || "/placeholder.svg"}
-                              alt={product.title}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        )}
-                        <p className="text-xs font-semibold text-[#0B1C2C] line-clamp-2 mb-1">{product.title}</p>
-                        <p className="text-sm font-bold text-[#C8A55C]">
-                          ${Number.parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}
-                        </p>
-                      </Link>
-                      <Button
-                        size="sm"
-                        className="w-full mt-2 bg-green-600 hover:bg-green-700 text-white text-xs py-1"
-                        onClick={() => handleQuickAdd(product)}
-                        disabled={isAdding}
-                      >
-                        {isAdding ? "Adding..." : "Quick Add"}
-                      </Button>
-                    </div>
-                  )
-                })}
-              </div>
-            </Card>
-          )}
-
-          {savingsProducts.length > 0 && (
-            <Card className="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200 p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Zap className="w-5 h-5 text-red-700" />
-                <h3 className="text-lg font-bold text-[#0B1C2C]">Last Minute Savings</h3>
-                <span className="ml-auto text-xs bg-red-600 text-white px-2 py-1 rounded-full font-semibold">
-                  Save ${potentialSavings.toFixed(0)}
-                </span>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {savingsProducts.map((product) => {
-                  const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
-                  const compareAt = product.compareAtPriceRange?.minVariantPrice?.amount
-                    ? Number.parseFloat(product.compareAtPriceRange.minVariantPrice.amount)
-                    : null
-                  const savings = compareAt ? compareAt - price : 0
-                  const isAdding = addingProducts.has(product.id)
-
-                  return (
-                    <div
-                      key={product.id}
-                      className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow relative"
-                    >
-                      {savings > 0 && (
-                        <div className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full font-bold z-10">
-                          Save ${savings.toFixed(0)}
-                        </div>
-                      )}
-                      <Link href={`/products/${product.handle}`} className="block">
-                        {product.featuredImage && (
-                          <div className="relative aspect-square mb-2 rounded overflow-hidden">
-                            <Image
-                              src={product.featuredImage.url || "/placeholder.svg"}
-                              alt={product.title}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        )}
-                        <p className="text-xs font-semibold text-[#0B1C2C] line-clamp-2 mb-1">{product.title}</p>
-                        <div className="flex items-center gap-2 mb-2">
-                          <p className="text-sm font-bold text-red-600">${price.toFixed(2)}</p>
-                          {compareAt && <p className="text-xs text-gray-500 line-through">${compareAt.toFixed(2)}</p>}
-                        </div>
-                      </Link>
-                      <Button
-                        size="sm"
-                        className="w-full bg-red-600 hover:bg-red-700 text-white text-xs py-1"
-                        onClick={() => handleQuickAdd(product)}
-                        disabled={isAdding}
-                      >
-                        {isAdding ? "Adding..." : "Add & Save"}
-                      </Button>
-                    </div>
-                  )
-                })}
-              </div>
-            </Card>
-          )}
         </div>
 
         {/* Order Summary - Sticky */}
         <div className="lg:col-span-1">
-          <Card className="p-6 sticky top-24 shadow-xl">
-            <h2 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-6">Order Summary</h2>
-
-            <div className="mb-6 pb-6 border-b border-gray-200">
-              <Label
-                htmlFor="discount-code"
-                className="flex items-center gap-2 text-sm font-semibold text-[#0B1C2C] mb-2"
-              >
-                <Tag className="w-4 h-4 text-[#C8A55C]" />
-                Discount Code
-              </Label>
-
-              {appliedDiscount ? (
-                <div className="flex items-center justify-between bg-green-50 border-2 border-green-200 rounded-lg p-3">
-                  <div className="flex items-center gap-2">
-                    <Tag className="w-4 h-4 text-green-600" />
-                    <span className="font-mono font-bold text-green-800">{appliedDiscount}</span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleRemoveDiscount}
-                    disabled={applyingDiscount}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <div className="flex gap-2">
-                    <Input
-                      id="discount-code"
-                      type="text"
-                      value={discountCode}
-                      onChange={(e) => {
-                        setDiscountCode(e.target.value.toUpperCase())
-                        setDiscountError(null)
-                      }}
-                      placeholder="Enter code"
-                      className="flex-1 font-mono"
-                      disabled={applyingDiscount}
-                    />
-                    <Button
-                      id="apply-discount-btn"
-                      onClick={handleApplyDiscount}
-                      disabled={!discountCode.trim() || applyingDiscount}
-                      className="bg-[#C8A55C] hover:bg-[#a88947] text-white"
-                    >
-                      {applyingDiscount ? "Applying..." : "Apply"}
-                    </Button>
-                  </div>
-                  {discountError && (
-                    <p className="text-xs text-red-600 flex items-center gap-1">
-                      <X className="w-3 h-3" />
-                      {discountError}
-                    </p>
-                  )}
-                  <p className="text-xs text-gray-600">
-                    Have a rewards code?{" "}
-                    <Link href="/account/rewards" className="text-[#C8A55C] hover:underline font-semibold">
-                      View your rewards
-                    </Link>
-                  </p>
-                </div>
-              )}
-            </div>
+          <Card className="p-6 sticky top-24 shadow-xl border-2 border-[#C8A55C]/20">
+            <h2 className="text-2xl font-serif font-bold text-[#0B1C2C] mb-6 text-center">Order Summary</h2>
 
             <div className="space-y-4 mb-6">
-              <div className="flex justify-between text-[#0B1C2C]">
+              <div className="flex justify-between text-[#0B1C2C] text-lg">
                 <span>
                   Subtotal ({lines.length} {lines.length === 1 ? "item" : "items"})
                 </span>
                 <span className="font-semibold">${subtotal.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-[#0B1C2C]/70">
+              <div className="flex justify-between text-[#0B1C2C]/70 text-lg">
                 <span className="flex items-center gap-1">
-                  <Truck className="w-4 h-4" />
+                  <Truck className="w-5 h-5" />
                   Shipping
                 </span>
-                <span className="font-semibold">Calculated at checkout</span>
+                <span className="font-semibold text-green-600">FREE</span>
               </div>
-              <div className="border-t-2 border-gray-200 pt-4 flex justify-between text-xl font-bold text-[#0B1C2C]">
+              <div className="border-t-2 border-gray-200 pt-4 flex justify-between text-2xl font-bold text-[#0B1C2C]">
                 <span>Total</span>
                 <span className="text-[#C8A55C]">${total.toFixed(2)}</span>
               </div>
@@ -816,24 +519,21 @@ export function CartPageClient() {
             <Button
               onClick={handleCheckout}
               size="lg"
-              className="w-full bg-[#C8A55C] hover:bg-[#a88947] text-white py-6 text-lg font-bold shadow-lg mt-3"
+              className="w-full bg-[#C8A55C] hover:bg-[#a88947] text-white py-8 text-xl font-bold shadow-[0_0_15px_rgba(200,165,92,0.5)] hover:shadow-[0_0_25px_rgba(200,165,92,0.7)] mt-4 transition-all transform hover:scale-[1.02]"
               disabled={isUpdating}
             >
-              Proceed to Checkout
+              PROCEED TO CHECKOUT
             </Button>
 
-            <div className="mt-6 pt-6 border-t border-gray-200 space-y-3">
-              <div className="flex items-center gap-3 text-sm text-gray-700">
-                <Shield className="w-5 h-5 text-green-600" />
-                <span>Secure SSL Encryption</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm text-gray-700">
-                <Award className="w-5 h-5 text-blue-600" />
-                <span>Lifetime Warranty</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm text-gray-700">
-                <Truck className="w-5 h-5 text-purple-600" />
-                <span>Fast Delivery</span>
+            {/* Safe Checkout Image */}
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="relative w-full h-24 md:h-32">
+                <Image
+                  src="/images/safecheckout.png"
+                  alt="Guaranteed Safe Checkout - McAfee, Norton, Visa, MasterCard, Amex, Discover, PayPal"
+                  fill
+                  className="object-contain"
+                />
               </div>
             </div>
           </Card>
