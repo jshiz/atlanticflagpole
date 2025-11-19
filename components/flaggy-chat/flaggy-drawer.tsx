@@ -30,9 +30,10 @@ interface ProductRecommendation {
 interface FlaggyDrawerProps {
   isOpen: boolean
   onClose: () => void
+  side?: "right" | "bottom"
 }
 
-export function FlaggyDrawer({ isOpen, onClose }: FlaggyDrawerProps) {
+export function FlaggyDrawer({ isOpen, onClose, side = "right" }: FlaggyDrawerProps) {
   const [message, setMessage] = useState("")
   const [messages, setMessages] = useState<Message[]>([])
   const [isThinking, setIsThinking] = useState(false)
@@ -200,8 +201,13 @@ export function FlaggyDrawer({ isOpen, onClose }: FlaggyDrawerProps) {
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent 
-        side="right" 
-        className="w-full sm:max-w-md p-0 border-l-2 border-[#C8A55C] bg-white overflow-hidden flex flex-col rounded-l-3xl"
+        side={side} 
+        className={cn(
+          "p-0 flex flex-col z-[90] bg-white shadow-2xl transition-all duration-500 ease-in-out",
+          side === "right" 
+            ? "w-full sm:max-w-md h-full border-l-4 border-[#C8A55C] rounded-l-3xl" 
+            : "w-full h-[85vh] mb-[56px] border-t-4 border-[#C8A55C] rounded-t-3xl"
+        )}
       >
         {/* Header */}
         <div className="bg-[#0B1C2C] text-white p-6 relative shrink-0">

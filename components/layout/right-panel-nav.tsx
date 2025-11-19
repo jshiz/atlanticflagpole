@@ -20,20 +20,44 @@ export function RightPanelNav() {
   const { cart } = useCart()
   const [activePanel, setActivePanel] = useState<ActivePanel>(null)
   const [mounted, setMounted] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     setMounted(true)
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
   const itemCount = (() => {
-    if (!cart?.lines?.edges || !Array.isArray(cart.lines.edges)) {
-      return 0
+    console.log("[v0] Cart structure:", { 
+      hasCart: !!cart, 
+      hasLines: !!cart?.lines,
+      linesType: cart?.lines ? typeof cart.lines : 'undefined',
+      hasEdges: !!cart?.lines?.edges,
+      edgesIsArray: Array.isArray(cart?.lines?.edges)
+    })
+    
+    if (!cart) return 0
+    
+    // Handle both direct array and edges structure
+    if (Array.isArray(cart.lines)) {
+      return cart.lines.reduce((total, line) => total + (line.quantity || 0), 0)
     }
-
-    return cart.lines.edges.reduce((total, edge) => {
-      return total + (edge?.node?.quantity || 0)
-    }, 0)
+    
+    if (cart.lines?.edges && Array.isArray(cart.lines.edges)) {
+      return cart.lines.edges.reduce((total, edge) => {
+        const quantity = edge?.node?.quantity || 0
+        console.log("[v0] Edge quantity:", quantity)
+        return total + quantity
+      }, 0)
+    }
+    
+    return 0
   })()
+  
+  console.log("[v0] Final cart item count:", itemCount)
 
   const handlePanelToggle = (panel: ActivePanel) => {
     setActivePanel(activePanel === panel ? null : panel)
@@ -47,13 +71,6 @@ export function RightPanelNav() {
       icon: MessageCircle,
       label: "Flaggy",
       color: "text-gray-300"
-    },
-    {
-      id: "cart" as const,
-      icon: ShoppingCart,
-      label: "Cart",
-      badge: itemCount,
-      color: "text-[#C8A55C]"
     },
     {
       id: "search" as const,
@@ -78,19 +95,44 @@ export function RightPanelNav() {
       icon: Globe,
       label: "Settings",
       color: "text-gray-300"
+    },
+    {
+      id: "cart" as const,
+      icon: ShoppingCart,
+      label: "Cart",
+      badge: itemCount,
+      color: "text-[#C8A55C]"
     }
   ]
 
+  const drawerSide = isMobile ? "bottom" : "right"
+
   return (
     <>
-      <CartDrawer isOpen={activePanel === "cart"} onClose={() => setActivePanel(null)} />
-      <SearchDrawer isOpen={activePanel === "search"} onClose={() => setActivePanel(null)} />
-      <PreferencesDrawer isOpen={activePanel === "preferences"} onClose={() => setActivePanel(null)} />
-      <FlaggyDrawer isOpen={activePanel === "flaggy"} onClose={() => setActivePanel(null)} />
-      <QuizDrawer isOpen={activePanel === "quiz"} onClose={() => setActivePanel(null)} />
-      <FinderDrawer isOpen={activePanel === "finder"} onClose={() => setActivePanel(null)} />
+      <CartDrawer isOpen={activePanel === "cart"} onClose={() => setActivePanel(null)} side={drawerSide} />
+      <SearchDrawer isOpen={activePanel === "search"} onClose={() => setActivePanel(null)} side={drawerSide} />
+      <PreferencesDrawer isOpen={activePanel === "preferences"} onClose={() => setActivePanel(null)} side={drawerSide} />
+      <FlaggyDrawer isOpen={activePanel === "flaggy"} onClose={() => setActivePanel(null)} side={drawerSide} />
+      <QuizDrawer isOpen={activePanel === "quiz"} onClose={() => setActivePanel(null)} side={drawerSide} />
+      <FinderDrawer isOpen={activePanel === "finder"} onClose={() => setActivePanel(null)} side={drawerSide} />
 
-      <div className="fixed right-0 top-1/2 -translate-y-1/2 z-[100] flex flex-col gap-1.5 bg-[#0B1C2C]/95 backdrop-blur-md border-2 border-r-0 border-[#C8A55C] rounded-l-2xl py-3 px-1.5 shadow-2xl shadow-black/20">
+      <div className={cn(
+        // Base (Mobile) - Docked Bottom Bar
+        "fixed bottom-0 left-0 right-0 z-[100]",
+        "flex flex-row items-center justify-around", 
+        "w-full",
+        "bg-[#0B1C2C] border-t border-[#C8A55C]",
+        "py-2 px-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]",
+        
+        // Desktop (md+) - Right Vertical Panel
+        "md:bottom-auto md:left-auto md:translate-x-0",
+        "md:right-0 md:top-1/2 md:-translate-y-1/2",
+        "md:flex-col md:gap-1.5 md:w-auto md:max-w-none",
+        "md:bg-[#0B1C2C]/95 md:backdrop-blur-md",
+        "md:rounded-l-2xl md:rounded-r-none md:rounded-bl-2xl md:rounded-tl-2xl",
+        "md:border-2 md:border-r-0 md:border-[#C8A55C]",
+        "md:py-3 md:px-1.5 md:shadow-2xl md:shadow-black/20"
+      )}>
         {navButtons.map((button) => {
           const Icon = button.icon
           const isActive = activePanel === button.id
@@ -100,27 +142,33 @@ export function RightPanelNav() {
               key={button.id}
               onClick={() => handlePanelToggle(button.id)}
               className={cn(
-                "relative w-10 h-10 md:w-11 md:h-11 rounded-xl flex items-center justify-center transition-all duration-300 group",
+                // Mobile: Slimmer buttons
+                "relative w-10 h-10 flex items-center justify-center transition-all duration-300 group",
+                // Desktop: Standard size
+                "md:w-11 md:h-11 md:rounded-xl",
                 isActive 
-                  ? "bg-gradient-to-br from-[#C8A55C] to-[#B69446] shadow-lg shadow-[#C8A55C]/30 scale-105" 
-                  : "hover:bg-white/10 hover:scale-105"
+                  ? "text-[#C8A55C] md:bg-gradient-to-br md:from-[#C8A55C] md:to-[#B69446] md:text-white md:shadow-lg md:shadow-[#C8A55C]/30 md:scale-105" 
+                  : "text-gray-400 hover:text-white md:hover:bg-white/10 md:hover:scale-105"
               )}
               aria-label={button.label}
             >
               <Icon className={cn(
-                "w-4 h-4 md:w-5 md:h-5 transition-all stroke-[2.5]",
-                isActive ? "text-white scale-110" : button.color,
+                "w-5 h-5 md:w-5 md:h-5 transition-all stroke-[2]",
+                isActive ? "scale-110" : button.color,
+                // Mobile active state: just color change, no background
+                isActive && "md:text-white",
                 !isActive && "group-hover:scale-110 group-hover:text-white"
               )} />
               
               {button.badge !== undefined && button.badge > 0 && (
-                <span className="absolute -top-2 -right-2 bg-gradient-to-br from-[#C8A55C] via-[#D4AF37] to-[#B69446] text-[#0B1C2C] text-[10px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#0B1C2C] shadow-lg shadow-[#C8A55C]/50 z-10 animate-in zoom-in duration-300">
+                <span className="absolute top-0 right-0 md:-top-2 md:-right-2 bg-gradient-to-br from-[#C8A55C] via-[#D4AF37] to-[#B69446] text-[#0B1C2C] text-[9px] md:text-[10px] font-extrabold w-3.5 h-3.5 md:w-5 md:h-5 rounded-full flex items-center justify-center border border-[#0B1C2C] md:border-2 shadow-lg shadow-[#C8A55C]/50 z-10 animate-in zoom-in duration-300">
                   {button.badge > 99 ? '99+' : button.badge}
                 </span>
               )}
               
+              {/* Tooltips hidden on mobile, shown on desktop */}
               <span className={cn(
-                "absolute right-full mr-3 bg-[#0B1C2C] text-white text-[10px] font-medium px-2 py-1 rounded-md opacity-0 transition-all duration-200 pointer-events-none whitespace-nowrap border border-[#C8A55C]/30 shadow-xl translate-x-2",
+                "hidden md:block absolute right-full mr-3 bg-[#0B1C2C] text-white text-[10px] font-medium px-2 py-1 rounded-md opacity-0 transition-all duration-200 pointer-events-none whitespace-nowrap border border-[#C8A55C]/30 shadow-xl translate-x-2",
                 "group-hover:opacity-100 group-hover:translate-x-0"
               )}>
                 {button.label}

@@ -3,7 +3,7 @@
 import type React from "react"
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
-import { ShoppingCart, MenuIcon, User } from "lucide-react"
+import { ShoppingCart, MenuIcon, User } from 'lucide-react'
 import { FlagpoleQuizModal } from "@/components/quiz/flagpole-quiz-modal"
 import Image from "next/image"
 import { useCart } from "@/components/cart/cart-context"
@@ -108,7 +108,7 @@ export function HeaderClient({
       />
 
       <header
-        className={`sticky top-0 z-[100] bg-white border-b border-gray-200 transition-all duration-300 ${
+        className={`sticky top-0 z-[90] bg-white border-b border-gray-200 transition-all duration-300 ${
           isScrolled ? "shadow-lg" : "shadow-sm"
         }`}
       >

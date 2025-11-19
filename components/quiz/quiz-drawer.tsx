@@ -64,9 +64,10 @@ const quizQuestions: QuizQuestion[] = [
 interface QuizDrawerProps {
   isOpen: boolean
   onClose: () => void
+  side?: "right" | "bottom"
 }
 
-export function QuizDrawer({ isOpen, onClose }: QuizDrawerProps) {
+export function QuizDrawer({ isOpen, onClose, side = "right" }: QuizDrawerProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [showResult, setShowResult] = useState(false)
@@ -126,8 +127,13 @@ export function QuizDrawer({ isOpen, onClose }: QuizDrawerProps) {
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent 
-        side="right" 
-        className="w-full sm:max-w-md p-0 border-l-2 border-[#C8A55C] bg-[#F4F1E8] overflow-hidden flex flex-col rounded-l-3xl"
+        side={side} 
+        className={cn(
+          "p-0 flex flex-col z-[90] bg-[#F4F1E8] shadow-2xl transition-all duration-500 ease-in-out",
+          side === "right" 
+            ? "w-full sm:max-w-md h-full border-l-4 border-[#C8A55C] rounded-l-3xl" 
+            : "w-full h-[85vh] mb-[56px] border-t-4 border-[#C8A55C] rounded-t-3xl"
+        )}
       >
         {/* Header */}
         <div className="bg-[#0B1C2C] text-white p-4 relative shrink-0">
@@ -172,30 +178,29 @@ export function QuizDrawer({ isOpen, onClose }: QuizDrawerProps) {
               </div>
             </div>
           ) : (
-            <div className="p-5 space-y-5">
+            <div className="p-4 space-y-4">
               {/* Question Image */}
-              <div className="relative w-full aspect-video rounded-xl overflow-hidden border-2 border-[#C8A55C]/30 shadow-md bg-gradient-to-br from-[#0B1C2C] via-[#1a2d3f] to-[#0B1C2C]">
+              <div className="relative w-full aspect-[16/9] md:aspect-video rounded-xl overflow-hidden border-2 border-[#C8A55C]/30 shadow-md bg-gradient-to-br from-[#0B1C2C] via-[#1a2d3f] to-[#0B1C2C]">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center space-y-2">
-                    <HelpCircle className="w-16 h-16 mx-auto text-[#C8A55C] opacity-90" />
-                    <p className="text-white/80 text-sm font-medium">Question {currentQuestion + 1}</p>
+                    <HelpCircle className="w-12 h-12 md:w-16 md:h-16 mx-auto text-[#C8A55C] opacity-90" />
+                    <p className="text-white/80 text-xs md:text-sm font-medium">Question {currentQuestion + 1}</p>
                   </div>
                 </div>
-                {/* Decorative pattern */}
                 <div className="absolute inset-0 opacity-10">
-                  <div className="absolute top-4 left-4 w-20 h-20 border-4 border-[#C8A55C] rounded-full"></div>
-                  <div className="absolute bottom-4 right-4 w-16 h-16 border-4 border-[#C8A55C] rounded-full"></div>
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-4 border-[#C8A55C] rounded-full"></div>
+                  <div className="absolute top-4 left-4 w-16 h-16 md:w-20 md:h-20 border-4 border-[#C8A55C] rounded-full"></div>
+                  <div className="absolute bottom-4 right-4 w-12 h-12 md:w-16 md:h-16 border-4 border-[#C8A55C] rounded-full"></div>
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 md:w-32 md:h-32 border-4 border-[#C8A55C] rounded-full"></div>
                 </div>
               </div>
 
               {/* Question Text */}
-              <h3 className="text-lg font-serif font-bold text-[#0B1C2C] leading-tight">
+              <h3 className="text-base md:text-lg font-serif font-bold text-[#0B1C2C] leading-tight">
                 {question.question}
               </h3>
 
               {/* Options */}
-              <div className="space-y-2.5">
+              <div className="space-y-2">
                 {question.options.map((option, index) => {
                   const isSelected = selectedAnswer === index
                   const isCorrect = index === question.correctAnswer
@@ -208,7 +213,7 @@ export function QuizDrawer({ isOpen, onClose }: QuizDrawerProps) {
                       onClick={() => !showResult && handleAnswerSelect(index)}
                       disabled={showResult}
                       className={cn(
-                        "w-full text-left p-3.5 rounded-xl border-2 transition-all duration-300 relative overflow-hidden group",
+                        "w-full text-left p-3 rounded-xl border-2 transition-all duration-300 relative overflow-hidden group",
                         showCorrect
                           ? "border-green-600 bg-green-50"
                           : showIncorrect
@@ -225,8 +230,8 @@ export function QuizDrawer({ isOpen, onClose }: QuizDrawerProps) {
                         )}>
                           {option}
                         </span>
-                        {showCorrect && <span className="text-green-600 font-bold text-xs bg-white/80 px-2 py-0.5 rounded-full">✓ Correct</span>}
-                        {showIncorrect && <span className="text-red-500 font-bold text-xs bg-white/80 px-2 py-0.5 rounded-full">✗ Incorrect</span>}
+                        {showCorrect && <span className="text-green-600 font-bold text-xs bg-white/80 px-2 py-0.5 rounded-full">✓</span>}
+                        {showIncorrect && <span className="text-red-500 font-bold text-xs bg-white/80 px-2 py-0.5 rounded-full">✗</span>}
                       </div>
                     </button>
                   )
@@ -234,25 +239,25 @@ export function QuizDrawer({ isOpen, onClose }: QuizDrawerProps) {
               </div>
 
               {/* Fun Fact / Next Button */}
-              <div className="min-h-[100px]">
+              <div className="min-h-[80px]">
                 {showResult ? (
-                  <div className="bg-[#0B1C2C]/5 border-l-4 border-[#0B1C2C] p-4 rounded-r-xl animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    <p className="text-xs font-bold text-[#C8A55C] uppercase tracking-wider mb-1">Did you know?</p>
-                    <p className="text-sm text-[#0B1C2C] leading-relaxed">{question.funFact}</p>
+                  <div className="bg-[#0B1C2C]/5 border-l-4 border-[#0B1C2C] p-3 rounded-r-xl animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <p className="text-[10px] font-bold text-[#C8A55C] uppercase tracking-wider mb-1">Did you know?</p>
+                    <p className="text-xs text-[#0B1C2C] leading-relaxed">{question.funFact}</p>
                   </div>
                 ) : (
                   <Button
                     onClick={handleNext}
                     disabled={selectedAnswer === null}
                     className={cn(
-                      "w-full py-6 text-base font-bold shadow-lg transition-all duration-300",
+                      "w-full py-5 text-sm font-bold shadow-lg transition-all duration-300",
                       selectedAnswer !== null
                         ? "bg-[#C8A55C] hover:bg-[#B69446] text-[#0B1C2C] translate-y-0 opacity-100"
                         : "bg-gray-200 text-gray-400 translate-y-2 opacity-0 pointer-events-none"
                     )}
                   >
                     {currentQuestion === quizQuestions.length - 1 ? "Finish Quiz" : "Next Question"}
-                    <ChevronRight className="ml-2 w-5 h-5" />
+                    <ChevronRight className="ml-2 w-4 h-4" />
                   </Button>
                 )}
               </div>

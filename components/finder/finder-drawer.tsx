@@ -9,9 +9,10 @@ import Link from "next/link"
 interface FinderDrawerProps {
   isOpen: boolean
   onClose: () => void
+  side?: "right" | "bottom"
 }
 
-export function FinderDrawer({ isOpen, onClose }: FinderDrawerProps) {
+export function FinderDrawer({ isOpen, onClose, side = "right" }: FinderDrawerProps) {
   const [height, setHeight] = useState<string>("")
   const [location, setLocation] = useState<"residential" | "commercial" | null>(null)
 
@@ -25,10 +26,18 @@ export function FinderDrawer({ isOpen, onClose }: FinderDrawerProps) {
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent 
-        side="right" 
-        className="w-[90vw] max-w-md h-full p-0 flex flex-col border-l-4 border-[#C8A55C] z-[200] rounded-l-3xl"
+        side={side} 
+        className={cn(
+          "p-0 flex flex-col z-[90] bg-white shadow-2xl transition-all duration-500 ease-in-out",
+          side === "right" 
+            ? "w-[90vw] max-w-md h-full border-l-4 border-[#C8A55C] rounded-l-3xl" 
+            : "w-full h-[85vh] mb-[56px] border-t-4 border-[#C8A55C] rounded-t-3xl rounded-b-none"
+        )}
       >
-        <SheetHeader className="p-4 bg-[#0B1C2C] text-white shrink-0 rounded-tl-3xl border-b-2 border-[#C8A55C]/30">
+        <SheetHeader className={cn(
+          "p-4 bg-[#0B1C2C] text-white shrink-0 border-b-2 border-[#C8A55C]/30",
+          side === "right" ? "rounded-tl-3xl" : "rounded-t-3xl"
+        )}>
           <div className="flex items-center justify-between">
             <SheetTitle className="text-white flex items-center gap-2 text-lg font-bold">
               <Compass className="w-5 h-5 text-[#C8A55C]" />
