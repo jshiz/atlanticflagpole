@@ -122,7 +122,6 @@ export default function RootLayout({
               {children}
             </main>
             <LazyFooter />
-            {/* Replaced StickyFooterUnified with RightPanelNav */}
             <RightPanelNav />
           </GeoProvider>
         </CartProvider>
