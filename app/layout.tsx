@@ -6,7 +6,6 @@ import { Suspense } from "react"
 import { Header } from "@/components/header"
 import { HeaderSkeleton } from "@/components/header-skeleton"
 import { LazyFooter } from "@/components/ui/lazy-footer"
-import { FlaggyChatWidget } from "@/components/flaggy-chat/flaggy-chat-widget"
 import { CartProvider } from "@/components/cart/cart-context"
 import { JudgeMePlatformScript } from "@/components/judgeme/judgeme-platform-script"
 import { PhoenixHomeTrialBar } from "@/components/phoenix-home-trial-bar"
@@ -14,7 +13,7 @@ import { GeoProvider } from "@/lib/geo/context"
 import { Toaster } from "@/components/ui/toaster"
 import { CookieConsentBanner } from "@/components/cookie-consent/cookie-consent-banner"
 import { FloatingActionMenu } from "@/components/floating-action-menu/floating-action-menu"
-import { StickyFooterUnified } from "@/components/layout/sticky-footer-unified"
+import { RightPanelNav } from "@/components/layout/right-panel-nav"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -123,8 +122,8 @@ export default function RootLayout({
               {children}
             </main>
             <LazyFooter />
-            {/* Replaced individual components with Unified Footer */}
-            <StickyFooterUnified />
+            {/* Replaced StickyFooterUnified with RightPanelNav */}
+            <RightPanelNav />
           </GeoProvider>
         </CartProvider>
         <JudgeMePlatformScript />
