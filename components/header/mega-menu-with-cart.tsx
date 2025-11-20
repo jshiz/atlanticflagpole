@@ -86,7 +86,7 @@ function QuickAddButton({ product }: { product: Product }) {
   const [added, setAdded] = useState(false)
 
   const defaultVariant = product.variants?.edges?.[0]?.node
-  const isAvailable = defaultVariant?.availableForSale
+  const isAvailable = defaultVariant?.availableForSale ?? product.availableForSale ?? true
 
   const handleQuickAdd = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -104,6 +104,7 @@ function QuickAddButton({ product }: { product: Product }) {
   }
 
   if (!defaultVariant) {
+    console.log("[v0] ⚠️ Product missing variant:", product.title, product.id)
     return (
       <Button size="sm" variant="outline" disabled className="w-full text-xs bg-transparent h-10 px-4">
         Unavailable
@@ -150,13 +151,21 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
 
   useEffect(() => {
     console.log(`[v0] 🔍 MegaMenuWithCart received ${featuredProducts.length} products for "${title}"`)
+    console.log(
+      `[v0] 🔍 First product structure:`,
+      featuredProducts[0]
+        ? {
+            id: featuredProducts[0].id,
+            title: featuredProducts[0].title,
+            hasVariants: !!featuredProducts[0].variants,
+            variantsEdges: featuredProducts[0].variants?.edges?.length,
+          }
+        : "No products",
+    )
 
-    const activeProducts = featuredProducts.filter((p) => {
-      const hasVariant = p.variants?.edges?.[0]?.node
-      return hasVariant // Remove availability check to show all products
-    })
+    const activeProducts = featuredProducts.filter((p) => p && p.id)
 
-    console.log(`[v0] ✅ Filtered to ${activeProducts.length} available products for "${title}"`)
+    console.log(`[v0] ✅ Showing ${activeProducts.length} products for "${title}"`)
 
     const shuffled = shuffleArray(activeProducts)
     setDisplayProducts(shuffled.slice(0, 5))

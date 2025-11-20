@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { X, Send, ShoppingCart, Star } from 'lucide-react'
+import { X, Send, ShoppingCart, Star } from "lucide-react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 
@@ -150,15 +150,11 @@ export function FlaggyContent({ onClose }: FlaggyContentProps) {
         setTicketForm({ name: "", email: "", issue: "" })
         setShowSuggestions(true)
       } else {
-        addFlaggyMessage(
-          "I had trouble creating the ticket. Please email us directly at support@atlanticflagpole.com.",
-        )
+        addFlaggyMessage("I had trouble creating the ticket. Please email us directly at support@atlanticflagpole.com.")
       }
     } catch (error) {
       console.error("Error creating ticket:", error)
-      addFlaggyMessage(
-        "I had trouble creating the ticket. Please email us directly at support@atlanticflagpole.com.",
-      )
+      addFlaggyMessage("I had trouble creating the ticket. Please email us directly at support@atlanticflagpole.com.")
     }
   }
 
@@ -198,42 +194,33 @@ export function FlaggyContent({ onClose }: FlaggyContentProps) {
   return (
     <div className="flex flex-col h-full w-full bg-white">
       {/* Header */}
-      <div className="bg-[#0B1C2C] text-white p-6 relative shrink-0">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="relative w-16 h-16 bg-gradient-to-br from-[#C8A55C] to-[#B8954C] rounded-full p-1 shadow-lg transform hover:scale-105 transition-transform duration-300">
-              <div className="relative w-full h-full bg-white rounded-full p-1 overflow-hidden">
+      <div className="bg-[#0B1C2C] text-white p-2.5 shrink-0 border-b-2 border-[#C8A55C]/30">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2 text-sm font-bold">
+            <div className="relative w-4 h-4 bg-gradient-to-br from-[#C8A55C] to-[#B8954C] rounded-full flex items-center justify-center">
+              <div className="relative w-full h-full bg-white rounded-full overflow-hidden">
                 <Image src="/images/design-mode/Flaggy.png" alt="Flaggy" fill className="object-cover" />
               </div>
-              <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-white rounded-full z-10"></div>
             </div>
-            <div>
-              <h3 className="text-white font-serif text-2xl">Flaggy</h3>
-              <p className="text-sm text-gray-300 flex items-center gap-2">
-                AI Assistant
-              </p>
-            </div>
+            Flaggy AI
           </div>
-          <button 
+          <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors bg-white/10 p-2 rounded-full hover:bg-white/20"
+            className="text-white hover:text-[#C8A55C] transition-colors p-1 hover:bg-white/10 rounded-lg"
           >
-            <X className="w-5 h-5" />
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
       {/* Chat Body */}
-      <div className="flex-1 p-4 overflow-y-auto bg-gradient-to-b from-gray-50 to-white overscroll-contain touch-pan-y">
+      <div className="flex-1 p-2.5 overflow-y-auto bg-gradient-to-b from-gray-50 to-white overscroll-contain touch-pan-y">
         {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={cn("mb-4 flex", msg.sender === "user" ? "justify-end" : "justify-start")}
-          >
+          <div key={msg.id} className={cn("mb-4 flex", msg.sender === "user" ? "justify-end" : "justify-start")}>
             <div className={cn("max-w-[80%]", msg.sender === "user" ? "order-2" : "order-1")}>
               {msg.sender === "flaggy" && (
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="relative w-5 h-5">
+                  <div className="relative w-12 h-12">
                     <Image src="/images/design-mode/Flaggy.png" alt="Flaggy" fill className="object-contain" />
                   </div>
                   <span className="text-xs font-semibold text-gray-600">Flaggy</span>
@@ -244,7 +231,7 @@ export function FlaggyContent({ onClose }: FlaggyContentProps) {
                   "rounded-2xl p-3 shadow-sm text-sm",
                   msg.sender === "user"
                     ? "bg-[#C8A55C] text-white rounded-tr-none"
-                    : "bg-white border border-gray-200 rounded-tl-none"
+                    : "bg-white border border-gray-200 rounded-tl-none",
                 )}
               >
                 <p className={cn("whitespace-pre-line", msg.sender === "user" ? "text-white" : "text-gray-800")}>
@@ -273,9 +260,7 @@ export function FlaggyContent({ onClose }: FlaggyContentProps) {
 
                     <div className="flex-1 flex flex-col justify-between min-w-0">
                       <div>
-                        <h4 className="font-bold text-xs text-gray-900 mb-1 line-clamp-2">
-                          {msg.product.title}
-                        </h4>
+                        <h4 className="font-bold text-xs text-gray-900 mb-1 line-clamp-2">{msg.product.title}</h4>
                         <div className="flex items-center gap-1 mb-1">
                           {[...Array(5)].map((_, i) => (
                             <Star
@@ -284,7 +269,7 @@ export function FlaggyContent({ onClose }: FlaggyContentProps) {
                                 "w-2.5 h-2.5",
                                 i < Math.floor(msg.product!.rating)
                                   ? "fill-[#C8A55C] text-[#C8A55C]"
-                                  : "fill-gray-200 text-gray-200"
+                                  : "fill-gray-200 text-gray-200",
                               )}
                             />
                           ))}
@@ -319,9 +304,18 @@ export function FlaggyContent({ onClose }: FlaggyContentProps) {
           <div className="mb-4 flex justify-start">
             <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-none p-3 shadow-sm">
               <div className="flex gap-1">
-                <div className="w-2 h-2 bg-[#C8A55C] rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
-                <div className="w-2 h-2 bg-[#C8A55C] rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
-                <div className="w-2 h-2 bg-[#C8A55C] rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
+                <div
+                  className="w-2 h-2 bg-[#C8A55C] rounded-full animate-bounce"
+                  style={{ animationDelay: "0ms" }}
+                ></div>
+                <div
+                  className="w-2 h-2 bg-[#C8A55C] rounded-full animate-bounce"
+                  style={{ animationDelay: "150ms" }}
+                ></div>
+                <div
+                  className="w-2 h-2 bg-[#C8A55C] rounded-full animate-bounce"
+                  style={{ animationDelay: "300ms" }}
+                ></div>
               </div>
             </div>
           </div>
@@ -386,7 +380,7 @@ export function FlaggyContent({ onClose }: FlaggyContentProps) {
       </div>
 
       {/* Chat Input */}
-      <div className="p-4 border-t-2 border-gray-200 bg-white shrink-0">
+      <div className="p-2.5 border-t-2 border-gray-200 bg-white shrink-0">
         <div className="flex gap-2">
           <input
             type="text"

@@ -1,6 +1,6 @@
 import { getMenu } from "@/lib/menus"
 import { getCollectionWithProducts } from "@/lib/shopify/catalog"
-import { getProducts } from "@/lib/shopify"
+import { getProducts, getProduct } from "@/lib/shopify"
 import { getCached, setCache } from "@/lib/cache"
 import { JudgemeBadge } from "@/components/judgeme/judgeme-badge"
 import { navigationConfig, singleNavItems } from "@/lib/navigation-config"
@@ -65,17 +65,26 @@ export async function Header() {
     console.log("[v0] 🔄 Fetching fresh header data...")
     const startTime = Date.now()
 
-    const [menuData, nflFlagProducts, christmasTreeProducts, holidayProducts, partsProducts] = await Promise.all([
-      getMenu("main-menu-new"),
-      getProducts({ first: 12, query: "tag:nfl-flags" }).catch(() => []),
-      getProducts({ first: 8, query: "tag:Christmas Tree" }).catch(() => []),
-      getProducts({ first: 8, query: "tag:holiday OR tag:seasonal OR tag:christmas" }).catch(() => []),
-      getProducts({ first: 8, query: "tag:phoenix OR tag:parts OR tag:accessories" }).catch(() => []),
-    ])
+    const featuredHolidayHandles = [
+      "patriot-glo-4000-led-flagpole-christmas-tree-30-43",
+      "phoenix-flagpole-christmas-tree-light-kit-for-20-25-poles",
+      "american-flag-lights-420led-outdoor-waterproof-red-white-and-blue-led-american-flag-net-light-of-the-united-states-for-memorial-day-independence-day-national-day-veterans-day-decorplug-in",
+    ]
+
+    const [menuData, nflFlagProducts, christmasTreeProducts, featuredHolidayProducts, partsProducts] =
+      await Promise.all([
+        getMenu("main-menu-new"),
+        getProducts({ first: 12, query: "tag:nfl-flags" }).catch(() => []),
+        getProducts({ first: 8, query: "tag:Christmas Tree" }).catch(() => []),
+        Promise.all(featuredHolidayHandles.map((handle) => getProduct(handle).catch(() => null))).then((products) =>
+          products.filter((p) => p !== null),
+        ),
+        getProducts({ first: 8, query: "tag:phoenix OR tag:parts OR tag:accessories" }).catch(() => []),
+      ])
 
     console.log(`[v0] ✅ Found ${nflFlagProducts?.length || 0} NFL flag products`)
     console.log(`[v0] ✅ Found ${christmasTreeProducts?.length || 0} Christmas tree products`)
-    console.log(`[v0] ✅ Found ${holidayProducts?.length || 0} holiday products`)
+    console.log(`[v0] ✅ Found ${featuredHolidayProducts?.length || 0} featured holiday products`)
     console.log(`[v0] ✅ Found ${partsProducts?.length || 0} parts products`)
 
     const megaMenuData: Record<string, any> = {}
@@ -91,11 +100,13 @@ export async function Header() {
         }
 
         if (title.includes("holiday") && title.includes("seasonal")) {
-          if (holidayProducts && holidayProducts.length > 0) {
+          if (featuredHolidayProducts && featuredHolidayProducts.length > 0) {
             megaMenuData[item.id] = {
-              products: { nodes: holidayProducts },
+              products: { nodes: featuredHolidayProducts },
             }
-            console.log(`[v0] ✅ Added ${holidayProducts.length} holiday products for "${item.title}" menu`)
+            console.log(
+              `[v0] ✅ Added ${featuredHolidayProducts.length} featured holiday products for "${item.title}" menu`,
+            )
           }
           continue
         }
@@ -139,7 +150,7 @@ export async function Header() {
       submenuProductsData,
       nflFlagProducts: nflFlagProducts || [],
       christmasTreeProducts: christmasTreeProducts || [],
-      holidayProducts: holidayProducts || [],
+      holidayProducts: featuredHolidayProducts || [],
       partsProducts: partsProducts || [],
     }
     setCache(cacheKey, headerData, 21600000)

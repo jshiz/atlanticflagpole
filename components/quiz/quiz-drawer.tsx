@@ -1,11 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTitle, SheetClose } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { SpinWheel } from "./spin-wheel"
-import { X, ChevronRight, HelpCircle, Trophy } from 'lucide-react'
+import { X, ChevronRight, HelpCircle, Trophy } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface QuizQuestion {
@@ -61,6 +61,14 @@ const quizQuestions: QuizQuestion[] = [
   },
 ]
 
+const quizImages = [
+  "/images/customer-photos/customer1.jpg",
+  "/images/customer-photos/customer2.jpg",
+  "/images/customer-photos/customer3.jpg",
+  "/images/customer-photos/customer4.jpg",
+  "/images/customer-photos/customer5.jpg",
+]
+
 interface QuizDrawerProps {
   isOpen: boolean
   onClose: () => void
@@ -78,7 +86,7 @@ export function QuizDrawer({ isOpen, onClose, side = "right" }: QuizDrawerProps)
   // Reset quiz when drawer opens if it was finished
   useEffect(() => {
     if (isOpen && showWheel) {
-      // Optional: keep state or reset. Let's keep state unless explicitly reset by user action usually, 
+      // Optional: keep state or reset. Let's keep state unless explicitly reset by user action usually,
       // but for a drawer feel, maybe nice to see where you left off.
     }
   }, [isOpen, showWheel])
@@ -126,15 +134,15 @@ export function QuizDrawer({ isOpen, onClose, side = "right" }: QuizDrawerProps)
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent 
-        side={side} 
+      <SheetContent
+        side={side}
         className={cn(
           "p-0 flex flex-col z-[90] bg-[#F4F1E8] shadow-2xl transition-all duration-500 ease-in-out",
-          side === "right" 
-            ? "w-full sm:max-w-md h-full border-l-4 border-[#C8A55C] rounded-l-3xl" 
-            : "h-[60vh] max-h-[500px] bottom-[52px] border-t-4 border-[#C8A55C] rounded-t-3xl rounded-b-none overflow-hidden",
+          side === "right"
+            ? "w-full sm:max-w-md h-full border-l-4 border-[#C8A55C] rounded-l-3xl"
+            : "h-[55vh] max-h-[450px] bottom-[52px] border-t-4 border-[#C8A55C] rounded-t-3xl rounded-b-none overflow-hidden",
           // Mobile: full width, Desktop: centered and narrower
-          side === "bottom" && "w-full md:w-[500px] md:left-1/2 md:-translate-x-1/2"
+          side === "bottom" && "w-full md:w-[500px] md:left-1/2 md:-translate-x-1/2",
         )}
       >
         {/* Header */}
@@ -150,11 +158,13 @@ export function QuizDrawer({ isOpen, onClose, side = "right" }: QuizDrawerProps)
               <X className="w-4 h-4" />
             </SheetClose>
           </div>
-          
+
           {!showWheel && (
             <div className="space-y-1.5">
               <div className="flex justify-between text-[10px] text-gray-300">
-                <span>Question {currentQuestion + 1} of {quizQuestions.length}</span>
+                <span>
+                  Question {currentQuestion + 1} of {quizQuestions.length}
+                </span>
                 <span className="text-[#C8A55C] font-bold flex items-center gap-1">
                   <Trophy className="w-3 h-3" /> Score: {score}
                 </span>
@@ -170,10 +180,10 @@ export function QuizDrawer({ isOpen, onClose, side = "right" }: QuizDrawerProps)
             <div className="h-full flex flex-col">
               <SpinWheel score={score} totalQuestions={quizQuestions.length} onClose={onClose} />
               <div className="p-4 text-center">
-                <Button 
+                <Button
                   onClick={resetQuiz}
-                  variant="outline" 
-                  className="border-[#0B1C2C] text-[#0B1C2C] hover:bg-[#0B1C2C] hover:text-white text-xs h-9"
+                  variant="outline"
+                  className="border-[#0B1C2C] text-[#0B1C2C] hover:bg-[#0B1C2C] hover:text-white text-xs h-9 bg-transparent"
                 >
                   Play Again
                 </Button>
@@ -181,25 +191,16 @@ export function QuizDrawer({ isOpen, onClose, side = "right" }: QuizDrawerProps)
             </div>
           ) : (
             <div className="p-3 space-y-3">
-              {/* Question Image */}
-              <div className="relative w-full aspect-video rounded-xl overflow-hidden border-2 border-[#C8A55C]/30 shadow-md bg-gradient-to-br from-[#0B1C2C] via-[#1a2d3f] to-[#0B1C2C]">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center space-y-1.5">
-                    <HelpCircle className="w-10 h-10 mx-auto text-[#C8A55C] opacity-90" />
-                    <p className="text-white/80 text-xs font-medium">Question {currentQuestion + 1}</p>
-                  </div>
-                </div>
-                <div className="absolute inset-0 opacity-10">
-                  <div className="absolute top-3 left-3 w-14 h-14 border-4 border-[#C8A55C] rounded-full"></div>
-                  <div className="absolute bottom-3 right-3 w-10 h-10 border-4 border-[#C8A55C] rounded-full"></div>
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 border-4 border-[#C8A55C] rounded-full"></div>
-                </div>
+              <div className="relative w-full aspect-video rounded-xl overflow-hidden border-2 border-[#C8A55C]/30 shadow-md">
+                <img
+                  src={quizImages[currentQuestion] || "/placeholder.svg"}
+                  alt={`Quiz question ${currentQuestion + 1}`}
+                  className="w-full h-full object-cover"
+                />
               </div>
 
               {/* Question Text */}
-              <h3 className="text-sm font-serif font-bold text-[#0B1C2C] leading-tight">
-                {question.question}
-              </h3>
+              <h3 className="text-sm font-serif font-bold text-[#0B1C2C] leading-tight">{question.question}</h3>
 
               {/* Options */}
               <div className="space-y-1.5">
@@ -222,18 +223,28 @@ export function QuizDrawer({ isOpen, onClose, side = "right" }: QuizDrawerProps)
                             ? "border-red-500 bg-red-50"
                             : isSelected
                               ? "border-[#C8A55C] bg-[#C8A55C]/10"
-                              : "border-gray-200 bg-white hover:border-[#C8A55C]/50 hover:bg-gray-50"
+                              : "border-gray-200 bg-white hover:border-[#C8A55C]/50 hover:bg-gray-50",
                       )}
                     >
                       <div className="flex items-center justify-between relative z-10">
-                        <span className={cn(
-                          "font-medium text-xs",
-                          showCorrect ? "text-green-800" : showIncorrect ? "text-red-800" : "text-gray-700"
-                        )}>
+                        <span
+                          className={cn(
+                            "font-medium text-xs",
+                            showCorrect ? "text-green-800" : showIncorrect ? "text-red-800" : "text-gray-700",
+                          )}
+                        >
                           {option}
                         </span>
-                        {showCorrect && <span className="text-green-600 font-bold text-[10px] bg-white/80 px-1.5 py-0.5 rounded-full">✓</span>}
-                        {showIncorrect && <span className="text-red-500 font-bold text-[10px] bg-white/80 px-1.5 py-0.5 rounded-full">✗</span>}
+                        {showCorrect && (
+                          <span className="text-green-600 font-bold text-[10px] bg-white/80 px-1.5 py-0.5 rounded-full">
+                            ✓
+                          </span>
+                        )}
+                        {showIncorrect && (
+                          <span className="text-red-500 font-bold text-[10px] bg-white/80 px-1.5 py-0.5 rounded-full">
+                            ✗
+                          </span>
+                        )}
                       </div>
                     </button>
                   )
@@ -255,7 +266,7 @@ export function QuizDrawer({ isOpen, onClose, side = "right" }: QuizDrawerProps)
                       "w-full py-3 text-xs font-bold shadow-lg transition-all duration-300 rounded-xl",
                       selectedAnswer !== null
                         ? "bg-[#C8A55C] hover:bg-[#B69446] text-[#0B1C2C] translate-y-0 opacity-100"
-                        : "bg-gray-200 text-gray-400 translate-y-2 opacity-0 pointer-events-none"
+                        : "bg-gray-200 text-gray-400 translate-y-2 opacity-0 pointer-events-none",
                     )}
                   >
                     {currentQuestion === quizQuestions.length - 1 ? "Finish Quiz" : "Next Question"}
@@ -327,31 +338,31 @@ export function QuizContent({ onClose }: QuizContentProps) {
   return (
     <div className="flex flex-col h-full w-full bg-[#F4F1E8]">
       {/* Header */}
-      <div className="bg-[#0B1C2C] text-white p-3 relative shrink-0">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="p-1 bg-[#C8A55C]/20 rounded-lg">
-              <HelpCircle className="w-4 h-4 text-[#C8A55C]" />
-            </div>
-            <h3 className="text-white font-serif text-base">Flagpole Quiz</h3>
+      <div className="bg-[#0B1C2C] text-white p-2.5 relative shrink-0 border-b-2 border-[#C8A55C]/30">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2 text-sm font-bold">
+            <HelpCircle className="w-4 h-4 text-[#C8A55C]" />
+            Flagpole Quiz
           </div>
-          <button 
+          <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-white hover:text-[#C8A55C] transition-colors p-1 hover:bg-white/10 rounded-lg"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
-        
+
         {!showWheel && (
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-[10px] text-gray-300">
-              <span>Question {currentQuestion + 1} of {quizQuestions.length}</span>
+          <div className="space-y-1">
+            <div className="flex justify-between text-[9px] text-gray-300">
+              <span>
+                {currentQuestion + 1}/{quizQuestions.length}
+              </span>
               <span className="text-[#C8A55C] font-bold flex items-center gap-1">
-                <Trophy className="w-3 h-3" /> Score: {score}
+                <Trophy className="w-2.5 h-2.5" /> {score}
               </span>
             </div>
-            <Progress value={progress} className="h-1 bg-white/10 [&>div]:bg-[#C8A55C]" />
+            <Progress value={progress} className="h-0.5 bg-white/10 [&>div]:bg-[#C8A55C]" />
           </div>
         )}
       </div>
@@ -361,40 +372,30 @@ export function QuizContent({ onClose }: QuizContentProps) {
         {showWheel ? (
           <div className="h-full flex flex-col">
             <SpinWheel score={score} totalQuestions={quizQuestions.length} onClose={onClose} />
-            <div className="p-4 text-center">
-              <Button 
+            <div className="p-3 text-center">
+              <Button
                 onClick={resetQuiz}
-                variant="outline" 
-                className="border-[#0B1C2C] text-[#0B1C2C] hover:bg-[#0B1C2C] hover:text-white text-xs h-9"
+                variant="outline"
+                className="border-[#0B1C2C] text-[#0B1C2C] hover:bg-[#0B1C2C] hover:text-white text-xs h-8 bg-transparent"
               >
                 Play Again
               </Button>
             </div>
           </div>
         ) : (
-          <div className="p-3 space-y-3">
-            {/* Question Image */}
-            <div className="relative w-full aspect-video rounded-xl overflow-hidden border-2 border-[#C8A55C]/30 shadow-md bg-gradient-to-br from-[#0B1C2C] via-[#1a2d3f] to-[#0B1C2C]">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center space-y-1.5">
-                  <HelpCircle className="w-10 h-10 mx-auto text-[#C8A55C] opacity-90" />
-                  <p className="text-white/80 text-xs font-medium">Question {currentQuestion + 1}</p>
-                </div>
-              </div>
-              <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-3 left-3 w-14 h-14 border-4 border-[#C8A55C] rounded-full"></div>
-                <div className="absolute bottom-3 right-3 w-10 h-10 border-4 border-[#C8A55C] rounded-full"></div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 border-4 border-[#C8A55C] rounded-full"></div>
-              </div>
+          <div className="p-2 space-y-2">
+            <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-[#C8A55C]/30 shadow-sm">
+              <img
+                src={quizImages[currentQuestion] || "/placeholder.svg"}
+                alt={`Quiz question ${currentQuestion + 1}`}
+                className="w-full h-full object-cover object-top"
+              />
             </div>
 
-            {/* Question Text */}
-            <h3 className="text-sm font-serif font-bold text-[#0B1C2C] leading-tight">
-              {question.question}
-            </h3>
+            <h3 className="text-xs font-serif font-bold text-[#0B1C2C] leading-tight">{question.question}</h3>
 
             {/* Options */}
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               {question.options.map((option, index) => {
                 const isSelected = selectedAnswer === index
                 const isCorrect = index === question.correctAnswer
@@ -407,51 +408,60 @@ export function QuizContent({ onClose }: QuizContentProps) {
                     onClick={() => !showResult && handleAnswerSelect(index)}
                     disabled={showResult}
                     className={cn(
-                      "w-full text-left p-2.5 rounded-xl border-2 transition-all duration-300 relative overflow-hidden group",
+                      "w-full text-left p-2 rounded-lg border transition-all duration-300 relative overflow-hidden group",
                       showCorrect
                         ? "border-green-600 bg-green-50"
                         : showIncorrect
                           ? "border-red-500 bg-red-50"
                           : isSelected
                             ? "border-[#C8A55C] bg-[#C8A55C]/10"
-                            : "border-gray-200 bg-white hover:border-[#C8A55C]/50 hover:bg-gray-50"
+                            : "border-gray-200 bg-white hover:border-[#C8A55C]/50 hover:bg-gray-50",
                     )}
                   >
                     <div className="flex items-center justify-between relative z-10">
-                      <span className={cn(
-                        "font-medium text-xs",
-                        showCorrect ? "text-green-800" : showIncorrect ? "text-red-800" : "text-gray-700"
-                      )}>
+                      <span
+                        className={cn(
+                          "font-medium text-[10px]",
+                          showCorrect ? "text-green-800" : showIncorrect ? "text-red-800" : "text-gray-700",
+                        )}
+                      >
                         {option}
                       </span>
-                      {showCorrect && <span className="text-green-600 font-bold text-[10px] bg-white/80 px-1.5 py-0.5 rounded-full">✓</span>}
-                      {showIncorrect && <span className="text-red-500 font-bold text-[10px] bg-white/80 px-1.5 py-0.5 rounded-full">✗</span>}
+                      {showCorrect && (
+                        <span className="text-green-600 font-bold text-[9px] bg-white/80 px-1 py-0.5 rounded-full">
+                          ✓
+                        </span>
+                      )}
+                      {showIncorrect && (
+                        <span className="text-red-500 font-bold text-[9px] bg-white/80 px-1 py-0.5 rounded-full">
+                          ✗
+                        </span>
+                      )}
                     </div>
                   </button>
                 )
               })}
             </div>
 
-            {/* Fun Fact / Next Button */}
-            <div className="min-h-[60px]">
+            <div className="min-h-[50px]">
               {showResult ? (
-                <div className="bg-[#0B1C2C]/5 border-l-4 border-[#0B1C2C] p-2.5 rounded-r-xl animate-in fade-in slide-in-from-bottom-2 duration-300">
-                  <p className="text-[9px] font-bold text-[#C8A55C] uppercase tracking-wider mb-0.5">Did you know?</p>
-                  <p className="text-[11px] text-[#0B1C2C] leading-relaxed">{question.funFact}</p>
+                <div className="bg-[#0B1C2C]/5 border-l-2 border-[#0B1C2C] p-2 rounded-r-lg animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <p className="text-[8px] font-bold text-[#C8A55C] uppercase tracking-wider mb-0.5">Did you know?</p>
+                  <p className="text-[10px] text-[#0B1C2C] leading-relaxed">{question.funFact}</p>
                 </div>
               ) : (
                 <Button
                   onClick={handleNext}
                   disabled={selectedAnswer === null}
                   className={cn(
-                    "w-full py-3 text-xs font-bold shadow-lg transition-all duration-300 rounded-xl",
+                    "w-full py-2 text-xs font-bold shadow-lg transition-all duration-300 rounded-lg",
                     selectedAnswer !== null
                       ? "bg-[#C8A55C] hover:bg-[#B69446] text-[#0B1C2C] translate-y-0 opacity-100"
-                      : "bg-gray-200 text-gray-400 translate-y-2 opacity-0 pointer-events-none"
+                      : "bg-gray-200 text-gray-400 translate-y-2 opacity-0 pointer-events-none",
                   )}
                 >
-                  {currentQuestion === quizQuestions.length - 1 ? "Finish Quiz" : "Next Question"}
-                  <ChevronRight className="ml-1.5 w-3.5 h-3.5" />
+                  {currentQuestion === quizQuestions.length - 1 ? "Finish" : "Next"}
+                  <ChevronRight className="ml-1 w-3 h-3" />
                 </Button>
               )}
             </div>

@@ -6,49 +6,14 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Check, Zap, Shield, Sparkles, TreePine, Truck, Award, ChevronRight, Gift, Heart } from "lucide-react"
-import { getProducts } from "@/lib/shopify"
+import { Check, Zap, Shield, TreePine, Truck, Award, ChevronRight, Gift, Heart } from "lucide-react"
+import { getProduct } from "@/lib/shopify"
 import type { ShopifyProduct } from "@/lib/shopify"
 
-const productKitConfig = [
-  {
-    id: "phoenix-kit",
-    name: "Phoenix Flagpole Christmas Tree Light Kit",
-    height: "20' & 25'",
-    leds: "900-1500 LEDs",
-    color: "Multiple Options",
-    searchTerms: ["phoenix", "flagpole", "christmas tree"],
-    features: [
-      "Works with 20' and 25' flagpoles",
-      "Professional-grade quality",
-      "Energy-efficient LEDs",
-      "Weather-resistant construction",
-    ],
-  },
-  {
-    id: "patriot-glo-4000",
-    name: "Patriot Glo 4000 Commercial-Grade",
-    height: "20' & 25'",
-    leds: "1500+ LEDs",
-    color: "Commercial Grade",
-    searchTerms: ["patriot glo 4000", "commercial"],
-    features: [
-      "Heavy-duty commercial display",
-      "Ultra-bright LED output",
-      "Premium durability",
-      "Professional installation",
-    ],
-    popular: true,
-  },
-  {
-    id: "patriot-glo-led",
-    name: "Patriot Glo LED Flagpole Christmas Tree Kit",
-    height: "20' & 25'",
-    leds: "900-1500 LEDs",
-    color: "LED Kit",
-    searchTerms: ["patriot glo led", "kit"],
-    features: ["Complete kit included", "Easy installation", "Bright LED illumination", "Great value option"],
-  },
+const productHandles = [
+  "patriot-glo-4000-led-flagpole-christmas-tree-30-43",
+  "phoenix-flagpole-christmas-tree-light-kit-for-20-25-poles",
+  "american-flag-lights-420led-outdoor-waterproof-red-white-and-blue-led-american-flag-net-light-of-the-united-states-for-memorial-day-independence-day-national-day-veterans-day-decorplug-in",
 ]
 
 const addOns = [
@@ -77,13 +42,11 @@ const addOns = [
 
 export function ChristmasTreeSalesPage() {
   const [productKits, setProductKits] = useState<
-    Array<
-      (typeof productKitConfig)[0] & {
-        price: number
-        compareAt: number
-        shopifyProduct?: ShopifyProduct
-      }
-    >
+    Array<{
+      shopifyProduct: ShopifyProduct
+      price: number
+      compareAt: number
+    }>
   >([])
   const [loading, setLoading] = useState(true)
   const [selectedKit, setSelectedKit] = useState<(typeof productKits)[0] | null>(null)
@@ -92,59 +55,43 @@ export function ChristmasTreeSalesPage() {
 
   useEffect(() => {
     async function fetchProducts() {
-      console.log("[v0] 🎄 Fetching Christmas tree products from Shopify by tag...")
+      console.log("[v0] 🎄 Fetching specific Christmas tree products from Shopify...")
 
       try {
-        const allChristmasProducts = await getProducts({ first: 20, query: "tag:Christmas Tree" })
-
-        console.log(`[v0] ✅ Found ${allChristmasProducts.length} Christmas tree products`)
-
-        const fetchedKits = productKitConfig.map((config) => {
-          // Find matching product by searching for all search terms in the title
-          const matchingProduct = allChristmasProducts.find((product) => {
-            const titleLower = product.title.toLowerCase()
-            return config.searchTerms.every((term) => titleLower.includes(term.toLowerCase()))
-          })
-
-          if (matchingProduct) {
-            console.log(`[v0] ✅ Matched "${config.name}" to product: ${matchingProduct.title}`)
-            console.log(`[v0] 💰 Price: ${matchingProduct.priceRange.minVariantPrice.amount}`)
-            console.log(`[v0] 🖼️ Image: ${matchingProduct.featuredImage?.url || "No image"}`)
-
-            const price = Number.parseFloat(matchingProduct.priceRange.minVariantPrice.amount)
-            const compareAt = matchingProduct.compareAtPriceRange?.minVariantPrice?.amount
-              ? Number.parseFloat(matchingProduct.compareAtPriceRange.minVariantPrice.amount)
-              : price * 1.2
-
-            return {
-              ...config,
-              price,
-              compareAt,
-              shopifyProduct: matchingProduct,
+        const products = await Promise.all(
+          productHandles.map(async (handle) => {
+            try {
+              return await getProduct(handle)
+            } catch (error) {
+              console.error(`[v0] Error fetching product ${handle}:`, error)
+              return null
             }
-          } else {
-            console.warn(`[v0] ⚠️ No matching product found for "${config.name}"`)
-            console.warn(`[v0] Search terms: ${config.searchTerms.join(", ")}`)
-            return null
+          }),
+        )
+
+        const validProducts = products.filter((p): p is ShopifyProduct => p !== null)
+
+        console.log(`[v0] ✅ Successfully fetched ${validProducts.length} out of ${productHandles.length} products`)
+
+        const kits = validProducts.map((product) => {
+          const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
+          const compareAt = product.compareAtPriceRange?.minVariantPrice?.amount
+            ? Number.parseFloat(product.compareAtPriceRange.minVariantPrice.amount)
+            : price * 1.2
+
+          console.log(`[v0] ✅ Product: ${product.title}`)
+          console.log(`[v0] 💰 Price: $${price}`)
+          console.log(`[v0] 🖼️ Image: ${product.featuredImage?.url || "No image"}`)
+
+          return {
+            shopifyProduct: product,
+            price,
+            compareAt,
           }
         })
 
-        const validKits = fetchedKits.filter((kit): kit is NonNullable<typeof kit> => kit !== null)
-
-        console.log(`[v0] 📊 Successfully matched ${validKits.length} out of ${productKitConfig.length} products`)
-
-        if (validKits.length === 0) {
-          console.error("[v0] ❌ No products could be matched from Shopify!")
-          console.error(
-            "[v0] Available products:",
-            allChristmasProducts.map((p) => p.title),
-          )
-        }
-
-        setProductKits(validKits)
-
-        const popularKit = validKits.find((k) => k.popular) || validKits[0]
-        setSelectedKit(popularKit)
+        setProductKits(kits)
+        setSelectedKit(kits[0])
         setLoading(false)
       } catch (error) {
         console.error("[v0] ❌ Error fetching Christmas tree products:", error)
@@ -200,12 +147,12 @@ export function ChristmasTreeSalesPage() {
   }
 
   const getProductImage = (kit: typeof selectedKit) => {
-    if (kit.shopifyProduct?.featuredImage?.url) {
-      console.log(`[v0] 🖼️ Using Shopify image for ${kit.name}: ${kit.shopifyProduct.featuredImage.url}`)
+    if (kit.shopifyProduct.featuredImage?.url) {
+      console.log(`[v0] 🖼️ Using Shopify image for ${kit.shopifyProduct.title}: ${kit.shopifyProduct.featuredImage.url}`)
       return kit.shopifyProduct.featuredImage.url
     }
-    console.log(`[v0] ⚠️ No Shopify image found for ${kit.name}, using placeholder`)
-    return `/placeholder.svg?height=800&width=800&query=${encodeURIComponent(kit.name)}`
+    console.log(`[v0] ⚠️ No Shopify image found for ${kit.shopifyProduct.title}, using placeholder`)
+    return `/placeholder.svg?height=800&width=800&query=${encodeURIComponent(kit.shopifyProduct.title)}`
   }
 
   return (
@@ -304,31 +251,26 @@ export function ChristmasTreeSalesPage() {
           </div>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {productKits.map((kit) => {
               const kitDiscount = Math.round(((kit.compareAt - kit.price) / kit.compareAt) * 100)
               const kitSavings = kit.compareAt - kit.price
+              const product = kit.shopifyProduct
 
               return (
                 <Card
-                  key={kit.id}
+                  key={product.id}
                   className={`relative overflow-hidden cursor-pointer transition-all duration-300 ${
-                    selectedKit.id === kit.id
+                    selectedKit.shopifyProduct.id === product.id
                       ? "ring-4 ring-[#C8A55C] shadow-2xl scale-105"
                       : "hover:shadow-xl hover:scale-102"
                   }`}
                   onClick={() => setSelectedKit(kit)}
                 >
-                  {kit.popular && (
-                    <div className="absolute top-0 right-0 bg-[#C8A55C] text-[#0B1C2C] px-4 py-1 text-sm font-bold z-10">
-                      MOST POPULAR
-                    </div>
-                  )}
-
                   <div className="relative aspect-square overflow-hidden bg-gray-50">
                     <Image
-                      src={getProductImage(kit) || "/placeholder.svg"}
-                      alt={kit.name}
+                      src={product.featuredImage?.url || "/placeholder.svg"}
+                      alt={product.featuredImage?.altText || product.title}
                       fill
                       className="object-cover"
                     />
@@ -338,17 +280,7 @@ export function ChristmasTreeSalesPage() {
                   </div>
 
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-[#0B1C2C] mb-2">{kit.name}</h3>
-                    <div className="space-y-1 text-sm text-[#0B1C2C]/70 mb-4">
-                      <p>
-                        <TreePine className="w-4 h-4 inline mr-1" />
-                        {kit.height} • {kit.leds}
-                      </p>
-                      <p>
-                        <Sparkles className="w-4 h-4 inline mr-1" />
-                        {kit.color}
-                      </p>
-                    </div>
+                    <h3 className="text-xl font-bold text-[#0B1C2C] mb-2 line-clamp-2">{product.title}</h3>
 
                     <div className="flex items-baseline gap-2 mb-4">
                       <span className="text-3xl font-bold text-[#0B1C2C]">${kit.price.toFixed(2)}</span>
@@ -359,14 +291,12 @@ export function ChristmasTreeSalesPage() {
                       Save ${kitSavings.toFixed(2)}
                     </div>
 
-                    <ul className="space-y-2 text-sm">
-                      {kit.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-start gap-2">
-                          <Check className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                          <span className="text-[#0B1C2C]/80">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    {product.description && (
+                      <div
+                        className="text-sm text-[#0B1C2C]/80 line-clamp-3"
+                        dangerouslySetInnerHTML={{ __html: product.description }}
+                      />
+                    )}
                   </div>
                 </Card>
               )
@@ -413,7 +343,7 @@ export function ChristmasTreeSalesPage() {
               <h4 className="text-2xl font-bold text-[#0B1C2C] mb-4">Your Order Summary</h4>
               <div className="space-y-3 mb-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-[#0B1C2C]">{selectedKit.name}</span>
+                  <span className="text-[#0B1C2C] line-clamp-1">{selectedKit.shopifyProduct.title}</span>
                   <span className="font-bold text-[#0B1C2C]">${selectedKit.price.toFixed(2)}</span>
                 </div>
                 {selectedAddOns.map((id) => {
