@@ -2,19 +2,14 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Check, Zap, Shield, TreePine, Truck, Award, ChevronRight, Gift, Heart } from "lucide-react"
-import { getProduct } from "@/lib/shopify"
+import { Check, Zap, Shield, TreePine, Truck, Award, ChevronRight, Gift, Heart, ShoppingCart } from "lucide-react"
+import { getFeaturedHolidayProducts } from "@/app/actions/get-featured-holiday-products"
 import type { ShopifyProduct } from "@/lib/shopify"
-
-const productHandles = [
-  "patriot-glo-4000-led-flagpole-christmas-tree-30-43",
-  "phoenix-flagpole-christmas-tree-light-kit-for-20-25-poles",
-  "american-flag-lights-420led-outdoor-waterproof-red-white-and-blue-led-american-flag-net-light-of-the-united-states-for-memorial-day-independence-day-national-day-veterans-day-decorplug-in",
-]
 
 const addOns = [
   {
@@ -55,33 +50,24 @@ export function ChristmasTreeSalesPage() {
 
   useEffect(() => {
     async function fetchProducts() {
-      console.log("[v0] 🎄 Fetching specific Christmas tree products from Shopify...")
+      console.log("[v0] 🎄 Fetching Christmas tree products...")
 
       try {
-        const products = await Promise.all(
-          productHandles.map(async (handle) => {
-            try {
-              return await getProduct(handle)
-            } catch (error) {
-              console.error(`[v0] Error fetching product ${handle}:`, error)
-              return null
-            }
-          }),
-        )
+        const products = await getFeaturedHolidayProducts()
 
-        const validProducts = products.filter((p): p is ShopifyProduct => p !== null)
+        console.log(`[v0] ✅ Successfully fetched ${products.length} products`)
 
-        console.log(`[v0] ✅ Successfully fetched ${validProducts.length} out of ${productHandles.length} products`)
-
-        const kits = validProducts.map((product) => {
+        const kits = products.map((product) => {
           const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
           const compareAt = product.compareAtPriceRange?.minVariantPrice?.amount
             ? Number.parseFloat(product.compareAtPriceRange.minVariantPrice.amount)
-            : price * 1.2
+            : price * 1.3
+
+          const imageUrl = product.featuredImage?.url || product.images?.edges?.[0]?.node?.url
 
           console.log(`[v0] ✅ Product: ${product.title}`)
           console.log(`[v0] 💰 Price: $${price}`)
-          console.log(`[v0] 🖼️ Image: ${product.featuredImage?.url || "No image"}`)
+          console.log(`[v0] 🖼️ Image URL:`, imageUrl)
 
           return {
             shopifyProduct: product,
@@ -147,11 +133,10 @@ export function ChristmasTreeSalesPage() {
   }
 
   const getProductImage = (kit: typeof selectedKit) => {
-    if (kit.shopifyProduct.featuredImage?.url) {
-      console.log(`[v0] 🖼️ Using Shopify image for ${kit.shopifyProduct.title}: ${kit.shopifyProduct.featuredImage.url}`)
-      return kit.shopifyProduct.featuredImage.url
+    const imageUrl = kit.shopifyProduct.featuredImage?.url || kit.shopifyProduct.images?.edges?.[0]?.node?.url
+    if (imageUrl) {
+      return imageUrl
     }
-    console.log(`[v0] ⚠️ No Shopify image found for ${kit.shopifyProduct.title}, using placeholder`)
     return `/placeholder.svg?height=800&width=800&query=${encodeURIComponent(kit.shopifyProduct.title)}`
   }
 
@@ -245,60 +230,82 @@ export function ChristmasTreeSalesPage() {
               Choose Your Perfect Christmas Tree Kit
             </h2>
             <p className="text-xl text-[#0B1C2C]/70 max-w-3xl mx-auto">
-              Select from our premium Patriot Glo LED kits designed for 20ft or 25ft flagpoles. Each kit includes
+              Select from our premium Patriot Glo LED kits designed for 20ft to 43ft flagpoles. Each kit includes
               everything you need for a spectacular holiday display.
             </p>
           </div>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
             {productKits.map((kit) => {
               const kitDiscount = Math.round(((kit.compareAt - kit.price) / kit.compareAt) * 100)
               const kitSavings = kit.compareAt - kit.price
               const product = kit.shopifyProduct
+              const imageUrl = product.featuredImage?.url || product.images?.edges?.[0]?.node?.url
+              const shortDescription = product.description
+                ? product.description.replace(/<[^>]*>/g, "").substring(0, 120) + "..."
+                : "Premium quality Christmas tree lights for your flagpole."
 
               return (
-                <Card
-                  key={product.id}
-                  className={`relative overflow-hidden cursor-pointer transition-all duration-300 ${
-                    selectedKit.shopifyProduct.id === product.id
-                      ? "ring-4 ring-[#C8A55C] shadow-2xl scale-105"
-                      : "hover:shadow-xl hover:scale-102"
-                  }`}
-                  onClick={() => setSelectedKit(kit)}
-                >
-                  <div className="relative aspect-square overflow-hidden bg-gray-50">
-                    <Image
-                      src={product.featuredImage?.url || "/placeholder.svg"}
-                      alt={product.featuredImage?.altText || product.title}
-                      fill
-                      className="object-cover"
-                    />
-                    <Badge className="absolute top-4 left-4 bg-red-600 hover:bg-red-700 text-white font-bold shadow-lg">
-                      SAVE {kitDiscount}%
-                    </Badge>
-                  </div>
-
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-[#0B1C2C] mb-2 line-clamp-2">{product.title}</h3>
-
-                    <div className="flex items-baseline gap-2 mb-4">
-                      <span className="text-3xl font-bold text-[#0B1C2C]">${kit.price.toFixed(2)}</span>
-                      <span className="text-lg text-gray-500 line-through">${kit.compareAt.toFixed(2)}</span>
+                <Link key={product.id} href={`/products/${product.handle}`}>
+                  <Card
+                    className={`relative overflow-hidden cursor-pointer transition-all duration-300 ${
+                      selectedKit.shopifyProduct.id === product.id
+                        ? "ring-4 ring-[#C8A55C] shadow-2xl"
+                        : "hover:shadow-xl hover:scale-[1.02]"
+                    }`}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setSelectedKit(kit)
+                    }}
+                  >
+                    <div className="relative aspect-square overflow-hidden bg-gray-50">
+                      {imageUrl ? (
+                        <Image
+                          src={imageUrl || "/placeholder.svg"}
+                          alt={product.featuredImage?.altText || product.title}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                          <span className="text-6xl">🎄</span>
+                        </div>
+                      )}
+                      <Badge className="absolute top-4 left-4 bg-red-600 hover:bg-red-700 text-white font-bold shadow-lg">
+                        SAVE {kitDiscount}%
+                      </Badge>
                     </div>
 
-                    <div className="bg-red-600 text-white px-3 py-2 rounded-lg text-center font-bold mb-4">
-                      Save ${kitSavings.toFixed(2)}
-                    </div>
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold text-[#0B1C2C] mb-2 line-clamp-2">{product.title}</h3>
 
-                    {product.description && (
-                      <div
-                        className="text-sm text-[#0B1C2C]/80 line-clamp-3"
-                        dangerouslySetInnerHTML={{ __html: product.description }}
-                      />
-                    )}
-                  </div>
-                </Card>
+                      <div className="flex items-baseline gap-2 mb-4">
+                        <span className="text-3xl font-bold text-[#0B1C2C]">${kit.price.toFixed(2)}</span>
+                        <span className="text-lg text-gray-500 line-through">${kit.compareAt.toFixed(2)}</span>
+                      </div>
+
+                      <div className="bg-red-600 text-white px-3 py-2 rounded-lg text-center font-bold mb-4">
+                        Save ${kitSavings.toFixed(2)}
+                      </div>
+
+                      <p className="text-sm text-[#0B1C2C]/80 line-clamp-3 mb-4">{shortDescription}</p>
+
+                      <Button
+                        className="w-full bg-green-600 hover:bg-green-700 text-white font-bold"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          console.log("[v0] Adding to cart:", product.title)
+                        }}
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Add to Cart
+                      </Button>
+                    </div>
+                  </Card>
+                </Link>
               )
             })}
           </div>

@@ -107,7 +107,7 @@ function QuickAddButton({ product }: { product: Product }) {
     console.log("[v0] ⚠️ Product missing variant:", product.title, product.id)
     return (
       <Button size="sm" variant="outline" disabled className="w-full text-xs bg-transparent h-10 px-4">
-        Unavailable
+        View Details
       </Button>
     )
   }
@@ -151,17 +151,16 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
 
   useEffect(() => {
     console.log(`[v0] 🔍 MegaMenuWithCart received ${featuredProducts.length} products for "${title}"`)
-    console.log(
-      `[v0] 🔍 First product structure:`,
-      featuredProducts[0]
-        ? {
-            id: featuredProducts[0].id,
-            title: featuredProducts[0].title,
-            hasVariants: !!featuredProducts[0].variants,
-            variantsEdges: featuredProducts[0].variants?.edges?.length,
-          }
-        : "No products",
-    )
+
+    if (featuredProducts[0]) {
+      console.log(`[v0] 🔍 First product details:`, {
+        id: featuredProducts[0].id,
+        title: featuredProducts[0].title,
+        hasImage: !!featuredProducts[0].featuredImage,
+        imageUrl: featuredProducts[0].featuredImage?.url,
+        hasVariants: !!featuredProducts[0].variants,
+      })
+    }
 
     const activeProducts = featuredProducts.filter((p) => p && p.id)
 
@@ -244,10 +243,13 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
 
         {displayProducts && displayProducts.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {displayProducts.map((product, index) => {
+            {displayProducts.map((product) => {
               const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
               const rating = getProductRating(product.id)
               const madeInUSA = isMadeInUSA(product)
+              const imageUrl = product.featuredImage?.url
+
+              console.log(`[v0] 🖼️ Rendering product "${product.title}" with image:`, imageUrl)
 
               return (
                 <Link
@@ -257,17 +259,18 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
                   className="group block"
                 >
                   <div className="relative aspect-square bg-gray-50 rounded-lg overflow-hidden mb-3 shadow-sm group-hover:shadow-xl transition-all duration-300">
-                    {product.featuredImage ? (
+                    {imageUrl ? (
                       <Image
-                        src={product.featuredImage.url || "/placeholder.svg"}
-                        alt={product.featuredImage.altText || product.title}
+                        src={imageUrl || "/placeholder.svg"}
+                        alt={product.featuredImage?.altText || product.title}
                         fill
                         sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                         className="object-cover transition-all duration-300 group-hover:brightness-110"
+                        unoptimized
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-300">
-                        <span className="text-2xl">🏴</span>
+                      <div className="w-full h-full flex items-center justify-center text-gray-300 bg-gray-100">
+                        <span className="text-4xl">🎄</span>
                       </div>
                     )}
 

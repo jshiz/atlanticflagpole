@@ -2,35 +2,41 @@
 
 import { getProduct } from "@/lib/shopify"
 
+const FEATURED_PRODUCT_HANDLES = [
+  "patriot-glo-4000-led-flagpole-christmas-tree-30-43",
+  "phoenix-flagpole-christmas-tree-light-kit-for-20-25-poles",
+]
+
 export async function getFeaturedHolidayProducts() {
-  const productHandles = [
-    "patriot-glo-4000-led-flagpole-christmas-tree-30-43",
-    "phoenix-flagpole-christmas-tree-light-kit-for-20-25-poles",
-    "american-flag-lights-420led-outdoor-waterproof-red-white-and-blue-led-american-flag-net-light-of-the-united-states-for-memorial-day-independence-day-national-day-veterans-day-decorplug-in",
-  ]
+  console.log("[v0] 🎄 Fetching featured holiday products...")
 
-  const products = await Promise.all(
-    productHandles.map(async (handle) => {
-      try {
-        const product = await getProduct(handle)
-        console.log(`[v0] 🎄 Featured holiday product fetched:`, {
-          title: product?.title,
-          hasImage: !!product?.featuredImage,
-          imageUrl: product?.featuredImage?.url,
-          hasVariants: !!product?.variants,
-          variantCount: product?.variants?.edges?.length,
-          firstVariantId: product?.variants?.edges?.[0]?.node?.id,
-          availableForSale: product?.availableForSale,
-        })
-        return product
-      } catch (error) {
-        console.error(`[v0] ❌ Error fetching product ${handle}:`, error)
-        return null
-      }
-    }),
-  )
+  try {
+    const products = await Promise.all(
+      FEATURED_PRODUCT_HANDLES.map(async (handle) => {
+        try {
+          const product = await getProduct(handle)
 
-  const validProducts = products.filter((p) => p !== null)
-  console.log(`[v0] 🎄 Total featured holiday products: ${validProducts.length}`)
-  return validProducts
+          console.log(`[v0] ✅ Fetched product: ${product.title}`)
+          console.log(`[v0] 📸 Product images:`, {
+            featuredImage: product.featuredImage,
+            firstImageEdge: product.images?.edges?.[0]?.node,
+          })
+
+          return product
+        } catch (error) {
+          console.error(`[v0] ❌ Error fetching product ${handle}:`, error)
+          return null
+        }
+      }),
+    )
+
+    const validProducts = products.filter((p) => p !== null)
+
+    console.log(`[v0] ✅ Successfully fetched ${validProducts.length} holiday products`)
+
+    return validProducts
+  } catch (error) {
+    console.error("[v0] ❌ Error in getFeaturedHolidayProducts:", error)
+    return []
+  }
 }
