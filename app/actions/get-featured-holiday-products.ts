@@ -3,8 +3,8 @@
 import { getProduct } from "@/lib/shopify"
 
 const FEATURED_PRODUCT_HANDLES = [
+  "patriot-glo-led-flagpole-christmas-tree-kit-20-25",
   "patriot-glo-4000-led-flagpole-christmas-tree-30-43",
-  "phoenix-flagpole-christmas-tree-light-kit-for-20-25-poles",
 ]
 
 export async function getFeaturedHolidayProducts() {

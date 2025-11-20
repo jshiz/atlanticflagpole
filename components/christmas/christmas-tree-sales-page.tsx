@@ -6,34 +6,8 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Check, Zap, Shield, TreePine, Truck, Award, ChevronRight, Gift, Heart, ShoppingCart } from "lucide-react"
 import { getFeaturedHolidayProducts } from "@/app/actions/get-featured-holiday-products"
 import type { ShopifyProduct } from "@/lib/shopify"
-
-const addOns = [
-  {
-    id: "timer",
-    name: "Smart Timer Controller",
-    price: 49.99,
-    image: "/placeholder.svg?height=300&width=300",
-    description: "Automatically turn your lights on/off at scheduled times",
-  },
-  {
-    id: "extension",
-    name: "25ft Extension Cable",
-    price: 29.99,
-    image: "/placeholder.svg?height=300&width=300",
-    description: "Extra length for flexible installation options",
-  },
-  {
-    id: "topper",
-    name: "LED Star Topper",
-    price: 79.99,
-    image: "/placeholder.svg?height=300&width=300",
-    description: "Illuminated star topper to crown your display",
-  },
-]
 
 export function ChristmasTreeSalesPage() {
   const [productKits, setProductKits] = useState<
@@ -44,30 +18,17 @@ export function ChristmasTreeSalesPage() {
     }>
   >([])
   const [loading, setLoading] = useState(true)
-  const [selectedKit, setSelectedKit] = useState<(typeof productKits)[0] | null>(null)
-  const [selectedAddOns, setSelectedAddOns] = useState<string[]>([])
   const [videoLoaded, setVideoLoaded] = useState(false)
 
   useEffect(() => {
     async function fetchProducts() {
-      console.log("[v0] 🎄 Fetching Christmas tree products...")
-
       try {
         const products = await getFeaturedHolidayProducts()
-
-        console.log(`[v0] ✅ Successfully fetched ${products.length} products`)
-
         const kits = products.map((product) => {
           const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
           const compareAt = product.compareAtPriceRange?.minVariantPrice?.amount
             ? Number.parseFloat(product.compareAtPriceRange.minVariantPrice.amount)
             : price * 1.3
-
-          const imageUrl = product.featuredImage?.url || product.images?.edges?.[0]?.node?.url
-
-          console.log(`[v0] ✅ Product: ${product.title}`)
-          console.log(`[v0] 💰 Price: $${price}`)
-          console.log(`[v0] 🖼️ Image URL:`, imageUrl)
 
           return {
             shopifyProduct: product,
@@ -77,7 +38,6 @@ export function ChristmasTreeSalesPage() {
         })
 
         setProductKits(kits)
-        setSelectedKit(kits[0])
         setLoading(false)
       } catch (error) {
         console.error("[v0] ❌ Error fetching Christmas tree products:", error)
@@ -93,22 +53,21 @@ export function ChristmasTreeSalesPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <TreePine className="w-16 h-16 text-green-600 animate-pulse mx-auto mb-4" />
-          <p className="text-xl text-[#0B1C2C]">Loading Christmas Tree Kits...</p>
+          <span className="text-6xl animate-pulse">🎄</span>
+          <p className="text-xl text-[#0B1C2C] mt-4">Loading Christmas Tree Kits...</p>
         </div>
       </div>
     )
   }
 
-  if (!selectedKit || productKits.length === 0) {
+  if (productKits.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-8">
-          <TreePine className="w-16 h-16 text-red-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-[#0B1C2C] mb-4">Products Not Available</h2>
+          <span className="text-6xl">🎄</span>
+          <h2 className="text-2xl font-bold text-[#0B1C2C] mb-4 mt-4">Products Not Available</h2>
           <p className="text-[#0B1C2C]/70 mb-6">
-            We're having trouble loading the Christmas tree products. Please check the console for details or contact
-            support.
+            We're having trouble loading the Christmas tree products. Please try again later.
           </p>
           <Button onClick={() => window.location.reload()} className="bg-green-600 hover:bg-green-700">
             Try Again
@@ -116,28 +75,6 @@ export function ChristmasTreeSalesPage() {
         </div>
       </div>
     )
-  }
-
-  const discountPercentage = Math.round(((selectedKit.compareAt - selectedKit.price) / selectedKit.compareAt) * 100)
-  const savings = selectedKit.compareAt - selectedKit.price
-
-  const addOnTotal = selectedAddOns.reduce((sum, id) => {
-    const addOn = addOns.find((a) => a.id === id)
-    return sum + (addOn?.price || 0)
-  }, 0)
-
-  const totalPrice = selectedKit.price + addOnTotal
-
-  const toggleAddOn = (id: string) => {
-    setSelectedAddOns((prev) => (prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]))
-  }
-
-  const getProductImage = (kit: typeof selectedKit) => {
-    const imageUrl = kit.shopifyProduct.featuredImage?.url || kit.shopifyProduct.images?.edges?.[0]?.node?.url
-    if (imageUrl) {
-      return imageUrl
-    }
-    return `/placeholder.svg?height=800&width=800&query=${encodeURIComponent(kit.shopifyProduct.title)}`
   }
 
   return (
@@ -161,7 +98,7 @@ export function ChristmasTreeSalesPage() {
         {/* Hero Content */}
         <div className="relative z-10 container mx-auto px-4 h-full flex flex-col justify-center items-center text-center">
           <Badge className="bg-red-600 hover:bg-red-700 text-white text-lg px-6 py-2 mb-6 shadow-2xl font-bold">
-            🎄 Limited Time Holiday Offer - Save Up To {discountPercentage}%
+            🎄 Limited Time Holiday Offer
           </Badge>
 
           <h1 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6 text-balance leading-tight">
@@ -182,17 +119,15 @@ export function ChristmasTreeSalesPage() {
               className="bg-red-600 hover:bg-red-700 text-white text-xl px-8 py-6 shadow-2xl"
               onClick={() => document.getElementById("products")?.scrollIntoView({ behavior: "smooth" })}
             >
-              <Gift className="w-6 h-6 mr-2" />
-              Shop Christmas Tree Kits
+              🎁 Shop Christmas Tree Kits
             </Button>
             <Button
               size="lg"
               variant="outline"
               className="bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white/20 text-xl px-8 py-6"
-              onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
+              onClick={() => document.getElementById("benefits")?.scrollIntoView({ behavior: "smooth" })}
             >
-              Learn More
-              <ChevronRight className="w-6 h-6 ml-2" />
+              Learn More →
             </Button>
           </div>
         </div>
@@ -203,40 +138,101 @@ export function ChristmasTreeSalesPage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div className="flex flex-col items-center gap-2">
-              <Truck className="w-8 h-8 text-[#C8A55C]" />
-              <span className="font-semibold">Free Shipping</span>
+              <span className="text-3xl text-[#C8A55C]">🛡️</span>
+              <span className="font-semibold">42-Month Warranty</span>
             </div>
             <div className="flex flex-col items-center gap-2">
-              <Shield className="w-8 h-8 text-[#C8A55C]" />
-              <span className="font-semibold">Weather Resistant</span>
+              <span className="text-3xl text-[#C8A55C]">⚡</span>
+              <span className="font-semibold">Energy Efficient LEDs</span>
             </div>
             <div className="flex flex-col items-center gap-2">
-              <Zap className="w-8 h-8 text-[#C8A55C]" />
-              <span className="font-semibold">Energy Efficient</span>
+              <span className="text-3xl text-[#C8A55C]">⏱️</span>
+              <span className="font-semibold">Minutes to Setup</span>
             </div>
             <div className="flex flex-col items-center gap-2">
-              <Award className="w-8 h-8 text-[#C8A55C]" />
+              <span className="text-3xl text-[#C8A55C]">🏆</span>
               <span className="font-semibold">Made in USA</span>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Why Choose Section with Photo */}
+      <section id="benefits" className="py-16 md:py-24 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
+              <Image
+                src="/images/image.png"
+                alt="Beautiful Christmas tree display on flagpole in snowy yard"
+                fill
+                className="object-cover"
+              />
+            </div>
+
+            <div>
+              <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#0B1C2C] mb-6">
+                Why Choose a Flagpole Christmas Tree?
+              </h2>
+              <p className="text-xl text-[#0B1C2C]/80 mb-8 leading-relaxed">
+                Create unforgettable holiday memories with our heartwarming Christmas delightful LED Flagpole Christmas
+                Trees! Transform your outdoor space into a winter wonderland that will be the talk of the neighborhood.
+              </p>
+
+              <div className="space-y-4">
+                {[
+                  {
+                    icon: "⏱️",
+                    title: "Easy to Set Up",
+                    description: "Giving you and your family more quality time together during the holidays",
+                  },
+                  {
+                    icon: "⚡",
+                    title: "Energy-Efficient",
+                    description: "Save money on your electricity bill while creating a stunning display",
+                  },
+                  {
+                    icon: "⭐",
+                    title: "Stylish Design",
+                    description: "Great attention to detail and durability for years of enjoyment",
+                  },
+                  {
+                    icon: "🎄",
+                    title: "Year-Round Value",
+                    description: "Take advantage of your flagpole in the winter season",
+                  },
+                ].map((benefit, index) => (
+                  <div key={index} className="flex gap-4 items-start">
+                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-2xl">
+                      {benefit.icon}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg text-[#0B1C2C] mb-1">{benefit.title}</h3>
+                      <p className="text-[#0B1C2C]/70">{benefit.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Product Selection */}
-      <section id="products" className="py-16 md:py-24 bg-gradient-to-b from-white to-[#F5F3EF]">
+      <section id="products" className="py-16 md:py-24 bg-gradient-to-b from-[#F5F3EF] to-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#0B1C2C] mb-4">
               Choose Your Perfect Christmas Tree Kit
             </h2>
             <p className="text-xl text-[#0B1C2C]/70 max-w-3xl mx-auto">
-              Select from our premium Patriot Glo LED kits designed for 20ft to 43ft flagpoles. Each kit includes
-              everything you need for a spectacular holiday display.
+              Select from our premium Patriot Glo LED kits. Each kit includes everything you need for a spectacular
+              holiday display.
             </p>
           </div>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {productKits.map((kit) => {
               const kitDiscount = Math.round(((kit.compareAt - kit.price) / kit.compareAt) * 100)
               const kitSavings = kit.compareAt - kit.price
@@ -247,25 +243,18 @@ export function ChristmasTreeSalesPage() {
                 : "Premium quality Christmas tree lights for your flagpole."
 
               return (
-                <Link key={product.id} href={`/products/${product.handle}`}>
-                  <Card
-                    className={`relative overflow-hidden cursor-pointer transition-all duration-300 ${
-                      selectedKit.shopifyProduct.id === product.id
-                        ? "ring-4 ring-[#C8A55C] shadow-2xl"
-                        : "hover:shadow-xl hover:scale-[1.02]"
-                    }`}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      setSelectedKit(kit)
-                    }}
-                  >
+                <Card
+                  key={product.id}
+                  className="relative overflow-hidden hover:shadow-2xl transition-all duration-300"
+                >
+                  <Link href={`/products/${product.handle}`}>
                     <div className="relative aspect-square overflow-hidden bg-gray-50">
                       {imageUrl ? (
                         <Image
                           src={imageUrl || "/placeholder.svg"}
                           alt={product.featuredImage?.altText || product.title}
                           fill
-                          className="object-cover"
+                          className="object-cover hover:scale-105 transition-transform duration-300"
                           unoptimized
                         />
                       ) : (
@@ -273,116 +262,232 @@ export function ChristmasTreeSalesPage() {
                           <span className="text-6xl">🎄</span>
                         </div>
                       )}
-                      <Badge className="absolute top-4 left-4 bg-red-600 hover:bg-red-700 text-white font-bold shadow-lg">
-                        SAVE {kitDiscount}%
-                      </Badge>
+                      {kitDiscount > 0 && (
+                        <Badge className="absolute top-4 left-4 bg-red-600 hover:bg-red-700 text-white font-bold shadow-lg text-base px-4 py-2">
+                          SAVE {kitDiscount}%
+                        </Badge>
+                      )}
+                    </div>
+                  </Link>
+
+                  <div className="p-6">
+                    <Link href={`/products/${product.handle}`}>
+                      <h3 className="text-xl font-bold text-[#0B1C2C] mb-3 hover:text-[#C8A55C] transition-colors">
+                        {product.title}
+                      </h3>
+                    </Link>
+
+                    <div className="flex items-baseline gap-3 mb-4">
+                      <span className="text-3xl font-bold text-[#0B1C2C]">${kit.price.toFixed(2)}</span>
+                      {kitDiscount > 0 && (
+                        <span className="text-lg text-gray-500 line-through">${kit.compareAt.toFixed(2)}</span>
+                      )}
                     </div>
 
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-[#0B1C2C] mb-2 line-clamp-2">{product.title}</h3>
-
-                      <div className="flex items-baseline gap-2 mb-4">
-                        <span className="text-3xl font-bold text-[#0B1C2C]">${kit.price.toFixed(2)}</span>
-                        <span className="text-lg text-gray-500 line-through">${kit.compareAt.toFixed(2)}</span>
-                      </div>
-
-                      <div className="bg-red-600 text-white px-3 py-2 rounded-lg text-center font-bold mb-4">
+                    {kitSavings > 0 && (
+                      <div className="bg-red-600 text-white px-4 py-2 rounded-lg text-center font-bold mb-4">
                         Save ${kitSavings.toFixed(2)}
                       </div>
+                    )}
 
-                      <p className="text-sm text-[#0B1C2C]/80 line-clamp-3 mb-4">{shortDescription}</p>
+                    <p className="text-sm text-[#0B1C2C]/70 mb-6 line-clamp-3">{shortDescription}</p>
 
-                      <Button
-                        className="w-full bg-green-600 hover:bg-green-700 text-white font-bold"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          console.log("[v0] Adding to cart:", product.title)
-                        }}
-                      >
-                        <ShoppingCart className="w-4 h-4 mr-2" />
-                        Add to Cart
-                      </Button>
+                    <div className="space-y-2 mb-6">
+                      <div className="flex items-center gap-2 text-sm text-[#0B1C2C]">
+                        <span className="text-green-600">✓</span>
+                        <span>No tools required</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-[#0B1C2C]">
+                        <span className="text-green-600">✓</span>
+                        <span>Weather-resistant design</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-[#0B1C2C]">
+                        <span className="text-green-600">✓</span>
+                        <span>42-month warranty included</span>
+                      </div>
                     </div>
-                  </Card>
-                </Link>
+
+                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-6">
+                      🛒 Add to Cart - ${kit.price.toFixed(2)}
+                    </Button>
+                  </div>
+                </Card>
               )
             })}
           </div>
+        </div>
+      </section>
 
-          {/* Add-Ons Section */}
-          <Card className="p-8 bg-white shadow-xl">
-            <h3 className="text-3xl font-serif font-bold text-[#0B1C2C] mb-6 flex items-center gap-3">
-              <Gift className="w-8 h-8 text-[#C8A55C]" />
-              Enhance Your Display with Add-Ons
-            </h3>
+      {/* Features Grid with Photos */}
+      <section className="py-16 md:py-24 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#0B1C2C] mb-4">
+              The Ultimate Holiday Statement
+            </h2>
+            <p className="text-xl text-[#0B1C2C]/70 max-w-3xl mx-auto">
+              For a truly spectacular display that captures the magic of the season
+            </p>
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              {addOns.map((addOn) => (
-                <Card
-                  key={addOn.id}
-                  className={`cursor-pointer transition-all duration-300 ${
-                    selectedAddOns.includes(addOn.id) ? "ring-2 ring-green-600 shadow-lg" : "hover:shadow-md"
-                  }`}
-                  onClick={() => toggleAddOn(addOn.id)}
-                >
-                  <div className="relative aspect-square overflow-hidden bg-gray-50">
-                    <Image src={addOn.image || "/placeholder.svg"} alt={addOn.name} fill className="object-cover" />
-                    {selectedAddOns.includes(addOn.id) && (
-                      <div className="absolute inset-0 bg-green-600/20 flex items-center justify-center">
-                        <div className="bg-green-600 text-white rounded-full p-3">
-                          <Check className="w-8 h-8" />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h4 className="font-bold text-[#0B1C2C] mb-2">{addOn.name}</h4>
-                    <p className="text-sm text-[#0B1C2C]/70 mb-3">{addOn.description}</p>
-                    <p className="text-xl font-bold text-[#0B1C2C]">+${addOn.price.toFixed(2)}</p>
-                  </div>
-                </Card>
-              ))}
-            </div>
-
-            {/* Order Summary */}
-            <div className="bg-[#F5F3EF] rounded-lg p-6">
-              <h4 className="text-2xl font-bold text-[#0B1C2C] mb-4">Your Order Summary</h4>
-              <div className="space-y-3 mb-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-[#0B1C2C] line-clamp-1">{selectedKit.shopifyProduct.title}</span>
-                  <span className="font-bold text-[#0B1C2C]">${selectedKit.price.toFixed(2)}</span>
-                </div>
-                {selectedAddOns.map((id) => {
-                  const addOn = addOns.find((a) => a.id === id)
-                  return addOn ? (
-                    <div key={id} className="flex justify-between items-center text-sm">
-                      <span className="text-[#0B1C2C]/70">{addOn.name}</span>
-                      <span className="text-[#0B1C2C]/70">${addOn.price.toFixed(2)}</span>
-                    </div>
-                  ) : null
-                })}
-                <Separator />
-                <div className="flex justify-between items-center text-xl font-bold">
-                  <span className="text-[#0B1C2C]">Total</span>
-                  <span className="text-[#0B1C2C]">${totalPrice.toFixed(2)}</span>
-                </div>
-                <div className="bg-red-600 text-white px-4 py-3 rounded-lg text-center">
-                  <p className="text-sm font-semibold">You're Saving</p>
-                  <p className="text-2xl font-bold">${savings.toFixed(2)}</p>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="overflow-hidden hover:shadow-xl transition-shadow">
+              <div className="relative aspect-square">
+                <Image
+                  src="/images/image.png"
+                  alt="Close-up of LED Christmas tree lights detail"
+                  fill
+                  className="object-cover"
+                />
               </div>
+              <div className="p-6">
+                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-4 text-2xl">
+                  ⚡
+                </div>
+                <h3 className="text-xl font-bold text-[#0B1C2C] mb-3">Energy-Efficient LED Lights</h3>
+                <p className="text-[#0B1C2C]/70">
+                  Light up your holiday season without lighting up your electricity bill. Our energy-efficient LEDs
+                  sparkle brilliantly while being kind on your wallet and the environment.
+                </p>
+              </div>
+            </Card>
 
-              <Button className="w-full bg-green-600 hover:bg-green-700 text-white text-xl py-6 font-bold shadow-lg">
-                <Heart className="w-6 h-6 mr-2" />
-                Add to Cart - ${totalPrice.toFixed(2)}
-              </Button>
+            <Card className="overflow-hidden hover:shadow-xl transition-shadow">
+              <div className="relative aspect-square">
+                <Image
+                  src="/images/image.png"
+                  alt="Flagpole Christmas tree installation detail"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="p-6">
+                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-4 text-2xl">
+                  ⏱️
+                </div>
+                <h3 className="text-xl font-bold text-[#0B1C2C] mb-3">Insta-Tree: Easy Setup</h3>
+                <p className="text-[#0B1C2C]/70">
+                  No tools required! Say goodbye to holiday hassles. Set up your stunning holiday centerpiece in just
+                  minutes. More time for hot cocoa and family moments.
+                </p>
+              </div>
+            </Card>
 
-              <p className="text-center text-sm text-[#0B1C2C]/70 mt-4">
-                ✓ Free Shipping • ✓ Easy Returns • ✓ Secure Checkout
-              </p>
-            </div>
-          </Card>
+            <Card className="overflow-hidden hover:shadow-xl transition-shadow">
+              <div className="relative aspect-square">
+                <Image
+                  src="/images/image.png"
+                  alt="Beautiful Christmas tree display in winter landscape"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="p-6">
+                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-4 text-2xl">
+                  🛡️
+                </div>
+                <h3 className="text-xl font-bold text-[#0B1C2C] mb-3">42-Month Warranty</h3>
+                <p className="text-[#0B1C2C]/70">
+                  We're not just offering a Christmas tree; we're promising peace of mind. Your investment is protected,
+                  ensuring seasons of joy and wonder year after year.
+                </p>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Customer Gallery */}
+      <section className="py-16 md:py-24 bg-gradient-to-b from-[#F5F3EF] to-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-serif font-bold text-[#0B1C2C] mb-4">
+              See What Customers Are Saying
+            </h2>
+            <p className="text-xl text-[#0B1C2C]/70 max-w-3xl mx-auto">
+              Join thousands of happy customers who have transformed their holidays
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <Card className="overflow-hidden">
+              <div className="relative aspect-[4/3]">
+                <Image
+                  src="/images/image.png"
+                  alt="Multicolor LED Christmas tree display in customer yard"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex gap-1 mb-3">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span key={star} className="text-yellow-400 text-xl">
+                      ⭐
+                    </span>
+                  ))}
+                </div>
+                <p className="text-[#0B1C2C] italic mb-3">
+                  "The multicolor option is absolutely stunning! Our neighbors stop by every night to admire it. Setup
+                  was incredibly easy - took us less than 15 minutes!"
+                </p>
+                <p className="text-sm text-[#0B1C2C]/70">- Sarah M., Colorado</p>
+              </div>
+            </Card>
+
+            <Card className="overflow-hidden">
+              <div className="relative aspect-[4/3]">
+                <Image
+                  src="/images/image.png"
+                  alt="Warm white LED Christmas tree with dog in snow"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex gap-1 mb-3">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span key={star} className="text-yellow-400 text-xl">
+                      ⭐
+                    </span>
+                  ))}
+                </div>
+                <p className="text-[#0B1C2C] italic mb-3">
+                  "Best investment we've made for holiday decorations. The warm white lights create such a cozy
+                  atmosphere. Even our dog loves it!"
+                </p>
+                <p className="text-sm text-[#0B1C2C]/70">- Mike T., Montana</p>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-16 md:py-24 bg-gradient-to-r from-green-600 to-red-600 text-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">Make This Your Brightest Christmas Yet</h2>
+          <p className="text-xl mb-8 max-w-2xl mx-auto">
+            Don't miss out on creating unforgettable holiday memories. Order your Patriot Glo LED Christmas Tree Kit
+            today!
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              size="lg"
+              className="bg-white text-green-600 hover:bg-gray-100 text-xl px-8 py-6 font-bold"
+              onClick={() => document.getElementById("products")?.scrollIntoView({ behavior: "smooth" })}
+            >
+              ❤️ Shop Now
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-2 border-white text-white hover:bg-white/20 text-xl px-8 py-6 font-bold bg-transparent"
+              asChild
+            >
+              <Link href="/pages/contact">Contact Us</Link>
+            </Button>
+          </div>
         </div>
       </section>
     </div>

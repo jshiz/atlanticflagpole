@@ -3,7 +3,6 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import { Shield, Wind, Award, CheckCircle } from "lucide-react"
 
 interface HeroProps {
   judgemeStats?: {
@@ -11,6 +10,50 @@ interface HeroProps {
     totalReviews: number
   }
 }
+
+const ShieldIcon = () => (
+  <svg className="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+    />
+  </svg>
+)
+
+const WindIcon = () => (
+  <svg className="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 014.438 0 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243-4.243 3 3 0 013.138 3.138 3 3 0 00.806 1.946 3 3 0 010 4.438 3 3 0 00-.806 1.946 3 3 0 01-3.138 3.138 3 3 0 00-1.946.806 3 3 0 01-4.438 0 3 3 0 00-1.946-.806 3 3 0 01-3.138-3.138z"
+    />
+  </svg>
+)
+
+const AwardIcon = () => (
+  <svg className="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138z"
+    />
+  </svg>
+)
+
+const CheckCircleIcon = () => (
+  <svg className="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+    />
+  </svg>
+)
 
 export function Hero({ judgemeStats }: HeroProps = {}) {
   const [timeLeft, setTimeLeft] = useState({
@@ -91,7 +134,7 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
                 { src: "/images/bbb-logo.webp", alt: "BBB Accredited" },
                 { src: "/images/one-percent-planet.svg", alt: "1% for Planet" },
                 {
-                  src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/madeinusabadge-y7lnHFiqBn1o0YpH7y5tKHymKkmgPA.jpg",
+                  src: "/images/madeinusabadge.jpg",
                   alt: "Made in USA",
                 },
               ].map((badge, index) => (
@@ -138,7 +181,9 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
                     withstand extreme weather and honor your patriotism for generations.
                   </p>
                   <div className="flex items-center justify-center gap-1 pt-2">
-                    <Shield className="w-4 h-4 text-[#C8A55C]" />
+                    <div className="text-[#C8A55C]">
+                      <ShieldIcon />
+                    </div>
                     <span className="text-[#C8A55C] font-bold text-xs uppercase tracking-wide">Lifetime Warranty</span>
                   </div>
                 </div>
@@ -278,23 +323,31 @@ export function Hero({ judgemeStats }: HeroProps = {}) {
           {[...Array(3)].map((_, setIndex) => (
             <div key={setIndex} className="flex items-center gap-6 md:gap-12 px-4 md:px-6 flex-shrink-0">
               <div className="flex items-center gap-2 md:gap-3">
-                <Award className="w-4 h-4 md:w-6 md:h-6 text-[#C8A55C] flex-shrink-0" />
+                <div className="text-[#C8A55C]">
+                  <AwardIcon />
+                </div>
                 <span className="text-[#C8A55C] font-semibold text-xs md:text-base tracking-wide">
                   365-Day Home Trial
                 </span>
               </div>
               <div className="flex items-center gap-2 md:gap-3">
-                <Shield className="w-4 h-4 md:w-6 md:h-6 text-[#C8A55C] flex-shrink-0" />
+                <div className="text-[#C8A55C]">
+                  <ShieldIcon />
+                </div>
                 <span className="text-[#C8A55C] font-semibold text-xs md:text-base tracking-wide">
                   Forever Warranty
                 </span>
               </div>
               <div className="flex items-center gap-2 md:gap-3">
-                <Wind className="w-4 h-4 md:w-6 md:h-6 text-[#C8A55C] flex-shrink-0" />
+                <div className="text-[#C8A55C]">
+                  <WindIcon />
+                </div>
                 <span className="text-[#C8A55C] font-semibold text-xs md:text-base tracking-wide">Made in USA</span>
               </div>
               <div className="flex items-center gap-2 md:gap-3">
-                <CheckCircle className="w-4 h-4 md:w-6 md:h-6 text-[#C8A55C] flex-shrink-0" />
+                <div className="text-[#C8A55C]">
+                  <CheckCircleIcon />
+                </div>
                 <span className="text-[#C8A55C] font-semibold text-xs md:text-base tracking-wide">
                   Join 2.5 Million Happy American Homeowners
                 </span>
