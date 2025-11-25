@@ -7,7 +7,6 @@ import Image from "next/image"
 import { useState, useEffect } from "react"
 import { Star, ShoppingCart, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/components/cart/cart-context"
 import { cn } from "@/lib/utils"
 
@@ -26,6 +25,12 @@ interface Product {
     url: string
     altText?: string
   }
+  images?: {
+    nodes: Array<{
+      url: string
+      altText?: string
+    }>
+  }
   priceRange: {
     minVariantPrice: {
       amount: string
@@ -33,11 +38,15 @@ interface Product {
     }
   }
   variants: {
-    edges: Array<{
+    edges?: Array<{
       node: {
         id: string
         availableForSale: boolean
       }
+    }>
+    nodes?: Array<{
+      id: string
+      availableForSale: boolean
     }>
   }
   availableForSale?: boolean
@@ -85,7 +94,7 @@ function QuickAddButton({ product }: { product: Product }) {
   const { addToCart, loading } = useCart()
   const [added, setAdded] = useState(false)
 
-  const defaultVariant = product.variants?.edges?.[0]?.node
+  const defaultVariant = product.variants?.edges?.[0]?.node || product.variants?.nodes?.[0]
   const isAvailable = defaultVariant?.availableForSale ?? product.availableForSale ?? true
 
   const handleQuickAdd = async (e: React.MouseEvent) => {
@@ -152,17 +161,21 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
   useEffect(() => {
     console.log(`[v0] 🔍 MegaMenuWithCart received ${featuredProducts.length} products for "${title}"`)
 
-    if (featuredProducts[0]) {
-      console.log(`[v0] 🔍 First product details:`, {
-        id: featuredProducts[0].id,
-        title: featuredProducts[0].title,
-        hasImage: !!featuredProducts[0].featuredImage,
-        imageUrl: featuredProducts[0].featuredImage?.url,
-        hasVariants: !!featuredProducts[0].variants,
-      })
-    }
+    const activeProducts = featuredProducts.filter((p) => {
+      if (!p || !p.id) return false
 
-    const activeProducts = featuredProducts.filter((p) => p && p.id)
+      const imageUrl = p.featuredImage?.url || p.images?.nodes?.[0]?.url
+
+      console.log(`[v0] Product: ${p.title}`, {
+        hasImage: !!imageUrl,
+        imageUrl: imageUrl,
+        hasFeaturedImage: !!p.featuredImage,
+        hasImagesNodes: !!p.images?.nodes?.length,
+        hasVariants: !!(p.variants?.edges?.length || p.variants?.nodes?.length),
+      })
+
+      return true
+    })
 
     console.log(`[v0] ✅ Showing ${activeProducts.length} products for "${title}"`)
 
@@ -247,7 +260,8 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
               const price = Number.parseFloat(product.priceRange.minVariantPrice.amount)
               const rating = getProductRating(product.id)
               const madeInUSA = isMadeInUSA(product)
-              const imageUrl = product.featuredImage?.url
+              const imageUrl = product.featuredImage?.url || product.images?.nodes?.[0]?.url
+              const imageAlt = product.featuredImage?.altText || product.images?.nodes?.[0]?.altText || product.title
 
               console.log(`[v0] 🖼️ Rendering product "${product.title}" with image:`, imageUrl)
 
@@ -262,7 +276,7 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
                     {imageUrl ? (
                       <Image
                         src={imageUrl || "/placeholder.svg"}
-                        alt={product.featuredImage?.altText || product.title}
+                        alt={imageAlt}
                         fill
                         sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                         className="object-cover transition-all duration-300 group-hover:brightness-110"
@@ -270,15 +284,21 @@ export function MegaMenuWithCart({ title, menuItems, featuredProducts = [], onLi
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-300 bg-gray-100">
-                        <span className="text-4xl">🎄</span>
+                        <span className="text-4xl">🏳️</span>
                       </div>
                     )}
 
                     {madeInUSA && (
                       <div className="absolute top-2 right-2 z-10">
-                        <Badge className="bg-[#0B1C2C] text-white text-[10px] px-2 py-0.5 font-bold shadow-lg border border-white/20">
-                          Made in USA
-                        </Badge>
+                        <div className="relative w-10 h-10 rounded-full overflow-hidden bg-white shadow-lg border border-[#C8A55C]">
+                          <Image
+                            src="/images/design-mode/madeinusabadge.jpg"
+                            alt="Made in USA"
+                            fill
+                            sizes="40px"
+                            className="object-contain p-1"
+                          />
+                        </div>
                       </div>
                     )}
                   </div>
